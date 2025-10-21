@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">QuantraVision Overlay</string>
+    <string name="overlay_permission_title">Overlay Permission</string>
+    <string name="overlay_permission_desc">Enable screen overlay for chart highlighting.</string>
+</resources>
