@@ -1,0 +1,6 @@
+name: "Double Bottom"
+image: "pattern_templates/double_bottom_ref.png"
+threshold: 0.80
+description: >
+  Mirror image of Double Top, forming two troughs.
+  Suggests exhaustion of sellers and possible bullish reversal.
