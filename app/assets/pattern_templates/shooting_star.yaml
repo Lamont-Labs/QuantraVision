@@ -1,0 +1,6 @@
+name: "Shooting Star"
+image: "pattern_templates/shooting_star_ref.png"
+threshold: 0.72
+description: >
+  Single candlestick with long upper shadow and small body near base.
+  Indicates bearish reversal after advance.
