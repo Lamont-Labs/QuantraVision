@@ -1,0 +1,6 @@
+name: "Head & Shoulders"
+image: "pattern_templates/head_shoulders_ref.png"
+threshold: 0.78
+description: >
+  Classic reversal pattern characterized by a central peak (head)
+  between two smaller peaks (shoulders). Confirms potential trend reversal.
