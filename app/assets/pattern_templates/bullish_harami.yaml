@@ -1,0 +1,5 @@
+name: "Bullish Harami"
+image: "pattern_templates/bullish_harami_ref.png"
+threshold: 0.72
+description: >
+  Small green body contained within prior larger red. Potential downside stall.
