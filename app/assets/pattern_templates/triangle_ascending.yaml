@@ -1,0 +1,6 @@
+name: "Ascending Triangle"
+image: "pattern_templates/triangle_ascending_ref.png"
+threshold: 0.80
+description: >
+  Bullish continuation pattern where price forms higher lows
+  against a horizontal resistance line.
