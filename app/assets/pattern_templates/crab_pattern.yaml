@@ -1,0 +1,5 @@
+name: "Crab Pattern"
+image: "pattern_templates/crab_pattern_ref.png"
+threshold: 0.86
+description: >
+  Harmonic with long CD extension. Sharp reversals from PRZ at D.
