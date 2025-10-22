@@ -1,0 +1,5 @@
+name: "Tweezer Bottom"
+image: "pattern_templates/tweezer_bottom_ref.png"
+threshold: 0.72
+description: >
+  Two adjacent troughs at similar lows. Short-term bullish reversal risk.
