@@ -1,0 +1,6 @@
+name: "Doji"
+image: "pattern_templates/doji_ref.png"
+threshold: 0.70
+description: >
+  Candle where open and close are nearly equal, denoting indecision.
+  Context determines reversal or continuation significance.
