@@ -1,0 +1,5 @@
+name: "Gartley 222"
+image: "pattern_templates/gartley_222_ref.png"
+threshold: 0.86
+description: >
+  Harmonic formation with specific Fibonacci ratios (XABCD). Reversal near D.
