@@ -1,0 +1,5 @@
+name: "Bollinger Squeeze Breakout"
+image: "pattern_templates/bollinger_squeeze_breakout_ref.png"
+threshold: 0.80
+description: >
+  Bands contract tightly then price breaks out with expansion. Volatility regime change.
