@@ -1,0 +1,5 @@
+name: "RSI Overbought Pullback"
+image: "pattern_templates/rsi_overbought_pullback_ref.png"
+threshold: 0.74
+description: >
+  RSI exceeds overbought level then falls back. Pullback risk in uptrends.
