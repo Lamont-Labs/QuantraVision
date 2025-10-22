@@ -1,0 +1,6 @@
+name: "Falling Wedge"
+image: "pattern_templates/falling_wedge_ref.png"
+threshold: 0.78
+description: >
+  Bullish reversal pattern characterized by converging downward-sloping lines.
+  Often precedes a breakout to the upside.
