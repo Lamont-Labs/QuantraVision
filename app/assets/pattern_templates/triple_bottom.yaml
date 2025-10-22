@@ -1,0 +1,5 @@
+name: "Triple Bottom"
+image: "pattern_templates/triple_bottom_ref.png"
+threshold: 0.79
+description: >
+  Three equal troughs revealing sustained support and probable bullish reversal.
