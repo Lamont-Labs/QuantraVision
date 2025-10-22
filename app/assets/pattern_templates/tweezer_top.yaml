@@ -1,0 +1,5 @@
+name: "Tweezer Top"
+image: "pattern_templates/tweezer_top_ref.png"
+threshold: 0.72
+description: >
+  Two adjacent peaks at similar highs. Short-term bearish reversal risk.
