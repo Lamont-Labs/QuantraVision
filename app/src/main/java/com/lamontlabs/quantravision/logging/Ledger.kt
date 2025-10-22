@@ -7,9 +7,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Immutable ledger of every detection for reproducibility proof.
- * Appends line-by-line with timestamp, pattern, confidence, tf, scale, and sha256.
- * Included in all exports for audit verification.
+ * Ledger
+ * Immutable detection ledger.
+ * Now includes legal disclaimer footer for audit and compliance.
  */
 object Ledger {
 
@@ -19,18 +19,25 @@ object Ledger {
     fun append(context: Context, m: PatternMatch, hash: String) {
         val line = buildString {
             append(sdf.format(Date(m.timestamp)))
-            append(" | ")
-            append(m.patternName)
-            append(" | tf=")
-            append(m.timeframe)
-            append(" | conf=")
-            append("%.3f".format(m.confidence))
-            append(" | scale=")
-            append("%.2f".format(m.scale))
-            append(" | sha256=")
-            append(hash)
+            append(" | ${m.patternName}")
+            append(" | conf=${"%.3f".format(m.confidence)}")
+            append(" | tf=${m.timeframe}")
+            append(" | sha256=$hash")
         }
-        File(context.filesDir, fileName).appendText(line + "\n")
+        val file = File(context.filesDir, fileName)
+        file.appendText(line + "\n")
+    }
+
+    fun finalizeLedger(context: Context) {
+        val file = File(context.filesDir, fileName)
+        if (!file.exists()) return
+        val disclaimer = """
+            
+            # DISCLAIMER
+            # QuantraVision Overlay © 2025 Lamont Labs
+            # Visual analysis only. No trades, predictions, or advice.
+        """.trimIndent()
+        file.appendText(disclaimer + "\n")
     }
 
     fun file(context: Context): File = File(context.filesDir, fileName)
