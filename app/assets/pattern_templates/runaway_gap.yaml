@@ -1,0 +1,5 @@
+name: "Runaway (Measuring) Gap"
+image: "pattern_templates/runaway_gap_ref.png"
+threshold: 0.79
+description: >
+  Mid-trend gap aligned with prevailing move. Often marks trend midpoint.
