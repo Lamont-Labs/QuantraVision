@@ -1,0 +1,5 @@
+name: "V-Bottom"
+image: "pattern_templates/v_bottom_ref.png"
+threshold: 0.77
+description: >
+  Sharp capitulation and immediate recovery forming a V shape.
