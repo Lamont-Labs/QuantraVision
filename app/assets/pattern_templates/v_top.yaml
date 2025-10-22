@@ -1,0 +1,5 @@
+name: "V-Top"
+image: "pattern_templates/v_top_ref.png"
+threshold: 0.77
+description: >
+  Fast blow-off top followed by swift decline forming an inverted V.
