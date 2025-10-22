@@ -1,0 +1,5 @@
+name: "Three Black Crows"
+image: "pattern_templates/three_black_crows_ref.png"
+threshold: 0.74
+description: >
+  Three consecutive long bearish candles from a rally. Strong distribution signal.
