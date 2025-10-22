@@ -1,0 +1,5 @@
+name: "Rounding Bottom"
+image: "pattern_templates/rounding_bottom_ref.png"
+threshold: 0.81
+description: >
+  Saucer-shaped base after downtrend. Gradual accumulation before breakout.
