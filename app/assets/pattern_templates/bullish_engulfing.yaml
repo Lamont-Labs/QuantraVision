@@ -1,0 +1,5 @@
+name: "Bullish Engulfing"
+image: "pattern_templates/bullish_engulfing_ref.png"
+threshold: 0.73
+description: >
+  Large green candle engulfs prior red body near support. Bullish reversal cue.
