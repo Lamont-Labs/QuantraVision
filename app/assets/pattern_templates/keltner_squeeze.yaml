@@ -1,0 +1,5 @@
+name: "Keltner Squeeze"
+image: "pattern_templates/keltner_squeeze_ref.png"
+threshold: 0.80
+description: >
+  Bollinger Bands move inside Keltner Channel. Breakout expected when bands exit channel.
