@@ -1,0 +1,5 @@
+name: "Golden Cross (50/200 MA)"
+image: "pattern_templates/golden_cross_ref.png"
+threshold: 0.78
+description: >
+  50-day moving average crosses above 200-day. Long-term bullish signal.
