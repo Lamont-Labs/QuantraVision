@@ -1,21 +1,40 @@
-# Configuration — QuantraVision Overlay
+# Configuration — QuantraVision Overlay (Multi-Timeframe v1.1)
 
-## Permissions
-- SYSTEM_ALERT_WINDOW  
-- MediaProjection API  
-- Foreground Service for overlay persistence  
+## Detection Engine
+- multi_scale.enabled: true
+- multi_scale.levels: 9
+- multi_scale.scale_factor: 0.85
+- aspect_tolerance: 0.12           # allow ±12% aspect deformation
+- nms.iou_threshold: 0.25           # prune overlapping matches
+- min_confidence_global: 0.70
+- grayscale_preprocessing: true
+- histogram_equalization: true
 
-## Modes
-- **Static Detection (Phase 1):** Analyze chart images from assets folder.  
-- **Live Overlay (Phase 2):** Real-time screen capture + pattern highlight.  
+## Template Schema (v1.1)
+Each YAML in `assets/pattern_templates/` may include:
+- name: string
+- image: path-to-reference-png
+- threshold: 0.70–0.95
+- scale_range: [0.5, 2.0]           # relative to reference image
+- aspect_tolerance: 0.10            # overrides global if present
+- timeframe_hints: ["1m","5m","15m","1h","4h","D","W"]
+- min_bars: 20                      # visual density guard
+- notes: string
 
-## Provenance Storage
-- Room database `PatternMatch.db`  
-- Each match entry: timestamp, pattern_id, confidence, hash  
+## Timeframe Agnosticism
+Charts are images with varying DPI and bar width. Engine normalizes by:
+- grayscale + CLAHE (contrast normalization)
+- Gaussian blur for noise robustness
+- multi-scale, slight aspect sweep
+- NMS to deduplicate multi-scale hits
 
-## Template Library
-Stored in `assets/pattern_templates/` as YAML files.  
-Integrity checked on load via SHA-256.
+## Provenance
+Store best match per scale with:
+- scale_used
+- aspect_used
+- confidence
+- template_hash
+- input_hash
 
-## Logging
-All detections → `/data/data/com.lamontlabs.quantravision/files/logs/`
+## Phase-2 (screen overlay) continuity
+Exactly same pipeline per captured frame. Determinism preserved.
