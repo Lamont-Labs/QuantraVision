@@ -1,0 +1,5 @@
+name: "ABCD Harmonic"
+image: "pattern_templates/abcd_harmonic_ref.png"
+threshold: 0.85
+description: >
+  Measured move pattern with AB≈CD legs and BC retracement. Works in both directions.
