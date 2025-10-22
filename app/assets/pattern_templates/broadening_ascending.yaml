@@ -1,0 +1,5 @@
+name: "Ascending Broadening"
+image: "pattern_templates/broadening_ascending_ref.png"
+threshold: 0.80
+description: >
+  Expanding pattern with rising highs and lows. Volatility increases before resolution.
