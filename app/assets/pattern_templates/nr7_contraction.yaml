@@ -1,0 +1,5 @@
+name: "NR7 Contraction"
+image: "pattern_templates/nr7_contraction_ref.png"
+threshold: 0.72
+description: >
+  Narrowest range of last seven sessions. Setup for range expansion.
