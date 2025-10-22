@@ -1,0 +1,6 @@
+name: "Inverted Cup and Handle"
+image: "pattern_templates/inverted_cup_and_handle_ref.png"
+threshold: 0.84
+description: >
+  Mirror of Cup and Handle; rounded top with small upward retracement (handle),
+  anticipating downward continuation.
