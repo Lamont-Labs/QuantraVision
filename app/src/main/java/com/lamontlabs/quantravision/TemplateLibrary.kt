@@ -1,14 +1,24 @@
 package com.lamontlabs.quantravision
 
 import android.content.Context
-import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.imgcodecs.Imgcodecs
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileInputStream
+import java.security.MessageDigest
 
-data class Template(val name: String, val path: String, val threshold: Double, val image: Mat)
+data class Template(
+    val name: String,
+    val path: String,
+    val threshold: Double,
+    val image: Mat,
+    val scaleRange: Pair<Double, Double>,
+    val aspectTolerance: Double?,
+    val timeframeHints: List<String>,
+    val minBars: Int,
+    val tplHash: String
+)
 
 class TemplateLibrary(private val context: Context) {
 
@@ -17,14 +27,41 @@ class TemplateLibrary(private val context: Context) {
         val dir = File(context.filesDir, "pattern_templates")
         val templates = mutableListOf<Template>()
         dir.listFiles()?.filter { it.extension == "yaml" }?.forEach { file ->
-            val data = yaml.load<Map<String, Any>>(FileInputStream(file))
-            val name = data["name"] as String
-            val path = data["image"] as String
-            val threshold = (data["threshold"] as Double)
-            val imageFile = File(context.filesDir, path)
-            val imageMat = Imgcodecs.imread(imageFile.absolutePath)
-            templates.add(Template(name, path, threshold, imageMat))
+            FileInputStream(file).use { fis ->
+                val data = yaml.load<Map<String, Any>>(fis)
+                val name = data["name"] as String
+                val path = data["image"] as String
+                val threshold = (data["threshold"] as Number).toDouble()
+                val sr = (data["scale_range"] as? List<*>)?.map { (it as Number).toDouble() } ?: listOf(0.6, 1.6)
+                val aspectTol = (data["aspect_tolerance"] as? Number)?.toDouble()
+                val tfHints = (data["timeframe_hints"] as? List<*>)?.map { it.toString() } ?: emptyList()
+                val minBars = (data["min_bars"] as? Number)?.toInt() ?: 0
+
+                val imageFile = File(context.filesDir, path)
+                val imageMat = Imgcodecs.imread(imageFile.absolutePath, Imgcodecs.IMREAD_GRAYSCALE)
+                require(!imageMat.empty()) { "Template image not found: $path" }
+
+                val tplHash = sha256(imageFile.readBytes())
+                templates.add(
+                    Template(
+                        name = name,
+                        path = path,
+                        threshold = threshold,
+                        image = imageMat,
+                        scaleRange = Pair(sr.first(), sr.last()),
+                        aspectTolerance = aspectTol,
+                        timeframeHints = tfHints,
+                        minBars = minBars,
+                        tplHash = tplHash
+                    )
+                )
+            }
         }
         return templates
+    }
+
+    private fun sha256(bytes: ByteArray): String {
+        val d = MessageDigest.getInstance("SHA-256").digest(bytes)
+        return d.joinToString("") { "%02x".format(it) }
     }
 }
