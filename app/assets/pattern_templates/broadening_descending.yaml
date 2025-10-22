@@ -1,0 +1,5 @@
+name: "Descending Broadening"
+image: "pattern_templates/broadening_descending_ref.png"
+threshold: 0.80
+description: >
+  Expanding pattern with falling highs and lows. Watch for reversal breakouts.
