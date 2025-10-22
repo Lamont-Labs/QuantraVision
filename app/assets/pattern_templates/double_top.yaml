@@ -1,0 +1,6 @@
+name: "Double Top"
+image: "pattern_templates/double_top_ref.png"
+threshold: 0.80
+description: >
+  Reversal pattern formed by two consecutive peaks at roughly the same level.
+  Signals weakening bullish momentum and potential bearish turn.
