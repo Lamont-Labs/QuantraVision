@@ -1,0 +1,5 @@
+name: "Rounding Top"
+image: "pattern_templates/rounding_top_ref.png"
+threshold: 0.81
+description: >
+  Dome-shaped distribution after uptrend. Signals gradual topping.
