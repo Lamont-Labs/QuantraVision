@@ -1,0 +1,5 @@
+name: "MACD Bullish Divergence"
+image: "pattern_templates/macd_bullish_divergence_ref.png"
+threshold: 0.76
+description: >
+  Price makes lower lows while MACD makes higher lows. Momentum shift to buyers.
