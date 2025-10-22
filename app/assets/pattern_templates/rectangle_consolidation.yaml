@@ -1,0 +1,6 @@
+name: "Rectangle Consolidation"
+image: "pattern_templates/rectangle_consolidation_ref.png"
+threshold: 0.80
+description: >
+  Price oscillates between horizontal support and resistance.
+  Breakout direction defines next trend.
