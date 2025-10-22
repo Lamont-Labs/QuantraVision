@@ -1,0 +1,6 @@
+name: "Cup and Handle"
+image: "pattern_templates/cup_and_handle_ref.png"
+threshold: 0.84
+description: >
+  Rounded base followed by slight downward handle.
+  Often precedes strong upward breakout in bullish markets.
