@@ -1,0 +1,5 @@
+name: "Inside Bar"
+image: "pattern_templates/inside_bar_ref.png"
+threshold: 0.71
+description: >
+  Current candle fully within prior candle's range. Compression before breakout.
