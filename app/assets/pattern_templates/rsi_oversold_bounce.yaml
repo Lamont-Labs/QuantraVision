@@ -1,0 +1,5 @@
+name: "RSI Oversold Bounce"
+image: "pattern_templates/rsi_oversold_bounce_ref.png"
+threshold: 0.74
+description: >
+  RSI dips below common oversold level then reclaims it. Mean-reversion setup.
