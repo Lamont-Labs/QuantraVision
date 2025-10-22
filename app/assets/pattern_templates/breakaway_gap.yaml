@@ -1,0 +1,5 @@
+name: "Breakaway Gap"
+image: "pattern_templates/breakaway_gap_ref.png"
+threshold: 0.79
+description: >
+  Gap out of a base that typically does not fill quickly. Trend initiation signal.
