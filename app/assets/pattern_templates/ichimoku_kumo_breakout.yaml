@@ -1,0 +1,5 @@
+name: "Ichimoku Kumo Breakout"
+image: "pattern_templates/ichimoku_kumo_breakout_ref.png"
+threshold: 0.82
+description: >
+  Price breaks cloud with supportive Tenkan/Kijun alignment. Trend confirmation.
