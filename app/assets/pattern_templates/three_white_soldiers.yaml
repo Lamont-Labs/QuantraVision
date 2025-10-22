@@ -1,0 +1,5 @@
+name: "Three White Soldiers"
+image: "pattern_templates/three_white_soldiers_ref.png"
+threshold: 0.74
+description: >
+  Three consecutive long bullish candles from a decline. Strong accumulation signal.
