@@ -1,0 +1,5 @@
+name: "Bearish Engulfing"
+image: "pattern_templates/bearish_engulfing_ref.png"
+threshold: 0.73
+description: >
+  Large red candle engulfs prior green body near resistance. Bearish reversal cue.
