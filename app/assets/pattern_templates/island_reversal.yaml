@@ -1,0 +1,5 @@
+name: "Island Reversal"
+image: "pattern_templates/island_reversal_ref.png"
+threshold: 0.80
+description: >
+  Gap up, short consolidation isolated by a gap down (or vice versa). Sharp reversals.
