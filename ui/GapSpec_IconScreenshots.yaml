@@ -1,0 +1,29 @@
+# ==================================================
+# GAP SPEC — ICON & SCREENSHOT REQUIREMENTS
+# ==================================================
+feature_id: "G005"
+name: "App Icons, Banners, and Screenshots"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+assets_required:
+  icons:
+    - icon_512.png
+    - icon_1024.png
+  screenshots:
+    - phone_dark_1.png
+    - phone_light_1.png
+    - tablet_10in.png
+    - foldable_7in.png
+  banners:
+    - feature_graphic_1024x500.png
+    - promo_banner_1280x720.png
+
+requirements:
+  - 4–8 screenshots per device class.
+  - Dark and light modes represented.
+  - Demonstrate overlay, settings, replay, and proof export.
+  - Compress ≤2MB per image (Play Store limit).
+  - Include captions per `graphics_manifest.json`.
+
+status: "Planned / In Progress"
