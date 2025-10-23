@@ -1,0 +1,42 @@
+# ==================================================
+# FEATURE SPEC — EDUCATION & TUTORIAL MODULE
+# ==================================================
+feature_id: "F004"
+name: "Pattern Education and Tutorials"
+category: "User Education"
+version: "1.0"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objective: >
+  Help users understand detected patterns through embedded offline lessons,
+  visual examples, and quizzes to improve trading literacy.
+
+scope:
+  - Static markdown lessons stored locally.
+  - PatternInfoSheet UI with example images + definitions.
+  - Quiz section with simple offline Q&A (JSON driven).
+  - Completion progress indicator.
+
+architecture:
+  assets: "/assets/education/"
+  components:
+    - TutorialEngine.kt
+    - LessonFragment.kt
+    - QuizManager.kt
+
+ui_requirements:
+  - “Learn” tab on main nav.
+  - Pattern-specific “What is this?” button in overlay.
+  - Show confidence and example illustration.
+
+security:
+  network_access: false
+  telemetry: none
+
+testing:
+  - Verify all markdown loads offline.
+  - Validate progress tracking file integrity.
+
+pro_tier: false
+status: "Planned / Approved"
