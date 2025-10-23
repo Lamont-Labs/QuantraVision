@@ -1,0 +1,5 @@
+# Optional prompt overrides (used by --provider openai). Keys are template file stems.
+# Example:
+# head_and_shoulders: "Minimal monochrome OHLC chart showing a classic head-and-shoulders formation..."
+# double_top: "Two peaks at similar height followed by neckline break. Clean grid. 256x256."
+# If absent, a generic prompt is constructed automatically.
