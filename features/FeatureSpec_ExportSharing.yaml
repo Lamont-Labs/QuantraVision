@@ -1,0 +1,40 @@
+# ==================================================
+# FEATURE SPEC — EXPORT & SHARING SUITE
+# ==================================================
+feature_id: "F006"
+name: "Export and Sharing Tools"
+category: "Output / Proof"
+version: "1.0"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objective: >
+  Allow users to export current detection overlays as images and structured JSON summaries
+  for journaling, social sharing, or offline review.
+
+scope:
+  - Export highlighted overlay PNG + metadata JSON.
+  - Share intent → system share sheet (optional).
+  - Include timestamp, pattern id, confidence, timeframe.
+  - Integrate with ProofSummaryClipboard.
+
+architecture:
+  components:
+    - ExportManager.kt
+    - ShareIntentBuilder.kt
+    - ProofSummaryClipboard.kt
+
+ui_requirements:
+  - "Export Image" and "Share Summary" buttons in overlay.
+  - Confirmation toast after export.
+
+security:
+  exported_data: "images + metadata (local)"
+  network_access: false (share optional via Android intents)
+
+testing:
+  - Verify deterministic metadata.
+  - Validate image overlay integrity.
+
+pro_tier: true
+status: "Planned / Approved"
