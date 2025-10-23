@@ -1,0 +1,31 @@
+# ==================================================
+# GAP SPEC — LOCAL CRASH PIPELINE
+# ==================================================
+feature_id: "G003"
+name: "Crash Logging and Export Pipeline"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+objective: >
+  Provide deterministic, privacy-safe crash reporting without network telemetry.
+
+scope:
+  - Local crash capture via `Thread.setDefaultUncaughtExceptionHandler`.
+  - Redact personal info or chart references.
+  - Store in `/crash_logs/` with SHA-256 file hash.
+  - Export via user-initiated share intent (optional).
+
+architecture:
+  components:
+    - CrashLogger.kt
+    - Redactor.kt
+    - CrashExporter.kt
+
+privacy:
+  network_access: false
+  data_retention: "auto-delete after 7 days unless exported"
+
+testing:
+  - Simulate crash → verify log creation + redaction.
+  - Verify identical crash = identical hash.
+
+status: "Planned / Approved"
