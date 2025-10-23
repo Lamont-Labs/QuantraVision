@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">QuantraVision Overlay</string>
-    <string name="overlay_permission_title">Overlay Permission</string>
-    <string name="overlay_permission_desc">Enable screen overlay for chart highlighting.</string>
+    <string name="app_name">QuantraVision</string>
+    <string name="splash_title">QuantraVision Overlay</string>
+    <string name="permission_overlay">Allow overlay permission to display highlights.</string>
+    <string name="permission_storage">Grant storage access to save exports.</string>
+    <string name="permission_billing">Billing permission required for Pro unlock.</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="terms_title">Terms of Use</string>
+    <string name="version_label">Version</string>
+    <string name="built_by">Built by Lamont Labs</string>
 </resources>
