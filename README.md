@@ -1,36 +1,64 @@
-# QuantraVision Overlay — v1.0-seed  
+# QuantraVision™ — Deterministic AI Trading Overlay
+
 **Owner:** Jesse J. Lamont / Lamont Labs  
-**Package:** com.lamontlabs.quantravision  
+**Version:** 1.1 (2025-10-23)  
+**Stage:** Production / Play-Store Ready  
 
-### Summary
-QuantraVision Overlay is an on-device AI visual assistant for traders.  
-It highlights known chart patterns directly over any trading platform window,  
-entirely offline, never transmitting or storing private data externally.  
-It functions as the “eyes” of QuantraCore, proving deterministic detection.
+QuantraVision™ is an **on-device deterministic AI overlay** that identifies and highlights chart patterns — triangles, double tops, wedges, RSI divergences — directly on any trading screen.  
+It observes only. It never trades, predicts, or connects online.
 
-### Features
-- Offline OpenCV + TensorFlow Lite pattern recognition  
-- Semi-transparent overlay renderer (MediaProjection)  
-- Pattern provenance logs (SHA-256 hashing + Room DB)  
-- Deterministic template library (YAML / TFLite)  
-- Greyline OS binder export pipeline  
+---
 
-### Build Requirements
-- Android Studio Giraffe or newer  
-- Kotlin 1.9 + Compose 1.6  
-- OpenCV SDK 4.x  
-- Target SDK 34  |  Min SDK 26  
+## Core Capabilities
+- Offline AI vision (OpenCV + TensorFlow Lite)  
+- Deterministic pattern templates (YAML + TFLite)  
+- 3–5 highlight events free → Pro unlock required thereafter  
+- ProofGate + BundleSigner + LicenseVerifier integrity chain  
+- SafeBoot, ThermalGuard, and PowerHint runtime protection  
+- Zero-network design (fail-closed privacy)  
+- SBOM + manifest + signature export (Pro mode)
 
-### Quick Start
-1. Clone repo  
-2. Open `app/` module in Android Studio  
-3. Sync Gradle and run on emulator or device  
-4. In app settings, enable overlay permission  
-5. Load sample charts from `assets/demo_charts/`  
+---
 
-### Security & Privacy
-No network access. All processing local. Logs are hashed and stored in Room DB.  
-Deterministic replay guarantees same input → same output.
+## Build Instructions
+```bash
+./gradlew clean assembleRelease
+adb install app/build/outputs/apk/release/app-release.apk
+```
 
-### License
-Apache 2.0 — see LICENSE.
+### Requirements
+- Android SDK 34+  
+- Kotlin 1.9+  
+- Jetpack Compose 1.6+  
+- OpenCV 4.8+
+
+---
+
+## Directory Layout
+```
+/src/main/java/com/lamontlabs/quantravision/   # Kotlin sources
+/res/values/                                   # Themes + resources
+/assets/legal/                                 # Offline legal bundle
+/docs/                                         # Binder + investor documentation
+```
+
+---
+
+## Usage Summary
+1. Grant overlay + battery optimization exemption  
+2. Complete onboarding flow  
+3. Open trading app  
+4. Press **Start Overlay**  
+
+---
+
+## License Tiers
+| Tier | Highlights | Features |
+|------|-------------|-----------|
+| Free | 5 events total | Overlay visualization only |
+| Pro | Unlimited | Full templates, exports, provenance logging |
+
+---
+
+© 2025 Jesse J. Lamont / Lamont Labs  
+_All rights reserved — educational use only._
