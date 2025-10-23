@@ -1,0 +1,40 @@
+# ==================================================
+# FEATURE SPEC — PERFORMANCE & RESOURCE MONITOR
+# ==================================================
+feature_id: "F005"
+name: "Performance and Resource Monitor"
+category: "System Safety"
+version: "1.0"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objective: >
+  Extend ThermalGuard and PowerHint with real-time monitoring dashboard for
+  CPU, GPU, temperature, and battery usage, ensuring safe continuous overlay operation.
+
+scope:
+  - Monitor temperature, CPU load, memory.
+  - Show warning toast if threshold exceeded.
+  - Auto-reduce detection FPS on heavy load.
+  - Optional 'Low-Power Mode'.
+
+architecture:
+  components:
+    - ResourceMonitor.kt
+    - PowerHintManager.kt
+    - DashboardWidget.kt
+
+security:
+  network_access: false
+  logs_stored: "local temporary telemetry, no identifiers"
+
+ui_requirements:
+  - Mini graph overlay in Settings > System Health.
+  - Toggle “Auto-throttle” in UI.
+
+testing:
+  - Stress test thermal conditions.
+  - Verify correct throttling.
+
+pro_tier: false
+status: "Planned / Approved"
