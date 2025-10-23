@@ -1,0 +1,55 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.lamontlabs.quantravision'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.lamontlabs.quantravision"
+        minSdk 26
+        targetSdk 34
+        versionCode 10
+        versionName "1.1"
+        vectorDrawables { useSupportLibrary true }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.3'
+    }
+
+    packagingOptions {
+        resources.excludes += ['META-INF/LICENSE*', 'META-INF/NOTICE*']
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation "androidx.activity:activity-compose:1.9.0"
+    implementation "androidx.compose.ui:ui:1.6.0"
+    implementation "androidx.compose.material3:material3:1.2.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
+    implementation "androidx.room:room-runtime:2.6.1"
+    kapt "androidx.room:room-compiler:2.6.1"
+    implementation "org.opencv:opencv-android:4.8.0"
+    implementation "org.tensorflow:tensorflow-lite:2.14.0"
+    implementation "com.android.billingclient:billing-ktx:6.1.0"
+    implementation "com.google.code.gson:gson:2.10.1"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+}
