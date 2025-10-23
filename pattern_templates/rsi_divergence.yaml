@@ -1,0 +1,34 @@
+pattern_id: "RSI_DIV001"
+name: "RSI Divergence"
+category: "Momentum"
+description: >
+  Occurs when price prints new highs or lows while RSI fails to confirm,
+  implying weakening momentum and possible reversal.
+structure:
+  points_required: 4
+  features:
+    - name: "price_highs"
+      description: "price makes higher highs"
+      tolerance: 0.10
+      relative_position: "top"
+    - name: "rsi_highs"
+      description: "RSI makes lower highs"
+      tolerance: 0.10
+      relative_position: "bottom"
+detection_rules:
+  timeframe_support: [ "15m", "1h", "4h", "1d" ]
+  confidence_formula: "(price_slope_diff + rsi_slope_diff) / 2"
+  min_confidence: 0.65
+visualization:
+  highlight_color: "#00A8FF"
+  glow_intensity: 0.8
+  label_format: "RSI Div {confidence}%"
+dataset:
+  example_images:
+    - "images/rsi_divergence_1.png"
+    - "images/rsi_divergence_2.png"
+metadata:
+  created: "2025-10-23"
+  updated: "2025-10-23"
+  version: "1.0"
+  author: "Jesse J. Lamont"
