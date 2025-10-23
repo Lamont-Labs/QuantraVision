@@ -1,0 +1,16 @@
+QuantraVision™ Disclaimer
+────────────────────────────
+This application is for demonstration and educational purposes only.
+
+It does not:
+- Execute or automate trades.
+- Provide investment recommendations.
+- Access live exchange APIs or user data.
+
+All pattern detections are visual approximations based on static or screen-captured chart data.
+They are not predictive analytics and must not be interpreted as financial advice.
+
+Use QuantraVision at your own discretion. Always consult a qualified financial professional
+before making any investment decision.
+
+© 2025 Jesse J. Lamont / Lamont Labs
