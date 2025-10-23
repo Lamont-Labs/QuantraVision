@@ -1,0 +1,25 @@
+# ==================================================
+# GAP SPEC — THREAT MODEL & ABUSE CASES
+# ==================================================
+feature_id: "G007"
+name: "Threat Model and Abuse Mitigation"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+overview:
+  model_version: "v1.0"
+  methodology: "STRIDE (simplified)"
+  objectives: "Identify threats to overlay integrity and user trust."
+
+threats:
+  - Overlay spoofing of broker apps → mitigation: watermark overlay, visible tag.
+  - Screen scraping injection → mitigation: local-only bitmap capture, sandbox.
+  - Model tampering → mitigation: integrity hash check, offline catalog.
+  - Privilege escalation via accessibility abuse → mitigation: overlay permission scoped, whitelisted.
+  - Data exfiltration risk → mitigation: no network access, audit at compile time.
+
+audit:
+  frequency: "each major release"
+  ownership: "Lamont Labs Security Maintainer"
+
+status: "Documented / Baseline Established"
