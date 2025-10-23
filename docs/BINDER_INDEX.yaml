@@ -1,0 +1,52 @@
+# ==================================================
+# LAMONT LABS — QUANTRAVISION™ BINDER INTEGRATION INDEX
+# ==================================================
+project:
+  name: "QuantraVision™ — AI Chart Overlay"
+  owner: "Jesse J. Lamont"
+  org: "Lamont Labs"
+  version: "1.1"
+  stage: "Play-Store Ready / Investor-Ready"
+  binder_type: "Greyline-Compliant Modular Binder"
+  last_updated: "2025-10-23"
+
+structure:
+  sections:
+    - 01_PROJECT_INFO.yaml
+    - 02_SYSTEM_ARCHITECTURE.md
+    - 03_SECURITY_MODEL.md
+    - 04_PATTERN_LIBRARY/
+    - 05_PROOFCHAIN.md
+    - 06_BUILD_AUTOMATION/
+    - 07_TEST_SUITE/
+    - 08_STORE_LISTING/
+    - 09_APPENDICES/
+
+export_pipeline:
+  google_docs: "Lamont Labs — QuantraVision Investor Binder"
+  github_repo: "https://github.com/Lamont-Labs/QuantraVision"
+  binder_pdf: "dist/QuantraVision_Binder.pdf"
+  provenance_zip: "dist/QuantraVision_ProofBundle.zip"
+
+provenance:
+  sbom: "app/src/main/assets/sbom.json"
+  manifest: "app/src/main/assets/manifest.json"
+  proofchain: "app/src/main/assets/PROOFCHAIN.md"
+  signature: "app/src/main/assets/signature.txt"
+
+distribution_targets:
+  - platform: "Google Play Store"
+    package: "com.lamontlabs.quantravision"
+    track: "Production"
+  - platform: "GitHub"
+    repo: "Lamont-Labs/QuantraVision"
+  - platform: "Google Docs"
+    hub: "Lamont Labs Binder Index"
+  - platform: "Medium"
+    article: "Proof Over Promises — The Lamont Labs Drop"
+
+integrity:
+  hash_method: "SHA-256"
+  signature_method: "Ed25519"
+  verification_tool: "verify.sh"
+  status: "pass"
