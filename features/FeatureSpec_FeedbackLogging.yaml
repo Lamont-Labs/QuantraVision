@@ -1,0 +1,45 @@
+# ==================================================
+# FEATURE SPEC — FEEDBACK & FALSE-POSITIVE LOGGING
+# ==================================================
+feature_id: "F008"
+name: "User Feedback and False-Positive Logging"
+category: "Quality / Trust"
+version: "1.0"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objective: >
+  Capture user feedback on detections to reduce false positives over time,
+  while preserving privacy with on-device hashed records.
+
+scope:
+  - In-overlay buttons: “Good Match” / “False Positive”.
+  - Local-only JSON log: detection_id, pattern_id, hash(image_path), timestamp, vote.
+  - Suppression rules: hide patterns repeatedly flagged on similar inputs.
+  - Optional export of anonymized aggregates (Pro) without images.
+
+architecture:
+  components:
+    - FeedbackRepository.kt (Room + JSON mirror)
+    - SuppressionEngine.kt (reads feedback, applies local rules)
+    - FeedbackUI.kt (inline chips/buttons in detection card)
+  data_flow: "Overlay → FeedbackUI → FeedbackRepository → SuppressionEngine → Detection pipeline"
+
+privacy_security:
+  network_access: false
+  stored_data: "hashed references only; no raw images"
+  retention: "FIFO capped (e.g., 10k events) with purge policy"
+  encryption: "SQLCipher for Room"
+
+ui_requirements:
+  - Detection details: feedback controls + small tally.
+  - Settings > Feedback: toggle suppression, clear logs, export anonymized CSV (Pro).
+
+testing:
+  - Unit: vote recording, hashing stability, suppression thresholds.
+  - Integration: repeated false-positive → suppression active.
+  - Golden: identical input set → identical suppression decisions.
+
+pro_tier: partial
+  details: "Export anonymized aggregates = Pro"
+status: "Planned / Approved"
