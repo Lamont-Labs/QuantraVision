@@ -1,0 +1,2 @@
+QuantraVision™ — AI overlay that highlights real chart patterns in real time.  
+Offline, deterministic, and privacy-first. See what your platform can’t.
