@@ -1,19 +1,39 @@
-# QuantraVision Overlay Makefile
+# ==================================================
+# QUANTRAVISION™ — BUILD & RELEASE AUTOMATION
+# ==================================================
 
-.PHONY: build clean install run verify
+APP_NAME := QuantraVision
+APP_ID := com.lamontlabs.quantravision
+BUILD_DIR := app/build/outputs/apk/release
+DIST_DIR := dist
 
-build:
-	@./gradlew assembleDebug
+.PHONY: all clean build sign verify bundle
+
+all: clean build verify
 
 clean:
-	@./gradlew clean
+	@echo "==> Cleaning previous builds..."
+	./gradlew clean
 
-install:
-	@./gradlew installDebug
+build:
+	@echo "==> Building release APK..."
+	./gradlew assembleRelease
 
-run:
-	@adb shell am start -n com.lamontlabs.quantravision/.MainActivity
+sign:
+	@echo "==> Signing APK..."
+	jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+	  -keystore ~/.android/release.keystore \
+	  $(BUILD_DIR)/app-release-unsigned.apk lamontlabs_key
+	@echo "==> Zipaligning..."
+	zipalign -v 4 $(BUILD_DIR)/app-release-unsigned.apk $(BUILD_DIR)/$(APP_NAME)-signed.apk
 
 verify:
-	@echo "Verifying provenance hashes..."
-	@sh scripts/verify_hashes.sh
+	@echo "==> Verifying determinism..."
+	bash verify.sh
+
+bundle:
+	@echo "==> Assembling Play Store AAB..."
+	./gradlew bundleRelease
+	mkdir -p $(DIST_DIR)
+	cp app/build/outputs/bundle/release/app-release.aab $(DIST_DIR)/$(APP_NAME)-v1.1.aab
+	@echo "==> Bundle ready in $(DIST_DIR)"
