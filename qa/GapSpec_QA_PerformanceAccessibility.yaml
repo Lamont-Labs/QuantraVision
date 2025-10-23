@@ -1,0 +1,30 @@
+# ==================================================
+# GAP SPEC — PERFORMANCE, ACCESSIBILITY & QA
+# ==================================================
+feature_id: "G006"
+name: "Performance, Thermal & Accessibility QA"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objectives:
+  - Verify frame rate ≥ 30 FPS on mid-tier devices.
+  - Maintain CPU usage ≤ 60%, temp ≤ 45°C.
+  - Ensure full TalkBack compliance and ≥4.5:1 contrast ratio.
+
+qa_matrix:
+  tests:
+    - BatteryDrainTest.kt
+    - FrameRateMonitor.kt
+    - ThermalStressTest.kt
+    - AccessibilityAudit.kt
+  devices:
+    - Pixel 7 (Android 14)
+    - Galaxy S22 (Android 14)
+    - Budget-tier (Android 12)
+    - Tablet 10in
+
+outcome:
+  pass_threshold: "All KPIs within tolerance"
+  fail_policy: "Block release until fixed"
+
+status: "Ongoing QA"
