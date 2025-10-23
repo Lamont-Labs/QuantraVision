@@ -1,0 +1,46 @@
+# ==================================================
+# FEATURE SPEC — WATCHLIST & ALERTS ENGINE
+# ==================================================
+feature_id: "F001"
+name: "Watchlist and Local Alerts"
+category: "User Utility / Core UX"
+version: "1.0"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objective: >
+  Allow users to mark trading symbols and receive overlay alerts when new pattern
+  detections occur on those watched instruments — fully offline, privacy-preserving.
+
+scope:
+  - Persistent local watchlist stored in Room DB.
+  - Background observer service to monitor overlay output.
+  - Local notification dispatch when pattern confidence > threshold.
+  - Settings UI for alert tone, vibration, threshold, and frequency.
+
+architecture:
+  components:
+    - WatchlistRepository.kt
+    - AlertService.kt
+    - NotificationManager.kt
+    - SettingsViewModel.kt
+  data_flow: "PatternDetectionEngine → AlertService → LocalNotification"
+
+security:
+  network_access: false
+  data_stored: "symbol name, timeframe, last detection hash"
+  encryption: "Room (SQLCipher)"
+  privacy_compliance: "GDPR/CCPA aligned"
+
+ui_requirements:
+  - Add '⭐ Add to Watchlist' button in OverlayHUD.
+  - Alerts screen accessible via Settings > Alerts.
+  - Allow per-symbol threshold adjustment.
+
+testing:
+  - Unit: Add/remove/watchlist persistence.
+  - Integration: Trigger alert → verify notification dispatch.
+  - Golden: Same pattern hash triggers single alert only.
+
+pro_tier: false
+status: "Planned / Approved"
