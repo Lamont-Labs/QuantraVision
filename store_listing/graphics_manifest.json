@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-23",
+  "screenshots": [
+    { "id": "ss1", "file": "screenshots/overlay_head_and_shoulders.png", "caption": "Real-time pattern highlight" },
+    { "id": "ss2", "file": "screenshots/settings_screen.png", "caption": "Privacy-first configuration" },
+    { "id": "ss3", "file": "screenshots/proof_export.png", "caption": "Deterministic export and verification" }
+  ],
+  "icons": [
+    { "size": "512x512", "file": "icons/icon_512.png" },
+    { "size": "1024x1024", "file": "icons/icon_1024.png" }
+  ],
+  "feature_graphic": "graphics/feature_banner.png",
+  "promo_video": "https://www.youtube.com/watch?v=QuantraVisionDemo",
+  "maintainer": "Jesse J. Lamont / Lamont Labs"
+}
