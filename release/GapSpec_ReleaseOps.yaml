@@ -1,0 +1,23 @@
+# ==================================================
+# GAP SPEC — RELEASE OPERATIONS
+# ==================================================
+feature_id: "G008"
+name: "Release Operations and Rollback Policy"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+release_cycle:
+  cadence: "Quarterly"
+  beta_channel: "Closed Track (20 testers)"
+  rollout_stages: [10%, 50%, 100%]
+  rollback_plan: "Previous signed artifact retained; switch track rollback."
+
+checklist:
+  - [ ] Verify manifest + hash
+  - [ ] Verify license + build number bump
+  - [ ] Run full test suite
+  - [ ] Upload to internal track
+  - [ ] Submit Play Data Safety
+  - [ ] Tag release + sign binder copy
+
+status: "Operational"
