@@ -1,0 +1,15 @@
+QuantraVision™ uses open-source components:
+───────────────────────────────────────────
+- OpenCV (BSD License)
+- TensorFlow Lite (Apache License 2.0)
+- Jetpack Compose / Material3 (Apache License 2.0)
+- Room Persistence Library (Apache License 2.0)
+- Gson (Apache License 2.0)
+- Google Play Billing (Apache License 2.0)
+
+No modification of original source code affects the applicable licenses.
+Full license texts are available at:
+https://opencv.org/license/
+https://www.apache.org/licenses/LICENSE-2.0
+
+© 2025 Lamont Labs — all proprietary systems under deterministic license.
