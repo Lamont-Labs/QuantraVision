@@ -1,0 +1,24 @@
+# ==================================================
+# GAP SPEC — LEGAL & TRADE COMPLIANCE
+# ==================================================
+feature_id: "G010"
+name: "Legal, Trademark & Export Compliance"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+legal_actions:
+  trademark: "Filed: QUANTRAVISION™ — Class 9 / Software"
+  copyright: "© 2025 Jesse J. Lamont / Lamont Labs"
+  dmca_contact: "legal@lamontlabs.ai"
+  export_control_statement: >
+    This software uses general-purpose encryption and is eligible for
+    license exception TSU (Technology and Software Unrestricted) under
+    U.S. EAR Section 740.13(e).
+
+regulatory_references:
+  - DMCA §512(c)
+  - GDPR Art. 17 (right to erasure)
+  - CCPA §1798.105 (deletion rights)
+  - U.S. EAR 15 CFR 740.13(e)
+
+status: "Filed / Binder Logged"
