@@ -1,0 +1,42 @@
+pattern_id: "HNS001"
+name: "Head and Shoulders"
+category: "Reversal"
+description: >
+  A reversal formation of three peaks: a central higher head flanked by
+  two shoulders at similar levels, signalling potential trend change.
+structure:
+  points_required: 7
+  features:
+    - name: "left_shoulder"
+      description: "first peak before main head"
+      tolerance: 0.15
+      relative_position: "top"
+    - name: "head"
+      description: "central peak higher than shoulders"
+      tolerance: 0.10
+      relative_position: "top"
+    - name: "right_shoulder"
+      description: "final peak near left-shoulder height"
+      tolerance: 0.15
+      relative_position: "top"
+    - name: "neckline"
+      description: "baseline joining troughs"
+      tolerance: 0.05
+      relative_position: "mid"
+detection_rules:
+  timeframe_support: [ "1h", "4h", "1d" ]
+  confidence_formula: "(match_ratio * symmetry_score) / 2"
+  min_confidence: 0.70
+visualization:
+  highlight_color: "#FF3B3B"
+  glow_intensity: 0.9
+  label_format: "H&S {confidence}%"
+dataset:
+  example_images:
+    - "images/head_and_shoulders_1.png"
+    - "images/head_and_shoulders_2.png"
+metadata:
+  created: "2025-10-23"
+  updated: "2025-10-23"
+  version: "1.0"
+  author: "Jesse J. Lamont"
