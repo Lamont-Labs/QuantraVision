@@ -1,0 +1,14 @@
+{
+  "data_collected": false,
+  "data_shared": false,
+  "network_access": false,
+  "permissions": [
+    { "name": "SYSTEM_ALERT_WINDOW", "purpose": "Draw overlay highlights" },
+    { "name": "FOREGROUND_SERVICE", "purpose": "Persistent overlay display" },
+    { "name": "BILLING", "purpose": "Pro unlock via Play Billing" }
+  ],
+  "encryption": "All logs stored in local encrypted Room DB",
+  "user_deletion_available": true,
+  "audited": "2025-10-23",
+  "auditor": "Lamont Labs Compliance Review"
+}
