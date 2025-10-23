@@ -1,0 +1,18 @@
+# ==================================================
+# APPENDIX — LEGAL INDEX
+# ==================================================
+legal_assets:
+  - PRIVACY_POLICY.html
+  - TERMS_OF_USE.html
+  - DISCLAIMER.txt
+  - ATTRIBUTIONS.txt
+
+licensing:
+  type: "Proprietary (Free + Paid Tiers)"
+  owner: "Jesse J. Lamont / Lamont Labs"
+  copyright: "© 2025 Lamont Labs"
+  redistribution: "Not permitted without written authorization."
+
+export_notes:
+  binder_reference: "Lamont Labs — Legal Appendix, Volume IV"
+  revision_date: "2025-10-23"
