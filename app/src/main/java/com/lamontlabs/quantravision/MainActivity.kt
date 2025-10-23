@@ -3,27 +3,50 @@ package com.lamontlabs.quantravision
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.lamontlabs.quantravision.startup.DisclaimerGate
-import com.lamontlabs.quantravision.ui.DisclaimerManager
-import com.lamontlabs.quantravision.ui.MainScreen
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import com.lamontlabs.quantravision.boot.SafeBoot
+import com.lamontlabs.quantravision.ui.DashboardScreen
+import com.lamontlabs.quantravision.ui.OverlayHUD
+import com.lamontlabs.quantravision.ui.TemplateManagerScreen
 
 /**
  * MainActivity
- * Entry point for QuantraVision.
- * Enforces disclaimer acknowledgment before loading UI.
- * Fails closed if user declines.
+ * Entry point. Runs SafeBoot before dashboard.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val ok = SafeBoot.run(this)
         setContent {
-            if (!DisclaimerGate.verifyOrExit(this)) {
-                DisclaimerManager.ShowIfNeeded(this) {
-                    recreate() // reload after acceptance
+            MaterialTheme {
+                if (ok) {
+                    var screen by remember { mutableStateOf("dashboard") }
+                    when (screen) {
+                        "dashboard" -> DashboardScreen(
+                            context = this@MainActivity,
+                            onStartScan = { screen = "overlay" },
+                            onReview = {},
+                            onTutorials = {},
+                            onSettings = {},
+                            onTemplates = { screen = "templates" }
+                        )
+                        "templates" -> TemplateManagerScreen(this@MainActivity) { screen = "dashboard" }
+                        "overlay" -> OverlayHUD(this@MainActivity)
+                    }
+                } else {
+                    InvalidLicenseScreen()
                 }
-            } else {
-                MainScreen()
             }
+        }
+    }
+}
+
+@Composable
+private fun InvalidLicenseScreen() {
+    Surface {
+        Box(Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+            Text("License check failed — overlay locked", style = MaterialTheme.typography.titleMedium)
         }
     }
 }
