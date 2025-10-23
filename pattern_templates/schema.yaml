@@ -1,0 +1,39 @@
+# ==================================================
+# QUANTRAVISION™ — PATTERN TEMPLATE SCHEMA (v1.0)
+# ==================================================
+pattern_id: "unique_identifier"
+name: "Human-readable pattern name"
+category: "Continuation | Reversal | Neutral"
+description: >
+  Concise definition of the pattern and what it visually represents.
+structure:
+  points_required: integer
+  features:
+    - name: "feature_name"
+      description: "visual cue (peak, trough, divergence, ratio)"
+      tolerance: "0.00-1.00 (percentage)"
+      relative_position: "top | mid | bottom"
+detection_rules:
+  timeframe_support:
+    - "1m"
+    - "5m"
+    - "15m"
+    - "1h"
+    - "4h"
+    - "1d"
+  confidence_formula: "weighted sum of matched feature ratios"
+  min_confidence: 0.65
+  required_patterns: []
+visualization:
+  highlight_color: "#00FF99"
+  glow_intensity: 0.75
+  label_format: "{name} ({confidence}%)"
+dataset:
+  example_images:
+    - "images/{pattern_id}_1.png"
+    - "images/{pattern_id}_2.png"
+metadata:
+  created: "2025-10-23"
+  updated: "2025-10-23"
+  version: "1.0"
+  author: "Jesse J. Lamont"
