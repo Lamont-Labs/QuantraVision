@@ -1,0 +1,43 @@
+# ==================================================
+# FEATURE SPEC — HISTORICAL BACK-SCAN MODE
+# ==================================================
+feature_id: "F002"
+name: "Historical Back-Scan Mode"
+category: "Analysis Tools"
+version: "1.0"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+
+objective: >
+  Enable users to import historical chart snapshots or candle CSV files and
+  run the same pattern detection pipeline retroactively. Allows testing,
+  journaling, and back-validation without live overlays.
+
+scope:
+  - Accepts image (PNG/JPG) or OHLCV CSV input.
+  - Runs PatternDetectionEngine in batch mode.
+  - Produces detection timeline and confidence summary.
+  - Supports export as JSON, CSV, or replay UI session.
+
+architecture:
+  modules:
+    - BackScanImporter.kt
+    - DetectionBatchProcessor.kt
+    - ReplayTimelineUI.kt
+  data_flow: "FileImport → Processor → PatternResultStore → ReplayView"
+
+security:
+  network_access: false
+  stored_data: "temporary session results"
+  deletion_policy: "auto-purge on exit"
+
+ui_requirements:
+  - “Back-Scan” option in Dashboard.
+  - File picker + summary table + ‘Play Replay’ slider.
+
+testing:
+  - Determinism test: identical inputs = identical timeline.
+  - Integration: verify export bundle reproducibility.
+
+pro_tier: true
+status: "Planned / Approved"
