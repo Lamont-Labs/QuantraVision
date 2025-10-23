@@ -1,0 +1,18 @@
+{
+  "sbom_version": "1.0",
+  "generated": "2025-10-23",
+  "app": "QuantraVision",
+  "components": [
+    { "name": "Kotlin", "version": "1.9", "license": "Apache-2.0" },
+    { "name": "Jetpack Compose", "version": "1.6", "license": "Apache-2.0" },
+    { "name": "OpenCV", "version": "4.8", "license": "BSD-3-Clause" },
+    { "name": "TensorFlow Lite", "version": "2.14", "license": "Apache-2.0" },
+    { "name": "Room", "version": "2.6", "license": "Apache-2.0" },
+    { "name": "Gson", "version": "2.10", "license": "Apache-2.0" }
+  ],
+  "integrity": {
+    "code_hash": "sha256:computed_at_build_time",
+    "catalog_hash": "sha256:computed_at_build_time",
+    "signature": "linked_to_signature.txt"
+  }
+}
