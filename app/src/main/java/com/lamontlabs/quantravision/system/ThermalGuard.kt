@@ -1,43 +1,44 @@
 package com.lamontlabs.quantravision.system
 
 import android.content.Context
-import android.os.Build
 import android.os.Temperature
-import android.os.Temperature.TYPE_CPU
-import android.os.Temperature.TYPE_GPU
-import android.os.Temperature.TYPE_SKIN
 import android.os.ThermalEventListener
 import android.os.ThermalService
-import android.util.Log
-import java.lang.reflect.Method
-import java.util.concurrent.atomic.AtomicInteger
+import android.widget.Toast
 
 /**
  * ThermalGuard
- * Monitors thermal status and applies deterministic throttling signals.
- * No network, no randomness. Only uses system thermal APIs if available.
+ * Monitors system temperature and throttles overlay FPS when overheating.
+ * Works offline using Android ThermalService (API 29+).
  */
 object ThermalGuard {
 
-    private val currentStatus = AtomicInteger(0)
+    private var throttled = false
 
-    fun start(context: Context, onThrottle: (Int) -> Unit) {
-        if (Build.VERSION.SDK_INT < 29) return
+    fun start(context: Context, onThrottle: (Boolean) -> Unit) {
         try {
-            val serviceClass = Class.forName("android.os.ThermalService")
-            val method: Method = serviceClass.getDeclaredMethod("getCurrentTemperatures")
-            val service = context.getSystemService(Context.THERMAL_SERVICE) as? ThermalService ?: return
+            val mgr = context.getSystemService(Context.THERMAL_SERVICE) as android.os.ThermalService?
+            if (mgr == null) return
             val listener = object : ThermalEventListener() {
-                override fun notifyThrottling(level: Int, temp: Temperature?) {
-                    currentStatus.set(level)
-                    onThrottle(level)
+                override fun onThermalEvent(temp: Temperature?) {
+                    if (temp == null) return
+                    val lvl = temp.value
+                    if (lvl > 65) {
+                        if (!throttled) {
+                            throttled = true
+                            onThrottle(true)
+                            Toast.makeText(context, "ThermalGuard: throttling detection for safety", Toast.LENGTH_SHORT).show()
+                        }
+                    } else if (lvl < 55 && throttled) {
+                        throttled = false
+                        onThrottle(false)
+                        Toast.makeText(context, "ThermalGuard: normal operation resumed", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-            service.registerThermalEventListener(listener)
-        } catch (e: Exception) {
-            Log.e("ThermalGuard", "Thermal monitoring not available: ${e.message}")
-        }
+            mgr.registerThermalEventListener(listener)
+        } catch (_: Exception) { }
     }
 
-    fun status(): Int = currentStatus.get()
+    fun isThrottled(): Boolean = throttled
 }
