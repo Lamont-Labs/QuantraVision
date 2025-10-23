@@ -1,43 +1,63 @@
 package com.lamontlabs.quantravision.security
 
 import android.content.Context
+import org.json.JSONObject
 import java.io.File
-import java.security.KeyFactory
-import java.security.PublicKey
-import java.security.Signature
-import java.security.spec.X509EncodedKeySpec
-import java.util.Base64
+import java.security.MessageDigest
+import java.util.*
 
 /**
  * LicenseVerifier
- * Offline license validation using Ed25519 digital signatures.
- * - Reads license.lic (Base64) and public.key from assets or /files/
- * - Verifies signature of "QuantraVision-License" string.
- * - No network, no expiry calls. Fail-closed if signature invalid.
+ * - Enforces device-bound offline licensing
+ * - Uses local license.json with expiration, device hash, and digital signature
+ * - Locks out capture/export if invalid
+ *
+ * Structure:
+ * {
+ *   "licensee": "Jesse J. Lamont",
+ *   "issued": "2025-10-21",
+ *   "expires": "2028-10-21",
+ *   "device_id": "<sha256>",
+ *   "signature": "<hex Ed25519>"
+ * }
  */
 object LicenseVerifier {
 
-    private const val LICENSE_FILE = "license.lic"
-    private const val PUBLIC_KEY_FILE = "public.key"
-    private const val PAYLOAD = "QuantraVision-License"
+    private const val FILE = "license.json"
 
-    fun verify(context: Context): Boolean {
-        val baseDir = context.filesDir
-        val licenseFile = File(baseDir, LICENSE_FILE)
-        val publicFile = File(baseDir, PUBLIC_KEY_FILE)
-        if (!licenseFile.exists() || !publicFile.exists()) return false
+    data class Result(
+        val valid: Boolean,
+        val reason: String,
+        val expires: String
+    )
 
-        val licenseBytes = Base64.getDecoder().decode(licenseFile.readText().trim())
-        val keyBytes = Base64.getDecoder().decode(publicFile.readText().trim())
-        val kf = KeyFactory.getInstance("Ed25519")
-        val pubKey: PublicKey = kf.generatePublic(X509EncodedKeySpec(keyBytes))
-        val sig = Signature.getInstance("Ed25519")
-        sig.initVerify(pubKey)
-        sig.update(PAYLOAD.toByteArray())
-        val ok = sig.verify(licenseBytes)
-        if (!ok) {
-            File(baseDir, "lock.flag").writeText("LICENSE INVALID")
+    fun verify(context: Context): Result {
+        val f = File(context.filesDir, FILE)
+        if (!f.exists()) {
+            return Result(false, "License file missing", "")
         }
-        return ok
+        val obj = JSONObject(f.readText())
+        val expires = obj.optString("expires", "")
+        val expTime = runCatching { SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(expires)?.time ?: 0L }.getOrDefault(0L)
+        if (System.currentTimeMillis() > expTime) {
+            return Result(false, "License expired", expires)
+        }
+
+        val devHash = deviceHash(context)
+        val expected = obj.optString("device_id", "")
+        if (devHash != expected) {
+            return Result(false, "Device mismatch", expires)
+        }
+
+        val sig = obj.optString("signature", "")
+        val payload = obj.toString().replace(sig, "")
+        val ok = SignatureVerifier.verify(payload.toByteArray(), sig)
+        return if (ok) Result(true, "Valid license", expires) else Result(false, "Invalid signature", expires)
+    }
+
+    private fun deviceHash(context: Context): String {
+        val id = android.provider.Settings.Secure.getString(context.contentResolver, android.provider.Settings.Secure.ANDROID_ID)
+        val md = MessageDigest.getInstance("SHA-256")
+        return md.digest(id.toByteArray()).joinToString("") { "%02x".format(it) }
     }
 }
