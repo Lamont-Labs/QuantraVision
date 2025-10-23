@@ -1,12 +1,31 @@
-*.iml
+# ==================================================
+# QUANTRAVISION™ — .gitignore
+# ==================================================
+
+# Build / Gradle
 .gradle/
 build/
-captures/
+**/build/
 local.properties
+
+# Android Studio
 .idea/
-.DS_Store
-app/build/
-app/release/
+*.iml
 *.apk
 *.aab
+
+# Signing & credentials
+signing.properties
 *.keystore
+*.jks
+pubkey.pem
+private_key.pem
+
+# Logs
+*.log
+crash_logs/
+dist/
+src_hash.txt
+res_hash.txt
+manifest.json
+signature.txt
