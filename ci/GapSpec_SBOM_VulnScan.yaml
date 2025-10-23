@@ -1,0 +1,28 @@
+# ==================================================
+# GAP SPEC — SBOM + VULNERABILITY SCANNING IN CI
+# ==================================================
+feature_id: "G002"
+name: "Automated SBOM and Vulnerability Scan"
+author: "Jesse J. Lamont"
+created: "2025-10-24"
+objective: >
+  Ensure all dependencies and assets have traceable provenance and are free from known vulnerabilities.
+
+scope:
+  - Generate CycloneDX SBOM via Gradle plugin.
+  - Run OWASP Dependency-Check and Gradle Versions Plugin in CI.
+  - Store results in `/reports/security/` with timestamp.
+  - Compare to baseline; fail CI if CVSS ≥7.
+
+ci_pipeline:
+  - Step 1: `./gradlew cyclonedxBom`
+  - Step 2: `dependencyCheckAnalyze`
+  - Step 3: `dependencyUpdates`
+  - Step 4: `bash verify_sbom.sh`
+
+output:
+  - sbom.json (included in binder)
+  - dependency-check-report.html
+  - dependency-updates.txt
+
+status: "Planned / Approved"
