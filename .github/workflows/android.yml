@@ -2,11 +2,9 @@ name: Android CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -51,9 +49,8 @@ jobs:
         with:
           name: qv-debug-outputs
           path: |
-            app/build/outputs/apk/debug/**/*.apk
-            app/build/reports/**
-          if-no-files-found: warn
+            app/build/outputs/apk/debug/
+            app/build/reports/
 
   bundle-release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -89,6 +86,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: qv-release-aab
-          path: app/build/outputs/bundle/release/*.aab
-          if-no-files-found: error
-```0
+          path: app/build/outputs/bundle/release/
