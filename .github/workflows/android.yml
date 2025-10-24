@@ -1,11 +1,14 @@
 name: Android CI
 
 on:
-  push: { branches: [ main ] }
-  pull_request: { branches: [ main ] }
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
-permissions: { contents: read }
+permissions:
+  contents: read
 
 concurrency:
   group: android-ci-${{ github.ref }}
@@ -24,8 +27,7 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # Build without Gradle wrapper (since wrapper files are not in repo)
-      - name: Setup Gradle 8.7
+      - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 8.7
@@ -55,7 +57,7 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle 8.7
+      - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 8.7
@@ -68,4 +70,3 @@ jobs:
         with:
           name: qv-release-aab
           path: app/build/outputs/bundle/release/*.aab
-```0
