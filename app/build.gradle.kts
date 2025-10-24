@@ -36,3 +36,41 @@ dependencies {
     // ...
     implementation("com.android.billingclient:billing-ktx:6.1.0")
 }
+// app/build.gradle.kts (module)
+plugins {
+  id("com.android.application")
+  id("org.jetbrains.kotlin.android")
+}
+
+android {
+  namespace = "com.lamontlabs.quantravision"
+  compileSdk = 34
+
+  defaultConfig {
+    applicationId = "com.lamontlabs.quantravision"
+    minSdk = 26
+    targetSdk = 34
+    versionCode = 13
+    versionName = "1.3"
+    vectorDrawables.useSupportLibrary = true
+  }
+
+  buildFeatures { compose = true }
+  composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
+}
+
+dependencies {
+  implementation("androidx.core:core-ktx:1.13.1")
+  implementation("androidx.appcompat:appcompat:1.7.0")
+  implementation("com.google.android.material:material:1.12.0")
+
+  // Compose
+  implementation("androidx.activity:activity-compose:1.9.2")
+  implementation("androidx.compose.ui:ui:1.7.2")
+  implementation("androidx.compose.material3:material3:1.3.0")
+  implementation("androidx.compose.ui:ui-tooling-preview:1.7.2")
+  debugImplementation("androidx.compose.ui:ui-tooling:1.7.2")
+
+  // Billing
+  implementation("com.android.billingclient:billing-ktx:6.2.1")
+}
