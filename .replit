@@ -1,0 +1,4 @@
+# Replit run configuration for Android Gradle builds
+run = ["bash","-lc","./scripts/build-debug.sh"]
+language = "bash"
+onBoot = ["bash","-lc","chmod +x scripts/*.sh || true"]
