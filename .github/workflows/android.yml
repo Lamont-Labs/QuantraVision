@@ -2,10 +2,10 @@ name: Android CI
 
 on:
   push:
-    branches: 
+    branches:
       - main
   pull_request:
-    branches: 
+    branches:
       - main
   workflow_dispatch:
 
@@ -29,14 +29,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle
+      - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.7
           cache-read-only: false
 
+      - name: Generate Gradle wrapper if missing
+        shell: bash
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "Gradle wrapper missing; generating with Gradle 8.7"
+            gradle wrapper --gradle-version 8.7
+          fi
+          chmod +x ./gradlew
+
       - name: Build Debug, Lint, Unit tests
-        run: ./gradlew assembleDebug lint test || gradle assembleDebug lint test
+        run: ./gradlew assembleDebug lint test --stacktrace --no-daemon
 
       - name: Upload Debug artifacts
         uses: actions/upload-artifact@v4
@@ -45,6 +53,7 @@ jobs:
           path: |
             app/build/outputs/apk/debug/**/*.apk
             app/build/reports/**
+          if-no-files-found: warn
 
   bundle-release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -60,17 +69,26 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle
+      - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.7
           cache-read-only: false
 
+      - name: Ensure Gradle wrapper
+        shell: bash
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            gradle wrapper --gradle-version 8.7
+          fi
+          chmod +x ./gradlew
+
       - name: Assemble Release AAB
-        run: ./gradlew bundleRelease || gradle bundleRelease
+        run: ./gradlew bundleRelease --stacktrace --no-daemon
 
       - name: Upload Release bundle
         uses: actions/upload-artifact@v4
         with:
           name: qv-release-aab
           path: app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+```0
