@@ -27,10 +27,12 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+      # New action name; installs Gradle when wrapper is absent
+      - name: Setup Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
+          cache-read-only: false
 
       - name: Build Debug, Lint, Unit tests
         run: gradle --no-daemon assembleDebug lint test
@@ -57,10 +59,11 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+      - name: Setup Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
+          cache-read-only: false
 
       - name: Assemble Release AAB
         run: gradle --no-daemon bundleRelease
@@ -70,3 +73,4 @@ jobs:
         with:
           name: qv-release-aab
           path: app/build/outputs/bundle/release/*.aab
+```0
