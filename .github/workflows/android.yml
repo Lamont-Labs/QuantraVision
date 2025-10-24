@@ -52,8 +52,6 @@ jobs:
     if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
     needs: build-test
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -111,4 +109,3 @@ jobs:
             **/PROOFCHAIN.md
             **/verify*.log
           if-no-files-found: ignore
-```0
