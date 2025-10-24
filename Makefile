@@ -37,3 +37,13 @@ bundle:
 	mkdir -p $(DIST_DIR)
 	cp app/build/outputs/bundle/release/app-release.aab $(DIST_DIR)/$(APP_NAME)-v1.1.aab
 	@echo "==> Bundle ready in $(DIST_DIR)"
+.PHONY: debug release sdk
+
+sdk:
+	bash ./scripts/setup-android-sdk.sh
+
+debug:
+	bash ./scripts/build-debug.sh
+
+release:
+	bash ./scripts/build-release.sh
