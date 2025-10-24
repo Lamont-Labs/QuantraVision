@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt' // enables kapt{} block and kapt(...) deps
+    id 'kotlin-kapt'
 }
 
 android {
@@ -15,31 +15,22 @@ android {
         versionCode 12
         versionName '1.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        vectorDrawables {
-            useSupportLibrary true
-        }
+        vectorDrawables { useSupportLibrary true }
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-        }
+        debug { minifyEnabled false }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    buildFeatures {
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.5.14'
-    }
+    buildFeatures { compose true }
+    composeOptions { kotlinCompilerExtensionVersion '1.5.14' }
+
     packagingOptions {
-        resources {
-            excludes += ['META-INF/DEPENDENCIES','META-INF/INDEX.LIST']
-        }
+        resources { excludes += ['META-INF/DEPENDENCIES','META-INF/INDEX.LIST'] }
     }
 }
 
@@ -70,7 +61,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.6'
 
-    // Room (annotation processor via kapt)
+    // Room via kapt
     implementation 'androidx.room:room-runtime:2.6.1'
     implementation 'androidx.room:room-ktx:2.6.1'
     kapt 'androidx.room:room-compiler:2.6.1'
@@ -81,6 +72,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }
 
-kapt {
-    correctErrorTypes = true
-}
+kapt { correctErrorTypes = true }
