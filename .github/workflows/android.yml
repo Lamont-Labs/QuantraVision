@@ -2,9 +2,11 @@ name: Android CI
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main ]
+    branches: 
+      - main
   workflow_dispatch:
 
 permissions:
@@ -27,15 +29,14 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # New action name; installs Gradle when wrapper is absent
-      - name: Setup Gradle 8.7
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
           cache-read-only: false
 
       - name: Build Debug, Lint, Unit tests
-        run: gradle --no-daemon assembleDebug lint test
+        run: ./gradlew assembleDebug lint test || gradle assembleDebug lint test
 
       - name: Upload Debug artifacts
         uses: actions/upload-artifact@v4
@@ -59,18 +60,17 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle 8.7
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
           cache-read-only: false
 
       - name: Assemble Release AAB
-        run: gradle --no-daemon bundleRelease
+        run: ./gradlew bundleRelease || gradle bundleRelease
 
       - name: Upload Release bundle
         uses: actions/upload-artifact@v4
         with:
           name: qv-release-aab
           path: app/build/outputs/bundle/release/*.aab
-```0
