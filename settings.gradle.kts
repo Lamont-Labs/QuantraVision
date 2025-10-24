@@ -1,2 +1,2 @@
-rootProject.name = "QuantraVisionOverlay"
+rootProject.name = "QuantraVision"
 include(":app")
