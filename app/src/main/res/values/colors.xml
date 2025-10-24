@@ -1,6 +1,13 @@
 <resources>
-  <color name="qv_black">#0B0F14</color>
-  <color name="qv_green">#00FF99</color>
-  <color name="qv_red">#FF3B3B</color>
-  <color name="qv_text">#E6EDF3</color>
+  <!-- Neon cyan on deep navy, matching logo -->
+  <color name="q_primary">#00D1FF</color>
+  <color name="q_primary_variant">#4DE6FF</color>
+  <color name="q_secondary">#2CC3F8</color>
+  <color name="q_background">#071423</color>
+  <color name="q_surface">#0B1C2E</color>
+  <color name="q_outline">#14405C</color>
+  <color name="q_on_primary">#001219</color>
+  <color name="q_on_surface">#D8F5FF</color>
+  <color name="q_warning">#FFC107</color>
+  <color name="q_error">#FF5252</color>
 </resources>
