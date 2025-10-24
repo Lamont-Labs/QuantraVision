@@ -1,3 +1,9 @@
 <resources>
   <string name="app_name">QuantraVision</string>
+  <string name="brand">Lamont Labs</string>
+  <string name="tier_free">Free</string>
+  <string name="tier_standard">Standard</string>
+  <string name="tier_pro">Pro</string>
+  <string name="upgrade_needed">Upgrade to continue pattern highlights.</string>
+  <string name="credits">© Lamont Labs</string>
 </resources>
