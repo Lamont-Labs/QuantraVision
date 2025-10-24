@@ -3,8 +3,6 @@ name: Android CI
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -25,10 +23,15 @@ jobs:
         with:
           gradle-version: 8.10.2
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Generate Gradle wrapper if missing
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "Gradle wrapper missing; generating..."
+            gradle wrapper --gradle-version 8.10.2
+          fi
+          chmod +x gradlew
 
-      - name: Build debug APK
+      - name: Build Debug APK
         run: ./gradlew clean assembleDebug --stacktrace --no-daemon
 
       - name: Run Lint
