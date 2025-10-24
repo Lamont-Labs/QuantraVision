@@ -47,3 +47,19 @@ debug:
 
 release:
 	bash ./scripts/build-release.sh
+.PHONY: sdk debug release binder full
+
+sdk:
+	bash ./scripts/setup-android-sdk.sh
+
+debug:
+	bash ./scripts/build-debug.sh
+
+release:
+	bash ./scripts/build-release.sh
+
+binder:
+	bash ./scripts/package-binder.sh
+
+full:
+	bash ./scripts/full-build.sh
