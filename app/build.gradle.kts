@@ -31,3 +31,8 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
 }
+// ADD the Billing dependency (keep the rest of your file unchanged)
+dependencies {
+    // ...
+    implementation("com.android.billingclient:billing-ktx:6.1.0")
+}
