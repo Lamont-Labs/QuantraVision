@@ -1,0 +1,4 @@
+[
+  { "id": "FLG_BULL", "name": "Bullish Flag", "threshold": 0.70 },
+  { "id": "HNS001",  "name": "Head & Shoulders", "threshold": 0.72 }
+]
