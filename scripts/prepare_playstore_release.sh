@@ -144,3 +144,67 @@ echo "== DONE =="
 echo "Upload-ready folder: dist/release"
 echo "Includes: app-release.aab, screenshots, feature graphic, metadata, legal, sbom."
 ```0
+# --- Add at bottom of existing script ---
+
+echo "== 9) Play Billing SKU sandbox validation =="
+BILLING_JSON="app/src/main/assets/billing_skus.json"
+if [ -f "$BILLING_JSON" ]; then
+  python3 - <<'PY'
+import json,sys
+path="app/src/main/assets/billing_skus.json"
+try:
+    data=json.load(open(path))
+    ids=[i["sku"] for i in data.get("skus",[])]
+    if not ids:
+        raise ValueError("No SKUs found.")
+    if not all(i.isidentifier() for i in ids):
+        raise ValueError("Invalid SKU format.")
+    print(f"Billing SKUs verified: {ids}")
+except Exception as e:
+    print(f"Billing SKU validation failed: {e}")
+    sys.exit(1)
+PY
+else
+  echo "WARNING: billing_skus.json missing, skipping validation"
+fi
+
+echo "== 10) Provenance signature generation =="
+python3 - <<'PY'
+import hashlib, json, time, os
+from pathlib import Path
+from nacl.signing import SigningKey
+from nacl.encoding import HexEncoder
+
+release_dir=Path("dist/release")
+aab=release_dir/"app-release.aab"
+sig_out=release_dir/"provenance.json"
+
+if not aab.exists():
+    print("No AAB to sign. Abort.")
+    raise SystemExit(1)
+
+sha256 = hashlib.sha256(aab.read_bytes()).hexdigest()
+keyfile = Path("lamontlabs_provenance.key")
+
+if not keyfile.exists():
+    sk = SigningKey.generate()
+    keyfile.write_bytes(sk.encode())
+else:
+    sk = SigningKey(keyfile.read_bytes())
+
+signed = sk.sign(sha256.encode(), encoder=HexEncoder)
+pubkey = sk.verify_key.encode(encoder=HexEncoder).decode()
+
+prov = {
+    "name": "QuantraVision Overlay",
+    "org": "Lamont Labs",
+    "timestamp": int(time.time()),
+    "sha256": sha256,
+    "signature_hex": signed.signature.decode(),
+    "public_key_hex": pubkey
+}
+sig_out.write_text(json.dumps(prov, indent=2))
+print("Provenance generated ->", sig_out)
+PY
+
+echo "== COMPLETE: Billing validation + provenance signature added =="
