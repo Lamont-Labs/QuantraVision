@@ -1,0 +1,19 @@
+<resources>
+  <string name="app_name">QuantraVision</string>
+  <string name="qv_disclaimer">Outil d’aide à la décision uniquement. Pas de conseil financier.</string>
+  <string name="qv_brand">Lamont Labs</string>
+  <string name="upgrade_title">Mise à niveau QuantraVision</string>
+  <string name="tier_standard_name">Standard</string>
+  <string name="tier_standard_desc">Débloquez la moitié des modèles.\nDétections illimitées.</string>
+  <string name="tier_standard_price">4,99 $ paiement unique</string>
+  <string name="tier_pro_name">Pro</string>
+  <string name="tier_pro_desc">Tous les modèles.\nMétriques avancées et priorité.</string>
+  <string name="tier_pro_price">9,99 $ paiement unique</string>
+  <string name="button_back">Retour</string>
+  <string name="how_to_title">Comment utiliser QuantraVision</string>
+  <string name="how_to_steps">1. Ouvrez QuantraVision.\n2. Autorisez la superposition.\n3. Lancez votre application de trading.\n4. Les modèles détectés apparaîtront en surbrillance.</string>
+  <string name="tradeability_breakdown">Analyse de viabilité</string>
+  <string name="confidence">Confiance</string>
+  <string name="confluence">Confluence</string>
+  <string name="market_conditions">Conditions de marché</string>
+  <string name="close">Fermer</string>
