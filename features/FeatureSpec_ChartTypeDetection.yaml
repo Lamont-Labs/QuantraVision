@@ -1,0 +1,26 @@
+# ==================================================
+# FEATURE SPEC — CHART TYPE DETECTION (Candle/Bar/Line/Heikin-Ashi/Renko)
+# ==================================================
+feature_id: "F010"
+name: "Chart Type Detection"
+version: "1.0"
+objective: >
+  Automatically identify chart style on-screen to route the correct pattern ruleset.
+scope:
+  - Detect: candlestick, OHLC bar, line, Heikin-Ashi, Renko.
+  - Switch template tolerances and candle heuristics per type.
+  - Offline-only; uses local CV + optional on-device OCR for labels.
+signals:
+  - Candle body/wick geometry distribution
+  - Presence of continuous path (line charts)
+  - Heikin-Ashi smoothing pattern (body continuity + limited gaps)
+  - Renko brick uniformity
+architecture:
+  modules:
+    - analysis/ChartTypeClassifier.kt
+    - detection/RuleRouter.kt
+  data_flow: "Frame → ChartTypeClassifier → RuleRouter → PatternDetectionEngine"
+testing:
+  - Golden set per chart type (at least 50 frames each).
+  - Confusion matrix ≥ 95% accuracy on golden set.
+status: "Planned / Approved"
