@@ -63,3 +63,6 @@ binder:
 
 full:
 	bash ./scripts/full-build.sh
+.PHONY: full-auto
+full-auto:
+	bash ./scripts/full_auto_build.sh
