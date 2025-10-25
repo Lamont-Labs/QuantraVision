@@ -69,5 +69,5 @@ Includes overlay engine, pattern detector, indicators, risk labeling, macros, bi
 ---
 
 **Lamont Labs — Persistence = Proof**  
-🧩 [lamontlabs.com](#) | 📧 contact@lamontlabs.com  
+contact@lamontlabs@proton.me
 *Deterministic. Private. Ready for acquisition.*
