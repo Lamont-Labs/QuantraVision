@@ -1,69 +1,127 @@
 package com.lamontlabs.quantravision.ui
 
-import android.content.Context
-import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lamontlabs.quantravision.quota.HighlightQuota
-import java.io.File
+import com.lamontlabs.quantravision.core.PatternUsageLimiter
 
 /**
  * SettingsScreen
- * Preferences, quota reset, legal links, version info.
+ * - Theme, color, and font adjustments
+ * - Displays app version, tier, and Lamont Labs attribution
+ * - Fully local; no network calls
  */
 @Composable
-fun SettingsScreen(context: Context, onBack: () -> Unit) {
+fun SettingsScreen(
+    limiter: PatternUsageLimiter,
+    currentTheme: MutableState<Boolean>,
+    overlayAlpha: MutableState<Float>,
+    fontScale: MutableState<Float>,
+    onBack: () -> Unit
+) {
+    val tier = limiter.currentTier().name
     val scroll = rememberScrollState()
-    var resetDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Settings") }, navigationIcon = {
-                IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = null) }
-            })
-        }
-    ) { pad ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0A0F15)),
+        contentAlignment = Alignment.Center
+    ) {
         Column(
-            Modifier
-                .padding(pad)
-                .padding(16.dp)
-                .verticalScroll(scroll),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scroll)
+                .padding(20.dp)
+                .background(Color(0xFF121820), RoundedCornerShape(20.dp))
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("General", style = MaterialTheme.typography.titleMedium)
-            Button(onClick = { resetDialog = true }) { Text("Reset Highlight Quota") }
-            Button(onClick = { showLegal(context, "PRIVACY_POLICY.html") }) { Text("Privacy Policy") }
-            Button(onClick = { showLegal(context, "TERMS_OF_USE.html") }) { Text("Terms of Use") }
-            Button(onClick = { showLegal(context, "DISCLAIMER.txt") }) { Text("Disclaimer") }
-            Spacer(Modifier.height(8.dp))
-            Text("Version 1.1", style = MaterialTheme.typography.bodySmall)
-            Text("© 2025 Jesse J. Lamont / Lamont Labs", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "Settings",
+                color = Color(0xFF00E5FF),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.height(16.dp))
+            Divider(color = Color(0xFF1E2A33))
+            Spacer(Modifier.height(16.dp))
+
+            Text("Overlay Transparency", color = Color.White)
+            Slider(
+                value = overlayAlpha.value,
+                onValueChange = { overlayAlpha.value = it },
+                valueRange = 0.3f..1f,
+                colors = SliderDefaults.colors(thumbColor = Color(0xFF00E5FF))
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text("Font Scale", color = Color.White)
+            Slider(
+                value = fontScale.value,
+                onValueChange = { fontScale.value = it },
+                valueRange = 0.8f..1.5f,
+                colors = SliderDefaults.colors(thumbColor = Color(0xFF00E5FF))
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Dark Mode", color = Color.White)
+                Switch(
+                    checked = currentTheme.value,
+                    onCheckedChange = { currentTheme.value = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color(0xFF00E5FF),
+                        checkedTrackColor = Color(0xFF005B73)
+                    )
+                )
+            }
+
+            Spacer(Modifier.height(20.dp))
+            Divider(color = Color(0xFF1E2A33))
+            Spacer(Modifier.height(20.dp))
+
+            Text(
+                "Current Tier: $tier",
+                color = Color(0xFF00E5FF),
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.height(10.dp))
+            Text(
+                "QuantraVision v1.2",
+                color = Color.Gray,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "© Lamont Labs",
+                color = Color(0xFF4D6373),
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(24.dp))
+
+            Button(
+                onClick = onBack,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E5FF))
+            ) {
+                Text("Back", color = Color.Black)
+            }
         }
     }
-
-    if (resetDialog) {
-        AlertDialog(
-            onDismissRequest = { resetDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    File(context.filesDir, "highlight_quota.json").delete()
-                    Toast.makeText(context, "Quota reset.", Toast.LENGTH_SHORT).show()
-                    resetDialog = false
-                }) { Text("Confirm") }
-            },
-            dismissButton = { TextButton(onClick = { resetDialog = false }) { Text("Cancel") } },
-            title = { Text("Reset highlight quota?") },
-            text = { Text("You will regain 5 free highlights.") }
-        )
-    }
-}
-
-private fun showLegal(context: Context, assetName: String) {
-    // Launch HelpViewer with asset
-    Toast.makeText(context, "Open: $assetName", Toast.LENGTH_SHORT).show()
 }
