@@ -1,0 +1,129 @@
+# ==================================================
+# QUANTRAVISION — REPLIT DEBUG + PUSHBACK PIPELINE v1.0
+# ==================================================
+goal: "Import 40k+ LOC into Replit, fix compile/runtime issues, fill missing files, push back to GitHub, then build in Android Studio and ship."
+constraints:
+  - "No feature drift. Only fixes, missing contents, and deterministic completions."
+  - "No network calls added to detection path. Offline-first preserved."
+  - "Keep package name, versions, and Gradle settings unchanged unless specified."
+  - "Every added file must include a provenance header and commit message rationale."
+
+repos:
+  upstream_github: "git@github.com:Lamont-Labs/QuantraVision.git"
+  replit_remote: "origin"  # set after import
+
+preflight:
+  - "Ensure repo has gradle wrapper: ./gradlew present and executable"
+  - "Pin Java 17 and Android Gradle Plugin versions"
+  - "Commit baseline: git tag pre-replit-sync"
+  - "Add CODEOWNERS and branch protection on main"
+  - "Open issues for every known missing file/content"
+
+replit_setup:
+  shell_profile: |
+    sdk use java 17 || true
+    export GRADLE_USER_HOME=$HOME/.gradle
+    chmod +x ./gradlew
+  cache_dirs:
+    - "~/.gradle/caches"
+    - "~/.android/build-cache"
+
+allowed_work:
+  - "Fix imports, package names, and resource IDs"
+  - "Complete missing files listed in issues (Detector, PatternLibrary, themes, strings, icons)"
+  - "Add deterministic assets: assets/patterns.json, assets/*.tflite"
+  - "Write minimal tests for loaders and detectors"
+  - "No UI redesign beyond fixing compile errors"
+
+provenance_requirements:
+  header_template: |
+    /*
+     * Added/Modified by Replit task <ticket_id>
+     * Reason: <one-line>
+     * Determinism: no RNG, no network, pure function where possible
+     * Date: <YYYY-MM-DD>
+     */
+commit_rules:
+  - "One logical change per commit"
+  - "Prefix with [replit-fix] or [replit-add]"
+  - "Reference issue IDs"
+
+build_commands:
+  debug_fast: "./gradlew :app:assembleDebug -x test --build-cache --parallel"
+  unit_tests: "./gradlew testDebugUnitTest --tests '*Pattern*' --build-cache"
+  release_check: "./gradlew :app:bundleRelease -Pandroid.enableR8=true --build-cache"
+
+acceptance_criteria:
+  compile:
+    - "assembleDebug succeeds"
+    - "No unresolved symbols, no duplicate resources"
+  runtime:
+    - "Cold start < 2s on emulator"
+    - "Camera preview renders"
+    - "Detector loads patterns.json without crash"
+  determinism:
+    - "Golden-frame test produces stable bboxes and scores (±0)"
+  security:
+    - "No internet permission in detection path; logs stripped in release"
+  docs:
+    - "README updated with build steps"
+    - "NOTICE.md lists third-party licenses"
+
+pushback_to_github:
+  commands: |
+    git remote set-url origin git@github.com:Lamont-Labs/QuantraVision.git
+    git checkout -b replit/qa-fixes
+    git push -u origin replit/qa-fixes
+  open_pr:
+    title: "Replit QA fixes: compile, assets, determinism checks"
+    body_points:
+      - "Summary of fixes and added files"
+      - "Test results and golden-frame hashes"
+      - "Known limitations and next steps"
+    required_checks:
+      - "CI: assembleDebug"
+      - "CI: unit tests loaders/detector"
+
+github_actions_ci_example: |
+  name: android-ci
+  on:
+    push: { branches: ["replit/*"] }
+    pull_request: { branches: ["main"] }
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-java@v4
+          with: { distribution: temurin, java-version: "17" }
+        - uses: gradle/actions/setup-gradle@v3
+        - run: ./gradlew :app:assembleDebug --build-cache --parallel
+        - run: ./gradlew testDebugUnitTest --tests "*Pattern*" --build-cache
+
+handoff_to_android_studio:
+  steps:
+    - "Merge PR → main"
+    - "Tag: v1.2-replit"
+    - "Open in Android Studio, run emulator test, then Generate Signed AAB"
+  artifacts:
+    - "app-debug.apk (internal)"
+    - "app-release.aab (Play Store)"
+  store_requirements:
+    - "Privacy Policy URL"
+    - "Content rating"
+    - "Screenshots and 30s preview clip"
+    - "Short + full description"
+
+risk_controls:
+  - "Cost: keep Replit on-task; no emulators; build only on demand"
+  - "Scope creep: reject feature requests; focus on missing/buggy files"
+  - "Licenses: verify OpenCV/TFLite notices; include NOTICE.md"
+  - "Secrets: never commit keystore; sign locally in Android Studio"
+
+success_definition:
+  - "Green debug build in Replit"
+  - "PR merged with passing CI"
+  - "Android Studio run succeeds on Pixel 7 API 34"
+  - "Release AAB built and ready for Play Console"
+# END
+```0
