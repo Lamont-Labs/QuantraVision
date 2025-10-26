@@ -1,13 +1,12 @@
-# Provenance — QuantraVision Overlay
+# Build Provenance
 
-Each pattern detection is recorded with:
-- SHA-256 hash of image input
-- pattern type and template ID
-- confidence score
-- timestamp (UTC ISO-8601)
-- local signature of engine version
+Each release includes:
+- `dist/release/app-release.aab` — Play package
+- `dist/release/sha256.txt` — SHA-256 of AAB
+- `dist/release/provenance.json` — Ed25519 signature and public key
+- `dist/sbom.json` — dependency manifest
 
-A deterministic build hash is generated at compile time using 
-`gradle tasks :hashSources`. This ensures identical source → identical hash → identical output.
-
-Provenance logs are stored in `PatternMatch.db` and exportable as YAML bundles for Greyline OS integration.
+Reproduce:
+1. Check out the tagged commit.
+2. Run `scripts/replit_master_build.sh`.
+3. Verify hash matches `sha256.txt`.
