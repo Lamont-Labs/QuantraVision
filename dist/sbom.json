@@ -1,0 +1,12 @@
+{
+  "name": "QuantraVision",
+  "version": "2.0",
+  "dependencies": [
+    { "group": "androidx.core", "name": "core-ktx", "version": "1.13.1", "license": "Apache-2.0" },
+    { "group": "androidx.compose.ui", "name": "ui", "version": "1.7.2", "license": "Apache-2.0" },
+    { "group": "org.tensorflow", "name": "tensorflow-lite", "version": "2.12.0", "license": "Apache-2.0" },
+    { "group": "org.tensorflow", "name": "tensorflow-lite-support", "version": "0.4.4", "license": "Apache-2.0" }
+  ],
+  "notes": "Expand during release; generated or amended by build scripts."
+}
+```0
