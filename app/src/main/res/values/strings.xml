@@ -1,5 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">QuantraVision</string>
+  <string name="qv_disclaimer">Decision aid tool only. Not financial advice.</string>
+  <string name="qv_brand">Lamont Labs</string>
+  <string name="upgrade_title">Upgrade QuantraVision</string>
+  <string name="tier_standard_name">Standard</string>
+  <string name="tier_standard_desc">Unlock half the patterns.\nUnlimited detections.</string>
+  <string name="tier_standard_price">$4.99 one-time payment</string>
+  <string name="tier_pro_name">Pro</string>
+  <string name="tier_pro_desc">All patterns.\nAdvanced metrics and priority.</string>
+  <string name="tier_pro_price">$9.99 one-time payment</string>
+  <string name="button_back">Back</string>
+  <string name="how_to_title">How to use QuantraVision</string>
+  <string name="how_to_steps">1. Open QuantraVision.\n2. Allow overlay permission.\n3. Launch your trading app.\n4. Detected patterns will appear highlighted.</string>
+  <string name="tradeability_breakdown">Tradability Analysis</string>
+  <string name="confidence">Confidence</string>
+  <string name="confluence">Confluence</string>
+  <string name="market_conditions">Market Conditions</string>
+  <string name="close">Close</string>
   <string name="brand">Lamont Labs</string>
   <string name="tier_free">Free</string>
   <string name="tier_standard">Standard</string>

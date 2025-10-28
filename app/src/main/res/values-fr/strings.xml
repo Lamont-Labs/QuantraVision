@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">QuantraVision</string>
-  <string name="qv_disclaimer">Outil d'aide à la décision uniquement. Pas de conseil financier.</string>
+  <string name="qv_disclaimer">Outil d\'aide à la décision uniquement. Pas de conseil financier.</string>
   <string name="qv_brand">Lamont Labs</string>
   <string name="upgrade_title">Mise à niveau QuantraVision</string>
   <string name="tier_standard_name">Standard</string>

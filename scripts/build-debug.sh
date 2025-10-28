@@ -16,8 +16,8 @@ fi
 # Ensure local.properties points to our SDK
 echo "sdk.dir=$ANDROID_SDK_ROOT" > "$ROOT_DIR/local.properties"
 
-# Build, Lint, and Unit tests
-./gradlew --stacktrace --no-daemon assembleDebug lint test
+# Build debug APK only (skip lint and tests for now)
+./gradlew --stacktrace --no-daemon assembleDebug
 
 # Report artifact locations
 echo

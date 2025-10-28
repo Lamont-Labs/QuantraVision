@@ -10,4 +10,7 @@
   <color name="q_on_surface">#D8F5FF</color>
   <color name="q_warning">#FFC107</color>
   <color name="q_error">#FF5252</color>
+  
+  <!-- Launcher icon background -->
+  <color name="ic_launcher_background">#071423</color>
 </resources>
