@@ -2,6 +2,7 @@ package com.lamontlabs.quantravision
 
 import android.content.Context
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Entity
 data class PatternMatch(
