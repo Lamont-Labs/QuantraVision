@@ -57,17 +57,20 @@ class PatternDetector(private val context: Context) {
                     val calibrated = ConfidenceCalibrator.calibrate(patternName, consensus.consensusScore)
                     val temporal = TemporalTracker.update("${patternName}:${imageFile.name}", calibrated, System.currentTimeMillis())
 
-                    db.patternDao().insert(
-                        PatternMatch(
-                            patternName = patternName,
-                            confidence = calibrated,
-                            timestamp = System.currentTimeMillis(),
-                            timeframe = tfLabel,
-                            scale = consensus.bestScale,
-                            consensusScore = consensus.consensusScore,
-                            windowMs = 7000L
-                        )
+                    val match = PatternMatch(
+                        patternName = patternName,
+                        confidence = calibrated,
+                        timestamp = System.currentTimeMillis(),
+                        timeframe = tfLabel,
+                        scale = consensus.bestScale,
+                        consensusScore = consensus.consensusScore,
+                        windowMs = 7000L
                     )
+                    
+                    db.patternDao().insert(match)
+
+                    // Integrate with new features
+                    com.lamontlabs.quantravision.integration.FeatureIntegration.onPatternDetected(context, match)
 
                     provenance.logHash(imageFile, "$patternName@${"%.2f".format(consensus.bestScale)}:${tfLabel}:c${"%.3f".format(calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
                 }

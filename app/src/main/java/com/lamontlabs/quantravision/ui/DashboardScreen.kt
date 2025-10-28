@@ -20,7 +20,10 @@ fun DashboardScreen(
     onReview: () -> Unit,
     onTutorials: () -> Unit,
     onSettings: () -> Unit,
-    onTemplates: () -> Unit
+    onTemplates: () -> Unit,
+    onAchievements: () -> Unit = {},
+    onAnalytics: () -> Unit = {},
+    onPredictions: () -> Unit = {}
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("QuantraVision Dashboard") }) }
@@ -31,22 +34,43 @@ fun DashboardScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ModeSwitchBanner(context) {}
+            
             Button(onClick = onStartScan, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Visibility, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Start Detection")
             }
+            
             Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.List, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("View Detections")
             }
+            
+            // New feature buttons
+            Button(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Star, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Achievements")
+            }
+            
+            Button(onClick = onAnalytics, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.TrendingUp, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Pattern Analytics")
+            }
+            
+            Button(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.TrendingUp, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Pattern Predictions")
+            }
+            
             Button(onClick = onTemplates, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Tune, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Template Manager")
             }
+            
             Button(onClick = onTutorials, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.School, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Tutorials & Quizzes")
             }
+            
             Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Settings, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Settings")
