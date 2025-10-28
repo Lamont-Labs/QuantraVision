@@ -2,3 +2,6 @@
 run = ["bash","-lc","./scripts/build-debug.sh"]
 language = "bash"
 onBoot = ["bash","-lc","chmod +x scripts/*.sh || true"]
+
+[agent]
+expertMode = true
