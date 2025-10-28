@@ -5,20 +5,18 @@
     android:viewportWidth="128"
     android:viewportHeight="128">
     
+    <!-- Lock body -->
     <path
         android:fillColor="#00E5FF"
-        android:pathData="M 64,20 C 50,20 38,32 38,46 L 38,56 L 30,56 L 30,108 L 98,108 L 98,56 L 90,56 L 90,46 C 90,32 78,20 64,20 Z M 64,30 C 72,30 80,38 80,46 L 80,56 L 48,56 L 48,46 C 48,38 56,30 64,30 Z"/>
+        android:pathData="M64,20C50,20,38,32,38,46L38,56L30,56L30,108L98,108L98,56L90,56L90,46C90,32,78,20,64,20ZM64,30C72,30,80,38,80,46L80,56L48,56L48,46C48,38,56,30,64,30Z"/>
     
-    <circle
+    <!-- Keyhole circle -->
+    <path
         android:fillColor="#0A1218"
-        android:cx="64"
-        android:cy="82"
-        android:r="8"/>
+        android:pathData="M64,74 a8,8 0 1,0 0,16 a8,8 0 1,0 0,-16"/>
     
-    <rect
+    <!-- Keyhole vertical bar -->
+    <path
         android:fillColor="#0A1218"
-        android:width="4"
-        android:height="12"
-        android:x="62"
-        android:y="82"/>
+        android:pathData="M62,82 h4 v12 h-4 Z"/>
 </vector>

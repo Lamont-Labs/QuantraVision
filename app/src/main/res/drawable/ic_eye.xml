@@ -5,19 +5,18 @@
     android:viewportWidth="128"
     android:viewportHeight="128">
     
+    <!-- Eye outline -->
     <path
         android:fillColor="#00E5FF"
-        android:pathData="M64,40c-24,0 -44,12 -54,24 10,12 30,24 54,24s44,-12 54,-24C108,52 88,40 64,40z"/>
+        android:pathData="M64,40c-24,0-44,12-54,24c10,12,30,24,54,24s44,-12,54,-24C108,52,88,40,64,40z"/>
     
-    <circle
+    <!-- Outer circle of pupil -->
+    <path
         android:fillColor="#0A1218"
-        android:cx="64"
-        android:cy="64"
-        android:r="16"/>
+        android:pathData="M64,48 a16,16 0 1,0 0,32 a16,16 0 1,0 0,-32"/>
     
-    <circle
+    <!-- Inner circle (highlight) -->
+    <path
         android:fillColor="#00E5FF"
-        android:cx="64"
-        android:cy="64"
-        android:r="8"/>
+        android:pathData="M64,56 a8,8 0 1,0 0,16 a8,8 0 1,0 0,-16"/>
 </vector>

@@ -32,7 +32,11 @@ fun DashboardScreen(
     onTemplates: () -> Unit,
     onAchievements: () -> Unit = {},
     onAnalytics: () -> Unit = {},
-    onPredictions: () -> Unit = {}
+    onPredictions: () -> Unit = {},
+    onBacktesting: () -> Unit = {},
+    onSimilarity: () -> Unit = {},
+    onMultiChart: () -> Unit = {},
+    onClearHighlights: () -> Unit = {}
 ) {
     var voiceCommandStatus by remember { mutableStateOf<VoiceCommandStatus?>(null) }
     var showStatusMessage by remember { mutableStateOf(false) }
@@ -79,9 +83,7 @@ fun DashboardScreen(
                 is VoiceCommandResult.NavigateAchievements -> onAchievements()
                 is VoiceCommandResult.NavigateAnalytics -> onAnalytics()
                 is VoiceCommandResult.NavigatePredictions -> onPredictions()
-                is VoiceCommandResult.ClearHighlights -> {
-                    // Clear highlights logic
-                }
+                is VoiceCommandResult.ClearHighlights -> onClearHighlights()
                 is VoiceCommandResult.RefreshDetection -> onStartScan()
                 else -> {}
             }
@@ -184,6 +186,21 @@ fun DashboardScreen(
             Button(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.TrendingUp, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Pattern Predictions")
+            }
+            
+            Button(onClick = onBacktesting, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Assessment, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Pattern Backtesting")
+            }
+            
+            Button(onClick = onSimilarity, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Search, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Similarity Search")
+            }
+            
+            Button(onClick = onMultiChart, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.CompareArrows, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Multi-Chart Comparison")
             }
             
             Button(onClick = onTemplates, modifier = Modifier.fillMaxWidth()) {

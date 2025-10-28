@@ -5,49 +5,32 @@
     android:viewportWidth="128"
     android:viewportHeight="128">
     
-    <rect
-        android:fillColor="#00E5FF"
-        android:width="72"
-        android:height="88"
-        android:x="28"
-        android:y="20"
-        android:rx="4"/>
-    
-    <rect
-        android:fillColor="#0A1218"
-        android:width="52"
-        android:height="6"
-        android:x="38"
-        android:y="38"
-        android:rx="2"/>
-    
-    <rect
-        android:fillColor="#0A1218"
-        android:width="52"
-        android:height="6"
-        android:x="38"
-        android:y="52"
-        android:rx="2"/>
-    
-    <rect
-        android:fillColor="#0A1218"
-        android:width="52"
-        android:height="6"
-        android:x="38"
-        android:y="66"
-        android:rx="2"/>
-    
-    <rect
-        android:fillColor="#0A1218"
-        android:width="32"
-        android:height="6"
-        android:x="38"
-        android:y="80"
-        android:rx="2"/>
-    
+    <!-- Document background (rounded rect) -->
     <path
         android:fillColor="#00E5FF"
-        android:pathData="M 85,85 L 95,95 L 125,65 L 115,55 Z"
+        android:pathData="M32,20 h68 a4,4 0 0,1 4,4 v84 a4,4 0 0,1 -4,4 h-68 a4,4 0 0,1 -4,-4 v-84 a4,4 0 0,1 4,-4 Z"/>
+    
+    <!-- Text lines -->
+    <path
+        android:fillColor="#0A1218"
+        android:pathData="M40,38 h48 a2,2 0 0,1 2,2 v2 a2,2 0 0,1 -2,2 h-48 a2,2 0 0,1 -2,-2 v-2 a2,2 0 0,1 2,-2 Z"/>
+    
+    <path
+        android:fillColor="#0A1218"
+        android:pathData="M40,52 h48 a2,2 0 0,1 2,2 v2 a2,2 0 0,1 -2,2 h-48 a2,2 0 0,1 -2,-2 v-2 a2,2 0 0,1 2,-2 Z"/>
+    
+    <path
+        android:fillColor="#0A1218"
+        android:pathData="M40,66 h48 a2,2 0 0,1 2,2 v2 a2,2 0 0,1 -2,2 h-48 a2,2 0 0,1 -2,-2 v-2 a2,2 0 0,1 2,-2 Z"/>
+    
+    <path
+        android:fillColor="#0A1218"
+        android:pathData="M40,80 h28 a2,2 0 0,1 2,2 v2 a2,2 0 0,1 -2,2 h-28 a2,2 0 0,1 -2,-2 v-2 a2,2 0 0,1 2,-2 Z"/>
+    
+    <!-- Verification checkmark -->
+    <path
+        android:fillColor="#00E5FF"
         android:strokeWidth="3"
-        android:strokeColor="#0A1218"/>
+        android:strokeColor="#0A1218"
+        android:pathData="M85,85 L95,95 L125,65 L115,55 Z"/>
 </vector>

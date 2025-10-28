@@ -3,17 +3,15 @@ package com.lamontlabs.quantravision
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.lifecycleScope
-import com.lamontlabs.quantravision.detection.Detector
-import com.lamontlabs.quantravision.detection.PatternLibrary
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.lamontlabs.quantravision.ui.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -27,37 +25,82 @@ class MainActivity : ComponentActivity() {
   fun QuantraVisionApp() {
     MaterialTheme {
       val ctx = LocalContext.current
-      val detector = remember { Detector() }
-      LaunchedEffect(Unit) { detector.load(ctx) }
+      val navController = rememberNavController()
+      
+      val detector = remember { PatternDetector(ctx) }
+      val scope = rememberCoroutineScope()
 
-      Surface(Modifier.fillMaxSize()) {
-        Box(Modifier.fillMaxSize()) {
-          // Camera preview container (for demo input)
-          AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { PreviewView(it).apply { implementationMode = PreviewView.ImplementationMode.PERFORMANCE } }
+      NavHost(navController, startDestination = "dashboard") {
+        composable("dashboard") {
+          DashboardScreen(
+            context = ctx,
+            onStartScan = { scope.launch { detector.scanStaticAssets() } },
+            onReview = { navController.navigate("detections_list") },
+            onTutorials = { navController.navigate("tutorials") },
+            onSettings = { navController.navigate("settings") },
+            onTemplates = { navController.navigate("templates") },
+            onAchievements = { navController.navigate("achievements") },
+            onAnalytics = { navController.navigate("analytics") },
+            onPredictions = { navController.navigate("predictions") },
+            onBacktesting = { navController.navigate("backtesting") },
+            onSimilarity = { navController.navigate("similarity") },
+            onMultiChart = { navController.navigate("multi_chart") },
+            onClearHighlights = { 
+              scope.launch { 
+                val db = PatternDatabase.getInstance(ctx)
+                db.clearAllTables()
+              } 
+            }
           )
-          // Minimal HUD
-          Column(
-            Modifier
-              .fillMaxWidth()
-              .align(Alignment.TopCenter)
-              .padding(12.dp)) {
-            Text("QuantraVision Overlay — Demo", style = MaterialTheme.typography.titleMedium)
-            Text("Watermark: QuantraVision / Lamont Labs", style = MaterialTheme.typography.labelSmall)
-          }
-          // Action bar
-          Row(
-            Modifier
-              .align(Alignment.BottomCenter)
-              .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            val scope = rememberCoroutineScope()
-            Button(onClick = { scope.launch { detector.demoScan() } }) { Text("Scan") }
-            Spacer(Modifier.width(12.dp))
-            Button(onClick = { PatternLibrary.toggleDemoBoxes() }) { Text("Toggle Boxes") }
-          }
+        }
+        
+        composable("achievements") {
+          AchievementsScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable("analytics") {
+          AnalyticsScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable("predictions") {
+          PredictionScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable("backtesting") {
+          BacktestScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable("similarity") {
+          SimilaritySearchScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable("multi_chart") {
+          MultiChartScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable("detections_list") {
+          DetectionListScreen(
+            db = PatternDatabase.getInstance(ctx),
+            onBack = { navController.popBackStack() }
+          )
+        }
+        
+        composable("tutorials") {
+          HelpScreen(
+            helpFiles = emptyList(),
+            onBack = { navController.popBackStack() }
+          )
+        }
+        
+        composable("settings") {
+          SettingsScreenWithNav(onBack = { navController.popBackStack() })
+        }
+        
+        composable("templates") {
+          TemplateManagerScreen(
+            context = ctx,
+            onBack = { navController.popBackStack() }
+          )
         }
       }
     }

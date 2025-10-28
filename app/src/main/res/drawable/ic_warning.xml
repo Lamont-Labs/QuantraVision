@@ -5,21 +5,18 @@
     android:viewportWidth="128"
     android:viewportHeight="128">
     
+    <!-- Triangle background -->
     <path
         android:fillColor="#00E5FF"
-        android:pathData="M 64,10 L 10,110 L 118,110 Z"/>
+        android:pathData="M64,16 L16,112 L112,112 Z"/>
     
-    <rect
+    <!-- Exclamation mark vertical bar (rounded rect using path) -->
+    <path
         android:fillColor="#0A1218"
-        android:width="6"
-        android:height="32"
-        android:x="61"
-        android:y="48"
-        android:rx="3"/>
+        android:pathData="M61,48 h6 a2,2 0 0,1 2,2 v30 a2,2 0 0,1 -2,2 h-6 a2,2 0 0,1 -2,-2 v-30 a2,2 0 0,1 2,-2 Z"/>
     
-    <circle
+    <!-- Exclamation mark dot (circle using path) -->
+    <path
         android:fillColor="#0A1218"
-        android:cx="64"
-        android:cy="92"
-        android:r="4"/>
+        android:pathData="M64,90 a4,4 0 1,0 0,8 a4,4 0 1,0 0,-8"/>
 </vector>

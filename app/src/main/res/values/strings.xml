@@ -24,4 +24,5 @@
     <string name="tier_standard_price">$4.99</string>
     <string name="tradeability_breakdown">Tradeability Breakdown</string>
     <string name="upgrade_title">Upgrade QuantraVision</string>
+    <string name="widget_description">Quick stats for QuantraVision pattern detection</string>
 </resources>
