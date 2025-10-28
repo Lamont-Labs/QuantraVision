@@ -1,6 +1,11 @@
 package com.lamontlabs.quantravision.ui
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,10 +13,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import com.lamontlabs.quantravision.voice.*
+import kotlinx.coroutines.delay
 
 /**
- * Updated DashboardScreen with mode toggle banner integration.
+ * Updated DashboardScreen with mode toggle banner integration and voice commands.
  */
 @Composable
 fun DashboardScreen(
@@ -25,8 +34,125 @@ fun DashboardScreen(
     onAnalytics: () -> Unit = {},
     onPredictions: () -> Unit = {}
 ) {
+    var voiceCommandStatus by remember { mutableStateOf<VoiceCommandStatus?>(null) }
+    var showStatusMessage by remember { mutableStateOf(false) }
+    var hasAudioPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == 
+                PackageManager.PERMISSION_GRANTED
+        )
+    }
+    
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasAudioPermission = isGranted
+        if (!isGranted) {
+            voiceCommandStatus = VoiceCommandStatus(
+                VoiceCommandState.ERROR,
+                "Microphone permission required for voice commands"
+            )
+            showStatusMessage = true
+        }
+    }
+    
+    val voiceHandler = rememberVoiceCommandHandler(
+        onStatusChange = { status ->
+            voiceCommandStatus = status
+            showStatusMessage = true
+        },
+        onCommandExecuted = { result ->
+            when (result) {
+                is VoiceCommandResult.FilterPattern -> {
+                    // Filter logic would be implemented here
+                }
+                is VoiceCommandResult.ClearFilter -> {
+                    // Clear filter logic
+                }
+                is VoiceCommandResult.ExportPDF -> {
+                    // PDF already exported by processor
+                }
+                is VoiceCommandResult.StartScanning -> onStartScan()
+                is VoiceCommandResult.StopScanning -> {
+                    // Stop scanning logic
+                }
+                is VoiceCommandResult.NavigateAchievements -> onAchievements()
+                is VoiceCommandResult.NavigateAnalytics -> onAnalytics()
+                is VoiceCommandResult.NavigatePredictions -> onPredictions()
+                is VoiceCommandResult.ClearHighlights -> {
+                    // Clear highlights logic
+                }
+                is VoiceCommandResult.RefreshDetection -> onStartScan()
+                else -> {}
+            }
+        }
+    )
+    
+    LaunchedEffect(showStatusMessage) {
+        if (showStatusMessage) {
+            delay(3000)
+            showStatusMessage = false
+        }
+    }
+    
     Scaffold(
-        topBar = { TopAppBar(title = { Text("QuantraVision Dashboard") }) }
+        topBar = { TopAppBar(title = { Text("QuantraVision Dashboard") }) },
+        floatingActionButton = {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AnimatedVisibility(
+                    visible = showStatusMessage && voiceCommandStatus != null,
+                    enter = fadeIn() + slideInHorizontally { it },
+                    exit = fadeOut() + slideOutHorizontally { it }
+                ) {
+                    Surface(
+                        tonalElevation = 4.dp,
+                        shape = MaterialTheme.shapes.medium,
+                        color = when (voiceCommandStatus?.state) {
+                            VoiceCommandState.LISTENING -> MaterialTheme.colorScheme.primaryContainer
+                            VoiceCommandState.SUCCESS -> MaterialTheme.colorScheme.tertiaryContainer
+                            VoiceCommandState.ERROR -> MaterialTheme.colorScheme.errorContainer
+                            else -> MaterialTheme.colorScheme.surfaceVariant
+                        }
+                    ) {
+                        Text(
+                            text = voiceCommandStatus?.message ?: "",
+                            modifier = Modifier.padding(12.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+                
+                FloatingActionButton(
+                    onClick = {
+                        if (hasAudioPermission) {
+                            when (voiceCommandStatus?.state) {
+                                VoiceCommandState.LISTENING -> voiceHandler.stopListening()
+                                else -> voiceHandler.startListening()
+                            }
+                        } else {
+                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    },
+                    containerColor = when (voiceCommandStatus?.state) {
+                        VoiceCommandState.LISTENING -> MaterialTheme.colorScheme.error
+                        VoiceCommandState.PROCESSING -> MaterialTheme.colorScheme.secondary
+                        else -> MaterialTheme.colorScheme.primary
+                    }
+                ) {
+                    Icon(
+                        imageVector = when (voiceCommandStatus?.state) {
+                            VoiceCommandState.LISTENING -> Icons.Default.MicOff
+                            VoiceCommandState.PROCESSING -> Icons.Default.HourglassEmpty
+                            else -> Icons.Default.Mic
+                        },
+                        contentDescription = "Voice Commands"
+                    )
+                }
+            }
+        }
     ) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).padding(24.dp),
@@ -45,7 +171,6 @@ fun DashboardScreen(
                 Spacer(Modifier.width(8.dp)); Text("View Detections")
             }
             
-            // New feature buttons
             Button(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Star, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Achievements")
