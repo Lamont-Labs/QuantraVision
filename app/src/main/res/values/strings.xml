@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">QuantraVision Overlay</string>
-    <string name="brand_footer">Lamont Labs</string>
-    <string name="watermark_edu">Educational visualization • Not financial advice</string>
+    <string name="qv_buy_once">Buy once. Own forever.</string>
+    <string name="qv_no_subs">No subscriptions. No renewals.</string>
+    <string name="qv_unlock_standard">Unlock Standard</string>
+    <string name="qv_unlock_pro">Unlock Pro</string>
+    <string name="qv_loading_prices">Loading prices…</string>
+    <string name="qv_restore_purchases">Restore Purchases</string>
 </resources>
