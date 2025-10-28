@@ -1,0 +1,9 @@
+name: "Bullish Breakaway Gap"
+type: "bullish"
+timeframe: "4h"
+confidence_threshold: 0.77
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_009.png"
+description: "Five-candle reversal pattern starting with a strong bearish candle, followed by gapping price action, and concluding with a bullish candle that closes the gap. Indicates exhaustion of selling pressure and reversal."

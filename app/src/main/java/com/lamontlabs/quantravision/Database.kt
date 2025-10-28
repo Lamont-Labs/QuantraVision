@@ -23,11 +23,43 @@ interface PatternDao {
 
     @Query("SELECT * FROM PatternMatch ORDER BY timestamp DESC")
     suspend fun getAll(): List<PatternMatch>
+    
+    @Query("SELECT * FROM PatternMatch WHERE timestamp > :since ORDER BY timestamp DESC")
+    suspend fun getRecent(since: Long): List<PatternMatch>
 }
 
-@Database(entities = [PatternMatch::class], version = 3)
+@Entity
+data class PredictedPattern(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val patternName: String,
+    val completionPercent: Double,
+    val confidence: Double,
+    val timestamp: Long,
+    val timeframe: String,
+    val estimatedCompletion: String,
+    val stage: String,
+    val formationVelocity: Double
+)
+
+@Dao
+interface PredictedPatternDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(prediction: PredictedPattern)
+
+    @Query("SELECT * FROM PredictedPattern ORDER BY timestamp DESC")
+    suspend fun getAll(): List<PredictedPattern>
+    
+    @Query("SELECT * FROM PredictedPattern WHERE timestamp > :since ORDER BY completionPercent DESC")
+    suspend fun getRecent(since: Long): List<PredictedPattern>
+    
+    @Query("DELETE FROM PredictedPattern WHERE timestamp < :before")
+    suspend fun deleteOld(before: Long)
+}
+
+@Database(entities = [PatternMatch::class, PredictedPattern::class], version = 4)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
+    abstract fun predictedPatternDao(): PredictedPatternDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -39,7 +71,7 @@ abstract class PatternDatabase : RoomDatabase() {
                     PatternDatabase::class.java,
                     "PatternMatch.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                 INSTANCE = instance
                 instance
@@ -57,6 +89,24 @@ abstract class PatternDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE PatternMatch ADD COLUMN consensusScore REAL NOT NULL DEFAULT 0.0")
                 database.execSQL("ALTER TABLE PatternMatch ADD COLUMN windowMs INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS PredictedPattern (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        patternName TEXT NOT NULL,
+                        completionPercent REAL NOT NULL,
+                        confidence REAL NOT NULL,
+                        timestamp INTEGER NOT NULL,
+                        timeframe TEXT NOT NULL,
+                        estimatedCompletion TEXT NOT NULL,
+                        stage TEXT NOT NULL,
+                        formationVelocity REAL NOT NULL
+                    )
+                """.trimIndent())
             }
         }
     }

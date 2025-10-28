@@ -1,0 +1,9 @@
+name: "Bearish Abandoned Baby"
+type: "bearish"
+timeframe: "4h"
+confidence_threshold: 0.82
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_027.png"
+description: "Rare three-candle reversal pattern with a doji gapping away from both surrounding candles at market top. Strong bearish signal indicating dramatic shift in market sentiment from bullish to bearish."

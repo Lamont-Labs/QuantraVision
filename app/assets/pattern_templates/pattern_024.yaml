@@ -1,0 +1,9 @@
+name: "Shooting Star"
+type: "bearish"
+timeframe: "1d"
+confidence_threshold: 0.75
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_024.png"
+description: "Single candlestick pattern with small body at lower end and long upper shadow, indicating rejection of higher prices. Appears at top of uptrends, signaling potential bearish reversal as sellers regain control."

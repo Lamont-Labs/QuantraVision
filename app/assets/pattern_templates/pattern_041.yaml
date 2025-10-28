@@ -1,0 +1,9 @@
+name: "Bear Flag Pattern"
+type: "bearish"
+timeframe: "1h"
+confidence_threshold: 0.75
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_041.png"
+description: "Strong downward move (flagpole) followed by rectangular consolidation tilting slightly up (flag). Breakdown downward continues trend. Short-term continuation pattern indicating temporary profit-taking before resumption."

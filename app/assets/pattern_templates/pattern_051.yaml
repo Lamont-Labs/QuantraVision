@@ -1,0 +1,9 @@
+name: "Low Volatility Squeeze"
+type: "neutral"
+timeframe: "1h"
+confidence_threshold: 0.74
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_051.png"
+description: "Period of compressed price action with diminishing range and volume. Market coiling for potential explosive move. Direction neutral until catalyst triggers breakout. Prepare for increased volatility."

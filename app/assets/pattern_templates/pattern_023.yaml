@@ -1,0 +1,9 @@
+name: "Evening Star Reversal"
+type: "bearish"
+timeframe: "4h"
+confidence_threshold: 0.80
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_023.png"
+description: "Three-candle bearish reversal pattern consisting of a long bullish candle, a small-bodied candle (the star), and a long bearish candle. Signals potential top formation and trend reversal from uptrend to downtrend."

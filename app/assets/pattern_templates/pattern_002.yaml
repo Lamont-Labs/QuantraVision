@@ -1,0 +1,9 @@
+name: "Morning Star Reversal"
+type: "bullish"
+timeframe: "4h"
+confidence_threshold: 0.80
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_002.png"
+description: "Three-candle bullish reversal pattern consisting of a long bearish candle, a small-bodied candle (the star), and a long bullish candle. Signals potential bottom formation and trend reversal from downtrend to uptrend."

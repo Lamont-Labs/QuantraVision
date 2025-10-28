@@ -1,0 +1,9 @@
+name: "Bullish Abandoned Baby"
+type: "bullish"
+timeframe: "4h"
+confidence_threshold: 0.82
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_006.png"
+description: "Rare three-candle reversal pattern with a doji gapping away from both surrounding candles. Strong bullish signal indicating dramatic shift in market sentiment from bearish to bullish with clear gap support."

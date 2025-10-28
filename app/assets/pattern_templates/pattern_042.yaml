@@ -1,0 +1,9 @@
+name: "Rounding Top"
+type: "bearish"
+timeframe: "1d"
+confidence_threshold: 0.78
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_042.png"
+description: "Long-term reversal pattern forming gradual inverted U-shaped top. Indicates slow shift from buying to selling pressure. Breakdown below support confirms pattern completion and signals sustained bearish trend."

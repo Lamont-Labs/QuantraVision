@@ -1,0 +1,9 @@
+name: "Stochastic Bearish Cross"
+type: "bearish"
+timeframe: "5m"
+confidence_threshold: 0.72
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_039.png"
+description: "Stochastic %K line crosses below %D line in overbought zone (above 80). Indicates momentum shift to bearish. Most reliable when occurring with price resistance and volume confirmation."

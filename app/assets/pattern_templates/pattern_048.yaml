@@ -1,0 +1,9 @@
+name: "Horizontal Channel"
+type: "neutral"
+timeframe: "1h"
+confidence_threshold: 0.71
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_048.png"
+description: "Price trading between well-defined horizontal support and resistance levels. Indicates range-bound market with balanced supply and demand. Traders oscillate between levels until breakout occurs."

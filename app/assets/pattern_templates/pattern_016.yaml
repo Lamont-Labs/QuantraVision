@@ -1,0 +1,9 @@
+name: "MACD Bullish Crossover"
+type: "bullish"
+timeframe: "1h"
+confidence_threshold: 0.71
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_016.png"
+description: "MACD line crosses above signal line, indicating bullish momentum shift. Histogram turns positive, confirming strengthening upward momentum. Best when occurring below zero line or with price confirmation."

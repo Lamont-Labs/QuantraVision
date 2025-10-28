@@ -1,0 +1,9 @@
+name: "Sideways Accumulation"
+type: "neutral"
+timeframe: "1d"
+confidence_threshold: 0.75
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_052.png"
+description: "Extended horizontal trading range where institutions accumulate positions. Volume patterns show absorption at support. Neutral until breakout confirms direction. Often precedes significant trending move."

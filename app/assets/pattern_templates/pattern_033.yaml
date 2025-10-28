@@ -1,0 +1,9 @@
+name: "Inverted Cup and Handle"
+type: "bearish"
+timeframe: "1d"
+confidence_threshold: 0.81
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_033.png"
+description: "Bearish continuation pattern resembling an inverted cup with handle. Inverted U-shaped formation followed by slight upward drift (handle). Breakdown from handle indicates strong bearish continuation."

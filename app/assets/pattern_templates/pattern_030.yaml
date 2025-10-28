@@ -1,0 +1,9 @@
+name: "Bearish Breakaway Gap"
+type: "bearish"
+timeframe: "4h"
+confidence_threshold: 0.77
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_030.png"
+description: "Five-candle reversal pattern starting with a strong bullish candle, followed by gapping price action, and concluding with a bearish candle that closes the gap. Indicates exhaustion of buying pressure and reversal."

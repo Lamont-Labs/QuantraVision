@@ -1,0 +1,9 @@
+name: "Ascending Triangle Breakout"
+type: "bullish"
+timeframe: "4h"
+confidence_threshold: 0.79
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_011.png"
+description: "Continuation pattern with horizontal resistance and rising support. Breakout above resistance with volume confirms bullish momentum. Indicates accumulation and increasing buying pressure leading to upward breakout."

@@ -1,0 +1,9 @@
+name: "Death Cross"
+type: "bearish"
+timeframe: "1d"
+confidence_threshold: 0.80
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_036.png"
+description: "50-day moving average crosses below 200-day moving average, signaling long-term bearish trend change. Classic technical indicator suggesting sustained selling pressure and negative market sentiment shift."

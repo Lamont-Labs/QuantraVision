@@ -6,6 +6,8 @@ import com.lamontlabs.quantravision.calibration.ConfidenceCalibrator
 import com.lamontlabs.quantravision.detection.ConsensusEngine
 import com.lamontlabs.quantravision.detection.TemporalTracker
 import com.lamontlabs.quantravision.time.TimeframeEstimator
+import com.lamontlabs.quantravision.prediction.PatternPredictionEngine
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.opencv.android.Utils
@@ -80,6 +82,81 @@ class PatternDetector(private val context: Context) {
             } catch (e: Exception) {
                 Timber.e(e)
             }
+        }
+        
+        // Run pattern predictions after detection completes (Pro-only feature)
+        runPredictions()
+    }
+    
+    private suspend fun runPredictions() = withContext(Dispatchers.IO) {
+        try {
+            // Check Pro access - predictions are Pro-only
+            if (!ProFeatureGate.isActive(context)) {
+                Timber.d("Skipping predictions - Pro feature not active")
+                return@withContext
+            }
+            
+            // Get recent matches from last 30 seconds for prediction analysis
+            val thirtySecondsAgo = System.currentTimeMillis() - 30000L
+            val recentMatches = db.patternDao().getRecent(thirtySecondsAgo)
+            
+            if (recentMatches.isEmpty()) {
+                Timber.d("No recent matches for prediction analysis")
+                return@withContext
+            }
+            
+            // Run prediction engine to find forming patterns (40-85% complete)
+            val formingPatterns = PatternPredictionEngine.predictForming(
+                context = context,
+                recentMatches = recentMatches,
+                partialConfidenceThreshold = 0.4
+            )
+            
+            // Calculate formation velocity for each pattern
+            val velocities = PatternPredictionEngine.analyzeFormationVelocity(
+                matches = recentMatches,
+                timeWindowMs = 30000L
+            )
+            
+            // Store predictions in database
+            val predictedDao = db.predictedPatternDao()
+            
+            // Clean up old predictions (older than 1 hour)
+            val oneHourAgo = System.currentTimeMillis() - 3600000L
+            predictedDao.deleteOld(oneHourAgo)
+            
+            formingPatterns.forEach { forming ->
+                // Only store patterns that are 40-85% formed
+                if (forming.completionPercent >= 40.0 && forming.completionPercent <= 85.0) {
+                    val velocity = velocities[forming.patternName] ?: 0.0
+                    
+                    val prediction = PredictedPattern(
+                        patternName = forming.patternName,
+                        completionPercent = forming.completionPercent,
+                        confidence = forming.confidence,
+                        timestamp = System.currentTimeMillis(),
+                        timeframe = "unknown", // Will be updated when matched to specific chart
+                        estimatedCompletion = forming.estimatedCompletion,
+                        stage = forming.stage,
+                        formationVelocity = velocity
+                    )
+                    
+                    predictedDao.insert(prediction)
+                    
+                    // Track prediction statistics in FeatureIntegration
+                    com.lamontlabs.quantravision.integration.FeatureIntegration.onPredictionGenerated(
+                        context, prediction
+                    )
+                    
+                    Timber.i("Prediction: ${forming.patternName} at ${forming.completionPercent.toInt()}% (${forming.stage})")
+                }
+            }
+            
+            Timber.i("Predictions complete: ${formingPatterns.size} forming patterns detected")
+            
+        } catch (e: Exception) {
+            // Error handling - predictions shouldn't break detection
+            Timber.e(e, "Prediction error (non-fatal)")
         }
     }
 

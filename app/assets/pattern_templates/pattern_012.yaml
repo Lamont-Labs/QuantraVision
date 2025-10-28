@@ -1,0 +1,9 @@
+name: "Cup with Handle Formation"
+type: "bullish"
+timeframe: "1d"
+confidence_threshold: 0.81
+scale_min: 0.8
+scale_max: 1.2
+scale_stride: 0.05
+image_path: "pattern_012.png"
+description: "Bullish continuation pattern resembling a cup with handle. U-shaped cup followed by slight downward drift (handle). Breakout from handle indicates strong bullish continuation and accumulation completion."
