@@ -1,16 +1,9 @@
 <resources>
-  <!-- Neon cyan on deep navy, matching logo -->
-  <color name="q_primary">#00D1FF</color>
-  <color name="q_primary_variant">#4DE6FF</color>
-  <color name="q_secondary">#2CC3F8</color>
-  <color name="q_background">#071423</color>
-  <color name="q_surface">#0B1C2E</color>
-  <color name="q_outline">#14405C</color>
-  <color name="q_on_primary">#001219</color>
-  <color name="q_on_surface">#D8F5FF</color>
-  <color name="q_warning">#FFC107</color>
-  <color name="q_error">#FF5252</color>
-  
-  <!-- Launcher icon background -->
-  <color name="ic_launcher_background">#071423</color>
+    <color name="qv_accent">#00E5FF</color>
+    <color name="qv_bg">#0A1218</color>
+    <color name="qv_fg">#E6F7FF</color>
+    <color name="qv_card">#14212C</color>
+    <color name="qv_warn">#FFB300</color>
+    <color name="qv_ok">#2EE6AA</color>
+    <color name="qv_err">#FF5252</color>
 </resources>

@@ -57,6 +57,7 @@ android {
 
   buildFeatures { compose = true }
   composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
+  packaging { resources { excludes += ["META-INF/DEPENDENCIES","META-INF/INDEX.LIST"] } }
 }
 
 dependencies {
@@ -74,3 +75,10 @@ dependencies {
   // Billing
   implementation("com.android.billingclient:billing-ktx:6.2.1")
 }
+
+apply(plugin = "com.diffplug.spotless")
+spotless {
+  kotlin { target("**/*.kt"); ktlint("1.2.1").editorConfigOverride(mapOf("indent_size" to "2","max_line_length" to "140")) }
+  format("xml") { target("**/*.xml"); trimTrailingWhitespace(); endWithNewline() }
+}
+tasks.named("preBuild").configure { dependsOn("spotlessApply") }
