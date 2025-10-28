@@ -12,9 +12,12 @@ android {
         applicationId = "com.lamontlabs.quantravision"
         minSdk = 26
         targetSdk = 34
-        versionCode = 13
-        versionName = "1.3"
+        versionCode = 20
+        versionName = "2.0"
         vectorDrawables.useSupportLibrary = true
+        
+        // App description metadata
+        manifestPlaceholders["appDescription"] = "World's best offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
     }
 
     buildTypes {
