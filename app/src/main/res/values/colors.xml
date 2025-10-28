@@ -1,6 +1,7 @@
 <resources>
     <color name="qv_accent">#00E5FF</color>
     <color name="qv_bg">#0A1218</color>
+    <color name="q_background">#0A1218</color>
     <color name="qv_fg">#E6F7FF</color>
     <color name="qv_card">#14212C</color>
     <color name="qv_warn">#FFB300</color>
