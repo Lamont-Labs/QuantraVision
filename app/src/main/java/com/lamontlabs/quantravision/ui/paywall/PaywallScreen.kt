@@ -27,7 +27,7 @@ fun Paywall(
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
                 Text("Standard — \$19.99 (one-time)")
-                Text("• 10 highlights/day\n• 30 patterns\n• PDF reports (watermarked)\n• Lessons 1-5\n• Basic achievements")
+                Text("• 10 highlights/day\n• 30 patterns\n• PDF reports (watermarked)\n• Lesson 1\n• Basic achievements")
                 Button(onClick = onStandard, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     Text("Upgrade to Standard")
                 }

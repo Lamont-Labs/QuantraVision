@@ -7,7 +7,8 @@ import java.io.File
 
 /**
  * InteractiveCourse
- * 10-lesson pattern trading course with quizzes and certificates
+ * 3-lesson foundation course: Introduction, Bull Flag, Head & Shoulders
+ * Includes quizzes with explanations and certificate of completion (70%+ average)
  */
 object InteractiveCourse {
 
@@ -55,7 +56,7 @@ object InteractiveCourse {
                 1. Continuation Patterns (trend continues)
                 2. Reversal Patterns (trend changes)
             """.trimIndent(),
-            imageRef = "pattern_001.png",
+            imageRef = "pattern_doji.png",
             quiz = Quiz(
                 listOf(
                     Question(
@@ -89,7 +90,7 @@ object InteractiveCourse {
                 • Target: Measure flagpole height, project from breakout
                 • Stop Loss: Below flag support
             """.trimIndent(),
-            imageRef = "pattern_002.png",
+            imageRef = "pattern_bull_flag_pattern.png",
             quiz = Quiz(
                 listOf(
                     Question(
@@ -119,7 +120,7 @@ object InteractiveCourse {
                 • Increased volume on breakdown
                 • Target: Neckline to head distance projected down
             """.trimIndent(),
-            imageRef = "pattern_003.png",
+            imageRef = "pattern_head_and_shoulders.png",
             quiz = Quiz(
                 listOf(
                     Question(
@@ -201,14 +202,8 @@ object InteractiveCourse {
 
         saveProgress(context, updated.copy(certificateEarned = certificate))
 
-        // Award bonus highlights for lesson completion
-        if (updated.completedLessons.size % 5 == 0) {
-            com.lamontlabs.quantravision.gamification.BonusHighlights.add(
-                context,
-                3,
-                "Completed 5 lessons"
-            )
-        }
+        // Note: Bonus highlights only available for Standard/Pro tiers
+        // Free tier does NOT earn bonus highlights from lessons
     }
 
     fun getCertificate(context: Context): String? {

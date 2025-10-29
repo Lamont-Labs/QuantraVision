@@ -19,7 +19,7 @@
     <string name="tier_pro_desc">All 108 patterns, predictive detection, voice commands, watermark-free PDFs</string>
     <string name="tier_pro_name">Pro Unlock</string>
     <string name="tier_pro_price">$49.99</string>
-    <string name="tier_standard_desc">30 patterns, 10 highlights/day, watermarked PDFs, lessons 1-5</string>
+    <string name="tier_standard_desc">30 patterns, 10 highlights/day, watermarked PDFs, lesson 1</string>
     <string name="tier_standard_name">Standard Unlock</string>
     <string name="tier_standard_price">$19.99</string>
     <string name="tradeability_breakdown">Tradeability Breakdown</string>

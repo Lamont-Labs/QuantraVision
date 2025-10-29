@@ -4,11 +4,11 @@
   <string name="qv_brand">Lamont Labs</string>
   <string name="upgrade_title">Actualiza QuantraVision</string>
   <string name="tier_standard_name">Standard</string>
-  <string name="tier_standard_desc">Desbloquea la mitad de los patrones.\nDetecciones ilimitadas.</string>
-  <string name="tier_standard_price">$4.99 pago único</string>
+  <string name="tier_standard_desc">30 patrones, 10 destacados/día, PDFs con marca de agua, lección 1</string>
+  <string name="tier_standard_price">$19.99 pago único</string>
   <string name="tier_pro_name">Pro</string>
-  <string name="tier_pro_desc">Todos los patrones.\nMétricas avanzadas y prioridad.</string>
-  <string name="tier_pro_price">$9.99 pago único</string>
+  <string name="tier_pro_desc">108 patrones, detección predictiva, comandos de voz, PDFs sin marca de agua</string>
+  <string name="tier_pro_price">$49.99 pago único</string>
   <string name="button_back">Volver</string>
   <string name="how_to_title">Cómo usar QuantraVision</string>
   <string name="how_to_steps">1. Abre QuantraVision.\n2. Concede permiso de superposición.\n3. Abre tu app de trading.\n4. Verás resaltados los patrones detectados.</string>

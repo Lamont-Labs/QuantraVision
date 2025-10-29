@@ -45,11 +45,11 @@ fun QuantraVisionIntroScreen(onContinue: () -> Unit, onPurchase: (String) -> Uni
             Spacer(Modifier.height(12.dp))
             Text("Visual AI Overlay for Traders — See patterns directly on your charts.")
             Spacer(Modifier.height(24.dp))
-            Button(onClick = onContinue) { Text("Start Free Mode (5 Highlights)") }
+            Button(onClick = onContinue) { Text("Start Free Mode (2 Highlights/day)") }
             Spacer(Modifier.height(16.dp))
-            Button(onClick = { onPurchase("standard_tier") }) { Text("Upgrade to Standard – \$4.99") }
+            Button(onClick = { onPurchase("standard_tier") }) { Text("Upgrade to Standard – \$19.99") }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { onPurchase("pro_tier") }) { Text("Upgrade to Pro – \$9.99") }
+            Button(onClick = { onPurchase("pro_tier") }) { Text("Upgrade to Pro – \$49.99") }
         }
     }
 }

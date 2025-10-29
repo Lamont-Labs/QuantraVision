@@ -6,8 +6,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * Complete 10-lesson interactive education course
- * Teaches chart pattern recognition with quizzes and certificates
+ * Extended 10-lesson education course (PLANNED - not currently active)
+ * Currently using InteractiveCourse.kt with 3 lessons
+ * This file contains full 10-lesson curriculum for future expansion
  */
 object EducationCourse {
 
@@ -53,7 +54,8 @@ object EducationCourse {
     )
 
     /**
-     * All 10 lessons - Complete course
+     * All 10 lessons - PLANNED (not currently active)
+     * Active course uses InteractiveCourse.kt with 3 lessons
      */
     fun getAllLessons(): List<Lesson> {
         return listOf(

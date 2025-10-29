@@ -34,10 +34,9 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - Hands-free operation for multi-monitor setups
 
 ### 🎓 **Interactive Education**
-- 10-lesson structured pattern recognition course
+- 3-lesson foundation course (Introduction, Bull Flag, Head & Shoulders)
 - Quizzes with detailed explanations
 - Certificate of completion (70%+ average)
-- Earn bonus highlights while learning
 
 ### 📊 **Professional Analytics**
 - Pattern performance tracking (which patterns work)
@@ -92,7 +91,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - 10 highlights per day
 - 30 patterns (basic + intermediate)
 - PDF reports (watermarked)
-- Education: Lessons 1-5
+- Education: Lesson 1 only
 - Basic achievements
 - Pattern similarity search
 - Analytics with export
@@ -102,7 +101,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - All 108 patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
-- **Complete education** (all 10 lessons)
+- **Complete education** (all 3 lessons)
 - **Full achievement system**
 - **Backtesting with CSV import**
 - **Multi-chart comparison**
@@ -159,10 +158,9 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - Hands-free operation
 
 ### **Education**
-- 10-lesson interactive course
+- 3-lesson interactive course  
 - Quizzes with explanations
-- Certificate of completion
-- Bonus highlights for learning
+- Certificate of completion (70%+ average)
 
 ---
 
@@ -228,7 +226,7 @@ bash scripts/build-debug.sh
 - Interactive course teaches pattern recognition systematically
 - Achievements reward learning and build confidence
 - Audit trail explains AI reasoning (learn why patterns matter)
-- Start free, earn extra features through engagement
+- Restrictive free tier encourages upgrade for full access
 
 ### **For Active Traders:**
 - Predictive mode shows patterns forming in real-time
@@ -282,7 +280,7 @@ bash scripts/build-debug.sh
 - User feedback integration
 - Pattern accuracy tuning
 - Performance optimization
-- Complete 10-lesson course series
+- Expand education course (add 7 more lessons)
 
 ### **Phase 3: Expansion** (Months 4-6)
 - iOS version (same pricing, same features)
@@ -317,7 +315,7 @@ bash scripts/build-debug.sh
 
 ### **Business Model Advantage:**
 1. One-time purchase (vs monthly subscriptions)
-2. Free tier with real value (not just a trial)
+2. Restrictive free tier creates upgrade urgency
 3. Achievement-based rewards
 4. No data harvesting
 5. Transparent pricing
@@ -348,7 +346,7 @@ The trading app industry is broken:
 
 **QuantraVision is the counter-model:**
 - One-time purchase preserves value
-- Free tier has real value (earn bonuses)
+- Free tier designed to create upgrade urgency
 - Privacy is guaranteed (offline forever)
 - AI is transparent (audit trail)
 

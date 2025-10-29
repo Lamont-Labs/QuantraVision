@@ -21,7 +21,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - Daily streak tracking (3, 7, 30 day milestones)
 - User statistics dashboard
 - Home screen widget for quick stats
-- Free users earn extra highlights through achievements
+- Bonus highlights available for Standard & Pro tiers
 
 ### 3. **Predictive Intelligence** 🔮
 - **Early pattern detection** - See patterns before they complete (40-85% formation)
@@ -59,12 +59,11 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - Perfect for multi-monitor setups
 
 ### 8. **Education System** 🎓
-- **10 complete interactive lessons** - All lessons fully implemented
+- **3 interactive lessons** - Introduction, Bull Flag, Head & Shoulders
 - Comprehensive quizzes with detailed explanations
 - Certificate of completion (70%+ average)
-- Bonus highlights for completing lessons
-- Learn while earning rewards
-- Topics: Basics, candlesticks, trends, triangles, wedges, harmonics, volume, timeframes, psychology, advanced strategies
+- Learn while improving your trading skills
+- Foundation course covering pattern basics and trading strategies
 
 ### 9. **Privacy & Performance** 🔒
 - 100% offline operation
@@ -124,7 +123,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - 10 highlights per day
 - 30 patterns (basic + intermediate)
 - PDF reports (watermarked)
-- Education: Lessons 1-5
+- Education: Lesson 1 only
 - Basic achievements
 - Pattern similarity search
 - Analytics with export
@@ -134,7 +133,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - All 108 patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
-- **Complete education** (all 10 lessons)
+- **Complete education** (all 3 lessons)
 - **Full achievement system**
 - **Backtesting with CSV import**
 - **Multi-chart comparison**
@@ -176,7 +175,7 @@ app/src/main/java/com/lamontlabs/quantravision/
 
 ### Integration Points (Complete ✅)
 - ✅ PatternDetector calls FeatureIntegration.onPatternDetected()
-- ✅ HighlightGate checks bonus highlights before quota
+- ✅ HighlightGate implements daily quota with reset
 - ✅ DashboardScreen provides navigation to all features
 - ✅ Widget auto-updates on detection
 - ✅ All file I/O runs async (Dispatchers.IO)
@@ -252,7 +251,7 @@ app/src/main/java/com/lamontlabs/quantravision/
 
 2. **Final Testing**
    - Test achievement unlocking
-   - Verify bonus highlights work
+   - Verify daily quota reset works
    - Test pattern prediction mode
    - Export PDF reports
    - Run backtests with sample data
@@ -307,7 +306,7 @@ app/src/main/
 ├── java/com/lamontlabs/quantravision/
 │   ├── PatternDetector.kt ⭐ (integrated)
 │   ├── detection/
-│   │   └── HighlightGate.kt ⭐ (bonus highlights)
+│   │   └── HighlightGate.kt ⭐ (quota management)
 │   ├── ui/
 │   │   ├── DashboardScreen.kt ⭐ (navigation)
 │   │   ├── AchievementsScreen.kt

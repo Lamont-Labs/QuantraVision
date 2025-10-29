@@ -76,7 +76,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                 ) {
                     Text(
                         if (standardProduct != null) {
-                            "Unlock Standard — ${standardProduct.oneTimePurchaseOfferDetails?.formattedPrice ?: "$4.99"}"
+                            "Unlock Standard — ${standardProduct.oneTimePurchaseOfferDetails?.formattedPrice ?: "$19.99"}"
                         } else {
                             "Unlock Standard (Loading...)"
                         }
@@ -94,7 +94,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                 ) {
                     Text(
                         if (proProduct != null) {
-                            "Unlock Pro — ${proProduct.oneTimePurchaseOfferDetails?.formattedPrice ?: "$9.99"}"
+                            "Unlock Pro — ${proProduct.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99"}"
                         } else {
                             "Unlock Pro (Loading...)"
                         }
