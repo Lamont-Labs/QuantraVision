@@ -49,14 +49,18 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                     }
                     
                     if (bitmap != null) {
-                        val allPatterns = PatternLibrary.getAllPatternNames()
-                        val similarPatterns = withContext(Dispatchers.IO) {
-                            PatternSimilaritySearch.searchByImage(context, bitmap, allPatterns)
-                        }
-                        results = similarPatterns
-                        
-                        if (results.isEmpty()) {
-                            errorMessage = "No similar patterns found. Try a different chart image."
+                        try {
+                            val allPatterns = PatternLibrary.getAllPatternNames()
+                            val similarPatterns = withContext(Dispatchers.IO) {
+                                PatternSimilaritySearch.searchByImage(context, bitmap, allPatterns)
+                            }
+                            results = similarPatterns
+                            
+                            if (results.isEmpty()) {
+                                errorMessage = "No similar patterns found. Try a different chart image."
+                            }
+                        } finally {
+                            bitmap.recycle()
                         }
                     } else {
                         errorMessage = "Failed to load image"

@@ -93,6 +93,8 @@ class LiveOverlayController(
         )
         bmp.copyPixelsFromBuffer(buffer)
         // Crop away row padding deterministically
-        return Bitmap.createBitmap(bmp, 0, 0, width, height)
+        val cropped = Bitmap.createBitmap(bmp, 0, 0, width, height)
+        bmp.recycle() // Release the padded bitmap
+        return cropped
     }
 }

@@ -96,7 +96,8 @@ object TimeframeEstimator {
         
         val edgePositions = mutableListOf<Int>()
         for (x in 0 until width) {
-            if (edges.get(sampleRow, x)[0] > 0) {
+            val pixel = edges.get(sampleRow, x)
+            if (pixel.isNotEmpty() && pixel[0] > 0) {
                 edgePositions.add(x)
             }
         }
@@ -181,10 +182,14 @@ object TimeframeEstimator {
         val sampleRow = height / 2
         
         var transitionCount = 0
-        var lastIntensity = gray.get(sampleRow, 0)[0]
+        val firstPixel = gray.get(sampleRow, 0)
+        if (firstPixel.isEmpty()) return 0.5
+        var lastIntensity = firstPixel[0]
         
         for (x in 1 until width step 2) {
-            val intensity = gray.get(sampleRow, x)[0]
+            val pixel = gray.get(sampleRow, x)
+            if (pixel.isEmpty()) continue
+            val intensity = pixel[0]
             if (abs(intensity - lastIntensity) > 20.0) {
                 transitionCount++
             }
@@ -206,8 +211,11 @@ object TimeframeEstimator {
         // Extract horizontal scanline
         val scanline = DoubleArray(width)
         for (x in 0 until width) {
-            scanline[x] = gray.get(sampleRow, x)[0]
+            val pixel = gray.get(sampleRow, x)
+            scanline[x] = if (pixel.isNotEmpty()) pixel[0] else 0.0
         }
+        
+        if (scanline.size < 2) return 0.5
         
         // Simple frequency analysis: count oscillations
         var oscillations = 0

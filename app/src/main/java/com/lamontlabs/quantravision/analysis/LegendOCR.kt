@@ -38,21 +38,29 @@ class LegendOCROffline : LegendOCR {
             return emptyList()
         }
 
-        // Crop a top-left band where legends usually appear (y ∈ [0..15%], x ∈ [0..65%])
-        val h = bmp.height
-        val w = bmp.width
-        val crop = Rect(0, 0, (w * 0.65f).toInt().coerceAtLeast(1), (h * 0.15f).toInt().coerceAtLeast(1))
-        val legendBmp = try { Bitmap.createBitmap(bmp, crop.left, crop.top, crop.width(), crop.height()) } catch (_: Throwable) { null }
-        frame.close()
-        if (legendBmp == null) return emptyList()
+        try {
+            // Crop a top-left band where legends usually appear (y ∈ [0..15%], x ∈ [0..65%])
+            val h = bmp.height
+            val w = bmp.width
+            val crop = Rect(0, 0, (w * 0.65f).toInt().coerceAtLeast(1), (h * 0.15f).toInt().coerceAtLeast(1))
+            val legendBmp = try { Bitmap.createBitmap(bmp, crop.left, crop.top, crop.width(), crop.height()) } catch (_: Throwable) { null }
+            frame.close()
+            if (legendBmp == null) return emptyList()
 
-        // Try ML Kit first
-        val rawText = if (mlkitAvailable) runCatching { recognizeWithMlKit(legendBmp) }.getOrDefault("") else ""
+            try {
+                // Try ML Kit first
+                val rawText = if (mlkitAvailable) runCatching { recognizeWithMlKit(legendBmp) }.getOrDefault("") else ""
 
-        val tokens = tokenizeLegendText(rawText)
-        return if (tokens.isNotEmpty()) tokens else
-            // Fallback: heuristic whitelist scan (very conservative)
-            heuristicLegendGuess(legendBmp)
+                val tokens = tokenizeLegendText(rawText)
+                return if (tokens.isNotEmpty()) tokens else
+                    // Fallback: heuristic whitelist scan (very conservative)
+                    heuristicLegendGuess(legendBmp)
+            } finally {
+                legendBmp.recycle()
+            }
+        } finally {
+            bmp.recycle()
+        }
     }
 
     // ---------------- internals ----------------
@@ -163,6 +171,7 @@ class LegendOCROffline : LegendOCR {
     } catch (_: Throwable) { null }
 
     private fun imageToNV21(image: ImageProxy): ByteArray? {
+        if (image.planes.size < 3) return null
         val yBuffer = image.planes[0].buffer
         val uBuffer = image.planes[1].buffer
         val vBuffer = image.planes[2].buffer

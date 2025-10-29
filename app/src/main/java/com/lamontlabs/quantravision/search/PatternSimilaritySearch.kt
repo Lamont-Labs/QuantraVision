@@ -155,14 +155,18 @@ object PatternSimilaritySearch {
             val inputStream = context.assets.open("pattern_templates/${patternName}_ref.png")
             val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
             if (bitmap == null) return null
-            val mat = Mat()
             try {
-                Utils.bitmapToMat(bitmap, mat)
-                Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2GRAY)
-                mat
-            } catch (e: Exception) {
-                mat.release()
-                null
+                val mat = Mat()
+                try {
+                    Utils.bitmapToMat(bitmap, mat)
+                    Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2GRAY)
+                    mat
+                } catch (e: Exception) {
+                    mat.release()
+                    null
+                }
+            } finally {
+                bitmap.recycle()
             }
         } catch (e: Exception) {
             null

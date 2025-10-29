@@ -34,7 +34,12 @@ fun PatternInfoSheet(
 
     val preview: ImageBitmap? = remember(entry) {
         val png = File(context.filesDir, "pattern_templates/${entry.id}_ref.png")
-        if (png.exists()) BitmapFactory.decodeFile(png.absolutePath)?.asImageBitmap() else null
+        if (png.exists()) {
+            val bmp = BitmapFactory.decodeFile(png.absolutePath)
+            val imageBitmap = bmp?.asImageBitmap()
+            bmp?.recycle()
+            imageBitmap
+        } else null
     }
 
     Dialog(onDismissRequest = onDismiss) {

@@ -42,14 +42,15 @@ class PatternDetector(private val context: Context) {
                     Timber.w("Failed to decode image: ${imageFile.name}")
                     return@forEach
                 }
-                val input = Mat()
                 try {
-                    Utils.bitmapToMat(bmp, input)
-                    Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
+                    val input = Mat()
+                    try {
+                        Utils.bitmapToMat(bmp, input)
+                        Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
 
-                    val est = TimeframeEstimator.estimateFromBitmap(bmp)
-                    val tfLabel = est.timeframe.label
-                    val grouped = templates.groupBy { it.name }
+                        val est = TimeframeEstimator.estimateFromBitmap(bmp)
+                        val tfLabel = est.timeframe.label
+                        val grouped = templates.groupBy { it.name }
 
                     grouped.forEach { (patternName, family) ->
                         val scaleMatches = mutableListOf<ScaleMatch>()
@@ -91,12 +92,15 @@ class PatternDetector(private val context: Context) {
                     // Integrate with new features
                     com.lamontlabs.quantravision.integration.FeatureIntegration.onPatternDetected(context, match)
 
-                    provenance.logHash(imageFile, "$patternName@${"%.2f".format(consensus.bestScale)}:${tfLabel}:c${"%.3f".format(calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
-                }
+                        provenance.logHash(imageFile, "$patternName@${"%.2f".format(consensus.bestScale)}:${tfLabel}:c${"%.3f".format(calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
+                    }
 
-                    Timber.i("Advanced detection complete for ${imageFile.name} [tf=$tfLabel]")
+                        Timber.i("Advanced detection complete for ${imageFile.name} [tf=$tfLabel]")
+                    } finally {
+                        input.release()
+                    }
                 } finally {
-                    input.release()
+                    bmp.recycle()
                 }
 
             } catch (e: Exception) {
