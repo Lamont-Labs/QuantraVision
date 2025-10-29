@@ -8,13 +8,13 @@ created: "2025-10-24"
 
 plans:
   - name: "Free Tier"
-    features: "2 highlights/day, 1 pattern (Doji only), analytics view-only, lesson 1 only"
+    features: "2 highlights/day, 1 pattern (Doji only), analytics view-only, lessons 1-12 only"
   - name: "Standard"
     price_usd: 19.99
-    features: "10 highlights/day, 30 patterns, PDF reports (watermarked), lesson 1, basic achievements"
+    features: "10 highlights/day, 30 patterns, PDF reports (watermarked), lessons 1-12, basic achievements"
   - name: "Pro"
     price_usd: 49.99
-    features: "Unlimited highlights, 108 patterns, predictive detection, complete education (3 lessons), voice commands, watermark-free PDFs, backtesting, multi-chart comparison"
+    features: "Unlimited highlights, 108 patterns, predictive detection, complete education (25 lessons), voice commands, watermark-free PDFs, backtesting, multi-chart comparison"
   - name: "Institutional License"
     price_usd: "Custom"
     features: "Private builds, provenance exports, audit tooling"

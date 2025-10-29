@@ -7,7 +7,7 @@ import java.io.File
 
 /**
  * InteractiveCourse
- * 3-lesson foundation course: Introduction, Bull Flag, Head & Shoulders
+ * 25-lesson comprehensive course: From fundamentals to advanced harmonic strategies
  * Includes quizzes with explanations and certificate of completion (70%+ average)
  */
 object InteractiveCourse {

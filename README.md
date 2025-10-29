@@ -34,7 +34,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - Hands-free operation for multi-monitor setups
 
 ### 🎓 **Interactive Education**
-- 3-lesson foundation course (Introduction, Bull Flag, Head & Shoulders)
+- 25-lesson comprehensive course (From fundamentals to advanced harmonic strategies)
 - Quizzes with detailed explanations
 - Certificate of completion (70%+ average)
 
@@ -83,7 +83,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - 2 highlights per day (resets daily)
 - 1 basic pattern (Doji only)
 - Analytics view-only (no export)
-- Education: Lesson 1 only
+- Education: Lessons 1-12 only
 - Home screen widget
 - Limited features to evaluate app
 
@@ -91,7 +91,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - 10 highlights per day
 - 30 patterns (basic + intermediate)
 - PDF reports (watermarked)
-- Education: Lesson 1 only
+- Education: Lessons 1-12 only
 - Basic achievements
 - Pattern similarity search
 - Analytics with export
@@ -101,7 +101,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - All 108 patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
-- **Complete education** (all 3 lessons)
+- **Complete education** (all 25 lessons)
 - **Full achievement system**
 - **Backtesting with CSV import**
 - **Multi-chart comparison**
@@ -158,7 +158,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - Hands-free operation
 
 ### **Education**
-- 3-lesson interactive course  
+- 25-lesson comprehensive course  
 - Quizzes with explanations
 - Certificate of completion (70%+ average)
 
@@ -280,7 +280,7 @@ bash scripts/build-debug.sh
 - User feedback integration
 - Pattern accuracy tuning
 - Performance optimization
-- Expand education course (add 7 more lessons)
+- Course complete with 25 comprehensive lessons
 
 ### **Phase 3: Expansion** (Months 4-6)
 - iOS version (same pricing, same features)

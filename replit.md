@@ -59,11 +59,11 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - Perfect for multi-monitor setups
 
 ### 8. **Education System** 🎓
-- **3 interactive lessons** - Introduction, Bull Flag, Head & Shoulders
+- **25 interactive lessons** - From fundamentals to advanced harmonic strategies
 - Comprehensive quizzes with detailed explanations
 - Certificate of completion (70%+ average)
 - Learn while improving your trading skills
-- Foundation course covering pattern basics and trading strategies
+- Comprehensive course covering pattern basics to advanced trading strategies
 
 ### 9. **Privacy & Performance** 🔒
 - 100% offline operation
@@ -115,7 +115,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - 2 highlights per day (resets daily)
 - 1 basic pattern (Doji only)
 - Analytics view-only (no export)
-- Education: Lesson 1 only
+- Education: Lessons 1-12 only
 - Home screen widget
 - Limited features to evaluate app
 
@@ -123,7 +123,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - 10 highlights per day
 - 30 patterns (basic + intermediate)
 - PDF reports (watermarked)
-- Education: Lesson 1 only
+- Education: Lessons 1-12 only
 - Basic achievements
 - Pattern similarity search
 - Analytics with export
@@ -133,7 +133,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 - All 108 patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
-- **Complete education** (all 3 lessons)
+- **Complete education** (all 25 lessons)
 - **Full achievement system**
 - **Backtesting with CSV import**
 - **Multi-chart comparison**
