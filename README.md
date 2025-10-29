@@ -83,7 +83,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 - 2 highlights per day (resets daily)
 - 1 basic pattern (Doji only)
 - Analytics view-only (no export)
-- Education: Lessons 1-12 only
+- Education: Lessons 1-5 only
 - Home screen widget
 - Limited features to evaluate app
 
