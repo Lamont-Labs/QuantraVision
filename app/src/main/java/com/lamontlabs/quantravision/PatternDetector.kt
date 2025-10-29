@@ -38,6 +38,10 @@ class PatternDetector(private val context: Context) {
         dir.listFiles()?.forEach { imageFile ->
             try {
                 val bmp = BitmapFactory.decodeFile(imageFile.absolutePath)
+                if (bmp == null) {
+                    Timber.w("Failed to decode image: ${imageFile.name}")
+                    return@forEach
+                }
                 val input = Mat()
                 Utils.bitmapToMat(bmp, input)
                 Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
