@@ -6,7 +6,7 @@ import com.lamontlabs.quantravision.billing.BillingManager.Tier
 class LicenseManager(private val context: Context) {
   private val prefs = context.getSharedPreferences("quantravision_prefs", Context.MODE_PRIVATE)
 
-  fun tier(): Tier = Tier.valueOf(prefs.getString("tier", "FREE")!!)
+  fun tier(): Tier = Tier.valueOf(prefs.getString("tier", "FREE") ?: "FREE")
   fun setTier(t: Tier) { prefs.edit().putString("tier", t.name).apply() }
 
   // Free gating: 2 highlights per day (resets daily)

@@ -42,7 +42,8 @@ class LiveOverlayController(
         mediaProjection = projection
 
         imageReader = ImageReader.newInstance(width, height, ImageFormat.RGBA_8888, 2)
-        val surface: Surface = imageReader!!.surface
+        val reader = imageReader ?: return
+        val surface: Surface = reader.surface
 
         virtualDisplay = projection.createVirtualDisplay(
             "QuantraVisionVD",
@@ -51,7 +52,7 @@ class LiveOverlayController(
             surface, null, null
         )
 
-        imageReader!!.setOnImageAvailableListener({ reader ->
+        reader.setOnImageAvailableListener({ reader ->
             val now = System.currentTimeMillis()
             if (now - lastEmitMs < framePeriodMs) {
                 // Drop frame deterministically to meet targetFps

@@ -25,7 +25,8 @@ class TemplateImporter(private val context: Context) {
         val name = safeName(uri, cr)
         require(name.endsWith(".yaml", true)) { "Only .yaml allowed for single-file import." }
         val out = File(targetDir, name)
-        val info = copyAndHash(cr.openInputStream(uri)!!, out)
+        val inputStream = cr.openInputStream(uri) ?: throw IllegalArgumentException("Cannot open URI: $uri")
+        val info = copyAndHash(inputStream, out)
         return ImportReport(listOf(info.copy(relativePath = "pattern_templates/${out.name}")))
     }
 
