@@ -1,7 +1,7 @@
 # QuantraVision - Advanced AI Pattern Detection
 
 ## Overview
-QuantraVision is a comprehensive offline AI pattern detection app for retail traders. It combines 120+ chart patterns with gamification, predictive analytics, professional reporting, and educational content—all without requiring subscriptions or internet connectivity.
+QuantraVision is a comprehensive offline AI pattern detection app for retail traders. It combines 108 chart patterns with gamification, predictive analytics, professional reporting, and educational content—all without requiring subscriptions or internet connectivity.
 
 ## Project Status
 **Last Updated:** October 28, 2025  
@@ -10,7 +10,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 ## 🏆 Key Features
 
 ### 1. **Comprehensive Pattern Library**
-- 120+ deterministic chart patterns
+- 108 deterministic chart patterns
 - Multi-scale consensus detection
 - Temporal stability tracking
 - Confidence calibration
@@ -88,7 +88,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 | Feature | QuantraVision | TradingView | Stock Rover | TrendSpider |
 |---------|---------------|-------------|-------------|-------------|
 | Offline Operation | ✅ | ❌ | ❌ | ❌ |
-| Pattern Count | 120+ | ~50 | ~30 | ~70 |
+| Pattern Count | 108 | ~50 | ~30 | ~70 |
 | Achievements/Gamification | ✅ | ❌ | ❌ | ❌ |
 | Pattern Predictions | ✅ | ❌ | ❌ | Limited |
 | Audit Trail (AI Explanation) | ✅ | ❌ | ❌ | ❌ |
@@ -131,7 +131,7 @@ QuantraVision is a comprehensive offline AI pattern detection app for retail tra
 
 ### PRO ($49.99 one-time)
 - Unlimited highlights
-- All 120+ patterns
+- All 108 patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
 - **Complete education** (all 10 lessons)
@@ -188,7 +188,7 @@ app/src/main/java/com/lamontlabs/quantravision/
 
 ### Completed ✅
 1. ✅ Build environment setup
-2. ✅ 120+ pattern visualization images
+2. ✅ 108 pattern visualization images
 3. ✅ 4 onboarding icons (eye, lock, warning, proof)
 4. ✅ Gamification system (15 achievements)
 5. ✅ Pattern performance analytics
@@ -228,7 +228,7 @@ app/src/main/java/com/lamontlabs/quantravision/
 - Backtesting validates patterns
 - PDF reports for compliance/journaling
 - Multi-chart correlation analysis
-- 120+ patterns cover all scenarios
+- 108 patterns cover all scenarios
 
 **For Privacy-Conscious:**
 - 100% offline, no data sharing
@@ -285,7 +285,7 @@ app/src/main/java/com/lamontlabs/quantravision/
 6. 100% offline operation
 
 ### 💪 Advanced Features
-1. 120+ patterns
+1. 108 patterns
 2. Multi-scale consensus detection
 3. Pattern performance analytics
 4. Professional PDF reports

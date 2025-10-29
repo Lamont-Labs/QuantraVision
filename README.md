@@ -64,7 +64,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 
 | Feature | QuantraVision | TradingView | TrendSpider |
 |---------|---------------|-------------|-------------|
-| Pattern Count | **120+** | ~50 | ~70 |
+| Pattern Count | **108** | ~50 | ~70 |
 | Predictive Detection | ✅ | ❌ | ❌ |
 | AI Audit Trail | ✅ | ❌ | ❌ |
 | Gamification | ✅ | ❌ | ❌ |
@@ -99,7 +99,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 
 ### **PRO** - $49.99 one-time
 - Unlimited highlights
-- All 120+ patterns
+- All 108 patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
 - **Complete education** (all 10 lessons)
@@ -116,7 +116,7 @@ A comprehensive trading education and analysis platform with advanced pattern de
 ## 🚀 Key Features
 
 ### **Pattern Detection**
-- 120+ deterministic chart patterns
+- 108 deterministic chart patterns
 - Multi-scale consensus detection
 - Temporal stability tracking
 - Confidence calibration (95%+ accuracy)
@@ -240,7 +240,7 @@ bash scripts/build-debug.sh
 - Backtesting validates pattern reliability
 - PDF reports for compliance and client presentations
 - Multi-chart correlation finds cross-asset opportunities
-- 120+ patterns cover all market scenarios
+- 108 patterns cover all market scenarios
 
 ### **For Privacy-Conscious:**
 - 100% offline (no data sharing, no tracking)
@@ -273,7 +273,7 @@ bash scripts/build-debug.sh
 ## 🛣️ Roadmap
 
 ### **Phase 1: Launch** (Current)
-- ✅ 120+ patterns
+- ✅ 108 patterns
 - ✅ 12 major feature systems
 - ✅ All features integrated
 - ⏳ Google Play Store release
@@ -309,7 +309,7 @@ bash scripts/build-debug.sh
 6. 100% offline operation
 
 ### **Best-in-Class Features:**
-1. 120+ patterns (most in industry)
+1. 108 patterns
 2. Multi-scale consensus detection
 3. Professional PDF reports
 4. Backtesting with CSV import

@@ -36,7 +36,7 @@ fun Paywall(
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
                 Text("Pro — \$49.99 (one-time)")
-                Text("• Unlimited highlights\n• All 120+ patterns\n• Predictive detection\n• Complete education\n• Voice commands\n• Watermark-free PDFs")
+                Text("• Unlimited highlights\n• All 108 patterns\n• Predictive detection\n• Complete education\n• Voice commands\n• Watermark-free PDFs")
                 Button(onClick = onPro, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     Text("Go Pro")
                 }
