@@ -53,7 +53,7 @@ class OverlayService : Service() {
     private fun startDetectionLoop() {
         scope.launch {
             val detector = PatternDetector(applicationContext)
-            while (true) {
+            while (isActive) {
                 detector.scanStaticAssets()
                 delay(3000)
             }

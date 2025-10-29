@@ -180,7 +180,11 @@ class LegendOCROffline : LegendOCR {
         val uSize = uBuffer.remaining()
         val vSize = vBuffer.remaining()
 
-        val nv21 = ByteArray(ySize + uSize + vSize)
+        // Guard against integer overflow in buffer size calculation
+        val totalSize = ySize.toLong() + uSize.toLong() + vSize.toLong()
+        if (totalSize > Int.MAX_VALUE || totalSize <= 0) return null
+        
+        val nv21 = ByteArray(totalSize.toInt())
         yBuffer.get(nv21, 0, ySize)
 
         // NV21 = Y + VU

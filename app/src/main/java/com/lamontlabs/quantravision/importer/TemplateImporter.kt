@@ -33,12 +33,20 @@ class TemplateImporter(private val context: Context) {
     fun importZip(uri: Uri): ImportReport {
         val cr = context.contentResolver
         val base = File(context.filesDir, "").apply { mkdirs() }
+        val baseCanonical = base.canonicalPath
         val entries = mutableListOf<ImportedFile>()
         // Manual ZIP parse without randomization to stay deterministic over ABIs
         val zis = java.util.zip.ZipInputStream(cr.openInputStream(uri))
         var entry = zis.nextEntry
         while (entry != null) {
             val dest = File(base, sanitizeZipPath(entry.name))
+            
+            // CRITICAL: Prevent path traversal attacks
+            val destCanonical = dest.canonicalPath
+            if (destCanonical != baseCanonical && !destCanonical.startsWith(baseCanonical + File.separator)) {
+                throw SecurityException("Path traversal attempt detected: ${entry.name}")
+            }
+            
             if (entry.isDirectory) {
                 dest.mkdirs()
             } else {
