@@ -44,3 +44,29 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Gson:** JSON parsing library
 -   **SnakeYAML:** YAML parsing library
 -   **Navigation Compose:** For in-app navigation
+
+## Recent Changes
+
+### Session 9 - Deep Security Scan (October 29, 2025)
+Fixed 3 critical vulnerabilities through comprehensive 10× deep debug scan:
+
+**Bug 41 - ANR/Battery Drain (OverlayService.kt):**
+- Fixed: `while(true)` → `while(isActive)` in coroutine detection loop
+- Impact: Prevents infinite loop causing ANR and battery drain when service is stopped
+
+**Bug 42 - Integer Overflow (LegendOCR.kt):**
+- Fixed: Added overflow check before ByteArray(ySize + uSize + vSize) allocation
+- Impact: Prevents crashes from integer overflow in image buffer calculations
+
+**Bug 43 - Path Traversal Vulnerability (TemplateImporter.kt):**
+- Fixed: Added canonical path validation with File.separator check
+- Impact: CRITICAL - Prevents malicious ZIP files from writing outside app directory
+- Security: Blocks `../../../etc/passwd` and absolute path prefix-sharing attacks
+
+**Critical Patterns Documented:**
+1. Coroutine loops MUST check `isActive` to respect cancellation
+2. ByteArray allocations from external sources require Long arithmetic + bounds checking
+3. File path operations MUST use canonical path validation: `destCanonical.startsWith(baseCanonical + File.separator)`
+4. BillingManager requires manual cleanup() call to avoid scope leak
+
+**Total Bugs Fixed:** 43 critical issues across all sessions (40 previous + 3 new)
