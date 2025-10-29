@@ -64,7 +64,7 @@ fun TemplateEditorScreen(context: Context, onBack: () -> Unit) {
                         } else status = "No template selected"
                     }
                 ) { Text("Save Changes") }
-                if (status != null) Text(status!!)
+                if (status != null) Text(status)
             }
             Divider()
             Text("Tip: use Template Manager to enable/disable patterns globally.", style = MaterialTheme.typography.bodySmall)
