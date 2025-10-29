@@ -208,14 +208,14 @@ object TimeframeEstimator {
         val height = gray.rows()
         val sampleRow = height / 2
         
+        if (width < 2) return 0.5
+        
         // Extract horizontal scanline
         val scanline = DoubleArray(width)
         for (x in 0 until width) {
             val pixel = gray.get(sampleRow, x)
             scanline[x] = if (pixel.isNotEmpty()) pixel[0] else 0.0
         }
-        
-        if (scanline.size < 2) return 0.5
         
         // Simple frequency analysis: count oscillations
         var oscillations = 0
