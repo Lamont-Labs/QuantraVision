@@ -26,7 +26,14 @@ class PatternDetector(private val context: Context) {
     suspend fun scanStaticAssets() = withContext(Dispatchers.Default) {
         val dir = File(context.filesDir, "demo_charts")
         if (!dir.exists()) return@withContext
-        val templates = templateLibrary.loadTemplates()
+        
+        // Load templates with error handling
+        val templates = try {
+            templateLibrary.loadTemplates()
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to load templates")
+            return@withContext
+        }
 
         dir.listFiles()?.forEach { imageFile ->
             try {
