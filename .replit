@@ -32,7 +32,7 @@ outputType = "console"
 
 [nix]
 channel = "stable-25_05"
-packages = ["unzip", "optipng", "pngquant"]
+packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "optipng", "pngquant", "tcl", "tk", "unzip", "zlib", "imagemagick"]
 
 [deployment]
 deploymentTarget = "cloudrun"
