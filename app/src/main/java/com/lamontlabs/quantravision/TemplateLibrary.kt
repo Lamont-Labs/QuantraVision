@@ -13,7 +13,9 @@ data class Template(
     val path: String,
     val threshold: Double,
     val image: Mat,
-    val scaleRange: Pair<Double, Double>,
+    val scaleMin: Double,
+    val scaleMax: Double,
+    val scaleStride: Double,
     val aspectTolerance: Double?,
     val timeframeHints: List<String>,
     val minBars: Int,
@@ -33,6 +35,9 @@ class TemplateLibrary(private val context: Context) {
                 val path = data["image"] as String
                 val threshold = (data["threshold"] as Number).toDouble()
                 val sr = (data["scale_range"] as? List<*>)?.map { (it as Number).toDouble() } ?: listOf(0.6, 1.6)
+                val scaleMin = sr.getOrElse(0) { 0.6 }
+                val scaleMax = sr.getOrElse(1) { 1.6 }
+                val scaleStride = (data["scale_stride"] as? Number)?.toDouble() ?: 0.15
                 val aspectTol = (data["aspect_tolerance"] as? Number)?.toDouble()
                 val tfHints = (data["timeframe_hints"] as? List<*>)?.map { it.toString() } ?: emptyList()
                 val minBars = (data["min_bars"] as? Number)?.toInt() ?: 0
@@ -48,7 +53,9 @@ class TemplateLibrary(private val context: Context) {
                         path = path,
                         threshold = threshold,
                         image = imageMat,
-                        scaleRange = Pair(sr.first(), sr.last()),
+                        scaleMin = scaleMin,
+                        scaleMax = scaleMax,
+                        scaleStride = scaleStride,
                         aspectTolerance = aspectTol,
                         timeframeHints = tfHints,
                         minBars = minBars,
