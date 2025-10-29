@@ -1,15 +1,15 @@
-# QuantraVision - World's Best Retail Trader Tool
+# QuantraVision - Advanced AI Pattern Detection
 
 ## Overview
-QuantraVision is the most comprehensive offline AI pattern detection app for retail traders. It combines 120+ chart patterns with gamification, predictive analytics, professional reporting, and educational content—all without requiring subscriptions or internet connectivity.
+QuantraVision is a comprehensive offline AI pattern detection app for retail traders. It combines 120+ chart patterns with gamification, predictive analytics, professional reporting, and educational content—all without requiring subscriptions or internet connectivity.
 
 ## Project Status
 **Last Updated:** October 28, 2025  
 **Status:** Feature-complete, ready for final build
 
-## 🏆 What Makes This World-Class
+## 🏆 Key Features
 
-### 1. **Unmatched Pattern Library**
+### 1. **Comprehensive Pattern Library**
 - 120+ deterministic chart patterns
 - Multi-scale consensus detection
 - Temporal stability tracking
@@ -110,34 +110,38 @@ QuantraVision is the most comprehensive offline AI pattern detection app for ret
 
 ---
 
-## Monetization Model (Fair & Transparent)
+## Monetization Model
 
-### FREE Tier
-- 5 base highlights + unlimited bonus highlights from achievements
-- 2 basic patterns
-- Full analytics access
-- Achievements system
-- Voice commands
-- Education course
+### FREE (Trial Experience)
+- 2 highlights per day (resets daily)
+- 1 basic pattern (Doji only)
+- Analytics view-only (no export)
+- Education: Lesson 1 only
 - Home screen widget
+- Limited features to evaluate app
 
-### STANDARD ($4.99 one-time)
-- Unlimited highlights
-- 60 patterns
-- All free features
+### STANDARD ($19.99 one-time)
+- 10 highlights per day
+- 30 patterns (basic + intermediate)
 - PDF reports (watermarked)
-- Basic backtesting
+- Education: Lessons 1-5
+- Basic achievements
+- Pattern similarity search
+- Analytics with export
 
-### PRO ($9.99 one-time)
+### PRO ($49.99 one-time)
 - Unlimited highlights
-- 120+ patterns
+- All 120+ patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
-- **Full backtesting with CSV import**
+- **Complete education** (all 10 lessons)
+- **Full achievement system**
+- **Backtesting with CSV import**
 - **Multi-chart comparison**
-- All Standard features
+- **16 voice commands**
+- **Priority support**
 
-**No subscriptions. No hidden fees. No data selling.**
+**No subscriptions. No hidden fees.**
 
 ---
 
@@ -206,13 +210,13 @@ app/src/main/java/com/lamontlabs/quantravision/
   - All code is complete and functional
   - Requires Android Studio build environment to complete
 
-### What Makes This "World's Best"
+### Target Audiences
 
 **For Beginners:**
 - Interactive course teaches pattern recognition
 - Achievements reward learning
 - Audit trail explains every detection
-- Start free, earn extra features
+- Restrictive free tier encourages upgrade
 
 **For Active Traders:**
 - Predictive mode shows patterns forming
@@ -234,9 +238,8 @@ app/src/main/java/com/lamontlabs/quantravision/
 
 **For Value Seekers:**
 - One-time purchase (no subscriptions)
-- Free tier with real value
-- Achievements earn bonuses
-- Fair, transparent pricing
+- Premium positioning at $19.99/$49.99
+- No hidden fees
 
 ---
 
@@ -257,12 +260,12 @@ app/src/main/java/com/lamontlabs/quantravision/
 
 3. **Google Play Setup**
    - Upload demo video
-   - Write compelling description highlighting unique features
+   - Write compelling description highlighting features
    - Add screenshots (achievements, predictions, analytics)
-   - Configure SKUs (Standard $4.99, Pro $9.99)
+   - Configure SKUs (Standard $19.99, Pro $49.99)
 
 4. **Marketing Angles**
-   - "The only pattern detection tool with gamification"
+   - "Pattern detection tool with gamification"
    - "See patterns BEFORE they complete"
    - "100% offline - your data stays on your device"
    - "One-time purchase, no subscriptions"
@@ -273,7 +276,7 @@ app/src/main/java/com/lamontlabs/quantravision/
 
 ## Competitive Advantages Summary
 
-### 🎯 Unique Features (No Competition Has These)
+### 🎯 Key Differentiators
 1. Gamification with achievements and rewards
 2. Predictive pattern detection (see patterns forming)
 3. AI audit trail (explainable AI)
@@ -281,18 +284,18 @@ app/src/main/java/com/lamontlabs/quantravision/
 5. Integrated education with certificates
 6. 100% offline operation
 
-### 💪 Best-in-Class Features
-1. 120+ patterns (more than any competitor)
+### 💪 Advanced Features
+1. 120+ patterns
 2. Multi-scale consensus detection
 3. Pattern performance analytics
 4. Professional PDF reports
 5. Backtesting with CSV import
 6. Multi-chart correlation
 
-### 💰 Business Model Advantage
-1. One-time purchase (competitors charge monthly)
-2. Free tier with real value (not just a trial)
-3. Achievement-based reward system
+### 💰 Business Model
+1. One-time purchase (vs monthly subscriptions)
+2. Restrictive free tier creates upgrade urgency
+3. Premium pricing ($19.99/$49.99)
 4. No data harvesting or selling
 5. Transparent pricing
 
@@ -347,7 +350,7 @@ app/src/main/
 
 ---
 
-**This is not just another pattern detection app. This is a complete trading education and analysis platform that respects user privacy, provides real value for free, and rewards engagement. The combination of predictive AI, gamification, education, and professional tools makes this genuinely unique in the market.**
+**This is a comprehensive trading education and analysis platform that respects user privacy, works 100% offline, and combines predictive AI, gamification, education, and professional tools in one package.**
 
 *Last updated: October 28, 2025*  
 *By: Replit Agent*  

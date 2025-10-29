@@ -1,6 +1,6 @@
-# QuantraVision - World's Best Retail Trader Tool
+# QuantraVision - Advanced AI Pattern Detection
 
-**The only offline AI pattern detection app with predictive intelligence, gamification, and explainable AI.**
+**Offline AI pattern detection app with predictive intelligence, gamification, and explainable AI.**
 
 ![status](https://img.shields.io/badge/build-ready-success)
 ![android](https://img.shields.io/badge/android-SDK_34-green)
@@ -9,30 +9,29 @@
 
 ---
 
-## 🏆 What Makes This World-Class
+## 🏆 Key Features
 
-QuantraVision isn't just another pattern detection app—it's a complete trading education and analysis platform that combines features no competitor offers:
+A comprehensive trading education and analysis platform with advanced pattern detection capabilities:
 
-### 🔮 **Predictive Pattern Detection** (UNIQUE)
+### 🔮 **Predictive Pattern Detection**
 - See patterns **BEFORE they complete** (40-85% formation stages)
 - Formation velocity tracking with estimated completion time
-- Nobody else has this capability
+- Early detection provides trading advantage
 
-### 🤖 **Explainable AI** (UNIQUE)
+### 🤖 **Explainable AI**
 - Full audit trail for every detection
 - Factor breakdown: confidence, consensus, temporal, timeframe
 - Understand WHY the AI detected each pattern
 
-### 🎮 **Gamification System** (UNIQUE)
+### 🎮 **Gamification System**
 - 15 achievements that unlock as you learn
 - Daily streak tracking builds discipline
-- Bonus highlights reward engagement
-- Free users earn unlimited extras through achievements
+- Bonus highlights reward engagement (Standard & Pro tiers)
 
-### 🎤 **Voice Commands** (UNIQUE)
+### 🎤 **Voice Commands**
 - 16 natural language commands
 - "Show bull flags", "Export all detections", "Start scanning"
-- Perfect for multi-monitor trading setups
+- Hands-free operation for multi-monitor setups
 
 ### 🎓 **Interactive Education**
 - 10-lesson structured pattern recognition course
@@ -73,35 +72,44 @@ QuantraVision isn't just another pattern detection app—it's a complete trading
 | Education Course | ✅ | Limited | ❌ |
 | 100% Offline | ✅ | ❌ | ❌ |
 | One-Time Purchase | ✅ | ❌ | ❌ |
-| Pricing | $4.99-$9.99 | $15-$60/mo | $40-$180/mo |
+| Pricing | $19.99-$49.99 | $15-$60/mo | $40-$180/mo |
 
-**6 unique features no competitor has. Better pricing. More patterns.**
+**Comprehensive feature set with competitive pricing.**
 
 ---
 
-## 💰 Pricing Model (Fair & Transparent)
+## 💰 Pricing Model
 
-### **FREE Tier**
-- 5 base highlights + **unlimited bonus highlights** from achievements
-- 2 basic patterns
-- Full analytics, achievements, voice commands, education course
+### **FREE** (Trial Experience)
+- 2 highlights per day (resets daily)
+- 1 basic pattern (Doji only)
+- Analytics view-only (no export)
+- Education: Lesson 1 only
 - Home screen widget
+- Limited features to evaluate app
 
-### **STANDARD** - $4.99 one-time
-- Unlimited highlights
-- 60 patterns
+### **STANDARD** - $19.99 one-time
+- 10 highlights per day
+- 30 patterns (basic + intermediate)
 - PDF reports (watermarked)
-- All free features
+- Education: Lessons 1-5
+- Basic achievements
+- Pattern similarity search
+- Analytics with export
 
-### **PRO** - $9.99 one-time
+### **PRO** - $49.99 one-time
 - Unlimited highlights
-- 120+ patterns
+- All 120+ patterns
 - **Pattern predictions** (exclusive)
 - **Watermark-free PDF reports**
-- **Full backtesting with CSV import**
+- **Complete education** (all 10 lessons)
+- **Full achievement system**
+- **Backtesting with CSV import**
 - **Multi-chart comparison**
+- **16 voice commands**
+- **Priority support**
 
-**No subscriptions. No hidden fees. No data selling.**
+**No subscriptions. No hidden fees.**
 
 ---
 

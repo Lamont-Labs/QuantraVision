@@ -10,7 +10,7 @@ import java.util.*
 /**
  * BonusHighlights
  * Manages bonus highlight credits earned through achievements
- * Free users can earn extra highlights beyond the 5 base limit
+ * Only available for Standard and Pro tiers (NOT free tier)
  */
 object BonusHighlights {
 
@@ -23,6 +23,11 @@ object BonusHighlights {
     )
 
     fun add(context: Context, amount: Int, reason: String) {
+        // Free tier users don't earn bonus highlights
+        val prefs = context.getSharedPreferences("quantravision_prefs", Context.MODE_PRIVATE)
+        val tier = prefs.getString("tier", "FREE") ?: "FREE"
+        if (tier == "FREE") return
+        
         val state = loadState(context)
         val current = state.optInt("total", 0)
         state.put("total", current + amount)
@@ -40,6 +45,11 @@ object BonusHighlights {
     }
 
     fun use(context: Context, amount: Int = 1): Boolean {
+        // Free tier users can't use bonus highlights
+        val prefs = context.getSharedPreferences("quantravision_prefs", Context.MODE_PRIVATE)
+        val tier = prefs.getString("tier", "FREE") ?: "FREE"
+        if (tier == "FREE") return false
+        
         val state = loadState(context)
         val current = state.optInt("total", 0)
         if (current < amount) return false
