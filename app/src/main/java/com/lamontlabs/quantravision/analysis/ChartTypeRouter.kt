@@ -56,7 +56,7 @@ class ChartTypeRouter(
     updateEma(t)
     val routed = decideType(System.nanoTime())
 
-    // 2) Run backend detector
+    // 2) Run backend detector (backend is responsible for closing frame)
     val dets = backend.analyze(frame)
 
     // 3) Apply per-type routing params and jitter suppression adjustments

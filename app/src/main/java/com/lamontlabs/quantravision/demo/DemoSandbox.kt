@@ -30,6 +30,7 @@ class DemoSandbox(private val backend: Detector) : Detector {
 
     override fun analyze(frame: ImageProxy): List<Detection> {
         // In demo mode we ignore camera frame and use sample images
+        // Backend is responsible for closing the frame
         return if (demoFiles.isNotEmpty()) {
             val dets = backend.analyze(frame)
             dets.map { d ->

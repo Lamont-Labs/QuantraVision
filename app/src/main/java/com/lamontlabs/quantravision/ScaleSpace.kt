@@ -36,9 +36,14 @@ object ScaleSpace {
 
     fun resizeForScale(src: Mat, scale: Double): Mat {
         val dst = Mat()
-        val newW = (src.width() * scale).toInt().coerceAtLeast(8)
-        val newH = (src.height() * scale).toInt().coerceAtLeast(8)
-        Imgproc.resize(src, dst, org.opencv.core.Size(newW.toDouble(), newH.toDouble()), 0.0, 0.0, Imgproc.INTER_AREA)
-        return dst
+        try {
+            val newW = (src.width() * scale).toInt().coerceAtLeast(8)
+            val newH = (src.height() * scale).toInt().coerceAtLeast(8)
+            Imgproc.resize(src, dst, org.opencv.core.Size(newW.toDouble(), newH.toDouble()), 0.0, 0.0, Imgproc.INTER_AREA)
+            return dst
+        } catch (e: Exception) {
+            dst.release()
+            throw e
+        }
     }
 }

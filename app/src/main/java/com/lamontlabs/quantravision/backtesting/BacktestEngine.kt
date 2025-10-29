@@ -100,7 +100,7 @@ object BacktestEngine {
                 BacktestResult(
                     patternName = pattern,
                     totalDetections = detections.size,
-                    avgConfidence = detections.map { it.confidence }.average(),
+                    avgConfidence = if (detections.isNotEmpty()) detections.map { it.confidence }.average() else 0.0,
                     accuracy = accuracy,
                     profitability = profitability,
                     bestTimeframe = "1H", // Simplified

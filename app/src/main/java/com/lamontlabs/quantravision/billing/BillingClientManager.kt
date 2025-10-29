@@ -35,12 +35,13 @@ class BillingClientManager(private val context: Context) : PurchasesUpdatedListe
             ).build()
         client.queryProductDetailsAsync(params) { result, list ->
             if (result.responseCode != BillingClient.BillingResponseCode.OK || list.isEmpty()) return@queryProductDetailsAsync
-            val offer = list.first().subscriptionOfferDetails?.firstOrNull() ?: return@queryProductDetailsAsync
+            val productDetails = list.first()
+            val offer = productDetails.subscriptionOfferDetails?.firstOrNull() ?: return@queryProductDetailsAsync
             val flowParams = BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(
                     listOf(
                         BillingFlowParams.ProductDetailsParams.newBuilder()
-                            .setProductDetails(list.first())
+                            .setProductDetails(productDetails)
                             .setOfferToken(offer.offerToken)
                             .build()
                     )

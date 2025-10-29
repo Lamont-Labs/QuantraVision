@@ -33,30 +33,38 @@ object PatternSimilaritySearch {
         val targetTemplate = loadPatternTemplate(context, targetPattern)
         if (targetTemplate == null) return emptyList()
 
-        val similarities = mutableListOf<SimilarPattern>()
+        try {
+            val similarities = mutableListOf<SimilarPattern>()
 
-        // Group matches by pattern name
-        val byPattern = allMatches.groupBy { it.patternName }
+            // Group matches by pattern name
+            val byPattern = allMatches.groupBy { it.patternName }
 
-        byPattern.forEach { (patternName, matches) ->
-            if (patternName != targetPattern) {
-                val compareTemplate = loadPatternTemplate(context, patternName)
-                if (compareTemplate != null) {
-                    val similarity = calculateSimilarity(targetTemplate, compareTemplate)
-                    similarities.add(
-                        SimilarPattern(
-                            patternName = patternName,
-                            similarity = similarity,
-                            matches = matches
-                        )
-                    )
+            byPattern.forEach { (patternName, matches) ->
+                if (patternName != targetPattern) {
+                    val compareTemplate = loadPatternTemplate(context, patternName)
+                    if (compareTemplate != null) {
+                        try {
+                            val similarity = calculateSimilarity(targetTemplate, compareTemplate)
+                            similarities.add(
+                                SimilarPattern(
+                                    patternName = patternName,
+                                    similarity = similarity,
+                                    matches = matches
+                                )
+                            )
+                        } finally {
+                            compareTemplate.release()
+                        }
+                    }
                 }
             }
-        }
 
-        return similarities
-            .sortedByDescending { it.similarity }
-            .take(topN)
+            return similarities
+                .sortedByDescending { it.similarity }
+                .take(topN)
+        } finally {
+            targetTemplate.release()
+        }
     }
 
     /**
@@ -68,28 +76,36 @@ object PatternSimilaritySearch {
         allPatterns: List<String>
     ): List<SimilarPattern> {
         val queryMat = Mat()
-        Utils.bitmapToMat(queryImage, queryMat)
-        Imgproc.cvtColor(queryMat, queryMat, Imgproc.COLOR_RGBA2GRAY)
+        try {
+            Utils.bitmapToMat(queryImage, queryMat)
+            Imgproc.cvtColor(queryMat, queryMat, Imgproc.COLOR_RGBA2GRAY)
 
-        val results = mutableListOf<SimilarPattern>()
+            val results = mutableListOf<SimilarPattern>()
 
-        allPatterns.forEach { pattern ->
-            val template = loadPatternTemplate(context, pattern)
-            if (template != null) {
-                val similarity = calculateSimilarity(queryMat, template)
-                if (similarity > 0.5) {
-                    results.add(
-                        SimilarPattern(
-                            patternName = pattern,
-                            similarity = similarity,
-                            matches = emptyList()
-                        )
-                    )
+            allPatterns.forEach { pattern ->
+                val template = loadPatternTemplate(context, pattern)
+                if (template != null) {
+                    try {
+                        val similarity = calculateSimilarity(queryMat, template)
+                        if (similarity > 0.5) {
+                            results.add(
+                                SimilarPattern(
+                                    patternName = pattern,
+                                    similarity = similarity,
+                                    matches = emptyList()
+                                )
+                            )
+                        }
+                    } finally {
+                        template.release()
+                    }
                 }
             }
-        }
 
-        return results.sortedByDescending { it.similarity }
+            return results.sortedByDescending { it.similarity }
+        } finally {
+            queryMat.release()
+        }
     }
 
     /**
@@ -115,14 +131,19 @@ object PatternSimilaritySearch {
         // Resize to same size for comparison
         val size = template1.size()
         val resized = Mat()
-        Imgproc.resize(template2, resized, size)
-
-        // Calculate structural similarity
         val result = Mat()
-        Imgproc.matchTemplate(template1, resized, result, Imgproc.TM_CCOEFF_NORMED)
-        
-        val mmr = Core.minMaxLoc(result)
-        return mmr.maxVal
+        try {
+            Imgproc.resize(template2, resized, size)
+
+            // Calculate structural similarity
+            Imgproc.matchTemplate(template1, resized, result, Imgproc.TM_CCOEFF_NORMED)
+            
+            val mmr = Core.minMaxLoc(result)
+            return mmr.maxVal
+        } finally {
+            resized.release()
+            result.release()
+        }
     }
 
     /**
@@ -133,10 +154,16 @@ object PatternSimilaritySearch {
         return try {
             val inputStream = context.assets.open("pattern_templates/${patternName}_ref.png")
             val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+            if (bitmap == null) return null
             val mat = Mat()
-            Utils.bitmapToMat(bitmap, mat)
-            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2GRAY)
-            mat
+            try {
+                Utils.bitmapToMat(bitmap, mat)
+                Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2GRAY)
+                mat
+            } catch (e: Exception) {
+                mat.release()
+                null
+            }
         } catch (e: Exception) {
             null
         }
