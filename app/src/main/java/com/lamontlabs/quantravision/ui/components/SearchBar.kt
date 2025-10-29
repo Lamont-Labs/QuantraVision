@@ -25,7 +25,7 @@ fun SearchBar(
         onValueChange = { state.value = it },
         modifier = modifier,
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-        placeholder = { Text(placeholder) ),
+        placeholder = { Text(placeholder) },
         singleLine = true
     )
 }
