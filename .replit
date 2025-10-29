@@ -32,7 +32,7 @@ outputType = "console"
 
 [nix]
 channel = "stable-25_05"
-packages = ["unzip"]
+packages = ["unzip", "optipng", "pngquant"]
 
 [deployment]
 deploymentTarget = "cloudrun"
