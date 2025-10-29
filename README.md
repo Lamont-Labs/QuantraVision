@@ -332,7 +332,7 @@ Copyright © 2025 Lamont Labs. All rights reserved.
 
 - **Issues**: Report bugs via GitHub Issues
 - **Features**: Request features via GitHub Discussions
-- **Contact**: support@lamontlabs.com
+- **Contact**: support@lamontlabs@proton.me
 
 ---
 
