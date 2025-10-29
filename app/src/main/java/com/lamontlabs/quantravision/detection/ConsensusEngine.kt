@@ -37,6 +37,7 @@ object ConsensusEngine {
     }
 
     private fun gaussianProximity(x: Double, mu: Double, sigma: Double): Double {
+        if (sigma == 0.0) return 0.0
         val z = (x - mu) / sigma
         // exp(-0.5*z^2) without kotlin.math.exp to keep deterministic across runtimes
         // Use 5th-order Taylor for exp approximation:

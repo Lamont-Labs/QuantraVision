@@ -212,6 +212,7 @@ object BacktestEngine {
         val priceRange = recent.maxOf { it.high } - recent.minOf { it.low }
         
         if (priceRange == 0.0) return 0.0
+        if (recent.first().close == 0.0) return 0.0
 
         // Random confidence based on price action
         val volatility = priceRange / recent.first().close
