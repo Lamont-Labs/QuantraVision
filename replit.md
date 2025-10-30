@@ -42,7 +42,7 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Room Database:** 2.6.1
 -   **Navigation Compose:** 2.7.7
 -   **TensorFlow Lite:** 2.13.0 with GPU support
--   **OpenCV:** 4.8.0 (official Maven Central AAR)
+-   **OpenCV:** 4.10.0 (official Maven Central AAR)
 -   **CameraX:** 1.3.4
 -   **Billing Library:** 6.2.1
 -   **Coroutines:** 1.7.3
@@ -76,7 +76,7 @@ Downgraded Kotlin to restore GitHub Actions build stability and fixed file corru
   - Coroutines: 1.10.2 → 1.7.3
   - TensorFlow Lite: 2.17.0 → 2.13.0
   - CameraX: 1.5.0 → 1.3.4
-  - OpenCV: 4.10.0 → 4.8.0
+  - OpenCV: 4.10.0 (verified Maven Central availability)
 
 **Impact:**
 - Proven stable build configuration with compatible dependency versions

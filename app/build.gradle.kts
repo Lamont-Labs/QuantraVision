@@ -92,8 +92,8 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.4")
     implementation("androidx.camera:camera-view:1.3.4")
     
-    // OpenCV - Stable version
-    implementation("org.opencv:opencv:4.8.0")
+    // OpenCV - First official Maven Central release
+    implementation("org.opencv:opencv:4.10.0")
     
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
