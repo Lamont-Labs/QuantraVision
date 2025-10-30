@@ -37,10 +37,10 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Android SDK:** Platform 35, Build tools 35.0.0 (Android 15)
 -   **Gradle:** 8.10.2 with AGP 8.6.0
 -   **Kotlin:** 2.0.21 with Compose compiler plugin
--   **AndroidX Core:** 1.17.0
--   **Jetpack Compose:** UI 1.9.4, Material3 1.4.0, Activity 1.11.0
+-   **AndroidX Core:** 1.15.0 (API 35 compatible)
+-   **Jetpack Compose:** UI 1.7.5, Material3 1.3.1, Activity 1.9.3
 -   **Room Database:** 2.8.3
--   **Navigation Compose:** 2.9.5
+-   **Navigation Compose:** 2.8.5
 -   **TensorFlow Lite:** 2.17.0 with GPU support
 -   **OpenCV:** 4.10.0 (official Maven Central AAR)
 -   **CameraX:** 1.5.0
