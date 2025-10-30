@@ -52,6 +52,28 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 
 ## Recent Changes
 
+### Session 10.2 - Kotlin Downgrade for KAPT Compatibility (October 30, 2025)
+Downgraded Kotlin to restore GitHub Actions build stability:
+
+**Issue:** Kotlin 2.0.21 incompatible with KAPT - KAPT uses K1 compiler internally which expects Kotlin 1.9.x, causing version resolution errors looking for non-existent version 1.9.25
+
+**Solution: Downgrade to Kotlin 1.9.24**
+- Kotlin: 2.0.21 → 1.9.24 (stable, KAPT-compatible)
+- AGP: 8.6.0 → 8.5.0 (compatible with Kotlin 1.9.24)
+- Reverted Compose compiler plugin to old setup with `kotlinCompilerExtensionVersion = "1.5.14"`
+- Removed all resolution strategy workarounds from settings.gradle.kts and build.gradle.kts
+- Removed dependency refresh step from GitHub Actions workflow
+
+**Impact:**
+- Restores proven stable build configuration
+- KAPT + Kotlin 1.9.24 is battle-tested and works reliably
+- All AndroidX dependencies remain at API 35 compatible versions
+- GitHub Actions CI/CD should now build successfully
+
+**Future Migration Path:**
+- When ready to upgrade to Kotlin 2.0+, migrate KAPT → KSP (Kotlin Symbol Processing)
+- Room 2.8.3 already supports KSP fully
+
 ### Session 10.1 - TensorFlow Lite Duplicate Class Fix (October 30, 2025)
 Fixed duplicate class conflict in TensorFlow Lite 2.17.0:
 
