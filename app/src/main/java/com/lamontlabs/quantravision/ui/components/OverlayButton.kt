@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,8 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.icons.Icons
-import androidx.compose.material3.icons.filled.Bolt
-import androidx.compose.material3.icons.filled.PowerSettingsNew
 import androidx.compose.material3.icons.outlined.Upgrade
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,12 +27,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lamontlabs.quantravision.R
 
 /**
  * Floating neon toggle for the overlay HUD.
@@ -100,11 +102,14 @@ fun OverlayButton(
                         .background(Color.Transparent),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = if (isActive) Icons.Filled.PowerSettingsNew else Icons.Filled.Bolt,
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_qv_logo),
                         contentDescription = if (isActive) "Stop overlay" else "Start overlay",
-                        tint = tint,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier
+                            .size(36.dp)
+                            .graphicsLayer {
+                                alpha = if (isActive) 1.0f else 0.6f
+                            }
                     )
                 }
             }

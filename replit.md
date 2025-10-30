@@ -220,3 +220,29 @@ private fun Image.toNv21(width: Int, height: Int): ByteArray {
 2. Run camera capture/analysis smoke tests on multiple devices
 3. Build release APK with `./gradlew assembleRelease`
 4. Submit to Google Play for production deployment
+
+### Session 10.5 - UI Enhancement: App Icon Overlay Button (October 30, 2025)
+Updated floating overlay button to use branded Q+V logo instead of generic Material Icons:
+
+**Changes Made:**
+- **OverlayButton.kt**: Replaced bolt/power icons with official Q+V geometric logo
+  - Uses `R.drawable.ic_qv_logo` (cyan circle with Q shape and triangular V accent)
+  - Active state: 100% alpha (full brightness)
+  - Inactive state: 60% alpha (dimmed)
+  - Increased icon size from 28.dp to 36.dp for better logo visibility
+  - Removed unused Material Icon imports
+
+**Branding Consistency:**
+- Overlay button now matches app launcher icon
+- Reinforces QuantraVision brand identity during active use
+- Maintains neon cyan glow effect (#00E5FF) around logo
+
+**User Experience:**
+- More recognizable and professional appearance
+- Clear visual connection between app icon and overlay controls
+- Consistent brand presence across all touchpoints
+
+**Technical Details:**
+- Zero LSP errors, production-ready
+- Uses vector drawable for crisp rendering at all sizes
+- Maintains all existing functionality (toggle, quota badge, upgrade pill)
