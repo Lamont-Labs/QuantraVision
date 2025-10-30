@@ -5,6 +5,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
 }
 
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force("org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable:2.0.21")
+        }
+    }
+}
+
 tasks.register("showRealErrors") {
     group = "help"
     description = "Disables KAPT to reveal actual compilation errors"
