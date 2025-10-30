@@ -58,7 +58,7 @@ Upgraded all dependencies to latest stable versions (October 2025) and cleaned u
 **Kotlin Toolchain:**
 - Kotlin: 1.9.24 → 2.0.21 (K2 compiler)
 - AGP (Android Gradle Plugin): 8.5.0 → 8.6.0
-- Migrated to Compose Compiler Gradle Plugin (removes kotlinCompilerExtensionVersion)
+- Migrated to Compose Compiler Gradle Plugin via buildscript classpath (removes kotlinCompilerExtensionVersion)
 
 **Android SDK:**
 - compileSdk: 34 → 35 (Android 15)
