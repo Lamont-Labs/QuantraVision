@@ -39,7 +39,7 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Kotlin:** Latest stable
 -   **Jetpack Compose:** Modern Android UI toolkit
 -   **TensorFlow Lite:** For on-device machine learning
--   **OpenCV:** For computer vision and image processing (version 4.8.0)
+-   **OpenCV:** For computer vision and image processing (version 4.10.0)
 -   **Timber:** Logging library
 -   **Gson:** JSON parsing library
 -   **SnakeYAML:** YAML parsing library

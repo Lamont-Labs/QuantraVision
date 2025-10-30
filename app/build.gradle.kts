@@ -90,13 +90,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.4")
     implementation("androidx.camera:camera-view:1.3.4")
     
-    // OpenCV (using Maven Central distribution)
-    // Note: If this fails, download opencv-4.8.0-android-sdk.zip from https://opencv.org/releases/
-    // and place the .aar file in app/libs/, then uncomment the line below:
-    // implementation(files("libs/opencv-4.8.0.aar"))
-    implementation("org.opencv:opencv-android:4.8.0") {
-        isTransitive = false
-    }
+    // OpenCV (official Maven Central release)
+    // Upgraded to 4.10.0 for official AAR support (4.8.0 wasn't available on Maven)
+    implementation("org.opencv:opencv:4.10.0")
     
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
