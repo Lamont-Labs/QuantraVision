@@ -7,7 +7,7 @@ data class Detection(val id: String, val name: String, val confidence: Int)
 
 class Detector {
   suspend fun demoScan(): List<Detection> {
-    delay(300) // simulate work
+    delay(300)
     return if (PatternLibrary.demoBoxes)
       listOf(
         Detection("FLG_BULL", "Bullish Flag", 92),
@@ -17,7 +17,6 @@ class Detector {
   }
 
   fun load(context: Context) {
-    // Load TFLite or template configs here (assets/patterns.json, models, etc.)
     PatternLibrary.load(context)
   }
 }
