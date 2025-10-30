@@ -67,11 +67,11 @@ implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
 }
 ```
 
-2. Removed duplicate Compose plugin version from app/build.gradle.kts (version already declared in root)
+2. Kept explicit Compose plugin version in app/build.gradle.kts for GitHub Actions compatibility
 
 **Impact:** 
 - Resolves AAR duplicate class errors, allows TensorFlow Lite 2.17.0 to use new LiteRT packages without conflicts
-- Fixes Compose plugin classpath resolution by inheriting version from root build.gradle.kts
+- GitHub Actions requires explicit plugin version: `id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"`
 
 ### Session 10 - Comprehensive Dependency Upgrade & Workflow Cleanup (October 30, 2025)
 Upgraded all dependencies to latest stable versions (October 2025) and cleaned up CI/CD workflows:
