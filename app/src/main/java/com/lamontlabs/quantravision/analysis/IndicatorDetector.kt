@@ -1,12 +1,15 @@
 package com.lamontlabs.quantravision.analysis
 
 import android.graphics.*
+import android.media.Image
 import android.util.Log
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.lamontlabs.quantravision.detection.Detection
 import kotlinx.coroutines.runBlocking
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
+import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import kotlin.math.abs
 import kotlin.math.max
@@ -29,6 +32,7 @@ import kotlin.math.min
 interface IndicatorDetector {
     fun load()
     fun analyze(frame: ImageProxy): List<IndicatorHit>
+    fun close()
 }
 
 enum class IndicatorType {
@@ -62,6 +66,10 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
 
     override fun load() {
         legendOCR.load()
+    }
+
+    override fun close() {
+        legendOCR.close()
     }
 
     override fun analyze(frame: ImageProxy): List<IndicatorHit> {
@@ -206,54 +214,49 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
         }
     }
     
-    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? = try {
-        val yuv = imageToNV21(image) ?: return null
-        val yuvImage = YuvImage(yuv, ImageFormat.NV21, image.width, image.height, null)
-        val out = java.io.ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 90, out)
-        val bytes = out.toByteArray()
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-    } catch (e: Exception) {
-        Log.e("IndicatorDetector", "Error converting ImageProxy to Bitmap", e)
-        null
+    @OptIn(ExperimentalGetImage::class)
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? {
+        val mediaImage = image.image ?: return null
+        val nv21 = mediaImage.toNv21(image.width, image.height)
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
+        val out = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 100, out)
+        return BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size())
     }
-
-    private fun imageToNV21(image: ImageProxy): ByteArray? {
-        if (image.planes.size < 3) return null
-        
-        val yBuffer = image.planes[0].buffer
-        val uBuffer = image.planes[1].buffer
-        val vBuffer = image.planes[2].buffer
-
-        yBuffer.rewind()
-        uBuffer.rewind()
-        vBuffer.rewind()
-
-        val ySize = yBuffer.remaining()
-        val uSize = uBuffer.remaining()
-        val vSize = vBuffer.remaining()
-
-        val totalSize = ySize.toLong() + uSize.toLong() + vSize.toLong()
-        if (totalSize > Int.MAX_VALUE || totalSize <= 0) return null
-        
-        val nv21 = ByteArray(totalSize.toInt())
-        yBuffer.get(nv21, 0, ySize)
-
-        val pixelStride = image.planes[2].pixelStride
-        val rowStride = image.planes[2].rowStride
-        val uvWidth = image.width / 2
-        val uvHeight = image.height / 2
-        var offset = ySize
-        val vBytes = ByteArray(vSize).also { vBuffer.get(it) }
-        val uBytes = ByteArray(uSize).also { uBuffer.get(it) }
-
-        for (i in 0 until uvHeight) {
-            for (j in 0 until uvWidth) {
-                val vuIndex = i * rowStride + j * pixelStride
-                if (vuIndex + 1 < vBytes.size && vuIndex + 1 < uBytes.size && offset + 1 < nv21.size) {
-                    nv21[offset++] = vBytes[vuIndex]
-                    nv21[offset++] = uBytes[vuIndex]
-                }
+    
+    private fun Image.toNv21(width: Int, height: Int): ByteArray {
+        val yPlane = planes[0]; val uPlane = planes[1]; val vPlane = planes[2]
+        val nv21 = ByteArray(width * height + 2 * (width * height / 4))
+        val yRowStride = yPlane.rowStride; val yPixelStride = yPlane.pixelStride
+        val uRowStride = uPlane.rowStride; val uPixelStride = uPlane.pixelStride
+        val vRowStride = vPlane.rowStride; val vPixelStride = vPlane.pixelStride
+        val yBuffer = yPlane.buffer.duplicate(); val yRow = ByteArray(yRowStride)
+        var outputPos = 0
+        for (row in 0 until height) {
+            yBuffer.position(row * yRowStride)
+            val bytesPerRow = min(yRowStride, yBuffer.remaining())
+            yBuffer.get(yRow, 0, bytesPerRow)
+            var col = 0
+            while (col < width) {
+                nv21[outputPos++] = yRow[col * yPixelStride]
+                col++
+            }
+        }
+        val uBuffer = uPlane.buffer.duplicate(); val vBuffer = vPlane.buffer.duplicate()
+        val uRow = ByteArray(uRowStride); val vRow = ByteArray(vRowStride)
+        var uvPos = width * height
+        for (row in 0 until height / 2) {
+            uBuffer.position(row * uRowStride)
+            vBuffer.position(row * vRowStride)
+            val uBytes = min(uRowStride, uBuffer.remaining())
+            val vBytes = min(vRowStride, vBuffer.remaining())
+            uBuffer.get(uRow, 0, uBytes)
+            vBuffer.get(vRow, 0, vBytes)
+            var col = 0
+            while (col < width / 2) {
+                nv21[uvPos++] = vRow[col * vPixelStride]
+                nv21[uvPos++] = uRow[col * uPixelStride]
+                col++
             }
         }
         return nv21
