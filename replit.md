@@ -69,9 +69,15 @@ implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
 
 2. Kept explicit Compose plugin version in app/build.gradle.kts for GitHub Actions compatibility
 
+3. Added plugin resolution strategy in settings.gradle.kts to force correct Compose compiler artifact
+
+4. Added dependency refresh step to GitHub Actions workflow to prevent version caching issues
+
 **Impact:** 
 - Resolves AAR duplicate class errors, allows TensorFlow Lite 2.17.0 to use new LiteRT packages without conflicts
 - GitHub Actions requires explicit plugin version: `id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"`
+- Plugin resolution strategy forces correct kotlin-compose-compiler-plugin artifact
+- Dependency refresh prevents Gradle from using stale cached versions in CI
 
 ### Session 10 - Comprehensive Dependency Upgrade & Workflow Cleanup (October 30, 2025)
 Upgraded all dependencies to latest stable versions (October 2025) and cleaned up CI/CD workflows:

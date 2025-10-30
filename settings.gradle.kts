@@ -4,6 +4,13 @@ pluginManagement {
     mavenCentral()
     gradlePluginPortal()
   }
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == "org.jetbrains.kotlin.plugin.compose") {
+        useModule("org.jetbrains.kotlin:kotlin-compose-compiler-plugin:${requested.version}")
+      }
+    }
+  }
 }
 
 dependencyResolutionManagement {
