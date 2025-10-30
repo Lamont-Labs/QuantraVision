@@ -34,18 +34,57 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 
 ## External Dependencies
 -   **Java:** GraalVM 22.3
--   **Android SDK:** Platform 34, Build tools 34.0.0
--   **Gradle:** 8.10.2
--   **Kotlin:** Latest stable
--   **Jetpack Compose:** Modern Android UI toolkit
--   **TensorFlow Lite:** For on-device machine learning
--   **OpenCV:** For computer vision and image processing (version 4.10.0)
--   **Timber:** Logging library
--   **Gson:** JSON parsing library
--   **SnakeYAML:** YAML parsing library
--   **Navigation Compose:** For in-app navigation
+-   **Android SDK:** Platform 35, Build tools 35.0.0 (Android 15)
+-   **Gradle:** 8.10.2 with AGP 8.6.0
+-   **Kotlin:** 2.0.21 with Compose compiler plugin
+-   **AndroidX Core:** 1.17.0
+-   **Jetpack Compose:** UI 1.9.4, Material3 1.4.0, Activity 1.11.0
+-   **Room Database:** 2.8.3
+-   **Navigation Compose:** 2.9.5
+-   **TensorFlow Lite:** 2.17.0 with GPU support
+-   **OpenCV:** 4.10.0 (official Maven Central AAR)
+-   **CameraX:** 1.5.0
+-   **Billing Library:** 8.0.0
+-   **Coroutines:** 1.10.2
+-   **Timber:** 5.0.1
+-   **Gson:** 2.11.0
+-   **SnakeYAML:** 2.3
 
 ## Recent Changes
+
+### Session 10 - Comprehensive Dependency Upgrade (October 30, 2025)
+Upgraded all dependencies to latest stable versions (October 2025):
+
+**Kotlin Toolchain:**
+- Kotlin: 1.9.24 → 2.0.21 (K2 compiler)
+- AGP (Android Gradle Plugin): 8.5.0 → 8.6.0
+- Migrated to Compose Compiler Gradle Plugin (removes kotlinCompilerExtensionVersion)
+
+**Android SDK:**
+- compileSdk: 34 → 35 (Android 15)
+- targetSdk: 34 → 35 (Required for Google Play by Aug 31, 2025)
+- versionCode: 20 → 21
+
+**Major Library Upgrades:**
+- AndroidX Core KTX: 1.13.1 → 1.17.0
+- Compose UI: 1.7.2 → 1.9.4
+- Material3: 1.3.0 → 1.4.0
+- Room Database: 2.6.1 → 2.8.3
+- Navigation: 2.7.7 → 2.9.5
+- Billing: 6.2.1 → 8.0.0 (major update)
+- TensorFlow Lite: 2.13.0 → 2.17.0
+- CameraX: 1.3.4 → 1.5.0
+- Coroutines: 1.7.3 → 1.10.2
+- Gson: 2.10.1 → 2.11.0
+- SnakeYAML: 2.0 → 2.3
+- OpenCV: 4.8.0 → 4.10.0 (fixed GitHub Actions build)
+
+**Benefits:**
+- Latest security patches and bug fixes
+- Improved performance and stability
+- Android 15 compliance for Google Play
+- New Compose features (autofill, haptics)
+- Billing Library 8.0 with automatic reconnection
 
 ### Session 9 - Deep Security Scan (October 29, 2025)
 Fixed 3 critical vulnerabilities through comprehensive 10× deep debug scan:
