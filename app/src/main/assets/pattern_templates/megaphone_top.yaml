@@ -1,0 +1,13 @@
+name: Megaphone Top
+image: pattern_templates/megaphone_top_ref.png
+threshold: 0.73
+scale_range:
+- 0.7
+- 1.4
+scale_stride: 0.15
+timeframe_hints:
+- 1h
+- 4h
+- 1d
+min_bars: 15
+aspect_tolerance: 0.2

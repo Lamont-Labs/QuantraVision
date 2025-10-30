@@ -1,0 +1,13 @@
+name: Hanging Man
+image: pattern_templates/hanging_man_ref.png
+threshold: 0.72
+scale_range:
+- 0.8
+- 1.3
+scale_stride: 0.1
+timeframe_hints:
+- 5m
+- 15m
+- 1h
+- 4h
+min_bars: 1

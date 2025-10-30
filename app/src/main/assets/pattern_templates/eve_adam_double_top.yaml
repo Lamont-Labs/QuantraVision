@@ -1,0 +1,12 @@
+name: Eve Adam Double Top
+image: pattern_templates/eve_adam_double_top_ref.png
+threshold: 0.77
+scale_range:
+- 0.7
+- 1.4
+scale_stride: 0.15
+timeframe_hints:
+- 1h
+- 4h
+- 1d
+min_bars: 15

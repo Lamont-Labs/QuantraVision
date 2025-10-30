@@ -1,0 +1,13 @@
+name: Inverse Head and Shoulders
+image: pattern_templates/inverse_head_and_shoulders_ref.png
+threshold: 0.78
+scale_range:
+- 0.7
+- 1.5
+scale_stride: 0.15
+timeframe_hints:
+- 15m
+- 1h
+- 4h
+- 1d
+min_bars: 20

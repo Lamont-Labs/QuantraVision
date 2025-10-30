@@ -1,0 +1,14 @@
+name: Bear Flag
+image: pattern_templates/bear_flag_ref.png
+threshold: 0.73
+scale_range:
+- 0.7
+- 1.5
+scale_stride: 0.15
+timeframe_hints:
+- 5m
+- 15m
+- 1h
+- 4h
+min_bars: 8
+aspect_tolerance: 0.2

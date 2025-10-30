@@ -1,0 +1,13 @@
+name: V Top
+image: pattern_templates/v_top_ref.png
+threshold: 0.7
+scale_range:
+- 0.7
+- 1.5
+scale_stride: 0.15
+timeframe_hints:
+- 5m
+- 15m
+- 1h
+- 4h
+min_bars: 8

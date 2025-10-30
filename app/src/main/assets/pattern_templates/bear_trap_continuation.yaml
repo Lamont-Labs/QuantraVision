@@ -1,0 +1,12 @@
+name: Bear Trap Continuation
+image: pattern_templates/bear_trap_continuation_ref.png
+threshold: 0.74
+scale_range:
+- 0.7
+- 1.4
+scale_stride: 0.15
+timeframe_hints:
+- 15m
+- 1h
+- 4h
+min_bars: 10

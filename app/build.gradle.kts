@@ -91,6 +91,9 @@ dependencies {
     // OpenCV - Latest official Maven Central release
     implementation("org.opencv:opencv:4.10.0")
     
+    // ML Kit Text Recognition - Latest stable
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    
     // Logging - Latest stable
     implementation("com.jakewharton.timber:timber:5.0.1")
     

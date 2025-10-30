@@ -1,0 +1,12 @@
+name: Bump and Run Reversal Top
+image: pattern_templates/bump_and_run_reversal_top_ref.png
+threshold: 0.75
+scale_range:
+- 0.7
+- 1.4
+scale_stride: 0.15
+timeframe_hints:
+- 1h
+- 4h
+- 1d
+min_bars: 18

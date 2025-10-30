@@ -1,0 +1,14 @@
+name: Rectangle Bearish
+image: pattern_templates/rectangle_bearish_ref.png
+threshold: 0.72
+scale_range:
+- 0.7
+- 1.4
+scale_stride: 0.15
+timeframe_hints:
+- 15m
+- 1h
+- 4h
+- 1d
+min_bars: 10
+aspect_tolerance: 0.25

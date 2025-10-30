@@ -1,0 +1,12 @@
+name: Two Bar Reversal Up
+image: pattern_templates/two_bar_reversal_up_ref.png
+threshold: 0.67
+scale_range:
+- 0.7
+- 1.5
+scale_stride: 0.12
+timeframe_hints:
+- 5m
+- 15m
+- 1h
+min_bars: 2

@@ -39,7 +39,7 @@ object AccessibilityLocaleHelper {
     }
 
     /** Wrap a string for current locale if you render dynamic text manually. */
-    fun localize(context: Context, text: String): String = text // placeholder for future i18n map
+    fun localize(context: Context, text: String): String = text
 
     /** Returns a Context configured to the chosen app locale for resource resolution. */
     fun contextWithLocale(base: Context): Context {

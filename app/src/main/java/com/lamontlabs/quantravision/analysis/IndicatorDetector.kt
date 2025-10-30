@@ -1,8 +1,13 @@
 package com.lamontlabs.quantravision.analysis
 
-import android.graphics.Color
+import android.graphics.*
+import android.util.Log
 import androidx.camera.core.ImageProxy
 import com.lamontlabs.quantravision.detection.Detection
+import kotlinx.coroutines.runBlocking
+import org.opencv.core.*
+import org.opencv.imgproc.Imgproc
+import java.nio.ByteBuffer
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -46,22 +51,24 @@ enum class Panel { MAIN, LOWER_1, LOWER_2 }
  * - Heuristic fusion: legend tokens + style cues + panel inference
  * - Pure on-device; wire your local OCR in recognizeLegend()
  */
-class SimpleIndicatorDetector : IndicatorDetector {
+class SimpleIndicatorDetector(private val context: android.content.Context) : IndicatorDetector {
 
     private val legendTokens = listOf(
         "SMA","EMA","WMA","MA","Moving Average","Bollinger","BB",
         "VWAP","RSI","MACD","Ichimoku","Volume","VOL"
     )
+    
+    private val legendOCR = LegendOCROffline()
 
-    override fun load() { /* no-op; plug OCR model load here if needed */ }
+    override fun load() {
+        legendOCR.load()
+    }
 
     override fun analyze(frame: ImageProxy): List<IndicatorHit> {
-        // 1) Legend OCR (stub). Replace with ML Kit local text-recognizer call.
-        val legend = recognizeLegend(frame) // e.g., ["EMA(50)","RSI(14)","VWAP"]
+        val legend = recognizeLegend(frame)
         val hitsFromLegend = legend.flatMap { token -> mapLegendToken(token) }
 
-        // 2) Visual cues fallback when legend hidden
-        val cues = detectVisualCues(frame) // coarse hints by color/style/panels
+        val cues = detectVisualCues(frame)
 
         // 3) Fuse with simple de-duplication and confidence max
         val fused = mutableMapOf<String, IndicatorHit>()
@@ -79,10 +86,13 @@ class SimpleIndicatorDetector : IndicatorDetector {
 
     // -------- internals --------
 
-    private fun recognizeLegend(@Suppress("UNUSED_PARAMETER") frame: ImageProxy): List<String> {
-        // Stub for local OCR. Keep deterministic.
-        // Return empty to rely on visual cues when no legend present.
-        return emptyList()
+    private fun recognizeLegend(frame: ImageProxy): List<String> {
+        return try {
+            runBlocking { legendOCR.analyze(frame) }
+        } catch (e: Exception) {
+            Log.w("IndicatorDetector", "OCR failed: ${e.message}")
+            emptyList()
+        }
     }
 
     private fun mapLegendToken(tok: String): List<IndicatorHit> {
@@ -102,20 +112,229 @@ class SimpleIndicatorDetector : IndicatorDetector {
         }
     }
 
-    private fun detectVisualCues(@Suppress("UNUSED_PARAMETER") frame: ImageProxy): List<IndicatorHit> {
-        // Minimal deterministic placeholders:
-        // In production, compute per-pixel line counts, band pairs, cloud fills, and subpanel separators.
+    private fun detectVisualCues(frame: ImageProxy): List<IndicatorHit> {
+        val tag = "IndicatorDetector"
         val results = mutableListOf<IndicatorHit>()
-
-        // Example heuristics sketch (replace with real CV):
-        // - Parallel band pair with semi-transparent fill => Bollinger
-        // - Single thick mean-reverting line hugging price => VWAP
-        // - Cloud-style filled region spanning ahead => Ichimoku
-        // - Lower panes with oscillator wave + midline => RSI/MACD
-        // - Dense vertical rectangles at bottom => Volume
-
-        // Conservatively emit low-confidence hints. Router can upweight via legend confirmation.
-        // Keep offline and deterministic.
+        
+        try {
+            val mat = imageProxyToMat(frame) ?: return results
+            val gray = Mat()
+            Imgproc.cvtColor(mat, gray, Imgproc.COLOR_RGB2GRAY)
+            
+            val height = mat.rows()
+            val width = mat.cols()
+            
+            val mainPanelEnd = (height * 0.70).toInt()
+            val lower1End = (height * 0.85).toInt()
+            
+            val mainPanel = gray.submat(0, mainPanelEnd, 0, width)
+            val lower1Panel = if (height > mainPanelEnd) {
+                gray.submat(mainPanelEnd, min(lower1End, height), 0, width)
+            } else null
+            val lower2Panel = if (height > lower1End) {
+                gray.submat(lower1End, height, 0, width)
+            } else null
+            
+            detectLinesInPanel(mainPanel)?.let { lineCount ->
+                when {
+                    lineCount in 1..2 -> results.add(
+                        IndicatorHit(IndicatorType.MA_EMA, "MA", 0.65f, Panel.MAIN)
+                    )
+                    lineCount in 3..4 -> results.add(
+                        IndicatorHit(IndicatorType.MA_SMA, "MA", 0.60f, Panel.MAIN)
+                    )
+                }
+            }
+            
+            if (detectBollingerBands(mainPanel)) {
+                results.add(IndicatorHit(IndicatorType.BOLLINGER, "BB", 0.70f, Panel.MAIN))
+            }
+            
+            if (detectThickLine(mainPanel)) {
+                results.add(IndicatorHit(IndicatorType.VWAP, "VWAP", 0.60f, Panel.MAIN))
+            }
+            
+            if (detectCloudPattern(mainPanel)) {
+                results.add(IndicatorHit(IndicatorType.ICHIMOKU, "Ichimoku", 0.65f, Panel.MAIN))
+            }
+            
+            lower1Panel?.let { panel ->
+                if (detectOscillatorPattern(panel)) {
+                    results.add(IndicatorHit(IndicatorType.RSI, "RSI", 0.55f, Panel.LOWER_1))
+                }
+            }
+            
+            lower2Panel?.let { panel ->
+                if (detectVolumePattern(panel)) {
+                    results.add(IndicatorHit(IndicatorType.VOLUME, "Volume", 0.75f, Panel.LOWER_2))
+                }
+            }
+            
+            mainPanel.release()
+            lower1Panel?.release()
+            lower2Panel?.release()
+            gray.release()
+            mat.release()
+            
+        } catch (e: Exception) {
+            Log.e(tag, "Error detecting visual cues", e)
+        }
+        
         return results
+    }
+    
+    private fun imageProxyToMat(image: ImageProxy): Mat? {
+        return try {
+            val bitmap = imageProxyToBitmap(image) ?: return null
+            val mat = Mat(bitmap.height, bitmap.width, CvType.CV_8UC4)
+            val buffer = ByteBuffer.allocate(bitmap.byteCount)
+            bitmap.copyPixelsToBuffer(buffer)
+            buffer.rewind()
+            mat.put(0, 0, buffer.array())
+            bitmap.recycle()
+            mat
+        } catch (e: Exception) {
+            Log.e("IndicatorDetector", "Error converting ImageProxy to Mat", e)
+            null
+        }
+    }
+    
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? {
+        return try {
+            val buffer = image.planes[0].buffer
+            val bytes = ByteArray(buffer.remaining())
+            buffer.get(bytes)
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        } catch (e: Exception) {
+            null
+        }
+    }
+    
+    private fun detectLinesInPanel(panel: Mat): Int? {
+        return try {
+            val edges = Mat()
+            Imgproc.Canny(panel, edges, 50.0, 150.0)
+            
+            val lines = Mat()
+            Imgproc.HoughLinesP(edges, lines, 1.0, Math.PI / 180, 50, 30.0, 10.0)
+            
+            val horizontalLines = mutableListOf<DoubleArray>()
+            for (i in 0 until lines.rows()) {
+                val line = lines.get(i, 0)
+                val x1 = line[0]
+                val y1 = line[1]
+                val x2 = line[2]
+                val y2 = line[3]
+                
+                val angle = Math.atan2(abs(y2 - y1), abs(x2 - x1)) * 180 / Math.PI
+                if (angle < 20) {
+                    horizontalLines.add(line)
+                }
+            }
+            
+            edges.release()
+            lines.release()
+            
+            horizontalLines.size
+        } catch (e: Exception) {
+            null
+        }
+    }
+    
+    private fun detectBollingerBands(panel: Mat): Boolean {
+        return try {
+            val lines = detectLinesInPanel(panel) ?: return false
+            lines >= 2
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    private fun detectThickLine(panel: Mat): Boolean {
+        return try {
+            val blurred = Mat()
+            Imgproc.GaussianBlur(panel, blurred, Size(5.0, 5.0), 0.0)
+            
+            val edges = Mat()
+            Imgproc.Canny(blurred, edges, 30.0, 100.0)
+            
+            val nonZeroCount = Core.countNonZero(edges)
+            val totalPixels = edges.rows() * edges.cols()
+            val edgeRatio = nonZeroCount.toFloat() / totalPixels
+            
+            blurred.release()
+            edges.release()
+            
+            edgeRatio in 0.02f..0.08f
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    private fun detectCloudPattern(panel: Mat): Boolean {
+        return try {
+            val blurred = Mat()
+            Imgproc.GaussianBlur(panel, blurred, Size(7.0, 7.0), 0.0)
+            
+            val mean = Core.mean(blurred).`val`[0]
+            val stdDev = Mat()
+            val meanMat = Mat()
+            Core.meanStdDev(blurred, meanMat, stdDev)
+            
+            val variance = stdDev.get(0, 0)[0]
+            
+            blurred.release()
+            stdDev.release()
+            meanMat.release()
+            
+            variance > 20.0
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    private fun detectOscillatorPattern(panel: Mat): Boolean {
+        return try {
+            val lines = Mat()
+            Imgproc.HoughLines(panel, lines, 1.0, Math.PI / 180, 30)
+            
+            val hasHorizontalMidline = lines.rows() >= 1
+            lines.release()
+            
+            hasHorizontalMidline
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    private fun detectVolumePattern(panel: Mat): Boolean {
+        return try {
+            val edges = Mat()
+            Imgproc.Canny(panel, edges, 50.0, 150.0)
+            
+            val lines = Mat()
+            Imgproc.HoughLinesP(edges, lines, 1.0, Math.PI / 180, 20, 5.0, 3.0)
+            
+            var verticalCount = 0
+            for (i in 0 until lines.rows()) {
+                val line = lines.get(i, 0)
+                val x1 = line[0]
+                val y1 = line[1]
+                val x2 = line[2]
+                val y2 = line[3]
+                
+                val angle = Math.atan2(abs(y2 - y1), abs(x2 - x1)) * 180 / Math.PI
+                if (angle > 70) {
+                    verticalCount++
+                }
+            }
+            
+            edges.release()
+            lines.release()
+            
+            verticalCount >= 10
+        } catch (e: Exception) {
+            false
+        }
     }
 }

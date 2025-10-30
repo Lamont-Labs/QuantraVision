@@ -32,7 +32,7 @@ outputType = "console"
 
 [nix]
 channel = "stable-25_05"
-packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "optipng", "pngquant", "tcl", "tk", "unzip", "zlib", "imagemagick"]
+packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "gobject-introspection", "gtk3", "imagemagick", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "optipng", "pkg-config", "pngquant", "qhull", "tcl", "tk", "unzip", "zlib"]
 
 [deployment]
 deploymentTarget = "cloudrun"

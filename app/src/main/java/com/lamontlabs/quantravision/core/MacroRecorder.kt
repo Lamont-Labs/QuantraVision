@@ -174,8 +174,6 @@ interface MacroAction {
 /** Action: capture MTF snapshots (user-configured labels like "5m,15m,1h"). */
 class MTFSnapshot private constructor(private val timeframes: List<String>) : MacroAction {
     override fun execute(context: Context) {
-        // Hook this into your existing screenshot + cache flow.
-        // Deterministic stub: write labels into an in-memory cache for the confluence engine to consume.
         MTFBus.push(timeframes)
     }
     override fun type() = TYPE
