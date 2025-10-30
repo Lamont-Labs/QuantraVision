@@ -113,4 +113,3 @@ class ChartTypeRouter(
   private fun clamp01(x: Float) = max(0f, min(1f, x))
   private data class Params(val minConf: Float, val wickBias: Float, val bodyBias: Float)
 }
-```0

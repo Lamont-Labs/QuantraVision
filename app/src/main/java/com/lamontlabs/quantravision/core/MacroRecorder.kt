@@ -223,4 +223,3 @@ object MTFBus {
     fun off(handler: (List<String>) -> Unit) { listeners.remove(handler) }
     fun push(tfs: List<String>) { listeners.forEach { h -> try { h(tfs) } catch (_: Throwable) {} } }
 }
-```0

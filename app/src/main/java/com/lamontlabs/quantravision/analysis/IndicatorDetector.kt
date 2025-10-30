@@ -119,4 +119,3 @@ class SimpleIndicatorDetector : IndicatorDetector {
         return results
     }
 }
-```0

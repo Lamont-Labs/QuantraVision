@@ -53,9 +53,12 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 ## Recent Changes
 
 ### Session 10.2 - Kotlin Downgrade for KAPT Compatibility (October 30, 2025)
-Downgraded Kotlin to restore GitHub Actions build stability:
+Downgraded Kotlin to restore GitHub Actions build stability and fixed file corruption issues:
 
-**Issue:** Kotlin 2.0.21 incompatible with KAPT - KAPT uses K1 compiler internally which expects Kotlin 1.9.x, causing version resolution errors looking for non-existent version 1.9.25
+**Issue 1:** Kotlin 2.0.21 incompatible with KAPT - KAPT uses K1 compiler internally which expects Kotlin 1.9.x, causing version resolution errors looking for non-existent version 1.9.25
+
+**Issue 2:** 7 Kotlin source files had corrupted endings (```0 appended), causing compilation errors:
+- OverlayButton.kt, IndicatorDetector.kt, ChartTypeRouter.kt, LegendOCR.kt, MacroRecorder.kt, AccessibilityLocaleHelper.kt, LatencyProfilerHUD.kt
 
 **Solution: Downgrade to Kotlin 1.9.24**
 - Kotlin: 2.0.21 → 1.9.24 (stable, KAPT-compatible)

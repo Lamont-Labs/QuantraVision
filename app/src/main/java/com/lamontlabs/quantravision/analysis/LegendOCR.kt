@@ -212,4 +212,3 @@ class LegendOCROffline : LegendOCR {
         return nv21
     }
 }
-```0
