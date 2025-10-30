@@ -49,25 +49,25 @@ android {
 }
 
 dependencies {
-    // Core Android - Updated to latest stable versions (Oct 2025)
-    implementation("androidx.core:core-ktx:1.17.0")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.google.android.material:material:1.13.0")
+    // Core Android - API 35 compatible versions
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
 
     // Room Database - Updated to 2.8.3 (Oct 2025)
     implementation("androidx.room:room-runtime:2.8.3")
     implementation("androidx.room:room-ktx:2.8.3")
     kapt("androidx.room:room-compiler:2.8.3")
 
-    // Jetpack Compose - Updated to latest stable (Oct 2025)
-    implementation("androidx.activity:activity-compose:1.11.0")
-    implementation("androidx.compose.ui:ui:1.9.4")
-    implementation("androidx.compose.material3:material3:1.4.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.9.4")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.9.4")
+    // Jetpack Compose - Compatible with API 35 (Android 15)
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.ui:ui:1.7.5")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.5")
     
-    // Navigation Compose - Updated to 2.9.5 (Sep 2025)
-    implementation("androidx.navigation:navigation-compose:2.9.5")
+    // Navigation Compose - API 35 compatible
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
     // Billing & Security - Updated Billing to 8.0.0 (Oct 2025)
     implementation("com.android.billingclient:billing-ktx:8.0.0")

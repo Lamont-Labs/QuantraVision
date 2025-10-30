@@ -65,19 +65,22 @@ Upgraded all dependencies to latest stable versions (October 2025) and cleaned u
 - targetSdk: 34 → 35 (Required for Google Play by Aug 31, 2025)
 - versionCode: 20 → 21
 
-**Major Library Upgrades:**
-- AndroidX Core KTX: 1.13.1 → 1.17.0
-- Compose UI: 1.7.2 → 1.9.4
-- Material3: 1.3.0 → 1.4.0
+**Major Library Upgrades (API 35 Compatible):**
+- AndroidX Core KTX: 1.13.1 → 1.15.0
+- AndroidX Activity Compose: 1.8.0 → 1.9.3
+- Compose UI: 1.7.2 → 1.7.5
+- Material3: 1.3.0 → 1.3.1
 - Room Database: 2.6.1 → 2.8.3
-- Navigation: 2.7.7 → 2.9.5
+- Navigation: 2.7.7 → 2.8.5
 - Billing: 6.2.1 → 8.0.0 (major update)
 - TensorFlow Lite: 2.13.0 → 2.17.0
 - CameraX: 1.3.4 → 1.5.0
 - Coroutines: 1.7.3 → 1.10.2
 - Gson: 2.10.1 → 2.11.0
 - SnakeYAML: 2.0 → 2.3
-- OpenCV: 4.8.0 → 4.10.0 (fixed GitHub Actions build)
+- OpenCV: 4.8.0 → 4.10.0
+
+**Note:** Avoided bleeding-edge versions (1.11.0, 1.17.0, 1.9.4, 2.9.5) that require unreleased API 36
 
 **Configuration Changes:**
 - JVM Target: Java 1.8 → Java 17 (required for AGP 8.6.0+)
