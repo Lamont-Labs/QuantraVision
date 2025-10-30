@@ -65,30 +65,39 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
     }
 
     override fun analyze(frame: ImageProxy): List<IndicatorHit> {
-        val legend = recognizeLegend(frame)
-        val hitsFromLegend = legend.flatMap { token -> mapLegendToken(token) }
-
-        val cues = detectVisualCues(frame)
-
-        // 3) Fuse with simple de-duplication and confidence max
-        val fused = mutableMapOf<String, IndicatorHit>()
-        (hitsFromLegend + cues).forEach { hit ->
-            val key = hit.type.name + ":" + hit.label + ":" + hit.panel.name
-            val prev = fused[key]
-            fused[key] = if (prev == null) hit else {
-                if (hit.confidence >= prev.confidence) hit else prev
-            }
+        val bitmap = imageProxyToBitmap(frame)
+        
+        if (bitmap == null) {
+            frame.close()
+            Log.w("IndicatorDetector", "Failed to convert ImageProxy to Bitmap")
+            return emptyList()
         }
+        
+        try {
+            val legend = recognizeLegend(bitmap)
+            val hitsFromLegend = legend.flatMap { token -> mapLegendToken(token) }
 
-        frame.close() // we don’t keep frames
-        return fused.values.map { it.copy(confidence = it.confidence.coerceIn(0f,1f)) }
+            val cues = detectVisualCues(bitmap)
+
+            val fused = mutableMapOf<String, IndicatorHit>()
+            (hitsFromLegend + cues).forEach { hit ->
+                val key = hit.type.name + ":" + hit.label + ":" + hit.panel.name
+                val prev = fused[key]
+                fused[key] = if (prev == null) hit else {
+                    if (hit.confidence >= prev.confidence) hit else prev
+                }
+            }
+
+            return fused.values.map { it.copy(confidence = it.confidence.coerceIn(0f,1f)) }
+        } finally {
+            bitmap.recycle()
+            frame.close()
+        }
     }
 
-    // -------- internals --------
-
-    private fun recognizeLegend(frame: ImageProxy): List<String> {
+    private fun recognizeLegend(bitmap: Bitmap): List<String> {
         return try {
-            runBlocking { legendOCR.analyze(frame) }
+            runBlocking { legendOCR.analyze(bitmap) }
         } catch (e: Exception) {
             Log.w("IndicatorDetector", "OCR failed: ${e.message}")
             emptyList()
@@ -112,12 +121,12 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
         }
     }
 
-    private fun detectVisualCues(frame: ImageProxy): List<IndicatorHit> {
+    private fun detectVisualCues(bitmap: Bitmap): List<IndicatorHit> {
         val tag = "IndicatorDetector"
         val results = mutableListOf<IndicatorHit>()
         
         try {
-            val mat = imageProxyToMat(frame) ?: return results
+            val mat = bitmapToMat(bitmap) ?: return results
             val gray = Mat()
             Imgproc.cvtColor(mat, gray, Imgproc.COLOR_RGB2GRAY)
             
@@ -183,31 +192,71 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
         return results
     }
     
-    private fun imageProxyToMat(image: ImageProxy): Mat? {
+    private fun bitmapToMat(bitmap: Bitmap): Mat? {
         return try {
-            val bitmap = imageProxyToBitmap(image) ?: return null
             val mat = Mat(bitmap.height, bitmap.width, CvType.CV_8UC4)
             val buffer = ByteBuffer.allocate(bitmap.byteCount)
             bitmap.copyPixelsToBuffer(buffer)
             buffer.rewind()
             mat.put(0, 0, buffer.array())
-            bitmap.recycle()
             mat
         } catch (e: Exception) {
-            Log.e("IndicatorDetector", "Error converting ImageProxy to Mat", e)
+            Log.e("IndicatorDetector", "Error converting Bitmap to Mat", e)
             null
         }
     }
     
-    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? {
-        return try {
-            val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        } catch (e: Exception) {
-            null
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? = try {
+        val yuv = imageToNV21(image) ?: return null
+        val yuvImage = YuvImage(yuv, ImageFormat.NV21, image.width, image.height, null)
+        val out = java.io.ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 90, out)
+        val bytes = out.toByteArray()
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    } catch (e: Exception) {
+        Log.e("IndicatorDetector", "Error converting ImageProxy to Bitmap", e)
+        null
+    }
+
+    private fun imageToNV21(image: ImageProxy): ByteArray? {
+        if (image.planes.size < 3) return null
+        
+        val yBuffer = image.planes[0].buffer
+        val uBuffer = image.planes[1].buffer
+        val vBuffer = image.planes[2].buffer
+
+        yBuffer.rewind()
+        uBuffer.rewind()
+        vBuffer.rewind()
+
+        val ySize = yBuffer.remaining()
+        val uSize = uBuffer.remaining()
+        val vSize = vBuffer.remaining()
+
+        val totalSize = ySize.toLong() + uSize.toLong() + vSize.toLong()
+        if (totalSize > Int.MAX_VALUE || totalSize <= 0) return null
+        
+        val nv21 = ByteArray(totalSize.toInt())
+        yBuffer.get(nv21, 0, ySize)
+
+        val pixelStride = image.planes[2].pixelStride
+        val rowStride = image.planes[2].rowStride
+        val uvWidth = image.width / 2
+        val uvHeight = image.height / 2
+        var offset = ySize
+        val vBytes = ByteArray(vSize).also { vBuffer.get(it) }
+        val uBytes = ByteArray(uSize).also { uBuffer.get(it) }
+
+        for (i in 0 until uvHeight) {
+            for (j in 0 until uvWidth) {
+                val vuIndex = i * rowStride + j * pixelStride
+                if (vuIndex + 1 < vBytes.size && vuIndex + 1 < uBytes.size && offset + 1 < nv21.size) {
+                    nv21[offset++] = vBytes[vuIndex]
+                    nv21[offset++] = uBytes[vuIndex]
+                }
+            }
         }
+        return nv21
     }
     
     private fun detectLinesInPanel(panel: Mat): Int? {

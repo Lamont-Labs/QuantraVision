@@ -23,6 +23,7 @@ import kotlin.coroutines.resumeWithException
 interface LegendOCR {
     fun load()
     suspend fun analyze(frame: ImageProxy): List<String>
+    suspend fun analyze(bitmap: Bitmap): List<String>
     fun close()
 }
 
@@ -51,8 +52,16 @@ class LegendOCROffline : LegendOCR {
         }
 
         try {
-            val h = bmp.height
-            val w = bmp.width
+            return analyze(bmp)
+        } finally {
+            bmp.recycle()
+        }
+    }
+
+    override suspend fun analyze(bitmap: Bitmap): List<String> {
+        try {
+            val h = bitmap.height
+            val w = bitmap.width
             val crop = Rect(
                 0, 
                 0, 
@@ -61,7 +70,7 @@ class LegendOCROffline : LegendOCR {
             )
             
             val legendBmp = try {
-                Bitmap.createBitmap(bmp, crop.left, crop.top, crop.width(), crop.height())
+                Bitmap.createBitmap(bitmap, crop.left, crop.top, crop.width(), crop.height())
             } catch (e: Exception) {
                 Log.w(tag, "Failed to crop legend region", e)
                 null
@@ -69,28 +78,22 @@ class LegendOCROffline : LegendOCR {
             
             if (legendBmp == null) return emptyList()
 
-            try {
-                val rawText = if (isInitialized && recognizer != null) {
-                    runCatching { recognizeWithMlKit(legendBmp) }.getOrElse { error ->
-                        Log.e(tag, "OCR failed", error)
-                        ""
-                    }
-                } else {
-                    Log.w(tag, "ML Kit not initialized, skipping OCR")
+            val rawText = if (isInitialized && recognizer != null) {
+                runCatching { recognizeWithMlKit(legendBmp) }.getOrElse { error ->
+                    Log.e(tag, "OCR failed", error)
                     ""
                 }
-
-                val tokens = tokenizeLegendText(rawText)
-                Log.d(tag, "Extracted ${tokens.size} legend tokens: $tokens")
-                return tokens
-            } finally {
-                legendBmp.recycle()
+            } else {
+                Log.w(tag, "ML Kit not initialized, skipping OCR")
+                ""
             }
+
+            val tokens = tokenizeLegendText(rawText)
+            Log.d(tag, "Extracted ${tokens.size} legend tokens: $tokens")
+            return tokens
         } catch (e: Exception) {
             Log.e(tag, "Error during legend analysis", e)
             return emptyList()
-        } finally {
-            bmp.recycle()
         }
     }
 
