@@ -453,10 +453,10 @@ Unlock 15 achievements as you master pattern recognition:
 
 ## 📞 Support
 
-- 📧 **Email**: support@lamontlabs.com
+- 📧 **Email**: Lamontlabs@proton.me
 - 💬 **Discord**: [Join Community](https://discord.gg/quantravision)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/quantravision/issues)
-- 📚 **Wiki**: [Documentation Wiki](https://github.com/yourusername/quantravision/wiki)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Lamont-Labs/QuantraVision/issues)
+- 📚 **Wiki**: [Documentation Wiki](https://github.com/Lamont-Labs/QuantraVision/wiki)
 
 ---
 

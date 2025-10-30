@@ -20,4 +20,4 @@ Upgrades (Standard/Pro) are processed by **Google Play Billing**. Google may pro
 Not directed to children. No content targeting minors.
 
 ## Contact
-Lamont Labs — contact@lamontlabs.com
+Lamont Labs — Lamontlabs@proton.me

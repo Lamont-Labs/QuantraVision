@@ -47,5 +47,5 @@ All operate within local sandbox contexts.
 
 ## 6. Contact
 For privacy concerns or data-access requests:  
-**Email:** legal@lamontlabs.ai  
+**Email:** Lamontlabs@proton.me  
 **Subject:** Privacy Inquiry — QuantraVision

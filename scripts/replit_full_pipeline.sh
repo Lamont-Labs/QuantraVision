@@ -138,8 +138,8 @@ TXT
 # 11. GitHub pushback
 # -----------------------
 echo ">>> Preparing pushback branch"
-git config --global user.email "ci@lamontlabs.com"
-git config --global user.name "Lamont Replit CI"
+git config --global user.email "Lamontlabs@proton.me"
+git config --global user.name "Lamont Labs"
 git checkout -b replit/build-$(date +%Y%m%d) || git checkout main
 git add dist/ legal/ docs/ NOTICE.md PROVENANCE.md dist/release/
 git commit -m "[replit-build] Auto build + provenance $(date +%F)" || true

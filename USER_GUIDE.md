@@ -54,6 +54,6 @@ Each export includes SHA-256 hashes verifiable via `verify.sh`.
 ---
 
 ## 7 · Support
-Email: contact@lamontlabs.com  
+Email: Lamontlabs@proton.me  
 Docs: /assets/legal/  
 © 2025 Jesse J. Lamont / Lamont Labs

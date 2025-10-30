@@ -314,8 +314,8 @@ We welcome feature suggestions! Please:
 ## 📞 Questions?
 
 - 💬 **Discord**: [Join Community](https://discord.gg/quantravision)
-- 📧 **Email**: dev@lamontlabs.com
-- 📚 **Wiki**: [Developer Documentation](https://github.com/yourusername/quantravision/wiki)
+- 📧 **Email**: Lamontlabs@proton.me
+- 📚 **Wiki**: [Developer Documentation](https://github.com/Lamont-Labs/QuantraVision/wiki)
 
 ---
 

@@ -4,7 +4,7 @@
 **Purpose:** Define minimal viable customer support process for Play Store compliance.
 
 ## Channels
-- In-app email link → support@lamontlabs.ai
+- In-app email link → Lamontlabs@proton.me
 - Auto-fill template includes build id, device, Android version.
 - SLA target: respond within 3 business days.
 - FAQ hosted offline inside Help tab.
@@ -15,7 +15,7 @@
 
 ## Escalation
 - Bugs → logged in GitHub Issues (private).
-- Legal → forward to legal@lamontlabs.ai
+- Legal → forward to Lamontlabs@proton.me
 
 ## Reporting
 - Monthly summary of tickets and fixes appended to binder ops log.

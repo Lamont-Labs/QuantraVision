@@ -10,4 +10,4 @@
 
 **Limitation of Liability.** To the maximum extent permitted by law, Lamont Labs is not liable for any losses arising from market activity or reliance on the app’s outputs.
 
-**Support.** contact@lamontlabs.com
+**Support.** Lamontlabs@proton.me

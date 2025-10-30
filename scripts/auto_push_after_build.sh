@@ -24,8 +24,8 @@ TAG="v1.2-auto-$DATE_TAG"
 COMMIT_MSG="[replit-build] Auto build + artifacts $DATE_TAG"
 
 # Git config
-git config user.email "ci@lamontlabs.com"
-git config user.name  "Lamont Replit CI"
+git config user.email "Lamontlabs@proton.me"
+git config user.name  "Lamont Labs"
 
 # Ignore secrets and large binaries by default
 grep -q '^keystore/' .gitignore 2>/dev/null || echo 'keystore/' >> .gitignore

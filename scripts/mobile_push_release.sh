@@ -31,8 +31,8 @@ grep -q '^dist/release/.*\.apk$' .gitignore 2>/dev/null || echo 'dist/release/*.
 grep -q '^keystore/' .gitignore 2>/dev/null || echo 'keystore/' >> .gitignore
 
 echo "== 2) Commit code, docs, metadata =="
-git config user.email "ci@lamontlabs.com"
-git config user.name  "Lamont Replit Mobile"
+git config user.email "Lamontlabs@proton.me"
+git config user.name  "Lamont Labs"
 git checkout -b "$BRANCH" || git checkout "$BRANCH"
 git add -A
 git commit -m "[replit-build] Mobile push: code, docs, metadata, excluding AAB/APK" || true
