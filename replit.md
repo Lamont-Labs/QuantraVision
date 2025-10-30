@@ -79,6 +79,9 @@ Upgraded all dependencies to latest stable versions (October 2025):
 - SnakeYAML: 2.0 → 2.3
 - OpenCV: 4.8.0 → 4.10.0 (fixed GitHub Actions build)
 
+**Configuration Changes:**
+- JVM Target: Java 1.8 → Java 17 (required for AGP 8.6.0+)
+
 **Benefits:**
 - Latest security patches and bug fixes
 - Improved performance and stability
