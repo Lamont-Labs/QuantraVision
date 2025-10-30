@@ -1,19 +1,5 @@
 plugins {
-    id("com.android.application") version "8.5.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
-    id("org.jetbrains.kotlin.kapt") version "1.9.24" apply false
-}
-
-tasks.register("showRealErrors") {
-    group = "help"
-    description = "Disables KAPT to reveal actual compilation errors"
-    
-    doFirst {
-        allprojects {
-            tasks.matching { it.name.contains("kapt", ignoreCase = true) }.forEach { kaptTask ->
-                kaptTask.enabled = false
-                println("Disabled KAPT task: ${kaptTask.name}")
-            }
-        }
-    }
+    id("com.android.application") version "8.7.3" apply false
+    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+    id("com.google.devtools.ksp") version "2.1.0-1.0.29" apply false
 }

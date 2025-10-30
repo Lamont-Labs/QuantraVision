@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -30,10 +30,6 @@ android {
     buildFeatures {
         compose = true
     }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
 
     packaging {
         resources {
@@ -52,57 +48,57 @@ android {
 }
 
 dependencies {
-    // Core Android - Kotlin 1.9.24 compatible versions
-    implementation("androidx.core:core-ktx:1.13.1")
+    // Core Android - Latest stable versions
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
 
-    // Room Database - Kotlin 1.9.24 compatible
+    // Room Database - Latest with KSP
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
-    // Jetpack Compose - Kotlin 1.9.24 compatible
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.compose.ui:ui:1.6.8")
-    implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.8")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.6.8")
+    // Jetpack Compose - Latest stable versions
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.ui:ui:1.7.5")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.5")
     
-    // Navigation Compose - Kotlin 1.9.24 compatible
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    // Navigation Compose - Latest stable
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
-    // Billing & Security - Kotlin 1.9.24 compatible
-    implementation("com.android.billingclient:billing-ktx:6.2.1")
+    // Billing & Security - Latest stable
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
-    // Coroutines - Kotlin 1.9.24 compatible
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    // Coroutines - Latest stable
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
 
-    // TensorFlow Lite - Stable versions
-    implementation("org.tensorflow:tensorflow-lite:2.13.0")
+    // TensorFlow Lite - Latest stable versions
+    implementation("org.tensorflow:tensorflow-lite:2.17.0")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
     }
-    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
 
-    // CameraX - Stable versions
-    implementation("androidx.camera:camera-core:1.3.4")
-    implementation("androidx.camera:camera-camera2:1.3.4")
-    implementation("androidx.camera:camera-lifecycle:1.3.4")
-    implementation("androidx.camera:camera-view:1.3.4")
+    // CameraX - Latest stable versions
+    implementation("androidx.camera:camera-core:1.5.0")
+    implementation("androidx.camera:camera-camera2:1.5.0")
+    implementation("androidx.camera:camera-lifecycle:1.5.0")
+    implementation("androidx.camera:camera-view:1.5.0")
     
-    // OpenCV - First official Maven Central release
+    // OpenCV - Latest official Maven Central release
     implementation("org.opencv:opencv:4.10.0")
     
-    // Logging
+    // Logging - Latest stable
     implementation("com.jakewharton.timber:timber:5.0.1")
     
-    // JSON & YAML parsing
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.yaml:snakeyaml:2.0")
+    // JSON & YAML parsing - Latest stable
+    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("org.yaml:snakeyaml:2.3")
 
-    // Testing
+    // Testing - Latest stable
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
