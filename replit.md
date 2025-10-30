@@ -59,14 +59,19 @@ Fixed duplicate class conflict in TensorFlow Lite 2.17.0:
 - `org.tensorflow.lite.DataType` found in both litert-api-1.0.1.aar and tensorflow-lite-api-2.13.0.aar
 - Root cause: `tensorflow-lite-support:0.4.4` transitively pulls in old `tensorflow-lite-api:2.13.0`
 
-**Fix:** Excluded old tensorflow-lite-api from tensorflow-lite-support dependency
+**Fixes Applied:**
+1. Excluded old tensorflow-lite-api from tensorflow-lite-support dependency:
 ```kotlin
 implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
     exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
 }
 ```
 
-**Impact:** Resolves AAR duplicate class errors, allows TensorFlow Lite 2.17.0 to use new LiteRT packages without conflicts
+2. Removed duplicate Compose plugin version from app/build.gradle.kts (version already declared in root)
+
+**Impact:** 
+- Resolves AAR duplicate class errors, allows TensorFlow Lite 2.17.0 to use new LiteRT packages without conflicts
+- Fixes Compose plugin classpath resolution by inheriting version from root build.gradle.kts
 
 ### Session 10 - Comprehensive Dependency Upgrade & Workflow Cleanup (October 30, 2025)
 Upgraded all dependencies to latest stable versions (October 2025) and cleaned up CI/CD workflows:
