@@ -58,7 +58,7 @@ Upgraded all dependencies to latest stable versions (October 2025) and cleaned u
 **Kotlin Toolchain:**
 - Kotlin: 1.9.24 → 2.0.21 (K2 compiler)
 - AGP (Android Gradle Plugin): 8.5.0 → 8.6.0
-- Migrated to Compose Compiler Gradle Plugin via buildscript classpath (removes kotlinCompilerExtensionVersion)
+- Compose Compiler Plugin: 2.0.21 (applied directly in app module, replaces kotlinCompilerExtensionVersion)
 
 **Android SDK:**
 - compileSdk: 34 → 35 (Android 15)
@@ -84,9 +84,10 @@ Upgraded all dependencies to latest stable versions (October 2025) and cleaned u
 
 **CI/CD Workflow Cleanup:**
 - Consolidated duplicate Android workflows into single android-ci.yml
+- Added Android SDK setup step for GitHub Actions builds
 - Removed deploy-pages.yml (not applicable for Android app)
 - Removed redundant android.yml (duplicate of android-build.yml)
-- Kept android-build.yml as primary build workflow with JDK 17
+- Updated workflow with JDK 17 and Android SDK configuration
 
 **Benefits:**
 - Latest security patches and bug fixes
