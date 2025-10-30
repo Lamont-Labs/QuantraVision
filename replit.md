@@ -52,6 +52,22 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 
 ## Recent Changes
 
+### Session 10.1 - TensorFlow Lite Duplicate Class Fix (October 30, 2025)
+Fixed duplicate class conflict in TensorFlow Lite 2.17.0:
+
+**Issue:** TensorFlow Lite 2.17.0 uses new LiteRT packages internally, causing duplicate class errors:
+- `org.tensorflow.lite.DataType` found in both litert-api-1.0.1.aar and tensorflow-lite-api-2.13.0.aar
+- Root cause: `tensorflow-lite-support:0.4.4` transitively pulls in old `tensorflow-lite-api:2.13.0`
+
+**Fix:** Excluded old tensorflow-lite-api from tensorflow-lite-support dependency
+```kotlin
+implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
+    exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
+}
+```
+
+**Impact:** Resolves AAR duplicate class errors, allows TensorFlow Lite 2.17.0 to use new LiteRT packages without conflicts
+
 ### Session 10 - Comprehensive Dependency Upgrade & Workflow Cleanup (October 30, 2025)
 Upgraded all dependencies to latest stable versions (October 2025) and cleaned up CI/CD workflows:
 

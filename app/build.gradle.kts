@@ -78,7 +78,9 @@ dependencies {
 
     // TensorFlow Lite - Updated to 2.17.0 (2025)
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
+        exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
+    }
     implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
 
     // CameraX - Updated to 1.5.0 stable (Oct 2025)
