@@ -52,8 +52,8 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 
 ## Recent Changes
 
-### Session 10 - Comprehensive Dependency Upgrade (October 30, 2025)
-Upgraded all dependencies to latest stable versions (October 2025):
+### Session 10 - Comprehensive Dependency Upgrade & Workflow Cleanup (October 30, 2025)
+Upgraded all dependencies to latest stable versions (October 2025) and cleaned up CI/CD workflows:
 
 **Kotlin Toolchain:**
 - Kotlin: 1.9.24 → 2.0.21 (K2 compiler)
@@ -81,6 +81,12 @@ Upgraded all dependencies to latest stable versions (October 2025):
 
 **Configuration Changes:**
 - JVM Target: Java 1.8 → Java 17 (required for AGP 8.6.0+)
+
+**CI/CD Workflow Cleanup:**
+- Consolidated duplicate Android workflows into single android-ci.yml
+- Removed deploy-pages.yml (not applicable for Android app)
+- Removed redundant android.yml (duplicate of android-build.yml)
+- Kept android-build.yml as primary build workflow with JDK 17
 
 **Benefits:**
 - Latest security patches and bug fixes
