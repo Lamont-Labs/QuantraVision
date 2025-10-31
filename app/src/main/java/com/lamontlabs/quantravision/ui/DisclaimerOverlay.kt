@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision.ui
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -7,10 +8,10 @@ import android.view.View
 
 /**
  * DisclaimerOverlay
- * Draws persistent “Illustrative Only” watermark on all active overlays.
+ * Draws persistent "Illustrative Only" watermark on all active overlays.
  * Always visible.  Semi-transparent.  Deterministic placement.
  */
-class DisclaimerOverlay : View(context) {
+class DisclaimerOverlay(context: Context) : View(context) {
 
     private val paint = Paint().apply {
         color = Color.argb(180, 255, 255, 255)

@@ -69,7 +69,10 @@ fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
                         }
                         Spacer(Modifier.height(8.dp))
                         Button(
-                            onClick = { step++ },
+                            onClick = { 
+                                DisclaimerManager.setAccepted(context, true)
+                                step++ 
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                         ) { 
                             Text("I Understand the Risks & Agree") 

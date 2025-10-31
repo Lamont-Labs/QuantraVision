@@ -1,7 +1,7 @@
 {
   "skus": [
-    { "sku": "qv_standard", "title": "QuantraVision Standard", "price": "4.99", "type": "inapp" },
-    { "sku": "qv_pro", "title": "QuantraVision Pro", "price": "9.99", "type": "inapp" }
+    { "sku": "qv_standard_one", "title": "QuantraVision Standard", "price": "14.99", "type": "inapp" },
+    { "sku": "qv_pro_one", "title": "QuantraVision Pro", "price": "29.99", "type": "inapp" }
   ],
   "notes": "Used for Play Billing SKU validation step. Keep IDs in sync with Play Console."
 }

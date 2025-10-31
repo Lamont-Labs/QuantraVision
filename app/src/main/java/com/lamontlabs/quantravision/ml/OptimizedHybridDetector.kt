@@ -99,27 +99,29 @@ class OptimizedHybridDetector(private val context: Context) {
     
     /**
      * Detect patterns using ML model (Phase 1 optimized)
+     * 
+     * FUTURE ENHANCEMENT: This optimization layer is not yet active in production.
+     * Current production uses PatternDetector.kt with OpenCV template matching.
+     * When ready, integrate with YOLOv8 model using OptimizedModelLoader and TensorPool.
      */
     private suspend fun detectWithML(
         chartImage: Bitmap,
         policy: InferencePolicy
     ): List<MLDetection> = withContext(Dispatchers.Default) {
-        // TODO: Integrate with actual YOLOv8 detector
-        // This would use OptimizedModelLoader and TensorPool
-        
-        // Placeholder implementation
+        // Placeholder for future YOLOv8 integration
         emptyList()
     }
     
     /**
      * Detect patterns using template matching (existing OpenCV)
+     * 
+     * FUTURE ENHANCEMENT: This will integrate with PatternDetector.kt template matching
+     * when this optimization layer becomes active in production.
      */
     private suspend fun detectWithTemplates(
         chartImage: Bitmap
     ): List<TemplateDetection> = withContext(Dispatchers.Default) {
-        // TODO: Integrate with existing PatternDetector template matching
-        
-        // Placeholder implementation
+        // Placeholder for future integration with PatternDetector
         emptyList()
     }
     

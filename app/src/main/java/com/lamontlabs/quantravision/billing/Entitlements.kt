@@ -12,8 +12,8 @@ data class Entitlements(
 
 // Map Play products -> entitlements
 object Sku {
-    const val STANDARD = "qv_standard_month"  // Play Console product ID
-    const val PRO = "qv_pro_month"            // Play Console product ID
+    const val STANDARD = "qv_standard_one"  // Play Console product ID (one-time purchase)
+    const val PRO = "qv_pro_one"            // Play Console product ID (one-time purchase)
     val ALL = setOf(STANDARD, PRO)
 }
 
