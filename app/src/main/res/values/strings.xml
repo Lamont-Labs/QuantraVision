@@ -15,7 +15,10 @@
     <string name="how_to_title">How to Use QuantraVision</string>
     <string name="market_conditions">Market Conditions</string>
     <string name="qv_brand">Lamont Labs • QuantraVision</string>
-    <string name="qv_disclaimer">Educational visualization only. Not financial advice.</string>
+    <string name="qv_disclaimer">⚠️ NOT FINANCIAL ADVICE - Educational visualization only. Trading is risky. You can lose money.</string>
+    <string name="qv_full_disclaimer">QuantraVision is an educational tool for technical analysis pattern recognition only. It is NOT financial advice. All trading decisions and their outcomes are your sole responsibility. AI pattern detection may produce false positives/negatives. Past performance does not predict future results. Consult a licensed financial advisor before investing. Lamont Labs is NOT liable for any trading losses or financial damages.</string>
+    <string name="qv_watermark">⚠ Illustrative Only — Not Financial Advice</string>
+    <string name="qv_risk_warning">⚠️ WARNING: Trading involves substantial risk of loss. Only invest capital you can afford to lose.</string>
     <string name="tier_pro_desc">All 108 patterns, predictive detection, voice commands, watermark-free PDFs</string>
     <string name="tier_pro_name">Pro Unlock</string>
     <string name="tier_pro_price">$49.99</string>

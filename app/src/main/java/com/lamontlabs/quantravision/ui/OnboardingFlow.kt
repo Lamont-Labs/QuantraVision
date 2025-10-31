@@ -2,6 +2,8 @@ package com.lamontlabs.quantravision.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,9 +43,37 @@ fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
                         Button(onClick = { PermissionHelper.requestAll(context); step++ }) { Text("Grant") }
                     }
                     2 -> {
-                        Text("Disclaimer", style = MaterialTheme.typography.titleLarge)
-                        Text("QuantraVision is for educational visualization only. It performs no trading or financial advice.")
-                        Button(onClick = { step++ }) { Text("Agree") }
+                        Text("⚠️ Legal Disclaimer", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.error)
+                        Column(
+                            Modifier
+                                .heightIn(max = 400.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                "NOT FINANCIAL ADVICE\n\n" +
+                                "QuantraVision is an EDUCATIONAL tool only. It does NOT provide financial advice, investment recommendations, or trading signals.\n\n" +
+                                "⚠️ TRADING IS RISKY. YOU CAN LOSE MONEY.\n\n" +
+                                "• AI pattern detection may produce false positives/negatives\n" +
+                                "• Past performance does NOT predict future results\n" +
+                                "• You are SOLELY responsible for all trading decisions\n" +
+                                "• Consult a licensed financial advisor before investing\n\n" +
+                                "LIMITATION OF LIABILITY:\n" +
+                                "Lamont Labs is NOT liable for any trading losses, missed opportunities, or financial damages arising from use of this app.\n\n" +
+                                "By clicking 'I Agree', you acknowledge:\n" +
+                                "1. You have read the full Terms of Use\n" +
+                                "2. You understand this is NOT financial advice\n" +
+                                "3. You accept all trading risks\n" +
+                                "4. You will not hold Lamont Labs liable for losses",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            onClick = { step++ },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) { 
+                            Text("I Understand the Risks & Agree") 
+                        }
                     }
                     else -> {
                         Text("Setup complete", style = MaterialTheme.typography.titleLarge)
