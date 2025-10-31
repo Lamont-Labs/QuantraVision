@@ -35,7 +35,12 @@ class LiveOverlayController(
     private var mediaProjection: MediaProjection? = null
     private val running = AtomicBoolean(false)
     private var lastEmitMs = 0L
-    private val framePeriodMs = (1000.0 / targetFps).toLong().coerceAtLeast(30)
+    private var lastPolicyCheckMs = 0L
+    private var framePeriodMs = (1000.0 / targetFps).toLong().coerceAtLeast(30)
+    
+    private fun getEffectiveFps(): Int {
+        return LiveOverlayControllerTunable.getTargetFps()
+    }
 
     fun start(projection: MediaProjection, width: Int, height: Int, densityDpi: Int) {
         if (running.getAndSet(true)) return
@@ -54,6 +59,12 @@ class LiveOverlayController(
 
         reader.setOnImageAvailableListener({ reader ->
             val now = System.currentTimeMillis()
+            
+            if (now - lastPolicyCheckMs > 5000) {
+                framePeriodMs = (1000.0 / getEffectiveFps()).toLong().coerceAtLeast(30)
+                lastPolicyCheckMs = now
+            }
+            
             if (now - lastEmitMs < framePeriodMs) {
                 // Drop frame deterministically to meet targetFps
                 reader.acquireLatestImage()?.close()

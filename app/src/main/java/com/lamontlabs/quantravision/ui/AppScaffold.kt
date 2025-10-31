@@ -10,20 +10,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lamontlabs.quantravision.PatternDatabase
-import com.lamontlabs.quantravision.detection.PatternDetector
+import com.lamontlabs.quantravision.PatternDetector
+import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import kotlinx.coroutines.launch
 
 @Composable
 fun QuantraVisionApp(context: Context) {
     QuantraVisionTheme {
         val navController = rememberNavController()
-        val detector = remember { PatternDetector(context) }
+        val detectorBridge = remember { HybridDetectorBridge(context) }
+        val legacyDetector = remember { PatternDetector(context) }
         val scope = rememberCoroutineScope()
         
         AppNavigationHost(
             context = context,
             navController = navController,
-            detector = detector,
+            detectorBridge = detectorBridge,
+            legacyDetector = legacyDetector,
             scope = scope
         )
     }
@@ -33,14 +36,49 @@ fun QuantraVisionApp(context: Context) {
 private fun AppNavigationHost(
     context: Context,
     navController: NavHostController,
-    detector: PatternDetector,
+    detectorBridge: HybridDetectorBridge,
+    legacyDetector: PatternDetector,
     scope: kotlinx.coroutines.CoroutineScope
 ) {
     NavHost(navController, startDestination = "dashboard") {
         composable("dashboard") {
             DashboardScreen(
                 context = context,
-                onStartScan = { scope.launch { detector.scanStaticAssets() } },
+                onStartScan = { 
+                    scope.launch { 
+                        try {
+                            // OPTIMIZED PATH: Use HybridDetectorBridge for AI-optimized detection
+                            val dir = java.io.File(context.filesDir, "demo_charts")
+                            if (dir.exists()) {
+                                timber.log.Timber.i("HybridDetectorBridge: Starting optimized scan from dashboard")
+                                dir.listFiles()?.forEach { imageFile ->
+                                    try {
+                                        val bitmap = android.graphics.BitmapFactory.decodeFile(imageFile.absolutePath)
+                                        if (bitmap != null) {
+                                            try {
+                                                val results = detectorBridge.detectPatternsOptimized(bitmap)
+                                                timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
+                                            } finally {
+                                                bitmap.recycle()
+                                            }
+                                        }
+                                    } catch (e: Exception) {
+                                        timber.log.Timber.e(e, "Error processing ${imageFile.name} with bridge")
+                                    }
+                                }
+                                timber.log.Timber.i("HybridDetectorBridge: Optimized scan complete")
+                            }
+                        } catch (e: Exception) {
+                            // FALLBACK: Use legacy detector if optimized path fails
+                            timber.log.Timber.w(e, "HybridDetectorBridge failed, falling back to legacy PatternDetector")
+                            try {
+                                legacyDetector.scanStaticAssets()
+                            } catch (fallbackError: Exception) {
+                                timber.log.Timber.e(fallbackError, "Legacy detector also failed")
+                            }
+                        }
+                    } 
+                },
                 onReview = { navController.navigate("detections_list") },
                 onTutorials = { navController.navigate("tutorials") },
                 onSettings = { navController.navigate("settings") },
