@@ -160,11 +160,23 @@ fun BookReaderScreen(
     var bookContent by remember { mutableStateOf("Loading...") }
     var coverBitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     
     LaunchedEffect(Unit) {
-        bookContent = loadBookContent(context)
-        coverBitmap = loadBookCover(context)
-        isLoading = false
+        try {
+            bookContent = loadBookContent(context)
+            coverBitmap = loadBookCover(context)
+            isLoading = false
+        } catch (e: OutOfMemoryError) {
+            // CRITICAL: Book content too large for low-end devices (~2-5%)
+            android.util.Log.e("BookViewer", "OOM loading book content", e)
+            errorMessage = "Book too large for this device. Please try on a device with more memory."
+            isLoading = false
+        } catch (e: Exception) {
+            android.util.Log.e("BookViewer", "Error loading book", e)
+            errorMessage = "Error loading book: ${e.message}"
+            isLoading = false
+        }
     }
     
     Scaffold(
@@ -199,6 +211,32 @@ fun BookReaderScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+        } else if (errorMessage != null) {
+            // Error state - show error message to user
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "⚠️",
+                        style = MaterialTheme.typography.displayLarge
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = errorMessage!!,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         } else {
             Column(

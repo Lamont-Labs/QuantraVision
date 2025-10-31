@@ -92,8 +92,22 @@ private fun AppNavigationHost(
                 onMultiChart = { navController.navigate("multi_chart") },
                 onClearHighlights = {
                     scope.launch {
-                        val db = PatternDatabase.getInstance(context)
-                        db.clearAllTables()
+                        try {
+                            val db = PatternDatabase.getInstance(context)
+                            db.clearAllTables()
+                            android.widget.Toast.makeText(
+                                context,
+                                "Database cleared successfully",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        } catch (e: Exception) {
+                            timber.log.Timber.e(e, "Failed to clear database (likely locked)")
+                            android.widget.Toast.makeText(
+                                context,
+                                "Failed to clear database. Please try again.",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             )

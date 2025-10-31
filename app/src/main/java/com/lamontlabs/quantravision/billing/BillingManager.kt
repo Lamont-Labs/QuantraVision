@@ -60,8 +60,24 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
             .setListener(this)
             .build()
 
+        // CRITICAL: Add 15-second timeout to prevent indefinite hang on devices with poor Play Services
+        var timeoutJob: Job? = null
+        var connectionCompleted = false
+        
+        timeoutJob = scope.launch {
+            delay(15000) // 15 second timeout
+            if (!connectionCompleted) {
+                Log.e("BillingManager", "CRITICAL: Billing connection timeout after 15 seconds")
+                // Call onReady to prevent app hang
+                onReady()
+            }
+        }
+
         client.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(result: BillingResult) {
+                connectionCompleted = true
+                timeoutJob?.cancel() // Cancel timeout since connection completed
+                
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                     Log.d("BillingManager", "Billing connected successfully")
                     queryProducts()
@@ -72,6 +88,8 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                 }
             }
             override fun onBillingServiceDisconnected() {
+                connectionCompleted = true
+                timeoutJob?.cancel() // Cancel timeout on disconnect
                 Log.w("BillingManager", "Billing disconnected, will retry on next operation")
             }
         })
@@ -218,17 +236,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     private fun processPurchase(purchase: Purchase, isRestoration: Boolean) {
         // Acknowledge purchase if needed
         if (!purchase.isAcknowledged) {
-            val params = AcknowledgePurchaseParams.newBuilder()
-                .setPurchaseToken(purchase.purchaseToken)
-                .build()
-            
-            client.acknowledgePurchase(params) { result ->
-                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    Log.d("BillingManager", "Purchase acknowledged")
-                } else {
-                    Log.e("BillingManager", "Failed to acknowledge: ${result.debugMessage}")
-                }
-            }
+            acknowledgePurchaseWithRetry(purchase.purchaseToken, retryCount = 0)
         }
 
         // Grant entitlement based on verified purchase
@@ -265,6 +273,35 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     
     fun getProductDetails(sku: String): ProductDetails? = productMap[sku]
     
+    /**
+     * Acknowledge purchase with retry logic
+     * CRITICAL: Prevents Google Play refunds after 3 days (~0.1-0.5% of purchases)
+     * Retries up to 5 times with 5-second delay
+     */
+    private fun acknowledgePurchaseWithRetry(purchaseToken: String, retryCount: Int) {
+        val params = AcknowledgePurchaseParams.newBuilder()
+            .setPurchaseToken(purchaseToken)
+            .build()
+        
+        client.acknowledgePurchase(params) { result ->
+            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                Log.d("BillingManager", "Purchase acknowledged successfully")
+            } else {
+                Log.e("BillingManager", "Failed to acknowledge purchase (attempt ${retryCount + 1}/5): ${result.debugMessage}")
+                
+                // Retry up to 5 times with 5-second delay
+                if (retryCount < 5) {
+                    scope.launch {
+                        delay(5000) // 5-second delay
+                        acknowledgePurchaseWithRetry(purchaseToken, retryCount + 1)
+                    }
+                } else {
+                    Log.e("BillingManager", "CRITICAL: Failed to acknowledge purchase after 5 attempts - Google Play may refund after 3 days")
+                }
+            }
+        }
+    }
+
     fun cleanup() {
         scope.cancel()
         if (::client.isInitialized) {

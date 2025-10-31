@@ -20,7 +20,15 @@ import com.lamontlabs.quantravision.system.PermissionHelper
  */
 @Composable
 fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
-    var step by remember { mutableStateOf(0) }
+    // CRITICAL: Save and restore onboarding progress to handle force-close scenarios
+    val prefs = remember { context.getSharedPreferences("qv_onboarding_prefs", Context.MODE_PRIVATE) }
+    var step by remember { mutableStateOf(loadOnboardingProgress(prefs)) }
+    
+    // Save progress whenever step changes
+    DisposableEffect(step) {
+        saveOnboardingProgress(prefs, step)
+        onDispose { }
+    }
 
     Dialog(
         onDismissRequest = { /* DO NOTHING - prevent dismissal */ },
@@ -89,10 +97,31 @@ fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
                     }
                     else -> {
                         Text("Setup complete", style = MaterialTheme.typography.titleLarge)
-                        Button(onClick = onComplete) { Text("Start") }
+                        Button(onClick = {
+                            // Clear onboarding progress on completion
+                            prefs.edit().clear().apply()
+                            onComplete()
+                        }) { Text("Start") }
                     }
                 }
             }
         }
     }
+}
+
+/**
+ * Load saved onboarding progress (for force-close recovery)
+ */
+private fun loadOnboardingProgress(prefs: android.content.SharedPreferences): Int {
+    val savedStep = prefs.getInt("onboarding_step", 0)
+    android.util.Log.d("OnboardingFlow", "Loaded onboarding progress: step $savedStep")
+    return savedStep
+}
+
+/**
+ * Save onboarding progress (for force-close recovery)
+ */
+private fun saveOnboardingProgress(prefs: android.content.SharedPreferences, step: Int) {
+    prefs.edit().putInt("onboarding_step", step).apply()
+    android.util.Log.d("OnboardingFlow", "Saved onboarding progress: step $step")
 }

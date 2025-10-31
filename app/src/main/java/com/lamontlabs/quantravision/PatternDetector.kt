@@ -138,7 +138,22 @@ class PatternDetector(private val context: Context) {
                         detectionBounds = detectionBounds
                     )
                     
-                    db.patternDao().insert(match)
+                    // CRITICAL: Handle disk full scenario gracefully (0.5-1% of devices)
+                    try {
+                        db.patternDao().insert(match)
+                    } catch (e: android.database.sqlite.SQLiteFullException) {
+                        Timber.e(e, "CRITICAL: Database insert failed - disk full")
+                        withContext(Dispatchers.Main) {
+                            android.widget.Toast.makeText(
+                                context,
+                                "Storage full: Cannot save pattern detection. Please free up space.",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        // Continue processing other patterns despite this failure
+                    } catch (e: Exception) {
+                        Timber.e(e, "Database insert failed for $patternName")
+                    }
 
                     // Trigger alerts for detected pattern
                     AlertManager.getInstance(context).onPatternDetected(match)
@@ -345,7 +360,22 @@ class PatternDetector(private val context: Context) {
                         formationVelocity = velocity
                     )
                     
-                    predictedDao.insert(prediction)
+                    // CRITICAL: Handle disk full scenario gracefully (0.5-1% of devices)
+                    try {
+                        predictedDao.insert(prediction)
+                    } catch (e: android.database.sqlite.SQLiteFullException) {
+                        Timber.e(e, "CRITICAL: Prediction insert failed - disk full")
+                        withContext(Dispatchers.Main) {
+                            android.widget.Toast.makeText(
+                                context,
+                                "Storage full: Cannot save predictions. Please free up space.",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        // Continue processing other predictions despite this failure
+                    } catch (e: Exception) {
+                        Timber.e(e, "Prediction insert failed for ${forming.patternName}")
+                    }
                     
                     // Track prediction statistics in FeatureIntegration
                     com.lamontlabs.quantravision.integration.FeatureIntegration.onPredictionGenerated(

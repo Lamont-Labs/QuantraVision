@@ -44,7 +44,14 @@ class TemplateLibrary(private val context: Context) {
 
                 val imageFile = File(context.filesDir, path)
                 val imageMat = Imgcodecs.imread(imageFile.absolutePath, Imgcodecs.IMREAD_GRAYSCALE)
-                require(!imageMat.empty()) { "Template image not found: $path" }
+                
+                // CRITICAL: Check if image loaded successfully before creating template
+                // If empty, skip this template instead of crashing the entire app
+                if (imageMat.empty()) {
+                    android.util.Log.w("TemplateLibrary", "SKIPPED: Template image not found or empty: $path (file: ${imageFile.absolutePath})")
+                    // Skip this template but continue loading others
+                    return@forEach
+                }
 
                 val tplHash = sha256(imageFile.readBytes())
                 templates.add(

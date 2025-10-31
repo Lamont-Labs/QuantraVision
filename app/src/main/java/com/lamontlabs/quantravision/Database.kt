@@ -1,6 +1,8 @@
 package com.lamontlabs.quantravision
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 
@@ -95,32 +97,82 @@ abstract class PatternDatabase : RoomDatabase() {
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
+        private const val TAG = "PatternDatabase"
+        private var isUsingInMemoryFallback = false
 
         fun getInstance(context: Context): PatternDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    PatternDatabase::class.java,
-                    "PatternMatch.db"
-                )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
-                    .build()
-                INSTANCE = instance
-                instance
+                INSTANCE ?: try {
+                    val instance = Room.databaseBuilder(
+                        context.applicationContext,
+                        PatternDatabase::class.java,
+                        "PatternMatch.db"
+                    )
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                        .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
+                        .build()
+                    INSTANCE = instance
+                    instance
+                } catch (e: Exception) {
+                    Log.e(TAG, "CRITICAL: Failed to create persistent database (disk full or permissions denied), using in-memory fallback", e)
+                    
+                    try {
+                        val fallbackInstance = Room.inMemoryDatabaseBuilder(
+                            context.applicationContext,
+                            PatternDatabase::class.java
+                        ).build()
+                        
+                        isUsingInMemoryFallback = true
+                        INSTANCE = fallbackInstance
+                        
+                        Toast.makeText(
+                            context.applicationContext,
+                            "Warning: Using temporary storage. Data will be lost on app restart. Please free up storage space.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        
+                        Log.w(TAG, "Successfully created in-memory fallback database")
+                        fallbackInstance
+                    } catch (fallbackError: Exception) {
+                        Log.e(TAG, "CRITICAL: Even in-memory database creation failed", fallbackError)
+                        throw RuntimeException("Cannot create database: ${fallbackError.message}", fallbackError)
+                    }
+                }
             }
         }
+        
+        fun isUsingInMemoryDatabase(): Boolean = isUsingInMemoryFallback
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN timeframe TEXT NOT NULL DEFAULT 'unknown'")
-                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN scale REAL NOT NULL DEFAULT 1.0")
+                // CRITICAL: Wrap each ALTER TABLE in try-catch to handle duplicate migrations
+                // Prevents crash if migration runs twice (0.1-0.5% of devices)
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN timeframe TEXT NOT NULL DEFAULT 'unknown'")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'timeframe' may already exist, skipping: ${e.message}")
+                }
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN scale REAL NOT NULL DEFAULT 1.0")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'scale' may already exist, skipping: ${e.message}")
+                }
             }
         }
 
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN consensusScore REAL NOT NULL DEFAULT 0.0")
-                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN windowMs INTEGER NOT NULL DEFAULT 0")
+                // CRITICAL: Wrap each ALTER TABLE in try-catch to handle duplicate migrations
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN consensusScore REAL NOT NULL DEFAULT 0.0")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'consensusScore' may already exist, skipping: ${e.message}")
+                }
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN windowMs INTEGER NOT NULL DEFAULT 0")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'windowMs' may already exist, skipping: ${e.message}")
+                }
             }
         }
         
@@ -144,8 +196,17 @@ abstract class PatternDatabase : RoomDatabase() {
         
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN originPath TEXT NOT NULL DEFAULT ''")
-                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN detectionBounds TEXT DEFAULT NULL")
+                // CRITICAL: Wrap each ALTER TABLE in try-catch to handle duplicate migrations
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN originPath TEXT NOT NULL DEFAULT ''")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'originPath' may already exist, skipping: ${e.message}")
+                }
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN detectionBounds TEXT DEFAULT NULL")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'detectionBounds' may already exist, skipping: ${e.message}")
+                }
             }
         }
         

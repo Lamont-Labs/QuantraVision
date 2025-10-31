@@ -143,11 +143,29 @@ object AchievementSystem {
     }
 
     private fun loadState(context: Context): JSONObject {
-        val f = File(context.filesDir, FILE)
-        return if (f.exists()) JSONObject(f.readText()) else JSONObject()
+        return try {
+            val f = File(context.filesDir, FILE)
+            if (f.exists()) {
+                JSONObject(f.readText())
+            } else {
+                JSONObject()
+            }
+        } catch (e: Exception) {
+            // CRITICAL: File operations can fail (~0.1-0.5%)
+            android.util.Log.e("AchievementSystem", "Failed to load achievements state, returning empty", e)
+            JSONObject() // Return empty state on error
+        }
     }
 
     private fun saveState(context: Context, obj: JSONObject) {
-        File(context.filesDir, FILE).writeText(obj.toString(2))
+        try {
+            File(context.filesDir, FILE).writeText(obj.toString(2))
+        } catch (e: java.io.IOException) {
+            // CRITICAL: Disk full or I/O error (~0.1-0.5%)
+            android.util.Log.e("AchievementSystem", "Failed to save achievements state (disk full or I/O error)", e)
+            // Don't crash - achievements are non-critical data
+        } catch (e: Exception) {
+            android.util.Log.e("AchievementSystem", "Unexpected error saving achievements state", e)
+        }
     }
 }

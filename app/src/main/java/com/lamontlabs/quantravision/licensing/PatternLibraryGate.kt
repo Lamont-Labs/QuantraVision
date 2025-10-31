@@ -1,6 +1,9 @@
 package com.lamontlabs.quantravision.licensing
 
 import android.content.Context
+import android.util.Log
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.lamontlabs.quantravision.PatternMatch
 
 /**
@@ -78,6 +81,29 @@ object PatternLibraryGate {
         "three_white_soldiers"
     )
 
+    /**
+     * Get SharedPreferences with fallback to regular prefs if encrypted fails
+     * CRITICAL: Prevents users from losing purchased patterns on encryption failure
+     */
+    private fun getPrefsWithFallback(context: Context): android.content.SharedPreferences {
+        return try {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            EncryptedSharedPreferences.create(
+                context,
+                "qv_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            Log.w("PatternLibraryGate", "Encrypted prefs failed, falling back to regular prefs", e)
+            // CRITICAL: Fallback to regular SharedPreferences to prevent locking out paying users
+            context.getSharedPreferences("qv_billing_prefs", Context.MODE_PRIVATE)
+        }
+    }
+    
     /**
      * Get current license tier
      */

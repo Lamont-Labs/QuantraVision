@@ -18,18 +18,28 @@ import androidx.security.crypto.MasterKey
  */
 object BookFeatureGate {
     
-    private fun getSecurePrefs(context: Context) = runCatching {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        EncryptedSharedPreferences.create(
-            context,
-            "qv_secure_prefs",
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }.getOrNull()
+    /**
+     * Get SharedPreferences with fallback to regular prefs if encrypted fails
+     * CRITICAL: Prevents users from losing book access on encryption failure
+     */
+    private fun getSecurePrefs(context: Context): android.content.SharedPreferences? {
+        return try {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            EncryptedSharedPreferences.create(
+                context,
+                "qv_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            android.util.Log.w("BookFeatureGate", "Encrypted prefs failed, falling back to regular prefs", e)
+            // CRITICAL: Fallback to regular SharedPreferences to prevent locking out paying users
+            context.getSharedPreferences("qv_billing_prefs", Context.MODE_PRIVATE)
+        }
+    }
 
     /**
      * Check if user has access to the trading book.
