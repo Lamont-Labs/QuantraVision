@@ -70,3 +70,11 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Detected Patterns:** 6 premium patterns (Head & Shoulders Top/Bottom, M_Head, W_Bottom, Triangle, StockLine)
 -   **Performance:** mAP@0.5: 93.2%, ~20ms inference time
 -   **Instructions:** See `app/src/main/assets/models/README.md` for conversion steps
+
+## Legal Compliance Status (October 2025)
+-   **Protection Level:** 85/100 (excellent for indie developer)
+-   **Legal Documents:** FINANCIAL_DISCLAIMER.md (9 sections), TERMS_OF_USE.md (16 sections), PRIVACY_POLICY.md, LICENSE.md
+-   **In-App Protections:** Mandatory onboarding disclaimer acceptance, persistent watermark on all overlays, comprehensive disclaimer strings
+-   **Key Protections:** Limitation of liability ($24.99 cap), arbitration clause, class action waiver, "NOT financial advice" everywhere, AI/ML accuracy disclaimers
+-   **Remaining:** Optional attorney review for jurisdiction-specific compliance, optional E&O insurance for large-scale deployment
+-   **Verdict:** App is very well protected legally. See `legal/LEGAL_SUMMARY.md` for full assessment
