@@ -4,10 +4,12 @@ pluginManagement {
     mavenCentral()
     gradlePluginPortal()
   }
-  plugins {
-    id("com.android.application") version "8.7.3"
-    id("org.jetbrains.kotlin.android") version "2.1.0"
-    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == "com.google.devtools.ksp") {
+        useModule("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${requested.version}")
+      }
+    }
   }
 }
 
