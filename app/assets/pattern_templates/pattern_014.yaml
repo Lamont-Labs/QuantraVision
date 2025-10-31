@@ -1,9 +1,0 @@
-name: "Bullish Pennant Continuation"
-type: "bullish"
-timeframe: "1h"
-confidence_threshold: 0.74
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_014.png"
-description: "Short-term bullish continuation pattern forming after strong upward move. Small symmetrical triangle consolidation followed by breakout continuation. Indicates brief pause before resuming uptrend momentum."

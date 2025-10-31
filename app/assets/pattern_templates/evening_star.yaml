@@ -1,5 +1,0 @@
-name: "Evening Star"
-image: "pattern_templates/evening_star_ref.png"
-threshold: 0.76
-description: >
-  Three-candle bearish reversal: long green, small indecision, long red closing inside first.

@@ -1,5 +1,0 @@
-name: "Exhaustion Gap"
-image: "pattern_templates/exhaustion_gap_ref.png"
-threshold: 0.79
-description: >
-  Late-trend gap that reverses quickly. Signals trend fatigue and reversal risk.

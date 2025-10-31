@@ -1,6 +1,0 @@
-name: "Hammer"
-image: "pattern_templates/hammer_ref.png"
-threshold: 0.72
-description: >
-  Single candlestick with long lower shadow and small body near top.
-  Signals potential bullish reversal after decline.

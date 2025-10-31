@@ -1,9 +1,0 @@
-name: "Rectangle Consolidation"
-type: "neutral"
-timeframe: "1d"
-confidence_threshold: 0.75
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_046.png"
-description: "Horizontal price channel with parallel support and resistance. Price oscillates between levels showing equilibrium. Breakout direction determines next trend, making this a neutral continuation pattern."

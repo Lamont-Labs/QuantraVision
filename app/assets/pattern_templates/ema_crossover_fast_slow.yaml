@@ -1,5 +1,0 @@
-name: "EMA Fast/Slow Crossover"
-image: "pattern_templates/ema_crossover_fast_slow_ref.png"
-threshold: 0.76
-description: >
-  Short EMA crosses long EMA. Direction defines trend bias.

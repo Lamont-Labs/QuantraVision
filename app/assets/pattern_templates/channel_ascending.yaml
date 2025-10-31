@@ -1,5 +1,0 @@
-name: "Ascending Channel"
-image: "pattern_templates/channel_ascending_ref.png"
-threshold: 0.83
-description: >
-  Parallel upward trendlines. Bounces at lower boundary in uptrends.

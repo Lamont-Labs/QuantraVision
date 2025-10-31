@@ -1,9 +1,0 @@
-name: "Bullish Piercing Line"
-type: "bullish"
-timeframe: "1h"
-confidence_threshold: 0.76
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_005.png"
-description: "Two-candle bullish reversal where a strong bullish candle opens below the previous bearish candle's close and closes above its midpoint. Demonstrates strong buying interest and potential trend reversal."

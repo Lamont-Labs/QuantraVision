@@ -1,5 +1,0 @@
-name: "Morning Star"
-image: "pattern_templates/morning_star_ref.png"
-threshold: 0.76
-description: >
-  Three-candle bullish reversal: long red, small indecision, long green closing inside first.

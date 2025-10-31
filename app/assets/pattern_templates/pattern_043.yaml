@@ -1,9 +1,0 @@
-name: "Doji Star"
-type: "neutral"
-timeframe: "1h"
-confidence_threshold: 0.71
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_043.png"
-description: "Single candle with virtually identical open and close prices, forming a cross or plus sign. Indicates market indecision and equilibrium between buyers and sellers. Context determines directional bias."

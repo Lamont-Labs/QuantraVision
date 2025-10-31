@@ -1,6 +1,0 @@
-name: "Bearish Flag"
-image: "pattern_templates/flag_bearish_ref.png"
-threshold: 0.82
-description: >
-  Sharp decline followed by short consolidation channel slanting up.
-  Predicts continuation of downtrend.

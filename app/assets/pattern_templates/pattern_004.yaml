@@ -1,9 +1,0 @@
-name: "Inverted Hammer"
-type: "bullish"
-timeframe: "15m"
-confidence_threshold: 0.72
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_004.png"
-description: "Bullish reversal candlestick with small body at lower end and long upper shadow. Found at downtrend bottoms, indicates buyers testing higher prices and potential shift in market sentiment despite initial rejection."

@@ -1,5 +1,0 @@
-name: "Outside Bar"
-image: "pattern_templates/outside_bar_ref.png"
-threshold: 0.71
-description: >
-  Current candle engulfs prior range. Volatility expansion and possible reversal.

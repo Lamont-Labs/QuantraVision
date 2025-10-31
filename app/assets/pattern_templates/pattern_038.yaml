@@ -1,9 +1,0 @@
-name: "RSI Overbought Reversal"
-type: "bearish"
-timeframe: "15m"
-confidence_threshold: 0.70
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_038.png"
-description: "RSI rises above 70 (overbought) then reverses below this threshold with bearish divergence. Indicates buying exhaustion and potential reversal. Strongest when combined with resistance level confluence."

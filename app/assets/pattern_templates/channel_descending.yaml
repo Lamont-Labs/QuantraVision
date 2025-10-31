@@ -1,5 +1,0 @@
-name: "Descending Channel"
-image: "pattern_templates/channel_descending_ref.png"
-threshold: 0.83
-description: >
-  Parallel downward trendlines. Rebounds at upper boundary in downtrends.

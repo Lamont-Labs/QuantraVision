@@ -1,5 +1,0 @@
-name: "Horizontal Channel"
-image: "pattern_templates/channel_horizontal_ref.png"
-threshold: 0.82
-description: >
-  Range-bound consolidation between flat support and resistance.

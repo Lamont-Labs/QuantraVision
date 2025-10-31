@@ -1,9 +1,0 @@
-name: "Bollinger Band Squeeze"
-type: "neutral"
-timeframe: "4h"
-confidence_threshold: 0.76
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_050.png"
-description: "Bollinger Bands contract to narrow range indicating extremely low volatility. Signals consolidation before significant move. Direction uncertain until breakout occurs. Volatility expansion typically follows."

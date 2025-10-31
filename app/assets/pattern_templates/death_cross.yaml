@@ -1,5 +1,0 @@
-name: "Death Cross (50/200 MA)"
-image: "pattern_templates/death_cross_ref.png"
-threshold: 0.78
-description: >
-  50-day moving average crosses below 200-day. Long-term bearish signal.

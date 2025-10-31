@@ -8,7 +8,7 @@
 
 [![Android](https://img.shields.io/badge/Android-15%20(API%2035)-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.1.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20offline-blue.svg)](legal/PRIVACY_POLICY.md)
 
 [Features](#-features) • [Tech Stack](#-tech-stack) • [Download](#-download) • [Pricing](#-pricing) • [Legal](#-legal)
@@ -40,6 +40,14 @@
 - **🧠 Explainable AI**: Full audit trail showing detection reasoning
 - **🔒 Privacy First**: 100% offline - zero data collection
 - **💰 One-Time Purchase**: $9.99-$24.99 - no subscriptions, no renewals
+
+---
+
+## 🚀 Getting Started
+
+**New to QuantraVision?** See [QUICK_START.md](QUICK_START.md) for build instructions.
+
+**Download APK:** [Releases](https://github.com/Lamont-Labs/QuantraVision/releases) • [Google Play](#) (coming soon)
 
 ---
 
@@ -385,17 +393,19 @@ Download from Google Play Store or build from source
 
 ## 📜 License
 
-**Proprietary Software** — All rights reserved.
+**Apache License 2.0**
 
-This application is proprietary software owned by Lamont Labs. You may use the app under the terms outlined in the [Terms of Use](legal/TERMS_OF_USE.md), but you may not:
+Copyright 2025 Jesse J. Lamont / Lamont Labs
 
-- Reverse engineer, decompile, or disassemble the application
-- Redistribute, resell, or sublicense the application
-- Extract or redistribute AI models, pattern libraries, or proprietary algorithms
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
 
-See [LICENSE.md](legal/LICENSE.md) for full terms.
+http://www.apache.org/licenses/LICENSE-2.0
 
-Third-party open-source libraries are used under their respective licenses (Apache 2.0, MIT, GPL-3.0). See `NOTICE.md` for attributions.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+See [LICENSE](LICENSE) for full terms.
+
+**Third-Party Licenses:** This project includes third-party libraries (TensorFlow Lite, OpenCV, Android libraries) each governed by their respective licenses. See `app/src/main/assets/NOTICE.md` for complete attribution.
 
 ---
 
@@ -410,7 +420,7 @@ Third-party open-source libraries are used under their respective licenses (Apac
 
 <div align="center">
 
-**© 2025 Lamont Labs. All rights reserved.**
+**© 2025 Lamont Labs**
 
 **Made with ❤️ for retail traders**
 

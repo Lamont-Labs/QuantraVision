@@ -1,9 +1,0 @@
-name: "Descending Triangle Breakdown"
-type: "bearish"
-timeframe: "4h"
-confidence_threshold: 0.79
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_032.png"
-description: "Continuation pattern with horizontal support and falling resistance. Breakdown below support with volume confirms bearish momentum. Indicates distribution and increasing selling pressure leading to downward breakdown."

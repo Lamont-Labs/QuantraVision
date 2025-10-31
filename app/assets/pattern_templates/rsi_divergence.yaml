@@ -1,6 +1,0 @@
-name: "RSI Divergence"
-image: "pattern_templates/rsi_divergence_ref.png"
-threshold: 0.75
-description: >
-  Occurs when RSI movement diverges from price movement,
-  indicating weakening momentum and possible reversal.

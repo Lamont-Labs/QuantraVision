@@ -1,5 +1,0 @@
-name: "Dark Cloud Cover"
-image: "pattern_templates/dark_cloud_cover_ref.png"
-threshold: 0.73
-description: >
-  After a green candle, a red opens gap-up and closes below midpoint of prior body.

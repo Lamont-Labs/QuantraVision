@@ -1,9 +1,0 @@
-name: "Range-Bound Market"
-type: "neutral"
-timeframe: "1d"
-confidence_threshold: 0.73
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_049.png"
-description: "Extended period of sideways price movement within defined boundaries. No clear trend direction. Oscillators work well in this environment. Await breakout for directional trade opportunities."

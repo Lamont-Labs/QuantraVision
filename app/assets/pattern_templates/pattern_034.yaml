@@ -1,9 +1,0 @@
-name: "Head and Shoulders Top"
-type: "bearish"
-timeframe: "4h"
-confidence_threshold: 0.83
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_034.png"
-description: "Major bearish reversal pattern with three peaks: left shoulder, higher head, and right shoulder. Neckline breakdown confirms reversal. Signals trend change from bullish to bearish with strong downside potential."

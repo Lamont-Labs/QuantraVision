@@ -1,9 +1,0 @@
-name: "Spinning Top"
-type: "neutral"
-timeframe: "15m"
-confidence_threshold: 0.70
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_044.png"
-description: "Small real body centered between long upper and lower shadows. Indicates indecision with neither bulls nor bears in control. Market uncertainty and potential consolidation before next directional move."

@@ -1,9 +1,0 @@
-name: "Falling Three Methods"
-type: "bearish"
-timeframe: "1h"
-confidence_threshold: 0.73
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_029.png"
-description: "Bearish continuation pattern with a long bearish candle, followed by three small bullish candles contained within its range, then another strong bearish candle. Signals temporary consolidation before downtrend continuation."

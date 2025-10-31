@@ -1,9 +1,0 @@
-name: "Hammer Formation"
-type: "bullish"
-timeframe: "1d"
-confidence_threshold: 0.75
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_003.png"
-description: "Single candlestick pattern with small body at upper end and long lower shadow, indicating rejection of lower prices. Appears at bottom of downtrends, signaling potential bullish reversal as buyers regain control."

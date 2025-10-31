@@ -1,5 +1,0 @@
-name: "MACD Bearish Divergence"
-image: "pattern_templates/macd_bearish_divergence_ref.png"
-threshold: 0.76
-description: >
-  Price makes higher highs while MACD makes lower highs. Momentum shift to sellers.

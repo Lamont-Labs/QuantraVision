@@ -1,9 +1,0 @@
-name: "Symmetrical Triangle"
-type: "neutral"
-timeframe: "4h"
-confidence_threshold: 0.74
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_047.png"
-description: "Converging trendlines with lower highs and higher lows forming triangle. Represents compression and uncertainty. Breakout direction (up or down) determines next move, neutral until confirmed."

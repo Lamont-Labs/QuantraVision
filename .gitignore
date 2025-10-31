@@ -139,3 +139,6 @@ obj/
 version.properties
 lint-results*.xml
 lint-results*.html
+
+# Archived auxiliary folders
+/archive/

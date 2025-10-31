@@ -1,9 +1,0 @@
-name: "Volume Surge Breakout"
-type: "bullish"
-timeframe: "1h"
-confidence_threshold: 0.76
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_019.png"
-description: "Price breaks resistance with volume exceeding 2x average, confirming strong buying interest. High volume validates breakout authenticity and reduces false breakout probability. Signals strong bullish conviction."

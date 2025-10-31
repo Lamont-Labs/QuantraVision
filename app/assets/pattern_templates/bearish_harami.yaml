@@ -1,5 +1,0 @@
-name: "Bearish Harami"
-image: "pattern_templates/bearish_harami_ref.png"
-threshold: 0.72
-description: >
-  Small red body contained within prior larger green. Potential upside stall.

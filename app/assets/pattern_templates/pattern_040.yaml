@@ -1,9 +1,0 @@
-name: "Distribution Volume Pattern"
-type: "bearish"
-timeframe: "1h"
-confidence_threshold: 0.76
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_040.png"
-description: "High volume on down days with low volume on up days indicates institutional distribution. Smart money selling into strength. Pattern suggests accumulating selling pressure before significant decline."

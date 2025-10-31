@@ -1,6 +1,0 @@
-name: "Rising Wedge"
-image: "pattern_templates/rising_wedge_ref.png"
-threshold: 0.78
-description: >
-  Bearish reversal pattern where price rises within narrowing boundaries.
-  Typically signals breakdown once lower line breaches.

@@ -1,9 +1,0 @@
-name: "Three White Soldiers"
-type: "bullish"
-timeframe: "1h"
-confidence_threshold: 0.78
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_001.png"
-description: "Three consecutive long bullish candles with progressively higher closes, each opening within the previous candle's body. Strong bullish reversal signal indicating sustained buying pressure and potential trend change."

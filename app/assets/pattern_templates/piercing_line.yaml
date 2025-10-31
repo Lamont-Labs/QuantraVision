@@ -1,5 +1,0 @@
-name: "Piercing Line"
-image: "pattern_templates/piercing_line_ref.png"
-threshold: 0.73
-description: >
-  After a red candle, a green opens gap-down and closes above midpoint of prior body.

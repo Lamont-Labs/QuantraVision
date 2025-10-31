@@ -1,9 +1,0 @@
-name: "Hanging Man"
-type: "bearish"
-timeframe: "4h"
-confidence_threshold: 0.73
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_025.png"
-description: "Bearish reversal candlestick with small body at upper end and long lower shadow. Found at uptrend tops, indicates sellers testing lower prices and potential shift in market sentiment despite temporary rejection."

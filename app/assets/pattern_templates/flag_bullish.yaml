@@ -1,6 +1,0 @@
-name: "Bullish Flag"
-image: "pattern_templates/flag_bullish_ref.png"
-threshold: 0.82
-description: >
-  Sharp upward move followed by short consolidation channel slanting down.
-  Indicates continuation after breakout.

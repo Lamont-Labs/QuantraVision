@@ -1,9 +1,0 @@
-name: "Three Black Crows"
-type: "bearish"
-timeframe: "1h"
-confidence_threshold: 0.78
-scale_min: 0.8
-scale_max: 1.2
-scale_stride: 0.05
-image_path: "pattern_022.png"
-description: "Three consecutive long bearish candles with progressively lower closes, each opening within the previous candle's body. Strong bearish reversal signal indicating sustained selling pressure and potential trend change."
