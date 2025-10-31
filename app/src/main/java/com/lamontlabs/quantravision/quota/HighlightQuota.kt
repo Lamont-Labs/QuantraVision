@@ -9,43 +9,69 @@ import java.util.Date
 
 /**
  * HighlightQuota
- * Limits total pattern highlight events before Pro is required.
+ * Enforces daily pattern highlight quota for Free tier.
+ * Option 1 Pricing: 3 highlights per day, resets daily at midnight.
  * Persistent, device-local, deterministic JSON: highlight_quota.json
  */
 object HighlightQuota {
 
     private const val FILE = "highlight_quota.json"
-    private const val FREE_LIMIT_DEFAULT = 5
+    private const val DAILY_LIMIT = 3 // Free tier gets 3 highlights per day
 
-    data class State(val count: Int, val limit: Int, val firstUseDate: String)
+    data class State(
+        val count: Int,
+        val limit: Int,
+        val lastResetDate: String,
+        val firstUseDate: String
+    )
 
     fun state(context: Context): State {
         val f = File(context.filesDir, FILE)
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+        
         if (!f.exists()) {
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
             val o = JSONObject().apply {
                 put("count", 0)
-                put("limit", FREE_LIMIT_DEFAULT)
+                put("limit", DAILY_LIMIT)
+                put("lastResetDate", today)
                 put("firstUse", today)
             }
             f.writeText(o.toString(2))
-            return State(0, FREE_LIMIT_DEFAULT, today)
+            return State(0, DAILY_LIMIT, today, today)
         }
+        
         val o = JSONObject(f.readText())
+        val lastReset = o.optString("lastResetDate", today)
+        
+        // Check if we need to reset the daily counter
+        if (lastReset != today) {
+            // New day - reset counter
+            val updatedO = JSONObject().apply {
+                put("count", 0)
+                put("limit", DAILY_LIMIT)
+                put("lastResetDate", today)
+                put("firstUse", o.optString("firstUse", today))
+            }
+            f.writeText(updatedO.toString(2))
+            return State(0, DAILY_LIMIT, today, o.optString("firstUse", today))
+        }
+        
         return State(
             o.optInt("count", 0),
-            o.optInt("limit", FREE_LIMIT_DEFAULT),
-            o.optString("firstUse", "unknown")
+            o.optInt("limit", DAILY_LIMIT),
+            lastReset,
+            o.optString("firstUse", today)
         )
     }
 
     fun increment(context: Context) {
         val f = File(context.filesDir, FILE)
-        val st = state(context)
+        val st = state(context) // This already handles daily reset
         val newCount = (st.count + 1).coerceAtMost(Int.MAX_VALUE)
         val o = JSONObject().apply {
             put("count", newCount)
             put("limit", st.limit)
+            put("lastResetDate", st.lastResetDate)
             put("firstUse", st.firstUseDate)
         }
         f.writeText(o.toString(2))

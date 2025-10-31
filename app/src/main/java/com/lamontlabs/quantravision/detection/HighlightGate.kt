@@ -11,9 +11,10 @@ import com.lamontlabs.quantravision.quota.HighlightQuota
  * HighlightGate
  * Enforces tier-based pattern access and highlight quota.
  * 
- * Free: 3-5 highlights, 30 basic patterns
- * Standard: Unlimited highlights, 30 basic patterns
- * Pro: Unlimited highlights, all 108 patterns
+ * Option 1 Pricing:
+ * Free: 3 highlights/day, 10 basic patterns
+ * Standard ($14.99): Unlimited highlights, 30 core patterns
+ * Pro ($29.99): Unlimited highlights, all 108 patterns
  */
 object HighlightGate {
 

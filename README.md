@@ -287,43 +287,61 @@ QuantraVision isn't just pattern detection—it's your complete trading co-pilot
 
 ## 💰 Pricing
 
-### Free Tier (Always Free)
-- 3-5 pattern highlights (quota-limited)
-- 30 core patterns (basic library)
+### 🆓 Free Tier (Always Free)
+- **3 pattern highlights per day** (resets daily)
+- **10 essential patterns** (H&S, Double Top/Bottom, Triangles, basic candlesticks)
 - Watermarked overlays
-- 25 education lessons
+- 5 education lessons (teaser)
 - No credit card required
+- **Perfect trial experience**
 
-### Standard Edition — $9.99 USD (One-Time)
-✅ **Unlimited pattern highlights**  
-✅ **30 core patterns** (most common patterns)  
-✅ **Regime Navigator** (market condition analysis)
-✅ Remove watermarks  
-✅ Enhanced detection algorithms  
-✅ Export PDFs  
-✅ 25 interactive lessons  
-✅ Pattern performance analytics  
+### 📚 Trading Book Add-On — $2.99 USD (Optional)
+✅ **Complete trading book** (in-app viewer)  
+✅ **Standalone purchase** OR free with Standard/Pro  
+✅ **100% offline** reading experience  
+✅ **Educational content** from our trading experts  
 
-### Pro Edition — $24.99 USD (One-Time)
-✅ **All Standard features**  
+*(Free when you purchase Standard or Pro!)*
+
+### ⭐ Standard Edition — $14.99 USD (One-Time)
+✅ **Unlimited pattern highlights** (no daily limits)  
+✅ **30 core patterns** (most profitable patterns)  
+✅ **📊 Regime Navigator** (market condition analysis - know WHEN to trade!)  
+✅ **Free trading book included** ($2.99 value)  
+✅ **Remove watermarks**  
+✅ **Export PDFs**  
+✅ **All 25 education lessons**  
+✅ **Pattern performance analytics**  
+
+💡 **Best Value:** Get Regime Navigator + 30 patterns + free book ($17.98 value) for only $14.99!
+
+### 🚀 Pro Edition — $29.99 USD (One-Time)
+✅ **Everything in Standard**  
 ✅ **Full 108-pattern library** (all patterns unlocked)  
 
-**🚀 Exclusive Intelligence Stack:**
-✅ **Pattern-to-Plan Engine** (educational trade scenarios)  
-✅ **Behavioral Guardrails** (discipline coaching, cool-downs)  
-✅ **Proof Capsules** (shareable tamper-proof receipts)  
+**🎯 Exclusive 4-Feature Intelligence Stack (NO competitor has these):**
+✅ **📊 Regime Navigator** (market condition analysis)  
+✅ **🎯 Pattern-to-Plan Engine** (educational trade scenarios with entry/exit/risk)  
+✅ **🛡️ Behavioral Guardrails** (discipline coaching prevents emotional trading)  
+✅ **📦 Proof Capsules** (shareable tamper-proof detection receipts)  
 
-**🎯 Professional Features:**
-✅ **Voice alerts & announcements** (TTS)  
-✅ **Haptic feedback patterns**  
-✅ **Predictive detection** (40-85% formation)  
+**📱 Professional Features:**
+✅ **Voice alerts & announcements** (hands-free TTS)  
+✅ **Haptic feedback patterns** (glanceable alerts)  
+✅ **Predictive detection** (40-85% formation early warning)  
 ✅ **Pattern invalidation alerts**  
 ✅ **Auto-scanning watchlist**  
 ✅ **Backtesting engine** (CSV import)  
 ✅ **Advanced analytics dashboard**  
 ✅ **Priority support**  
 
-**No Subscriptions. No Renewals. Buy once, own forever.**
+🎁 **Bonus:** Free trading book included ($2.99 value)
+
+---
+
+**✨ No Subscriptions. No Renewals. Buy once, own forever.**
+
+**💰 Fair Pricing Promise:** Every tier offers clear value. Free tier is a genuine trial. Standard gets you Regime Navigator (our biggest competitive advantage). Pro unlocks the complete intelligence stack that NO other trading app offers.
 
 ---
 

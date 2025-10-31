@@ -54,12 +54,14 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Licensing
 
-**Billing System**: Google Play In-App Billing with three-tier structure
-- **Free Tier**: 3-5 pattern highlights (quota-limited), 30 core patterns, watermarked overlays
-- **Standard ($9.99)**: Unlimited highlights, 30 core patterns, remove watermarks, PDF export, all 25 lessons
-- **Pro ($24.99)**: All Standard features + full 108-pattern library + voice alerts + haptic feedback + predictive detection + backtesting
-- HighlightGate enforces highlight quota for Free tier
-- PatternLibraryGate restricts pattern access by tier (30 core patterns for Free/Standard, all 108 for Pro)
+**Billing System**: Google Play In-App Billing with four-tier structure (Option 1 Pricing)
+- **Free Tier**: 3 highlights/day (daily reset), 10 essential patterns, watermarked overlays, 5 lessons (trial experience)
+- **Book Add-On ($2.99)**: Complete trading book (standalone purchase OR free with Standard/Pro)
+- **Standard ($14.99)**: Unlimited highlights, 30 core patterns, Regime Navigator, free book, remove watermarks, PDF export, all 25 lessons
+- **Pro ($29.99)**: All Standard features + full 108-pattern library + 4 exclusive intelligence features (Pattern-to-Plan, Behavioral Guardrails, Proof Capsules) + voice alerts + haptic feedback + predictive detection + backtesting
+- HighlightGate enforces daily highlight quota for Free tier (3/day)
+- PatternLibraryGate restricts pattern access by tier (10 patterns for Free, 30 for Standard, all 108 for Pro)
+- BookFeatureGate controls trading book access ($2.99 standalone or free with Standard/Pro)
 - BillingManager validates purchases via Google Play and stores entitlements in encrypted SharedPreferences
 - StandardFeatureGate and ProFeatureGate read from secure encrypted prefs (cannot be spoofed)
 - No subscription model - lifetime access with single purchase

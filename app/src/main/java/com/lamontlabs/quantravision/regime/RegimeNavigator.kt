@@ -14,6 +14,8 @@ import kotlin.math.sqrt
  * On-device market regime classifier that analyzes chart conditions to provide
  * educational context for detected patterns.
  * 
+ * TIER REQUIREMENT: Requires Standard tier ($14.99) or Pro tier ($29.99)
+ * 
  * LEGAL: This is an EDUCATIONAL TOOL ONLY. Regime classifications are NOT
  * market predictions, forecasts, or trading recommendations. See legal/ADVANCED_FEATURES_DISCLAIMER.md
  * 
@@ -83,6 +85,14 @@ object RegimeNavigator {
         volumes: List<Double>? = null
     ): MarketRegime = withContext(Dispatchers.Default) {
         
+        // CRITICAL TIER GATE: Regime Navigator requires Standard tier ($14.99) or higher
+        if (!com.lamontlabs.quantravision.licensing.StandardFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Regime Navigator requires Standard tier ($14.99) or Pro tier ($29.99). " +
+                "Upgrade to unlock market condition analysis."
+            )
+        }
+        
         // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Regime Navigator")
         
@@ -127,6 +137,14 @@ object RegimeNavigator {
         match: PatternMatch,
         regime: MarketRegime
     ): AnnotatedPattern = withContext(Dispatchers.Default) {
+        
+        // CRITICAL TIER GATE: Regime Navigator requires Standard tier ($14.99) or higher
+        if (!com.lamontlabs.quantravision.licensing.StandardFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Regime Navigator requires Standard tier ($14.99) or Pro tier ($29.99). " +
+                "Upgrade to unlock market condition analysis."
+            )
+        }
         
         // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Regime Navigator")
