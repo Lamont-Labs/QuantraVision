@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/quantravision-logo.png" alt="QuantraVision Logo" width="400"/>
+
 # QuantraVision
 
 ### 🚀 Advanced AI Pattern Detection for Traders
