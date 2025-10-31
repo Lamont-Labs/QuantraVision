@@ -1,6 +1,8 @@
 package com.lamontlabs.quantravision.ui.screens
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -154,10 +158,12 @@ fun BookReaderScreen(
     onNavigateBack: () -> Unit
 ) {
     var bookContent by remember { mutableStateOf("Loading...") }
+    var coverBitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     
     LaunchedEffect(Unit) {
         bookContent = loadBookContent(context)
+        coverBitmap = loadBookCover(context)
         isLoading = false
     }
     
@@ -203,6 +209,19 @@ fun BookReaderScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
+                // Book cover at the top
+                coverBitmap?.let { bitmap ->
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "The Friendly Trader book cover",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(3f / 4f)
+                            .padding(bottom = 24.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                
                 Text(
                     text = bookContent,
                     style = MaterialTheme.typography.bodyLarge.copy(
@@ -249,5 +268,14 @@ private suspend fun loadBookContent(context: Context): String = withContext(Disp
         reader.readText()
     } catch (e: Exception) {
         "Error loading book: ${e.message}\n\nPlease contact support."
+    }
+}
+
+private suspend fun loadBookCover(context: Context): android.graphics.Bitmap? = withContext(Dispatchers.IO) {
+    try {
+        val inputStream = context.assets.open("book/cover.png")
+        BitmapFactory.decodeStream(inputStream)
+    } catch (e: Exception) {
+        null // Cover is optional, book still works without it
     }
 }
