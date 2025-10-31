@@ -22,12 +22,12 @@ fun Paywall(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Unlock QuantraVision", style = MaterialTheme.typography.headlineSmall)
-        Text("Free: 3-5 highlights, 30 core patterns. Upgrade for unlimited access.")
+        Text("Free: 3 highlights/day, 10 basic patterns. Upgrade for unlimited access.")
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
-                Text("Standard — \$9.99 (one-time)")
-                Text("• Unlimited highlights\n• 30 core patterns\n• Enhanced detection\n• Remove watermarks\n• Export PDFs\n• All 25 lessons")
+                Text("Standard — \$14.99 (one-time)")
+                Text("• Unlimited highlights\n• 30 core patterns\n• Regime Navigator\n• Free trading book\n• Remove watermarks\n• Export PDFs\n• All 25 lessons")
                 Button(onClick = onStandard, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     Text("Upgrade to Standard")
                 }
@@ -35,8 +35,8 @@ fun Paywall(
         }
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
-                Text("Pro — \$24.99 (one-time)")
-                Text("• All Standard features\n• Full 108-pattern library\n• Voice alerts & haptic feedback\n• Predictive detection (40-85% formation)\n• Pattern invalidation alerts\n• Auto-scanning watchlist\n• Backtesting engine")
+                Text("Pro — \$29.99 (one-time)")
+                Text("• All Standard features\n• Full 108-pattern library\n• 4 Intelligence Features (Regime Navigator, Pattern-to-Plan, Behavioral Guardrails, Proof Capsules)\n• Free trading book\n• Voice alerts & haptic feedback\n• Predictive detection\n• Auto-scanning watchlist\n• Backtesting engine")
                 Button(onClick = onPro, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     Text("Go Pro")
                 }

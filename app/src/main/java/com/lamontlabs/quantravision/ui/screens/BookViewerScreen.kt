@@ -125,12 +125,13 @@ fun BookLockedScreen(onNavigateBack: () -> Unit) {
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            Button(
-                onClick = { /* TODO: Navigate to upgrade screen */ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Upgrade to Unlock")
-            }
+            Text(
+                text = "💡 Tip: Visit Settings or Dashboard to access the upgrade screen",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
