@@ -222,7 +222,7 @@ United States, without regard to conflict of law principles.
 1. ✅ **DONE**: Comprehensive legal docs created
 2. ✅ **DONE**: In-app disclaimer acceptance flow
 3. ✅ **DONE**: Persistent watermark on overlays
-4. ⏳ **TODO**: Specify your state in Terms of Use Section 14
+4. ✅ **DONE**: California jurisdiction specified in Terms of Use Section 14
 5. ⏳ **RECOMMENDED**: Consult attorney for 1-hour review (~$200-$500)
 
 ### After Launch:
