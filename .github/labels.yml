@@ -1,0 +1,136 @@
+# GitHub Issue Labels Configuration
+# Provides consistent labeling across the project
+
+# Priority Labels
+- name: "priority: critical"
+  color: "d73a4a"
+  description: "Critical issue requiring immediate attention"
+
+- name: "priority: high"
+  color: "ff6b6b"
+  description: "High priority issue"
+
+- name: "priority: medium"
+  color: "fbca04"
+  description: "Medium priority issue"
+
+- name: "priority: low"
+  color: "0e8a16"
+  description: "Low priority issue"
+
+# Type Labels
+- name: "type: bug"
+  color: "d73a4a"
+  description: "Something isn't working correctly"
+
+- name: "type: feature"
+  color: "0075ca"
+  description: "New feature or enhancement request"
+
+- name: "type: documentation"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+- name: "type: performance"
+  color: "ff9800"
+  description: "Performance improvements"
+
+- name: "type: security"
+  color: "d73a4a"
+  description: "Security-related issue"
+
+- name: "type: refactor"
+  color: "fbca04"
+  description: "Code refactoring"
+
+- name: "type: test"
+  color: "1d76db"
+  description: "Testing improvements"
+
+# Area Labels
+- name: "area: ui"
+  color: "c5def5"
+  description: "User interface related"
+
+- name: "area: ml"
+  color: "006b75"
+  description: "Machine learning / AI related"
+
+- name: "area: detection"
+  color: "006b75"
+  description: "Pattern detection related"
+
+- name: "area: education"
+  color: "5319e7"
+  description: "Educational content related"
+
+- name: "area: billing"
+  color: "fbca04"
+  description: "In-app billing related"
+
+- name: "area: legal"
+  color: "d4c5f9"
+  description: "Legal / compliance related"
+
+- name: "area: overlay"
+  color: "c5def5"
+  description: "Real-time overlay related"
+
+- name: "area: alerts"
+  color: "ff9800"
+  description: "Voice/haptic/visual alerts"
+
+# Status Labels
+- name: "status: in-progress"
+  color: "0e8a16"
+  description: "Currently being worked on"
+
+- name: "status: blocked"
+  color: "d73a4a"
+  description: "Blocked by another issue or dependency"
+
+- name: "status: needs-review"
+  color: "fbca04"
+  description: "Needs code review"
+
+- name: "status: needs-testing"
+  color: "1d76db"
+  description: "Needs testing"
+
+- name: "status: wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+# Community Labels
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+
+# Automated Labels
+- name: "dependencies"
+  color: "0366d6"
+  description: "Pull requests that update a dependency file"
+
+- name: "automated"
+  color: "ededed"
+  description: "Automated by bots"
+
+- name: "github-actions"
+  color: "000000"
+  description: "GitHub Actions related"

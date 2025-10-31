@@ -1,0 +1,39 @@
+# CODEOWNERS - Automated PR Review Assignment
+# Each line represents a rule for which files are owned by which team/person
+# These owners will be automatically requested for review when someone opens a PR
+
+# Global owner - Jesse J. Lamont (Lamont Labs)
+* @Lamont-Labs
+
+# Core app code
+/app/src/main/java/com/lamontlabs/quantravision/ @Lamont-Labs
+
+# ML/AI optimization code - requires ML expertise
+/app/src/main/java/com/lamontlabs/quantravision/ml/ @Lamont-Labs
+/docs/ai/ @Lamont-Labs
+
+# Build configuration - requires Android build expertise
+*.gradle @Lamont-Labs
+*.gradle.kts @Lamont-Labs
+/gradle/ @Lamont-Labs
+
+# Legal documents - requires legal review
+/legal/ @Lamont-Labs
+/docs/legal-reference/ @Lamont-Labs
+
+# Security-related files - requires security review
+SECURITY.md @Lamont-Labs
+/security/ @Lamont-Labs
+
+# Documentation - can be reviewed by anyone familiar with the project
+/docs/ @Lamont-Labs
+*.md @Lamont-Labs
+
+# GitHub configuration
+/.github/ @Lamont-Labs
+
+# Pattern templates - requires pattern recognition expertise
+/pattern_templates/ @Lamont-Labs
+
+# Store assets - requires design/marketing review
+/store_assets/ @Lamont-Labs
