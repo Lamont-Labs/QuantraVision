@@ -23,18 +23,27 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Professional Analytics:** Tracks pattern performance (accuracy, frequency, confidence) and identifies hot patterns.
 -   **Advanced Trading Tools:** Smart Watchlist, PDF Report Generator, Backtesting Engine (CSV import, historical validation), Multi-Chart Comparison, and Pattern Similarity Search.
 -   **AI Transparency:** Provides a detection audit trail with reasoning, factor breakdown, and a warning system.
--   **Hands-Free Operation:** Supports 16 natural language voice commands.
+-   **Hands-Free Operation:** Supports 16 natural language voice commands with voice announcements (TTS) for pattern alerts.
 -   **Education System:** 25 interactive lessons with quizzes and certification.
 -   **Privacy & Performance:** 100% offline, no data collection, deterministic results, fast on-device processing.
 -   **Indicator Detection:** Integrates IndicatorDetector with LegendOCR for robust legend token recognition and visual cue detection, handling complex image processing and resource management.
 
+**Unique Competitive Features (October 2025):**
+-   **Voice Announcements:** Android TextToSpeech announces pattern detections hands-free ("Head and Shoulders forming - 75% complete, strong confidence"). Supports high confidence alerts, forming pattern notifications, and invalidation warnings. All offline, no internet required.
+-   **Haptic Feedback:** Multi-modal vibration patterns for different pattern types (2 buzzes = bullish, 3 buzzes = bearish, long buzz = high confidence, double long = invalidated). Provides glanceable alerts without looking at screen.
+-   **Pattern Strength Scoring:** Three-tier categorization system with color coding - 🔴 Weak (40-60%), 🟡 Moderate (60-80%), 🟢 Strong (80-100%). Includes formation percentage calculation and confidence grading (A+ to F).
+-   **Pattern Invalidation Detection:** Real-time detection when patterns break their formation rules (e.g., neckline broken, triangle diverged). Alerts via voice + haptic + UI notification. Stores invalidation history in database for analysis.
+-   **Enhanced Smart Watchlist:** Auto-scanning watchlist with proactive alerts. Identifies top opportunities, tracks bullish/bearish pattern counts, and provides pattern clustering across timeframes. WatchlistScanner runs on configurable intervals (default 5 minutes).
+-   **Multi-Modal Alert System:** Centralized AlertManager singleton coordinates voice, haptic, and visual alerts. Settings persist via SharedPreferences. All alerts 100% offline and privacy-preserving.
+
 **System Design Choices:**
--   **Modularity:** Features are organized into distinct modules (e.g., `gamification/`, `analytics/`, `prediction/`).
+-   **Modularity:** Features are organized into distinct modules (e.g., `gamification/`, `analytics/`, `prediction/`, `alerts/`, `watchlist/`).
 -   **Integration:** `PatternDetector` integrates with `FeatureIntegration`, `HighlightGate` manages quotas, and `DashboardScreen` provides central navigation.
 -   **Asynchronous Operations:** All file I/O operations utilize `Dispatchers.IO`.
 -   **Feature Gating:** Pro features are managed via `BillingManager`/`LicenseManager`.
--   **Resource Management:** Implements careful resource handling, especially for image processing, to prevent leaks and ensure stable performance (e.g., stride-safe YUV to Bitmap conversion, proper ML Kit TextRecognizer closure).
+-   **Resource Management:** Implements careful resource handling, especially for image processing, to prevent leaks and ensure stable performance (e.g., stride-safe YUV to Bitmap conversion, proper ML Kit TextRecognizer closure, singleton AlertManager for TTS/Vibrator lifecycle).
 -   **ProGuard Configuration:** Comprehensive keep rules are in place for ML Kit and OpenCV to prevent issues in release builds.
+-   **Alert Architecture:** Thread-safe singleton AlertManager with double-checked locking pattern coordinates all voice, haptic, and invalidation alerts across the app. Uses application context and SharedPreferences for lifecycle safety and preference persistence.
 
 ## External Dependencies
 -   **Java:** GraalVM 22.3
