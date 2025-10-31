@@ -2,6 +2,7 @@ package com.lamontlabs.quantravision.analysis
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.lamontlabs.quantravision.PatternDetector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -64,16 +65,19 @@ class HybridPatternDetector(private val context: Context) {
     /**
      * Run hybrid detection on chart screenshot.
      * Executes both ML and template detection in parallel for performance.
+     * 
+     * @param bitmap The chart image to analyze
+     * @param originPath The source file path or identifier for provenance tracking
      */
-    suspend fun detect(bitmap: Bitmap): List<HybridDetection> = withContext(Dispatchers.Default) {
+    suspend fun detect(bitmap: Bitmap, originPath: String = "unknown"): List<HybridDetection> = withContext(Dispatchers.Default) {
         val results = mutableListOf<HybridDetection>()
         
         // Run both detectors in parallel
         val mlJob = async { 
-            if (mlDetectionEnabled) runMLDetection(bitmap) else emptyList()
+            if (mlDetectionEnabled) runMLDetection(bitmap, originPath) else emptyList()
         }
         val templateJob = async { 
-            if (templateDetectionEnabled) runTemplateDetection(bitmap) else emptyList()
+            if (templateDetectionEnabled) runTemplateDetection(bitmap, originPath) else emptyList()
         }
         
         val mlResults = mlJob.await()
@@ -93,7 +97,7 @@ class HybridPatternDetector(private val context: Context) {
     /**
      * Run YOLOv8 ML-based detection
      */
-    private suspend fun runMLDetection(bitmap: Bitmap): List<HybridDetection> {
+    private suspend fun runMLDetection(bitmap: Bitmap, originPath: String): List<HybridDetection> {
         return try {
             val mlDetections = yoloDetector.detect(bitmap)
             
@@ -106,7 +110,8 @@ class HybridPatternDetector(private val context: Context) {
                     metadata = mapOf(
                         "classIndex" to detection.classIndex,
                         "modelVersion" to "YOLOv8s-v1.0",
-                        "chartAgnostic" to true
+                        "chartAgnostic" to true,
+                        "originPath" to originPath
                     )
                 )
             }
@@ -119,17 +124,59 @@ class HybridPatternDetector(private val context: Context) {
     /**
      * Run OpenCV template-based detection
      */
-    private suspend fun runTemplateDetection(bitmap: Bitmap): List<HybridDetection> {
+    private suspend fun runTemplateDetection(bitmap: Bitmap, originPath: String): List<HybridDetection> {
         return try {
-            // Use existing PatternDetector
-            // Note: This is a simplified integration - actual implementation 
-            // depends on your existing PatternDetector interface
+            // Use new bitmap-based API from PatternDetector with originPath
+            val patternMatches = templateDetector.detectFromBitmap(bitmap, originPath)
             
-            val templateResults = templateDetector.scanStaticAssets()
-            
-            // Convert to HybridDetection format
-            // TODO: Integrate with your actual PatternDetector results
-            emptyList<HybridDetection>()
+            // Convert PatternMatch results to HybridDetection format
+            patternMatches.map { match ->
+                // Log warning if detectionBounds is null
+                if (match.detectionBounds == null) {
+                    Timber.w("Template detection succeeded but bounds unavailable for pattern: ${match.patternName}")
+                }
+                
+                // Parse detectionBounds string ("x,y,w,h") to RectF
+                val boundingBox = match.detectionBounds?.let { bounds ->
+                    try {
+                        val parts = bounds.split(",").map { it.toFloat() }
+                        if (parts.size == 4) {
+                            android.graphics.RectF(
+                                parts[0],           // left (x)
+                                parts[1],           // top (y)
+                                parts[0] + parts[2], // right (x + width)
+                                parts[1] + parts[3]  // bottom (y + height)
+                            )
+                        } else {
+                            Timber.w("Malformed detectionBounds (expected 4 parts, got ${parts.size}): $bounds")
+                            null
+                        }
+                    } catch (e: Exception) {
+                        Timber.w(e, "Failed to parse detectionBounds: $bounds")
+                        null
+                    }
+                }
+                
+                // Track whether bounds are available
+                val boundsAvailable = boundingBox != null
+                
+                HybridDetection(
+                    patternName = match.patternName,
+                    confidence = match.confidence.toFloat(),
+                    method = DetectionMethod.TEMPLATE_OPENCV,
+                    boundingBox = boundingBox,
+                    metadata = mapOf(
+                        "timeframe" to match.timeframe,
+                        "scale" to match.scale,
+                        "consensusScore" to match.consensusScore,
+                        "windowMs" to match.windowMs,
+                        "timestamp" to match.timestamp,
+                        "detectionMethod" to "multi-scale-template-matching",
+                        "originPath" to match.originPath,
+                        "boundsAvailable" to boundsAvailable
+                    )
+                )
+            }
             
         } catch (e: Exception) {
             Timber.e(e, "Template detection failed")

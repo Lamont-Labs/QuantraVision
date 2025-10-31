@@ -12,8 +12,10 @@ data class PatternMatch(
     val timestamp: Long,
     val timeframe: String,
     val scale: Double,
-    val consensusScore: Double,   // NEW: consensus across scales
-    val windowMs: Long            // NEW: temporal stability window contribution
+    val consensusScore: Double,   // Consensus across scales
+    val windowMs: Long,           // Temporal stability window contribution
+    val originPath: String = "",  // Source image path (e.g., "validation/test_1234567890.png")
+    val detectionBounds: String? = null  // Bounding box as "x,y,w,h" or null if unavailable
 )
 
 @Dao
@@ -56,7 +58,7 @@ interface PredictedPatternDao {
     suspend fun deleteOld(before: Long)
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class], version = 4)
+@Database(entities = [PatternMatch::class, PredictedPattern::class], version = 5)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
@@ -71,7 +73,7 @@ abstract class PatternDatabase : RoomDatabase() {
                     PatternDatabase::class.java,
                     "PatternMatch.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                 INSTANCE = instance
                 instance
@@ -107,6 +109,13 @@ abstract class PatternDatabase : RoomDatabase() {
                         formationVelocity REAL NOT NULL
                     )
                 """.trimIndent())
+            }
+        }
+        
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN originPath TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE PatternMatch ADD COLUMN detectionBounds TEXT DEFAULT NULL")
             }
         }
     }

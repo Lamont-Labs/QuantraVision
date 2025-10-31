@@ -51,7 +51,9 @@ class ValidationFramework(private val context: Context) {
         val detectionMethod: String,
         val confidence: Float,
         val correct: Boolean,
-        val processingTimeMs: Long
+        val processingTimeMs: Long,
+        val boundingBox: android.graphics.RectF? = null,
+        val originPath: String? = null
     )
     
     data class AccuracyReport(
@@ -109,6 +111,51 @@ class ValidationFramework(private val context: Context) {
                 }
                 
                 appendLine()
+                
+                // Show bounding box statistics
+                val resultsWithBounds = results.count { it.boundingBox != null }
+                val resultsWithoutBounds = results.size - resultsWithBounds
+                
+                appendLine("Detection Location Info:")
+                appendLine("  Detections with bounding boxes: $resultsWithBounds/${results.size}")
+                
+                if (resultsWithoutBounds > 0) {
+                    appendLine("  Detections without location data: $resultsWithoutBounds/${results.size}")
+                }
+                
+                // Show sample detections with location data
+                if (resultsWithBounds > 0) {
+                    val samplesWithBounds = results.filter { it.boundingBox != null }.take(5)
+                    if (samplesWithBounds.isNotEmpty()) {
+                        appendLine()
+                        appendLine("  Sample Detections (with location):")
+                        samplesWithBounds.forEach { result ->
+                            val bbox = result.boundingBox!!
+                            val status = if (result.correct) "✓" else "✗"
+                            appendLine("    $status ${result.testCase.imageFile.name}: " +
+                                "${result.detectedPatterns.firstOrNull() ?: "None"} " +
+                                "at [${bbox.left.toInt()},${bbox.top.toInt()}] " +
+                                "${bbox.width().toInt()}x${bbox.height().toInt()}px")
+                        }
+                    }
+                }
+                
+                // Show sample detections without location data
+                if (resultsWithoutBounds > 0) {
+                    val samplesWithoutBounds = results.filter { it.boundingBox == null }.take(5)
+                    if (samplesWithoutBounds.isNotEmpty()) {
+                        appendLine()
+                        appendLine("  Sample Detections (no location data):")
+                        samplesWithoutBounds.forEach { result ->
+                            val status = if (result.correct) "✓" else "✗"
+                            appendLine("    $status ${result.testCase.imageFile.name}: " +
+                                "${result.detectedPatterns.firstOrNull() ?: "None"} " +
+                                "(No location data)")
+                        }
+                    }
+                }
+                
+                appendLine()
                 appendLine("=" .repeat(60))
             }
         }
@@ -137,9 +184,7 @@ class ValidationFramework(private val context: Context) {
             try {
                 val result = validateSingleCase(testCase)
                 results.add(result)
-                
-                val status = if (result.correct) "✓" else "✗"
-                Timber.i("$status ${testCase.imageFile.name}: Expected ${testCase.expectedPattern}, Got ${result.detectedPatterns}")
+                // Per-result logging is now done in validateSingleCase with location info
                 
             } catch (e: Exception) {
                 Timber.e(e, "Validation failed for ${testCase.imageFile.name}")
@@ -158,8 +203,8 @@ class ValidationFramework(private val context: Context) {
         
         val startTime = System.currentTimeMillis()
         
-        // Run hybrid detection
-        val detections = hybridDetector.detect(bitmap)
+        // Run hybrid detection with actual file path for provenance tracking
+        val detections = hybridDetector.detect(bitmap, testCase.imageFile.absolutePath)
         
         val processingTime = System.currentTimeMillis() - startTime
         
@@ -178,6 +223,17 @@ class ValidationFramework(private val context: Context) {
         val correct = detected
         val detectionMethod = bestMatch?.method?.name ?: "NONE"
         val confidence = bestMatch?.confidence ?: 0f
+        val boundingBox = bestMatch?.boundingBox
+        val originPath = bestMatch?.metadata?.get("originPath") as? String
+        
+        // Log per-result information with detection location
+        val locationInfo = if (boundingBox != null) {
+            "at [${boundingBox.left.toInt()},${boundingBox.top.toInt()}, ${boundingBox.width().toInt()}x${boundingBox.height().toInt()}]"
+        } else {
+            "location unknown"
+        }
+        val status = if (correct) "✓" else "✗"
+        Timber.i("$status ${testCase.imageFile.name}: Expected ${testCase.expectedPattern}, Got ${detectedPatterns.joinToString(", ")} $locationInfo")
         
         bitmap.recycle()
         
@@ -188,7 +244,9 @@ class ValidationFramework(private val context: Context) {
             detectionMethod = detectionMethod,
             confidence = confidence,
             correct = correct,
-            processingTimeMs = processingTime
+            processingTimeMs = processingTime,
+            boundingBox = boundingBox,
+            originPath = originPath
         )
     }
     

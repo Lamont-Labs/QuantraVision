@@ -1,6 +1,7 @@
 package com.lamontlabs.quantravision
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.lamontlabs.quantravision.calibration.ConfidenceCalibrator
 import com.lamontlabs.quantravision.detection.ConsensusEngine
@@ -22,16 +23,43 @@ class PatternDetector(private val context: Context) {
     private val templateLibrary = TemplateLibrary(context)
     private val db = PatternDatabase.getInstance(context)
     private val provenance = Provenance(context)
+    
+    // Cache loaded templates to prevent reloading on every detection call
+    @Volatile
+    private var cachedTemplates: List<Template>? = null
+    private val templateLock = Any()
 
+    /**
+     * Load templates once and cache them for reuse.
+     * Thread-safe lazy loading with double-checked locking.
+     */
+    private fun getTemplates(): List<Template> {
+        cachedTemplates?.let { return it }
+        
+        synchronized(templateLock) {
+            cachedTemplates?.let { return it }
+            
+            val loaded = try {
+                templateLibrary.loadTemplates()
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load templates")
+                emptyList()
+            }
+            
+            cachedTemplates = loaded
+            Timber.i("Templates loaded and cached: ${loaded.size} patterns")
+            return loaded
+        }
+    }
+    
     suspend fun scanStaticAssets() = withContext(Dispatchers.Default) {
         val dir = File(context.filesDir, "demo_charts")
         if (!dir.exists()) return@withContext
         
-        // Load templates with error handling
-        val templates = try {
-            templateLibrary.loadTemplates()
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to load templates")
+        // Use cached templates
+        val templates = getTemplates()
+        if (templates.isEmpty()) {
+            Timber.w("No templates available for scanning")
             return@withContext
         }
 
@@ -64,7 +92,15 @@ class PatternDetector(private val context: Context) {
                                     val mmr = Core.minMaxLoc(res)
                                     val conf = mmr.maxVal
                                     if (conf >= tpl.threshold) {
-                                        scaleMatches.add(ScaleMatch(patternName, conf, s))
+                                        scaleMatches.add(ScaleMatch(
+                                            patternName = patternName,
+                                            confidence = conf,
+                                            scale = s,
+                                            matchX = mmr.maxLoc.x,
+                                            matchY = mmr.maxLoc.y,
+                                            templateWidth = tpl.image.cols().toDouble(),
+                                            templateHeight = tpl.image.rows().toDouble()
+                                        ))
                                     }
                                 } finally {
                                     res.release()
@@ -77,6 +113,12 @@ class PatternDetector(private val context: Context) {
                     val calibrated = ConfidenceCalibrator.calibrate(patternName, consensus.consensusScore)
                     val temporal = TemporalTracker.update("${patternName}:${imageFile.name}", calibrated, System.currentTimeMillis())
 
+                    // Find best match for bounding box
+                    val bestMatch = scaleMatches.maxByOrNull { it.confidence }
+                    val detectionBounds = bestMatch?.let {
+                        "${it.matchX.toInt()},${it.matchY.toInt()},${it.templateWidth.toInt()},${it.templateHeight.toInt()}"
+                    }
+
                     val match = PatternMatch(
                         patternName = patternName,
                         confidence = calibrated,
@@ -84,7 +126,9 @@ class PatternDetector(private val context: Context) {
                         timeframe = tfLabel,
                         scale = consensus.bestScale,
                         consensusScore = consensus.consensusScore,
-                        windowMs = 7000L
+                        windowMs = 7000L,
+                        originPath = "demo/${imageFile.name}",
+                        detectionBounds = detectionBounds
                     )
                     
                     db.patternDao().insert(match)
@@ -110,6 +154,127 @@ class PatternDetector(private val context: Context) {
         
         // Run pattern predictions after detection completes (Pro-only feature)
         runPredictions()
+    }
+    
+    /**
+     * Detect patterns from a single Bitmap image.
+     * Uses multi-scale template matching with consensus and calibration.
+     * Returns structured results instead of storing in database.
+     * 
+     * @param bitmap The chart image to analyze
+     * @param originPath The source file path or identifier for provenance tracking
+     * @return List of detected pattern matches
+     */
+    suspend fun detectFromBitmap(bitmap: Bitmap, originPath: String = "unknown"): List<PatternMatch> = withContext(Dispatchers.Default) {
+        val results = mutableListOf<PatternMatch>()
+        
+        // Use cached templates to avoid reloading on every call
+        val templates = getTemplates()
+        if (templates.isEmpty()) {
+            Timber.w("No templates available for detection")
+            return@withContext emptyList()
+        }
+        
+        val input = Mat()
+        try {
+            // Convert bitmap to grayscale Mat
+            Utils.bitmapToMat(bitmap, input)
+            Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
+            
+            // Estimate timeframe from chart
+            val est = TimeframeEstimator.estimateFromBitmap(bitmap)
+            val tfLabel = est.timeframe.label
+            
+            // Group templates by pattern name
+            val grouped = templates.groupBy { it.name }
+            
+            // Detect each pattern
+            grouped.forEach { (patternName, family) ->
+                val scaleMatches = mutableListOf<ScaleMatch>()
+                
+                // Multi-scale template matching
+                family.forEach { tpl ->
+                    val cfg = ScaleSpace.ScaleConfig(tpl.scaleMin, tpl.scaleMax, tpl.scaleStride)
+                    for (s in ScaleSpace.scales(cfg)) {
+                        val scaled = ScaleSpace.resizeForScale(input, s)
+                        val res = Mat()
+                        try {
+                            Imgproc.matchTemplate(scaled, tpl.image, res, Imgproc.TM_CCOEFF_NORMED)
+                            val mmr = Core.minMaxLoc(res)
+                            val conf = mmr.maxVal
+                            if (conf >= tpl.threshold) {
+                                scaleMatches.add(ScaleMatch(
+                                    patternName = patternName,
+                                    confidence = conf,
+                                    scale = s,
+                                    matchX = mmr.maxLoc.x,
+                                    matchY = mmr.maxLoc.y,
+                                    templateWidth = tpl.image.cols().toDouble(),
+                                    templateHeight = tpl.image.rows().toDouble()
+                                ))
+                            }
+                        } finally {
+                            res.release()
+                            scaled.release()
+                        }
+                    }
+                }
+                
+                // Guard against empty scaleMatches
+                if (scaleMatches.isEmpty()) {
+                    Timber.w("No scale matches found for pattern: $patternName (threshold not met)")
+                    return@forEach
+                }
+                
+                // Compute consensus across scales
+                val consensus = ConsensusEngine.compute(patternName, scaleMatches) ?: return@forEach
+                
+                // Calibrate confidence
+                val calibrated = ConfidenceCalibrator.calibrate(patternName, consensus.consensusScore)
+                
+                // Apply temporal tracking with stable content-based ID
+                val timestamp = System.currentTimeMillis()
+                val stableId = "${patternName}:validation_${timestamp}"
+                val temporal = TemporalTracker.update(stableId, calibrated, timestamp)
+                
+                // Find best match for bounding box
+                val bestMatch = scaleMatches.maxByOrNull { it.confidence }
+                val detectionBounds = bestMatch?.let {
+                    "${it.matchX.toInt()},${it.matchY.toInt()},${it.templateWidth.toInt()},${it.templateHeight.toInt()}"
+                }
+                
+                // Log warning if bounds are missing
+                if (detectionBounds == null) {
+                    Timber.w("Pattern detected but bounding box unavailable: $patternName (no best match found)")
+                }
+                
+                // Create pattern match result
+                val match = PatternMatch(
+                    patternName = patternName,
+                    confidence = calibrated,
+                    timestamp = timestamp,
+                    timeframe = tfLabel,
+                    scale = consensus.bestScale,
+                    consensusScore = consensus.consensusScore,
+                    windowMs = 7000L,
+                    originPath = originPath,
+                    detectionBounds = detectionBounds
+                )
+                
+                results.add(match)
+                
+                Timber.d("Detected: $patternName (conf=${String.format("%.3f", calibrated)}, scale=${String.format("%.2f", consensus.bestScale)})")
+            }
+            
+            Timber.i("Detection complete: ${results.size} patterns found [tf=$tfLabel]")
+            
+        } catch (e: Exception) {
+            Timber.e(e, "Detection from bitmap failed")
+        } finally {
+            input.release()
+        }
+        
+        results
     }
     
     private suspend fun runPredictions() = withContext(Dispatchers.IO) {
@@ -184,5 +349,13 @@ class PatternDetector(private val context: Context) {
         }
     }
 
-    data class ScaleMatch(val patternName: String, val confidence: Double, val scale: Double)
+    data class ScaleMatch(
+        val patternName: String, 
+        val confidence: Double, 
+        val scale: Double,
+        val matchX: Double = 0.0,
+        val matchY: Double = 0.0,
+        val templateWidth: Double = 0.0,
+        val templateHeight: Double = 0.0
+    )
 }
