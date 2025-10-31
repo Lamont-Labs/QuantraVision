@@ -132,9 +132,15 @@
 
 ---
 
-## High-Risk Jurisdictions
+## High-Risk Jurisdictions & California-Specific Compliance
 
-If you are located in a jurisdiction with strict financial services regulations (e.g., EU MiFID II, UK FCA), consult a local attorney to ensure your use of this app complies with local laws.
+**California Users:**
+
+This application complies with California consumer protection laws. California users have specific rights under the California Consumer Privacy Act (CCPA) and other state regulations. See our Privacy Policy for CCPA compliance details.
+
+**International & EU/UK Users:**
+
+If you are located in a jurisdiction with strict financial services regulations (e.g., EU MiFID II, UK FCA, Singapore MAS), consult a local attorney to ensure your use of this app complies with local laws. This app is designed for U.S. users and may not comply with all international financial services regulations.
 
 ---
 

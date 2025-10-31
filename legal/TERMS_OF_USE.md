@@ -86,9 +86,9 @@ By downloading, installing, or using QuantraVision ("the App"), you agree to be 
 
 **Pricing Tiers:**
 
-1. **Free Tier**: Limited features with watermarked overlays
-2. **Standard ($9.99 one-time)**: Full pattern library, no watermarks
-3. **Pro ($24.99 one-time)**: Advanced features (voice alerts, predictions, backtesting)
+1. **Free Tier**: Limited features with watermarked overlays (always free)
+2. **Standard ($9.99 USD one-time)**: Full 108 pattern library, remove watermarks, enhanced detection
+3. **Pro ($24.99 USD one-time)**: All Standard features plus voice alerts, predictive detection, backtesting, advanced analytics, priority support
 
 **Purchase Terms:**
 
@@ -193,15 +193,23 @@ You agree to indemnify, defend, and hold harmless Lamont Labs, its officers, emp
 
 **Governing Law:**
 
-These Terms are governed by the laws of the United States, without regard to conflict of law principles.
+These Terms are governed by the laws of the State of California, United States, without regard to its conflict of law principles. Any legal action or proceeding arising under these Terms will be brought exclusively in the federal or state courts located in California, and you hereby irrevocably consent to the personal jurisdiction and venue therein.
 
 **Arbitration:**
 
-Any disputes arising from these Terms or your use of the App shall be resolved through binding arbitration in accordance with the American Arbitration Association (AAA) rules, rather than in court.
+Any disputes, claims, or controversies arising from or relating to these Terms or your use of the App shall be resolved through binding individual arbitration administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules, rather than in court. The arbitration will be conducted in California or remotely via videoconference.
+
+**Exceptions to Arbitration:**
+
+Either party may seek injunctive relief in court for intellectual property infringement or misappropriation.
 
 **Class Action Waiver:**
 
-You agree to resolve disputes individually and waive any right to participate in class-action lawsuits or class-wide arbitration.
+YOU AND LAMONT LABS AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING. You expressly waive any right to participate in class-action lawsuits or class-wide arbitration.
+
+**California Consumer Rights:**
+
+Under California Civil Code Section 1789.3, California users are entitled to the following consumer rights notice: If you have a complaint regarding the App or want to request a refund, please contact Lamont Labs at Lamontlabs@proton.me. You may also contact the Complaint Assistance Unit of the Division of Consumer Services of the California Department of Consumer Affairs in writing at 1625 North Market Blvd., Suite N 112, Sacramento, CA 95834, or by telephone at (916) 445-1254 or (800) 952-5210.
 
 ---
 
