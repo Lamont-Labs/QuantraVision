@@ -8,7 +8,7 @@
 
 [![Android](https://img.shields.io/badge/Android-15%20(API%2035)-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.1.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
-[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](legal/LICENSE.md)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20offline-blue.svg)](legal/PRIVACY_POLICY.md)
 
 [Features](#-features) • [Tech Stack](#-tech-stack) • [Download](#-download) • [Pricing](#-pricing) • [Legal](#-legal)
@@ -229,13 +229,15 @@
 ## 💰 Pricing
 
 ### Free Tier (Always Free)
-- Limited pattern detection
+- 3-5 pattern highlights (quota-limited)
+- 30 core patterns (basic library)
 - Watermarked overlays
-- Basic education lessons
+- 25 education lessons
 - No credit card required
 
 ### Standard Edition — $9.99 USD (One-Time)
-✅ Full 108 pattern library  
+✅ **Unlimited pattern highlights**  
+✅ **30 core patterns** (most common patterns)  
 ✅ Remove watermarks  
 ✅ Enhanced detection algorithms  
 ✅ Export PDFs  
@@ -244,6 +246,7 @@
 
 ### Pro Edition — $24.99 USD (One-Time)
 ✅ **All Standard features**  
+✅ **Full 108-pattern library** (all patterns unlocked)  
 ✅ **Voice alerts & announcements** (TTS)  
 ✅ **Haptic feedback patterns**  
 ✅ **Predictive detection** (40-85% formation)  
