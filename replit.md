@@ -173,6 +173,7 @@ Preferred communication style: Simple, everyday language.
 - **Legal Documents**: HTML/Markdown copies of terms, privacy policy, disclaimers
 - **Demo Charts**: Static sample charts for offline testing
 - **Educational Content**: 25 interactive lessons with quizzes
+- **Trading Book**: "The Friendly Trader" by Jesse J. Lamont (10 chapters, in-app reader, 100% offline)
 
 ### Security & Compliance
 - **Ed25519 Cryptography**: Digital signatures for provenance chains

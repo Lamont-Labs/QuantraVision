@@ -47,7 +47,7 @@
 - **🎤 Voice Announcements**: Hands-free alerts via Android TTS
 - **📳 Haptic Feedback**: Multi-modal vibration patterns for glanceable alerts
 - **📊 Auto-Scanning Watchlist**: Proactive pattern monitoring
-- **🎓 Education System**: 25 comprehensive lessons with quizzes
+- **🎓 Education System**: 25 comprehensive lessons with quizzes + integrated trading book ("The Friendly Trader" by Jesse J. Lamont)
 - **🎮 Gamification**: Achievements, streaks, progress tracking
 
 **Privacy & Pricing:**
@@ -296,12 +296,14 @@ QuantraVision isn't just pattern detection—it's your complete trading co-pilot
 - **Perfect trial experience**
 
 ### 📚 Trading Book Add-On — $2.99 USD (Optional)
-✅ **Complete trading book** (in-app viewer)  
+✅ **"The Friendly Trader" by Jesse J. Lamont** (complete 10-chapter guide)  
+✅ **Integrated in-app reader** (100% offline, no internet required)  
 ✅ **Standalone purchase** OR free with Standard/Pro  
-✅ **100% offline** reading experience  
-✅ **Educational content** from our trading experts  
+✅ **Comprehensive trading education:** Market basics, chart reading, risk management, pattern recognition, trading psychology, and more!  
 
-*(Free when you purchase Standard or Pro!)*
+*Topics covered: Market fundamentals, candlestick charts, beginner tools, risk management, pattern spotting, emotional control, first demo trades, and staying in the game.*
+
+🎁 **FREE when you purchase Standard or Pro!**
 
 ### ⭐ Standard Edition — $14.99 USD (One-Time)
 ✅ **Unlimited pattern highlights** (no daily limits)  
