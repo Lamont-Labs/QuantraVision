@@ -1,33 +1,37 @@
 package com.lamontlabs.quantravision.licensing
 
 import android.content.Context
-import org.json.JSONObject
-import java.io.File
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 /**
  * StandardFeatureGate
  * Single source of truth for Standard tier unlock.
- * Active if license_standard.json exists and verifies minimal schema.
+ * SECURE: Reads from BillingManager's encrypted SharedPreferences.
+ * Cannot be spoofed without Google Play purchase.
  */
 object StandardFeatureGate {
-    private const val FILE = "license_standard.json"
+    
+    private fun getSecurePrefs(context: Context) = runCatching {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        EncryptedSharedPreferences.create(
+            context,
+            "qv_secure_prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }.getOrNull()
 
+    /**
+     * Check if Standard tier is active (verified by BillingManager).
+     * Returns true for both STANDARD and PRO tiers (Pro includes Standard features)
+     */
     fun isActive(context: Context): Boolean {
-        val f = File(context.filesDir, FILE)
-        if (!f.exists()) return false
-        return runCatching {
-            val o = JSONObject(f.readText())
-            o.optString("tier", "") == "STANDARD" && o.optLong("issued", 0L) > 0L
-        }.getOrElse { false }
-    }
-
-    /** Offline institutional unlock writer (call only after verification elsewhere). */
-    fun activateOffline(context: Context, issued: Long = System.currentTimeMillis()) {
-        val f = File(context.filesDir, FILE)
-        val o = JSONObject().apply {
-            put("tier", "STANDARD")
-            put("issued", issued)
-        }
-        f.writeText(o.toString(2))
+        val prefs = getSecurePrefs(context) ?: return false
+        val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
+        return tier == "STANDARD" || tier == "PRO"
     }
 }

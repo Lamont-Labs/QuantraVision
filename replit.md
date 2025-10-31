@@ -52,11 +52,14 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Licensing
 
-**Billing System**: Google Play In-App Billing
-- Two tiers: Standard ($9.99) and Pro ($24.99) one-time purchases
-- Free tier includes 3-5 pattern highlights as quota-limited trial
-- HighlightGate enforces quota with upgrade prompts
-- LicenseManager validates purchases offline after initial Google Play verification
+**Billing System**: Google Play In-App Billing with three-tier structure
+- **Free Tier**: 3-5 pattern highlights (quota-limited), 30 core patterns, watermarked overlays
+- **Standard ($9.99)**: Unlimited highlights, 30 core patterns, remove watermarks, PDF export, all 25 lessons
+- **Pro ($24.99)**: All Standard features + full 108-pattern library + voice alerts + haptic feedback + predictive detection + backtesting
+- HighlightGate enforces highlight quota for Free tier
+- PatternLibraryGate restricts pattern access by tier (30 core patterns for Free/Standard, all 108 for Pro)
+- BillingManager validates purchases via Google Play and stores entitlements in encrypted SharedPreferences
+- StandardFeatureGate and ProFeatureGate read from secure encrypted prefs (cannot be spoofed)
 - No subscription model - lifetime access with single purchase
 
 **Security Architecture**:
@@ -95,12 +98,11 @@ Preferred communication style: Simple, everyday language.
 - LiveOverlayController manages frame capture and detection loop
 - Deterministic rendering with provenance logging for each detection
 
-**Feature Gating**: Pro features locked behind billing verification
-- Unlimited pattern highlights (vs 3-5 free)
-- Full 108-pattern template library
-- PDF report generation
-- Proof bundle export with SHA-256 hashes and Ed25519 signatures
-- Backtesting engine with CSV import
+**Feature Gating**: Tier-based feature access with billing verification
+- **Free → Standard**: Unlimited highlights (vs 3-5 quota), remove watermarks, PDF export
+- **Standard → Pro**: Full 108-pattern library (vs 30 core), voice alerts, haptic feedback, predictive detection, pattern invalidation warnings, auto-scanning watchlist, backtesting engine with CSV import, proof bundle export with SHA-256 hashes and Ed25519 signatures
+- PatternLibraryGate.STANDARD_TIER_PATTERNS defines the 30 core patterns (Head & Shoulders, Double Top/Bottom, Triangles, Flags, Pennants, basic candlesticks)
+- HighlightGate applies two-step filtering: (1) tier-based pattern filtering, (2) quota-based highlight limiting for Free tier
 
 ### Performance & Power Management
 

@@ -16,44 +16,44 @@ object PatternLibraryGate {
 
     /**
      * Standard Tier Core Patterns (30 patterns)
-     * Most common and essential patterns for technical analysis
+     * IDs match actual YAML filenames (lowercase snake_case)
      */
-    private val STANDARD_TIER_PATTERNS = setOf(
+    val STANDARD_TIER_PATTERNS = setOf(
         // Major Reversals (10)
-        "Head_and_Shoulders",
-        "Inverse_Head_and_Shoulders",
-        "Double_Top",
-        "Double_Bottom",
-        "Triple_Top",
-        "Triple_Bottom",
-        "Rounding_Top",
-        "Rounding_Bottom",
-        "V_Top",
-        "V_Bottom",
+        "head_and_shoulders",
+        "inverse_head_and_shoulders",
+        "double_top",
+        "double_bottom",
+        "triple_top",
+        "triple_bottom",
+        "rounding_top",
+        "rounding_bottom",
+        "v_top",
+        "v_bottom",
         
         // Major Continuations (10)
-        "Ascending_Triangle",
-        "Descending_Triangle",
-        "Symmetrical_Triangle",
-        "Rising_Wedge",
-        "Falling_Wedge",
-        "Bull_Flag",
-        "Bear_Flag",
-        "Bull_Pennant",
-        "Bear_Pennant",
-        "Cup_and_Handle",
+        "ascending_triangle",
+        "descending_triangle",
+        "symmetrical_triangle",
+        "rising_wedge",
+        "falling_wedge",
+        "bull_flag",
+        "bear_flag",
+        "bull_pennant",
+        "bear_pennant",
+        "cup_and_handle",
         
         // Essential Candlesticks (10)
-        "Doji",
-        "Hammer",
-        "Hanging_Man",
-        "Inverted_Hammer",
-        "Shooting_Star",
-        "Bullish_Engulfing",
-        "Bearish_Engulfing",
-        "Morning_Star",
-        "Evening_Star",
-        "Piercing_Line"
+        "doji",
+        "hammer",
+        "hanging_man",
+        "inverted_hammer",
+        "shooting_star",
+        "bullish_engulfing",
+        "bearish_engulfing",
+        "morning_star",
+        "evening_star",
+        "three_white_soldiers"
     )
 
     /**

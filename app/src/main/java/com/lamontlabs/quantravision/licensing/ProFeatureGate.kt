@@ -1,33 +1,36 @@
 package com.lamontlabs.quantravision.licensing
 
 import android.content.Context
-import org.json.JSONObject
-import java.io.File
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 /**
  * ProFeatureGate
  * Single source of truth for Pro unlock.
- * Active if license_pro.json exists and verifies minimal schema.
+ * SECURE: Reads from BillingManager's encrypted SharedPreferences.
+ * Cannot be spoofed without Google Play purchase.
  */
 object ProFeatureGate {
-    private const val FILE = "license_pro.json"
+    
+    private fun getSecurePrefs(context: Context) = runCatching {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        EncryptedSharedPreferences.create(
+            context,
+            "qv_secure_prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }.getOrNull()
 
+    /**
+     * Check if Pro tier is active (verified by BillingManager)
+     */
     fun isActive(context: Context): Boolean {
-        val f = File(context.filesDir, FILE)
-        if (!f.exists()) return false
-        return runCatching {
-            val o = JSONObject(f.readText())
-            o.optString("tier", "") == "PRO" && o.optLong("issued", 0L) > 0L
-        }.getOrElse { false }
-    }
-
-    /** Offline institutional unlock writer (call only after verification elsewhere). */
-    fun activateOffline(context: Context, issued: Long = System.currentTimeMillis()) {
-        val f = File(context.filesDir, FILE)
-        val o = JSONObject().apply {
-            put("tier", "PRO")
-            put("issued", issued)
-        }
-        f.writeText(o.toString(2))
+        val prefs = getSecurePrefs(context) ?: return false
+        val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
+        return tier == "PRO"
     }
 }
