@@ -6,7 +6,7 @@
 
 ### 🚀 Advanced AI Pattern Detection for Traders
 
-*The world's most comprehensive offline trading pattern recognition system with predictive intelligence, gamification, and explainable AI*
+*Offline trading pattern recognition system with predictive intelligence, gamification, and explainable AI*
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/yourusername/quantravision)
 [![Android](https://img.shields.io/badge/Android-15%20(API%2035)-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
@@ -31,7 +31,7 @@
 
 ## 🎯 Overview
 
-**QuantraVision** is a revolutionary Android application that brings institutional-grade pattern recognition to retail traders. Powered by TensorFlow Lite and OpenCV, it detects 108 unique chart patterns with **predictive intelligence** that shows patterns *before* they complete.
+**QuantraVision** is an Android application that provides pattern recognition for traders. Powered by TensorFlow Lite and OpenCV, it detects 108 unique chart patterns with **predictive intelligence** that shows patterns *before* they complete.
 
 ### Why QuantraVision?
 

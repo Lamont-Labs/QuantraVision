@@ -17,7 +17,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         
         // App description metadata
-        manifestPlaceholders["appDescription"] = "World's best offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
+        manifestPlaceholders["appDescription"] = "Offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
     }
 
     buildTypes {
