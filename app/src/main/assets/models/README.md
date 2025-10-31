@@ -81,8 +81,53 @@ model.export(format='tflite', imgsz=640, int8=True)
 
 ✅ Code integration complete  
 ✅ ML detection pipeline ready  
-⏳ Model file pending (add during Android Studio build)  
-⏳ User must download and convert model locally
+✅ PyTorch model downloaded (84MB - `stockmarket-pattern-yolov8.pt`)  
+⏳ TFLite conversion required (run locally)
+
+---
+
+## ⚠️ IMPORTANT: PyTorch → TFLite Conversion Required
+
+The downloaded `stockmarket-pattern-yolov8.pt` (84MB) is in PyTorch format and **must be converted to TFLite** for Android compatibility.
+
+**Conversion Steps (Run on your local machine):**
+
+```bash
+# 1. Install ultralytics
+pip install ultralytics
+
+# 2. Convert to TFLite with INT8 quantization
+cd app/src/main/assets/models/
+yolo export model=stockmarket-pattern-yolov8.pt format=tflite int8 imgsz=640
+
+# This creates: stockmarket-pattern-yolov8_saved_model/stockmarket-pattern-yolov8_full_integer_quant.tflite
+
+# 3. Rename and replace
+mv stockmarket-pattern-yolov8_saved_model/*_full_integer_quant.tflite stockmarket-pattern-yolov8.tflite
+rm -rf stockmarket-pattern-yolov8_saved_model
+rm stockmarket-pattern-yolov8.pt  # Remove PyTorch file after conversion
+```
+
+**Alternative (Python script):**
+```python
+from ultralytics import YOLO
+
+# Load PyTorch model
+model = YOLO('stockmarket-pattern-yolov8.pt')
+
+# Export to TFLite (INT8 quantized)
+model.export(format='tflite', imgsz=640, int8=True)
+```
+
+**Result:** Creates `stockmarket-pattern-yolov8.tflite` (~22MB after quantization)
+
+---
+
+## Why Conversion Failed in Replit
+
+The automated conversion failed due to disk quota limits when installing TensorFlow and PyTorch dependencies (requires ~2-3GB). 
+
+**Solution:** Convert on your local machine where there are no quota restrictions.
 
 ---
 
