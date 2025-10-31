@@ -62,3 +62,11 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Timber:** 5.0.1
 -   **Gson:** 2.11.0
 -   **SnakeYAML:** 2.3
+
+## YOLOv8 Model Status (October 2025)
+-   **Model Source:** HuggingFace foduucom/stockmarket-pattern-detection-yolov8
+-   **Current State:** PyTorch model downloaded (84MB) - located at `app/src/main/assets/models/stockmarket-pattern-yolov8.pt`
+-   **Conversion Required:** Must be converted to TFLite format on local machine (Replit environment has disk quota limitations)
+-   **Detected Patterns:** 6 premium patterns (Head & Shoulders Top/Bottom, M_Head, W_Bottom, Triangle, StockLine)
+-   **Performance:** mAP@0.5: 93.2%, ~20ms inference time
+-   **Instructions:** See `app/src/main/assets/models/README.md` for conversion steps
