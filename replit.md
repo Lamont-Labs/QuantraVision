@@ -25,6 +25,7 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **AI Transparency:** Provides a detection audit trail with reasoning, factor breakdown, and a warning system.
 -   **Hands-Free Operation:** Supports 16 natural language voice commands with voice announcements (TTS) for pattern alerts.
 -   **Education System:** 25 interactive lessons with quizzes and certification.
+-   **In-App Tutorial:** FirstTimeWalkthrough (6-step animated), QuickStartGuide (collapsible reference), emphasizes correct app opening order (chart app FIRST → QuantraVision → Start Overlay).
 -   **Privacy & Performance:** 100% offline, no data collection, deterministic results, fast on-device processing.
 -   **Indicator Detection:** Integrates IndicatorDetector with LegendOCR for robust legend token recognition and visual cue detection, handling complex image processing and resource management.
 
