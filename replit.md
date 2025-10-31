@@ -6,6 +6,8 @@ QuantraVision is a professional Android application providing advanced AI-powere
 
 The application targets retail traders seeking professional-grade pattern detection without subscriptions or cloud dependencies. Key value propositions include predictive detection at 40-85% pattern formation, multi-modal alerts (voice, haptic, visual), pattern invalidation warnings, and explainable AI with full audit trails.
 
+**Unique Intelligence Stack (v1.0.0):** QuantraVision is differentiated from ALL competitors by 4 game-changing features: (1) Regime Navigator - on-device market condition analysis that tells traders WHEN patterns matter, (2) Pattern-to-Plan Engine - educational trade scenarios with entry/exit/risk calculations, (3) Behavioral Guardrails - discipline coaching that prevents emotional trading, and (4) Proof Capsules - shareable tamper-proof detection receipts for viral growth. All features are 100% offline and include comprehensive legal disclaimers (educational tools only, NOT financial advice).
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

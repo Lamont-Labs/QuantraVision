@@ -18,6 +18,12 @@ Democratize professional-grade technical analysis through privacy-first, offline
 
 **Status:** Production-ready, GitHub published
 
+**🚀 Unique Intelligence Stack (NO competitor has these):**
+- ✅ **Regime Navigator** — Market condition analysis (volatility, trend, liquidity)
+- ✅ **Pattern-to-Plan Engine** — Educational trade scenarios with entry/exit/risk
+- ✅ **Behavioral Guardrails** — Discipline coaching, cool-downs, emotion detection
+- ✅ **Proof Capsules** — Shareable tamper-proof detection receipts
+
 **Core Features:**
 - ✅ 108 chart patterns (YOLOv8 + OpenCV hybrid)
 - ✅ Real-time overlay via MediaProjection

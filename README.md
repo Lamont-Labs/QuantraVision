@@ -31,14 +31,27 @@
 
 ### Why QuantraVision?
 
+**Core AI Detection:**
 - **🔮 Predictive Detection**: Identify patterns at 40-85% formation stages
-- **🎤 Voice Announcements**: Hands-free alerts via Android TTS
-- **📳 Haptic Feedback**: Multi-modal vibration patterns for glanceable alerts
+- **🧠 Explainable AI**: Full audit trail showing detection reasoning
 - **🎯 Pattern Strength Scoring**: Three-tier categorization (Weak/Moderate/Strong)
 - **⚠️ Invalidation Alerts**: Real-time warnings when patterns break formation rules
+
+**Game-Changing Intelligence Features:**
+- **📊 Regime Navigator**: Know WHEN patterns matter - on-device market condition analysis (volatility, trend, liquidity)
+- **🎯 Pattern-to-Plan Engine**: From detection to action in seconds - educational trade scenarios with entry/exit/risk calculations
+- **🛡️ Behavioral Guardrails**: Your trading discipline coach - cool-down timers, streak warnings, emotion detection
+- **📦 Proof Capsules**: Shareable, tamper-proof detection receipts with SHA-256 hashing
+
+**Professional Features:**
+- **🎤 Voice Announcements**: Hands-free alerts via Android TTS
+- **📳 Haptic Feedback**: Multi-modal vibration patterns for glanceable alerts
 - **📊 Auto-Scanning Watchlist**: Proactive pattern monitoring
-- **🧠 Explainable AI**: Full audit trail showing detection reasoning
-- **🔒 Privacy First**: 100% offline - zero data collection
+- **🎓 Education System**: 25 comprehensive lessons with quizzes
+- **🎮 Gamification**: Achievements, streaks, progress tracking
+
+**Privacy & Pricing:**
+- **🔒 100% Offline**: Zero data collection, all processing on-device
 - **💰 One-Time Purchase**: $9.99-$24.99 - no subscriptions, no renewals
 
 ---
@@ -53,11 +66,49 @@
 
 ## ✨ Features
 
+### 🚀 Game-Changing Intelligence Stack
+
+QuantraVision isn't just pattern detection—it's your complete trading co-pilot with exclusive features NO competitor offers:
+
+#### 📊 **Regime Navigator** - *Know WHEN patterns matter*
+- On-device market condition analysis (volatility, trend strength, liquidity)
+- Every pattern annotated: "🟢 High Probability - Strong trend + low volatility"
+- Educational success rate estimates based on market regime
+- Voice: "Head & Shoulders in favorable conditions - historically 85% success rate"
+- **Your Edge:** Competitors show patterns but not context
+
+#### 🎯 **Pattern-to-Plan Engine** - *From detection to action in seconds*
+- Instant educational trade scenarios for every pattern
+- Entry price: "Buy at $152.30 (neckline break)"
+- Stop loss: "$149.80 (pattern invalidates)"
+- Take profit: "$157.50 (measured move)"
+- Position sizing: "Risk 1% = 50 shares max. R:R 2.0"
+- Voice scenarios with full disclaimers
+- **Your Edge:** Bridges the gap between seeing and trading
+
+#### 🛡️ **Behavioral Guardrails** - *Your trading discipline coach*
+- Cool-down timers: Prevents revenge trading after rapid-fire views
+- Loss streak warnings: "You've lost 3 in a row. Take a break."
+- Emotion detection: Flags unusual bursts of activity
+- Voice coaching: "Pattern detected, but you're on tilt. Sit this one out."
+- **Your Edge:** NO competitor addresses emotional trading—the #1 account killer
+
+#### 📦 **Proof Capsules** - *Shareable, tamper-proof trading receipts*
+- Every high-confidence detection becomes a proof capsule
+- SHA-256 hashing prevents tampering
+- Export via QR code or Android share
+- Show off: "Look at this 92% confidence H&S I caught at 9:32am - here's proof"
+- **Your Edge:** Viral growth + community building without cloud dependency
+
+⚠️ **Legal Note:** All advanced features are educational tools only. See [Advanced Features Disclaimer](legal/ADVANCED_FEATURES_DISCLAIMER.md). NOT financial advice.
+
+---
+
 <table>
 <tr>
 <td width="50%">
 
-### 🔥 Unique Competitive Advantages
+### 🔥 Additional Professional Features
 
 #### 1. Voice Announcements (TTS)
 - Hands-free pattern alerts
@@ -246,6 +297,7 @@
 ### Standard Edition — $9.99 USD (One-Time)
 ✅ **Unlimited pattern highlights**  
 ✅ **30 core patterns** (most common patterns)  
+✅ **Regime Navigator** (market condition analysis)
 ✅ Remove watermarks  
 ✅ Enhanced detection algorithms  
 ✅ Export PDFs  
@@ -255,6 +307,13 @@
 ### Pro Edition — $24.99 USD (One-Time)
 ✅ **All Standard features**  
 ✅ **Full 108-pattern library** (all patterns unlocked)  
+
+**🚀 Exclusive Intelligence Stack:**
+✅ **Pattern-to-Plan Engine** (educational trade scenarios)  
+✅ **Behavioral Guardrails** (discipline coaching, cool-downs)  
+✅ **Proof Capsules** (shareable tamper-proof receipts)  
+
+**🎯 Professional Features:**
 ✅ **Voice alerts & announcements** (TTS)  
 ✅ **Haptic feedback patterns**  
 ✅ **Predictive detection** (40-85% formation)  
