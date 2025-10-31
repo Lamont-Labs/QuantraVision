@@ -125,12 +125,23 @@ fun BookLockedScreen(onNavigateBack: () -> Unit) {
             
             Spacer(modifier = Modifier.height(24.dp))
             
+            Button(
+                onClick = { 
+                    // TODO: Navigate to upgrade/billing screen once integrated with AppScaffold
+                    // For now, users can access upgrades through Settings or Dashboard
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Upgrade to Unlock")
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
             Text(
-                text = "💡 Tip: Visit Settings or Dashboard to access the upgrade screen",
+                text = "Note: Upgrade functionality will be available in Settings once billing is fully integrated.",
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
