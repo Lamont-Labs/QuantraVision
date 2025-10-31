@@ -10,17 +10,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.lamontlabs.quantravision.system.PermissionHelper
 
 /**
  * OnboardingFlow
  * Runs on first launch to guide user through overlay, privacy and disclaimer acceptance.
+ * CRITICAL: Dialog CANNOT be dismissed without accepting disclaimer (legal requirement)
  */
 @Composable
 fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
     var step by remember { mutableStateOf(0) }
 
-    Dialog(onDismissRequest = {}) {
+    Dialog(
+        onDismissRequest = { /* DO NOTHING - prevent dismissal */ },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false
+        )
+    ) {
         Surface(
             shape = MaterialTheme.shapes.medium,
             tonalElevation = 8.dp,

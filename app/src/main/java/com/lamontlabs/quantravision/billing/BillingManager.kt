@@ -30,16 +30,23 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     private var productMap: Map<String, ProductDetails> = emptyMap()
     
     private val prefs by lazy {
-        val masterKey = MasterKey.Builder(activity)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        EncryptedSharedPreferences.create(
-            activity,
-            "qv_secure_prefs",
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        try {
+            val masterKey = MasterKey.Builder(activity)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            EncryptedSharedPreferences.create(
+                activity,
+                "qv_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            Log.e("BillingManager", "EncryptedSharedPreferences failed, falling back to regular prefs", e)
+            // CRITICAL: Fallback to regular SharedPreferences to prevent locking out paying users
+            // Better to have unencrypted entitlements than no access at all
+            activity.getSharedPreferences("qv_billing_prefs", Context.MODE_PRIVATE)
+        }
     }
 
     private val unlockedKey = "qv_unlocked_tier"

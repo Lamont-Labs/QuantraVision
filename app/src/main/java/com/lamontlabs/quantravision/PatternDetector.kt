@@ -65,50 +65,56 @@ class PatternDetector(private val context: Context) {
         }
 
         dir.listFiles()?.forEach { imageFile ->
+            var bmp: Bitmap? = null
+            var input: Mat? = null
+            
             try {
-                val bmp = BitmapFactory.decodeFile(imageFile.absolutePath)
+                bmp = BitmapFactory.decodeFile(imageFile.absolutePath)
                 if (bmp == null) {
                     Timber.w("Failed to decode image: ${imageFile.name}")
                     return@forEach
                 }
-                try {
-                    val input = Mat()
-                    try {
-                        Utils.bitmapToMat(bmp, input)
-                        Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
+                
+                input = Mat()
+                Utils.bitmapToMat(bmp, input)
+                Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
 
-                        val est = TimeframeEstimator.estimateFromBitmap(bmp)
-                        val tfLabel = est.timeframe.label
-                        val grouped = templates.groupBy { it.name }
+                val est = TimeframeEstimator.estimateFromBitmap(bmp)
+                val tfLabel = est.timeframe.label
+                val grouped = templates.groupBy { it.name }
 
-                    grouped.forEach { (patternName, family) ->
-                        val scaleMatches = mutableListOf<ScaleMatch>()
-                        family.forEach { tpl ->
-                            val cfg = ScaleSpace.ScaleConfig(tpl.scaleMin, tpl.scaleMax, tpl.scaleStride)
-                            for (s in ScaleSpace.scales(cfg)) {
-                                val scaled = ScaleSpace.resizeForScale(input, s)
-                                val res = Mat()
-                                try {
-                                    Imgproc.matchTemplate(scaled, tpl.image, res, Imgproc.TM_CCOEFF_NORMED)
-                                    val mmr = Core.minMaxLoc(res)
-                                    val conf = mmr.maxVal
-                                    if (conf >= tpl.threshold) {
-                                        scaleMatches.add(ScaleMatch(
-                                            patternName = patternName,
-                                            confidence = conf,
-                                            scale = s,
-                                            matchX = mmr.maxLoc.x,
-                                            matchY = mmr.maxLoc.y,
-                                            templateWidth = tpl.image.cols().toDouble(),
-                                            templateHeight = tpl.image.rows().toDouble()
-                                        ))
-                                    }
-                                } finally {
-                                    res.release()
-                                    scaled.release()
+                grouped.forEach { (patternName, family) ->
+                    val scaleMatches = mutableListOf<ScaleMatch>()
+                    family.forEach { tpl ->
+                        val cfg = ScaleSpace.ScaleConfig(tpl.scaleMin, tpl.scaleMax, tpl.scaleStride)
+                        for (s in ScaleSpace.scales(cfg)) {
+                            var scaled: Mat? = null
+                            var res: Mat? = null
+                            try {
+                                scaled = ScaleSpace.resizeForScale(input, s)
+                                res = Mat()
+                                Imgproc.matchTemplate(scaled, tpl.image, res, Imgproc.TM_CCOEFF_NORMED)
+                                val mmr = Core.minMaxLoc(res)
+                                val conf = mmr.maxVal
+                                if (conf >= tpl.threshold) {
+                                    scaleMatches.add(ScaleMatch(
+                                        patternName = patternName,
+                                        confidence = conf,
+                                        scale = s,
+                                        matchX = mmr.maxLoc.x,
+                                        matchY = mmr.maxLoc.y,
+                                        templateWidth = tpl.image.cols().toDouble(),
+                                        templateHeight = tpl.image.rows().toDouble()
+                                    ))
                                 }
+                            } catch (e: Exception) {
+                                Timber.e(e, "Error in template matching for $patternName at scale $s")
+                            } finally {
+                                res?.release()
+                                scaled?.release()
                             }
                         }
+                    }
 
                     val consensus = ConsensusEngine.compute(patternName, scaleMatches) ?: return@forEach
                     val calibrated = ConfidenceCalibrator.calibrate(patternName, consensus.consensusScore)
@@ -140,19 +146,16 @@ class PatternDetector(private val context: Context) {
                     // Integrate with new features
                     com.lamontlabs.quantravision.integration.FeatureIntegration.onPatternDetected(context, match)
 
-                        provenance.logHash(imageFile, "$patternName@${"%.2f".format(consensus.bestScale)}:${tfLabel}:c${"%.3f".format(calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
-                    }
-
-                        Timber.i("Advanced detection complete for ${imageFile.name} [tf=$tfLabel]")
-                    } finally {
-                        input.release()
-                    }
-                } finally {
-                    bmp.recycle()
+                    provenance.logHash(imageFile, "$patternName@${"%.2f".format(consensus.bestScale)}:${tfLabel}:c${"%.3f".format(calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
                 }
 
+                Timber.i("Advanced detection complete for ${imageFile.name} [tf=$tfLabel]")
+                
             } catch (e: Exception) {
-                Timber.e(e)
+                Timber.e(e, "Error processing image: ${imageFile.name}")
+            } finally {
+                input?.release()
+                bmp?.recycle()
             }
         }
         
@@ -179,9 +182,10 @@ class PatternDetector(private val context: Context) {
             return@withContext emptyList()
         }
         
-        val input = Mat()
+        var input: Mat? = null
         try {
             // Convert bitmap to grayscale Mat
+            input = Mat()
             Utils.bitmapToMat(bitmap, input)
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
             
@@ -200,9 +204,11 @@ class PatternDetector(private val context: Context) {
                 family.forEach { tpl ->
                     val cfg = ScaleSpace.ScaleConfig(tpl.scaleMin, tpl.scaleMax, tpl.scaleStride)
                     for (s in ScaleSpace.scales(cfg)) {
-                        val scaled = ScaleSpace.resizeForScale(input, s)
-                        val res = Mat()
+                        var scaled: Mat? = null
+                        var res: Mat? = null
                         try {
+                            scaled = ScaleSpace.resizeForScale(input, s)
+                            res = Mat()
                             Imgproc.matchTemplate(scaled, tpl.image, res, Imgproc.TM_CCOEFF_NORMED)
                             val mmr = Core.minMaxLoc(res)
                             val conf = mmr.maxVal
@@ -217,9 +223,11 @@ class PatternDetector(private val context: Context) {
                                     templateHeight = tpl.image.rows().toDouble()
                                 ))
                             }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Error in template matching for $patternName at scale $s")
                         } finally {
-                            res.release()
-                            scaled.release()
+                            res?.release()
+                            scaled?.release()
                         }
                     }
                 }
@@ -278,7 +286,7 @@ class PatternDetector(private val context: Context) {
         } catch (e: Exception) {
             Timber.e(e, "Detection from bitmap failed")
         } finally {
-            input.release()
+            input?.release()
         }
         
         results
