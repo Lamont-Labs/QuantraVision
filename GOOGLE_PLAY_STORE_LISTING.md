@@ -195,7 +195,9 @@ Professional-grade tools for retail traders.
 - Dark professional theme (#0A1218 background)
 - Lamont Labs branding
 
-**Status:** ✅ Generated and ready for upload
+**Status:** ✅ Generated, resized to exact specs (1024x500), ready for upload  
+**Actual Dimensions:** 1024x500 pixels (verified)  
+**File Size:** 331 KB
 
 ---
 
