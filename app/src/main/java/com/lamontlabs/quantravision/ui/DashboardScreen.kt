@@ -37,7 +37,8 @@ fun DashboardScreen(
     onBacktesting: () -> Unit = {},
     onSimilarity: () -> Unit = {},
     onMultiChart: () -> Unit = {},
-    onClearHighlights: () -> Unit = {}
+    onClearHighlights: () -> Unit = {},
+    onBook: () -> Unit = {}
 ) {
     var voiceCommandStatus by remember { mutableStateOf<VoiceCommandStatus?>(null) }
     var showStatusMessage by remember { mutableStateOf(false) }
@@ -214,6 +215,11 @@ fun DashboardScreen(
             Button(onClick = onTutorials, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.School, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Tutorials & Quizzes")
+            }
+            
+            Button(onClick = onBook, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Book, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Trading Book")
             }
             
             Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {

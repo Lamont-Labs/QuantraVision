@@ -44,6 +44,7 @@ private fun AppNavigationHost(
         composable("dashboard") {
             DashboardScreen(
                 context = context,
+                onBook = { navController.navigate("book") },
                 onStartScan = { 
                     scope.launch { 
                         try {
@@ -151,6 +152,12 @@ private fun AppNavigationHost(
             ReplayScreen(
                 context = context,
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("book") {
+            com.lamontlabs.quantravision.ui.screens.BookViewerScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }
