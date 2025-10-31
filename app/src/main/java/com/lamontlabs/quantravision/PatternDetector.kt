@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.calibration.ConfidenceCalibrator
 import com.lamontlabs.quantravision.detection.ConsensusEngine
 import com.lamontlabs.quantravision.detection.TemporalTracker
@@ -132,6 +133,9 @@ class PatternDetector(private val context: Context) {
                     )
                     
                     db.patternDao().insert(match)
+
+                    // Trigger alerts for detected pattern
+                    AlertManager.getInstance(context).onPatternDetected(match)
 
                     // Integrate with new features
                     com.lamontlabs.quantravision.integration.FeatureIntegration.onPatternDetected(context, match)
@@ -263,6 +267,9 @@ class PatternDetector(private val context: Context) {
                 
                 results.add(match)
                 
+                // Trigger alerts for detected pattern
+                AlertManager.getInstance(context).onPatternDetected(match)
+                
                 Timber.d("Detected: $patternName (conf=${String.format("%.3f", calibrated)}, scale=${String.format("%.2f", consensus.bestScale)})")
             }
             
@@ -358,4 +365,20 @@ class PatternDetector(private val context: Context) {
         val templateWidth: Double = 0.0,
         val templateHeight: Double = 0.0
     )
+    
+    fun getAlertManager(): AlertManager = AlertManager.getInstance(context)
+    
+    fun getDatabase(): PatternDatabase = db
+    
+    fun setVoiceEnabled(enabled: Boolean) {
+        AlertManager.getInstance(context).setVoiceEnabled(enabled)
+    }
+    
+    fun setHapticEnabled(enabled: Boolean) {
+        AlertManager.getInstance(context).setHapticEnabled(enabled)
+    }
+    
+    fun isVoiceEnabled(): Boolean = AlertManager.getInstance(context).isVoiceEnabled()
+    
+    fun isHapticEnabled(): Boolean = AlertManager.getInstance(context).isHapticEnabled()
 }

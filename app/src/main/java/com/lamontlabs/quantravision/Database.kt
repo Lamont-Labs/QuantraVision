@@ -58,10 +58,40 @@ interface PredictedPatternDao {
     suspend fun deleteOld(before: Long)
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class], version = 5)
+@Entity
+data class InvalidatedPattern(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val patternName: String,
+    val previousConfidence: Double,
+    val finalConfidence: Double,
+    val invalidationReason: String,
+    val timestamp: Long,
+    val timeframe: String = "unknown"
+)
+
+@Dao
+interface InvalidatedPatternDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(invalidation: InvalidatedPattern)
+
+    @Query("SELECT * FROM InvalidatedPattern ORDER BY timestamp DESC")
+    suspend fun getAll(): List<InvalidatedPattern>
+    
+    @Query("SELECT * FROM InvalidatedPattern WHERE timestamp > :since ORDER BY timestamp DESC")
+    suspend fun getRecent(since: Long): List<InvalidatedPattern>
+    
+    @Query("DELETE FROM InvalidatedPattern WHERE timestamp < :before")
+    suspend fun deleteOld(before: Long)
+    
+    @Query("SELECT COUNT(*) FROM InvalidatedPattern WHERE patternName = :name")
+    suspend fun getInvalidationCount(name: String): Int
+}
+
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class], version = 6)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
+    abstract fun invalidatedPatternDao(): InvalidatedPatternDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -73,7 +103,7 @@ abstract class PatternDatabase : RoomDatabase() {
                     PatternDatabase::class.java,
                     "PatternMatch.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .build()
                 INSTANCE = instance
                 instance
@@ -116,6 +146,22 @@ abstract class PatternDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE PatternMatch ADD COLUMN originPath TEXT NOT NULL DEFAULT ''")
                 database.execSQL("ALTER TABLE PatternMatch ADD COLUMN detectionBounds TEXT DEFAULT NULL")
+            }
+        }
+        
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS InvalidatedPattern (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        patternName TEXT NOT NULL,
+                        previousConfidence REAL NOT NULL,
+                        finalConfidence REAL NOT NULL,
+                        invalidationReason TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL,
+                        timeframe TEXT NOT NULL DEFAULT 'unknown'
+                    )
+                """.trimIndent())
             }
         }
     }

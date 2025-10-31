@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.voice.*
 import kotlinx.coroutines.delay
 
@@ -163,6 +164,8 @@ fun DashboardScreen(
         ) {
             ModeSwitchBanner(context) {}
             
+            AlertSettingsCard(context)
+            
             Button(onClick = onStartScan, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Visibility, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Start Detection")
@@ -216,6 +219,71 @@ fun DashboardScreen(
             Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Settings, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Settings")
+            }
+        }
+    }
+}
+
+@Composable
+fun AlertSettingsCard(context: Context) {
+    val alertManager = remember { AlertManager.getInstance(context) }
+    var voiceEnabled by remember { mutableStateOf(alertManager.isVoiceEnabled()) }
+    var hapticEnabled by remember { mutableStateOf(alertManager.isHapticEnabled()) }
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                "Alert Settings",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.RecordVoiceOver, contentDescription = null, 
+                        tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Voice Announcements")
+                }
+                Switch(
+                    checked = voiceEnabled,
+                    onCheckedChange = { enabled ->
+                        voiceEnabled = enabled
+                        alertManager.setVoiceEnabled(enabled)
+                    }
+                )
+            }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Vibration, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Haptic Feedback")
+                }
+                Switch(
+                    checked = hapticEnabled,
+                    onCheckedChange = { enabled ->
+                        hapticEnabled = enabled
+                        alertManager.setHapticEnabled(enabled)
+                    }
+                )
             }
         }
     }

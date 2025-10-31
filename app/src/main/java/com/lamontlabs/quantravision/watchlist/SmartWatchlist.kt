@@ -205,4 +205,8 @@ object SmartWatchlist {
 
         File(context.filesDir, FILE).writeText(json.toString(2))
     }
+    
+    fun createScanner(context: Context, patternDetector: com.lamontlabs.quantravision.PatternDetector): WatchlistScanner {
+        return WatchlistScanner(context, patternDetector)
+    }
 }

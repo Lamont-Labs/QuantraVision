@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision.analysis
 import android.content.Context
 import android.graphics.Bitmap
 import com.lamontlabs.quantravision.PatternDetector
+import com.lamontlabs.quantravision.alerts.PatternStrength
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -50,6 +51,12 @@ class HybridPatternDetector(private val context: Context) {
                 confidence >= 0.6f -> "Medium"
                 else -> "Low"
             }
+        
+        val strength: PatternStrength.StrengthLevel
+            get() = PatternStrength.calculateStrength(confidence.toDouble())
+        
+        val strengthInfo: PatternStrength.StrengthInfo
+            get() = PatternStrength.getStrengthInfo(confidence.toDouble())
     }
     
     /**
