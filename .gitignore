@@ -2,30 +2,140 @@
 # QUANTRAVISION™ — .gitignore
 # ==================================================
 
-# Build / Gradle
+# Gradle
 .gradle/
 build/
 **/build/
+!gradle/wrapper/gradle-wrapper.jar
 local.properties
+gradle.properties.local
 
-# Android Studio
+# Android Studio / IntelliJ IDEA
 .idea/
 *.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/modules.xml
+.idea/.name
+.idea/compiler.xml
+.idea/misc.xml
+.idea/vcs.xml
+.navigation/
+captures/
+*.ipr
+*.iws
+out/
+
+# Android Build Outputs
 *.apk
 *.aab
+*.ap_
+*.dex
+*.class
+output.json
 
-# Signing & credentials
+# Signing & Credentials
 signing.properties
 *.keystore
 *.jks
 pubkey.pem
 private_key.pem
+google-services.json
+release/
 
-# Logs
+# Logs & Debug
 *.log
 crash_logs/
+hs_err_pid*.log
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Kotlin
+.kotlin/
+*.kotlin_module
+
+# Testing
+.externalNativeBuild/
+.cxx/
+obj/
+ndkBuild/
+test-output/
+*.hprof
+
+# Replit-specific
+.cache/
+.config/
+.local/
+.pythonlibs/
 dist/
+__pycache__/
+*.pyc
+.replit
+repl.nix
+poetry.lock
+venv/
+
+# Temporary & Generated
 src_hash.txt
 res_hash.txt
 manifest.json
 signature.txt
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~.nib
+
+# Profiling
+*.hprof
+*.trace
+
+# Proguard
+proguard/
+mapping.txt
+
+# NDK
+obj/
+.externalNativeBuild/
+.cxx/
+
+# Misc
+*.jar
+!gradle/wrapper/*.jar
+version.properties
+lint-results*.xml
+lint-results*.html

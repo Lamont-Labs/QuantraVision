@@ -1,4 +1,0 @@
-{
-  "ignore": ["**/dist/**", "**/app/build/**"],
-  "run": "bash ./scripts/build-debug.sh"
-}
