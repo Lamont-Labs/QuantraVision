@@ -185,12 +185,17 @@ Professional-grade tools for retail traders.
 ## 🎬 Feature Graphic (Required)
 
 **Size:** 1024x500 pixels  
-**Format:** PNG or JPEG  
+**Format:** PNG  
+**File Location:** `store_assets/feature_graphic_1024x500.png` ✅  
 **Content:** 
-- QuantraVision branding
+- QuantraVision branding with cyan accent (#00E5FF)
 - "108 AI Chart Patterns"
 - "100% Offline • No Subscriptions"
-- Dramatic chart visualization
+- Dramatic chart visualization with head & shoulders pattern
+- Dark professional theme (#0A1218 background)
+- Lamont Labs branding
+
+**Status:** ✅ Generated and ready for upload
 
 ---
 
