@@ -78,7 +78,7 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
     // Coroutines - Latest stable
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     // TensorFlow Lite - Latest stable versions
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
