@@ -30,7 +30,7 @@ jobs:
       run: chmod +x gradlew
       
     - name: Build debug APK
-      run: ./gradlew assembleDebug --stacktrace --no-daemon
+      run: ./gradlew assembleDebug --stacktrace --info --no-configuration-cache
       
     - name: Run lint checks
       run: ./gradlew lintDebug --stacktrace --no-daemon
