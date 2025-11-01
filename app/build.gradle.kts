@@ -87,7 +87,7 @@ dependencies {
 
     // TensorFlow Lite - Latest stable versions
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
+    implementation("org.tensorflow:tensorflow-lite-support:0.5.0") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
     }
     implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
@@ -99,7 +99,7 @@ dependencies {
     implementation("androidx.camera:camera-view:1.5.0")
     
     // OpenCV - Latest official Maven Central release
-    implementation("org.opencv:opencv:4.10.0")
+    implementation("org.opencv:opencv:4.12.0")
     
     // ML Kit Text Recognition - Latest stable
     implementation("com.google.mlkit:text-recognition:16.0.1")
