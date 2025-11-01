@@ -132,15 +132,102 @@
 
 ---
 
-## High-Risk Jurisdictions & California-Specific Compliance
+## International Regulatory Warnings
+
+**⚠️ CRITICAL: International Users Must Read**
+
+### Jurisdictions With Strict Financial Services Regulations
+
+**BEFORE using this app, consult local legal counsel if you are located in:**
+
+**European Union (EU/EEA):**
+- MiFID II (Markets in Financial Instruments Directive II) may apply
+- MAR (Market Abuse Regulation) prohibits insider trading and market manipulation
+- Pattern recognition tools may require regulatory approval in some member states
+- **Our Position:** This app is educational software, NOT investment advice under MiFID II
+- **Your Responsibility:** Verify compliance with your country's national implementation of EU directives
+
+**United Kingdom:**
+- Financial Conduct Authority (FCA) authorization may be required for financial software
+- Financial Services and Markets Act 2000 (FSMA) governs investment advice
+- **Our Position:** Educational pattern recognition is NOT a regulated activity under FSMA Section 22
+- **Your Responsibility:** Verify compliance with FCA Handbook and UK securities laws
+
+**Singapore:**
+- Monetary Authority of Singapore (MAS) regulates financial advisory services
+- Securities and Futures Act (SFA) and Financial Advisers Act (FAA) apply
+- **Our Position:** NOT providing financial advisory services under SFA Section 2
+- **Your Responsibility:** Consult MAS guidelines on financial software
+
+**Hong Kong:**
+- Securities and Futures Commission (SFC) licensing requirements
+- Securities and Futures Ordinance (SFO) governs investment advice
+- **Our Position:** NOT providing Type 4 (advising on securities) or Type 9 (asset management) regulated activities
+- **Your Responsibility:** Verify compliance with SFC codes of conduct
+
+**Australia:**
+- Australian Securities and Investments Commission (ASIC) regulates financial products
+- Corporations Act 2001 Section 766B defines financial product advice
+- **Our Position:** Educational pattern recognition is NOT financial product advice
+- **Your Responsibility:** Consult ASIC regulatory guides
+
+**Switzerland:**
+- Swiss Financial Market Supervisory Authority (FINMA) regulations
+- Financial Services Act (FinSA) and Financial Institutions Act (FinIA)
+- **Our Position:** NOT providing financial services under FinSA/FinIA
+- **Your Responsibility:** Verify compliance with Swiss financial services laws
+
+**Dubai/UAE:**
+- Dubai Financial Services Authority (DFSA) and Financial Services Regulatory Authority (FSRA)
+- **Our Position:** NOT authorized to provide financial services in DIFC or ADGM
+- **Your Responsibility:** Verify compliance with UAE financial regulations
+
+**Other High-Risk Jurisdictions:**
+- **Japan**: Financial Services Agency (FSA) - Financial Instruments and Exchange Act
+- **Canada**: Provincial securities commissions (OSC, AMF, ASC, etc.)
+- **New Zealand**: Financial Markets Authority (FMA)
+- **South Korea**: Financial Services Commission (FSC)
+- **India**: Securities and Exchange Board of India (SEBI)
+
+### Prohibited Jurisdictions
+
+**DO NOT USE THIS APP if you are located in:**
+- North Korea
+- Iran
+- Syria
+- Crimea region
+- Cuba (U.S. OFAC sanctions apply)
+- Any jurisdiction where U.S. software is prohibited by sanctions
+
+### Mandatory Legal Consultation
+
+**YOU MUST consult a licensed attorney in your jurisdiction if:**
+1. You are uncertain whether this app constitutes regulated financial services in your country
+2. Local laws require registration or licensing for pattern recognition tools
+3. You are a professional trader subject to regulatory oversight
+4. You intend to use the app for commercial purposes or fund management
+
+### User Compliance Certification
+
+**By using this app, you certify that:**
+1. ✅ You have verified the app's legality in your jurisdiction
+2. ✅ You have obtained any required approvals or licenses (if applicable)
+3. ✅ You understand the app is educational and NOT financial advice
+4. ✅ You will NOT use the app in any prohibited jurisdiction
+5. ✅ You indemnify Lamont Labs for any violations of local laws
+
+**Failure to comply with local laws is YOUR responsibility, not ours.**
+
+---
+
+## California-Specific Compliance
 
 **California Users:**
 
 This application complies with California consumer protection laws. California users have specific rights under the California Consumer Privacy Act (CCPA) and other state regulations. See our Privacy Policy for CCPA compliance details.
 
-**International & EU/UK Users:**
-
-If you are located in a jurisdiction with strict financial services regulations (e.g., EU MiFID II, UK FCA, Singapore MAS), consult a local attorney to ensure your use of this app complies with local laws. This app is designed for U.S. users and may not comply with all international financial services regulations.
+**California Civil Code Section 1789.3:**
+For complaints or refund requests, contact Lamontlabs@proton.me or the California Department of Consumer Affairs: (916) 445-1254 or (800) 952-5210.
 
 ---
 
