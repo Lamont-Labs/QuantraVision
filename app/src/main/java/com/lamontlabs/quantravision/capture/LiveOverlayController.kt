@@ -46,16 +46,28 @@ class LiveOverlayController(
         if (running.getAndSet(true)) return
         mediaProjection = projection
 
-        imageReader = ImageReader.newInstance(width, height, ImageFormat.RGBA_8888, 2)
-        val reader = imageReader ?: return
-        val surface: Surface = reader.surface
+        try {
+            imageReader = ImageReader.newInstance(width, height, ImageFormat.RGBA_8888, 2)
+            val reader = imageReader ?: run {
+                running.set(false)
+                throw IllegalStateException("Failed to create ImageReader")
+            }
+            val surface: Surface = reader.surface
 
-        virtualDisplay = projection.createVirtualDisplay(
-            "QuantraVisionVD",
-            width, height, densityDpi,
-            android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            surface, null, null
-        )
+            virtualDisplay = projection.createVirtualDisplay(
+                "QuantraVisionVD",
+                width, height, densityDpi,
+                android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                surface, null, null
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("LiveOverlayController", "CRITICAL: Failed to create virtual display (MediaProjection may have been stopped)", e)
+            // Clean up partially initialized resources
+            running.set(false)
+            try { imageReader?.close() } catch (_: Exception) {}
+            imageReader = null
+            throw RuntimeException("Failed to start screen capture. Please restart the overlay service.", e)
+        }
 
         reader.setOnImageAvailableListener({ reader ->
             val now = System.currentTimeMillis()

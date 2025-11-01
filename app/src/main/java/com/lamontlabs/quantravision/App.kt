@@ -20,21 +20,33 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         
-        // Initialize OpenCV with proper error handling
+        // Initialize OpenCV with proper error handling and user notification
         try {
             val success = OpenCVLoader.initDebug()
             if (success) {
                 openCVInitialized = true
-                Log.i("QuantraVision", "OpenCV loaded successfully - flag set to true")
+                Log.i("QuantraVision", "OpenCV loaded successfully - full pattern detection available")
             } else {
                 openCVInitialized = false
-                Log.e("QuantraVision", "OpenCV initialization failed - flag remains false")
-                // App can still function with limited capabilities
+                Log.e("QuantraVision", "OpenCV initialization failed - pattern detection limited to ML-only mode")
+                
+                // Notify user that pattern detection is running in limited mode
+                android.widget.Toast.makeText(
+                    this,
+                    "⚠️ Limited Mode: Advanced pattern detection unavailable. App will detect only 6 core patterns via ML.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
             }
         } catch (e: Exception) {
             openCVInitialized = false
-            Log.e("QuantraVision", "OpenCV initialization exception: ${e.message} - flag set to false", e)
-            // Non-fatal - app will work without OpenCV features
+            Log.e("QuantraVision", "OpenCV initialization exception: ${e.message} - limited mode enabled", e)
+            
+            // Notify user about limited functionality
+            android.widget.Toast.makeText(
+                this,
+                "⚠️ Limited Mode: Template matching disabled. Only 6 ML patterns available.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
         }
     }
 }

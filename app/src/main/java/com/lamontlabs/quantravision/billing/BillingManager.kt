@@ -29,23 +29,37 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     private lateinit var client: BillingClient
     private var productMap: Map<String, ProductDetails> = emptyMap()
     
+    /**
+     * SECURITY: Encrypted SharedPreferences with FAIL-CLOSED pattern
+     * NO fallback to unencrypted storage - throws exception if encryption fails
+     * This prevents exposing purchase data in plaintext
+     * 
+     * Synchronized access prevents race conditions when multiple feature gates read simultaneously
+     */
     private val prefs by lazy {
-        try {
-            val masterKey = MasterKey.Builder(activity)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            EncryptedSharedPreferences.create(
-                activity,
-                "qv_secure_prefs",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        } catch (e: Exception) {
-            Log.e("BillingManager", "EncryptedSharedPreferences failed, falling back to regular prefs", e)
-            // CRITICAL: Fallback to regular SharedPreferences to prevent locking out paying users
-            // Better to have unencrypted entitlements than no access at all
-            activity.getSharedPreferences("qv_billing_prefs", Context.MODE_PRIVATE)
+        synchronized(this) {
+            try {
+                val masterKey = MasterKey.Builder(activity)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+                EncryptedSharedPreferences.create(
+                    activity,
+                    "qv_secure_prefs",
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            } catch (e: Exception) {
+                Log.e("BillingManager", "CRITICAL: EncryptedSharedPreferences initialization failed", e)
+                // SECURITY: FAIL-CLOSED PATTERN
+                // Do NOT fall back to unencrypted SharedPreferences
+                // Better to block access than expose purchase data in plaintext
+                // User must clear app data or reinstall to recover
+                throw SecurityException(
+                    "Cannot initialize secure storage. Please clear app data in Settings > Apps > QuantraVision > Storage > Clear Data, then restart the app.",
+                    e
+                )
+            }
         }
     }
 
@@ -177,12 +191,19 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
      * Clear all entitlements (for refunds, revocations, chargebacks)
      */
     private fun clearEntitlements() {
-        prefs.edit()
-            .remove(unlockedKey)
-            .remove(purchaseTokenKey)
-            .apply()
-        onTierChanged?.invoke("")
-        Log.w("BillingManager", "Entitlements cleared")
+        synchronized(this) {
+            try {
+                prefs.edit()
+                    .remove(unlockedKey)
+                    .remove(purchaseTokenKey)
+                    .apply()
+                onTierChanged?.invoke("")
+                Log.w("BillingManager", "Entitlements cleared")
+            } catch (e: Exception) {
+                Log.e("BillingManager", "Failed to clear entitlements", e)
+                // Non-fatal - worst case user keeps access when they shouldn't
+            }
+        }
     }
     
     /**
@@ -260,14 +281,40 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     }
 
     private fun setUnlockedSecure(tier: String, token: String) {
-        prefs.edit()
-            .putString(unlockedKey, tier)
-            .putString(purchaseTokenKey, token)
-            .apply()
-        onTierChanged?.invoke(tier)
+        synchronized(this) {
+            try {
+                prefs.edit()
+                    .putString(unlockedKey, tier)
+                    .putString(purchaseTokenKey, token)
+                    .apply()
+                onTierChanged?.invoke(tier)
+            } catch (e: Exception) {
+                Log.e("BillingManager", "CRITICAL: Failed to save entitlements - purchase may not be persisted", e)
+                // Notify user of storage failure
+                activity.runOnUiThread {
+                    android.widget.Toast.makeText(
+                        activity,
+                        "Failed to save purchase. Please ensure you have sufficient storage space.",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
     }
 
-    fun getUnlockedTier(): String = prefs.getString(unlockedKey, "") ?: ""
+    fun getUnlockedTier(): String {
+        return synchronized(this) {
+            try {
+                prefs.getString(unlockedKey, "") ?: ""
+            } catch (e: Exception) {
+                Log.e("BillingManager", "CRITICAL: Failed to read entitlements from secure storage", e)
+                // SECURITY: Return empty string (deny access) if we can't read secure storage
+                // Do NOT fall back to allowing access - fail closed
+                ""
+            }
+        }
+    }
+    
     fun isStandard(): Boolean = getUnlockedTier() == "standard" || isPro()
     fun isPro(): Boolean = getUnlockedTier() == "pro"
     
