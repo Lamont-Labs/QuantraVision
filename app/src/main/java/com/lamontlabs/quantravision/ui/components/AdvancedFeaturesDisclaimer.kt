@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lamontlabs.quantravision.licensing.AdvancedFeatureGate
+import kotlinx.coroutines.launch
 import java.io.File
 
 /**
@@ -24,15 +26,23 @@ import java.io.File
 @Composable
 fun AdvancedFeaturesDisclaimerCard(
     modifier: Modifier = Modifier,
-    collapsible: Boolean = true
+    collapsible: Boolean = true,
+    requireAcceptance: Boolean = false,
+    onAccepted: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    
     var disclaimerText by remember { mutableStateOf<String?>(null) }
     var isExpanded by remember { mutableStateOf(!collapsible) }
     var isLoading by remember { mutableStateOf(true) }
+    var isAccepted by remember { mutableStateOf(false) }
+    var isAccepting by remember { mutableStateOf(false) }
+    var acceptanceError by remember { mutableStateOf<String?>(null) }
     
     LaunchedEffect(Unit) {
-        disclaimerText = loadDisclaimer(context)
+        disclaimerText = AdvancedFeatureGate.getDisclaimerText(context)
+        isAccepted = AdvancedFeatureGate.hasAccepted(context)
         isLoading = false
     }
     
@@ -120,6 +130,73 @@ fun AdvancedFeaturesDisclaimerCard(
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
+                
+                if (requireAcceptance && !isAccepted) {
+                    Spacer(Modifier.height(16.dp))
+                    
+                    acceptanceError?.let { error ->
+                        Text(
+                            "❌ $error",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                    
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                try {
+                                    isAccepting = true
+                                    acceptanceError = null
+                                    AdvancedFeatureGate.recordAcceptance(context)
+                                    isAccepted = true
+                                    onAccepted?.invoke()
+                                } catch (e: Exception) {
+                                    acceptanceError = "Failed to save acceptance: ${e.message}"
+                                } finally {
+                                    isAccepting = false
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isAccepting
+                    ) {
+                        if (isAccepting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(
+                            if (isAccepting) "Saving..." else "✓ I Accept - Continue to Advanced Features"
+                        )
+                    }
+                }
+                
+                if (isAccepted) {
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Disclaimer accepted",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             } else {
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -132,85 +209,3 @@ fun AdvancedFeaturesDisclaimerCard(
     }
 }
 
-/**
- * Load disclaimer from legal/ADVANCED_FEATURES_DISCLAIMER.md
- * Falls back to hardcoded text if file not found
- */
-private fun loadDisclaimer(context: Context): String {
-    return try {
-        // Try to load from assets first
-        context.assets.open("legal/ADVANCED_FEATURES_DISCLAIMER.md").bufferedReader().use {
-            it.readText()
-        }
-    } catch (e: Exception) {
-        // Fallback: Try external files dir
-        try {
-            val legalDir = File(context.filesDir.parent, "legal")
-            val disclaimerFile = File(legalDir, "ADVANCED_FEATURES_DISCLAIMER.md")
-            if (disclaimerFile.exists()) {
-                disclaimerFile.readText()
-            } else {
-                getFallbackDisclaimer()
-            }
-        } catch (e2: Exception) {
-            getFallbackDisclaimer()
-        }
-    }
-}
-
-private fun getFallbackDisclaimer(): String {
-    return """
-# Advanced Features Legal Disclaimer
-
-**Effective Date:** November 1, 2025
-
-## ⚠️ CRITICAL LEGAL NOTICE
-
-By using QuantraVision's Intelligence Stack features (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules), you acknowledge and agree to the following:
-
-## 1. Educational Tools Only
-
-These features are EDUCATIONAL TOOLS designed to help you learn technical analysis, trading psychology, and risk management concepts.
-
-**These features are NOT:**
-- Financial advice or investment recommendations
-- Trading signals or actionable suggestions
-- Market predictions or forecasts
-- Personalized investment strategies
-- Professional financial planning services
-
-## 2. No Trading Recommendations
-
-All scenarios, calculations, warnings, and classifications are HYPOTHETICAL EXAMPLES for educational purposes only.
-
-## 3. You Are Responsible
-
-**YOU** are solely responsible for:
-- All trading decisions
-- Conducting your own research
-- Managing your own risk and capital
-- Understanding that trading involves substantial risk of loss
-- Consulting licensed financial advisors before trading
-
-## 4. Risk Disclosure
-
-TRADING INVOLVES SUBSTANTIAL RISK OF LOSS. You may lose your entire investment. No pattern, regime, or strategy guarantees profitability.
-
-## 5. Not Investment Advice
-
-QuantraVision and Lamont Labs are NOT registered investment advisors and do NOT provide investment advice.
-
-## 6. Limitation of Liability
-
-Maximum liability is capped at the purchase price ($29.99 for Pro tier).
-
-## Contact
-
-**Lamont Labs, LLC**  
-Email: legal@lamontlabs.io
-
----
-
-© 2025 Lamont Labs, LLC. All rights reserved.
-""".trimIndent()
-}

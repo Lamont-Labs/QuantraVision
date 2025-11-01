@@ -78,9 +78,15 @@ fun IntelligenceScreen(
                 }
             }
             
-            // MANDATORY LEGAL DISCLAIMER
+            // MANDATORY LEGAL DISCLAIMER - Requires acceptance before feature access
             item {
-                AdvancedFeaturesDisclaimerCard(collapsible = true)
+                AdvancedFeaturesDisclaimerCard(
+                    collapsible = true,
+                    requireAcceptance = hasProAccess,
+                    onAccepted = {
+                        // Acceptance recorded - features now accessible
+                    }
+                )
             }
             
             // Pro upgrade banner if needed
