@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lamontlabs.quantravision.education.Lesson
 import com.lamontlabs.quantravision.education.LessonRepository
+import com.lamontlabs.quantravision.education.model.Lesson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
