@@ -9,7 +9,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.licensing.BookFeatureGate
+import com.lamontlabs.quantravision.utils.BookmarkManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -166,6 +170,36 @@ fun BookReaderScreen(
     context: Context,
     onNavigateBack: () -> Unit
 ) {
+    // Scroll state with bookmark support
+    val scrollState = rememberScrollState()
+    var showMenu by remember { mutableStateOf(false) }
+    val hasBookmark = remember { BookmarkManager.hasBookmark(context) }
+    
+    // Load saved bookmark position after content is loaded
+    LaunchedEffect(scrollState.maxValue) {
+        if (scrollState.maxValue > 0 && hasBookmark) {
+            val savedPosition = BookmarkManager.getBookmark(context)
+            scrollState.scrollTo(savedPosition)
+        }
+    }
+    
+    // Auto-save bookmark as user scrolls (with debouncing)
+    LaunchedEffect(scrollState.value) {
+        if (scrollState.value > 0) {
+            kotlinx.coroutines.delay(500)
+            BookmarkManager.saveBookmark(context, scrollState.value)
+        }
+    }
+    
+    // Save bookmark when navigating away
+    DisposableEffect(Unit) {
+        onDispose {
+            if (scrollState.value > 0) {
+                BookmarkManager.saveBookmark(context, scrollState.value)
+            }
+        }
+    }
+    
     // Use produceState for proper coroutine-based state management
     // This ensures loading happens on background thread without blocking composition
     val bookState by produceState<BookUiState>(initialValue = BookUiState.Loading, context) {
@@ -204,6 +238,46 @@ fun BookReaderScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                    }
+                },
+                actions = {
+                    val progress = if (scrollState.maxValue > 0) {
+                        BookmarkManager.getProgressPercentage(scrollState.value, scrollState.maxValue)
+                    } else 0
+                    
+                    Icon(
+                        imageVector = if (hasBookmark) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                        contentDescription = "Bookmark",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    
+                    if (progress > 0) {
+                        Text(
+                            text = "$progress%",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    }
+                    
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, "Menu")
+                    }
+                    
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Clear bookmark & start over") },
+                            onClick = {
+                                BookmarkManager.clearBookmark(context)
+                                kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
+                                    scrollState.scrollTo(0)
+                                }
+                                showMenu = false
+                            },
+                            enabled = hasBookmark
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -270,10 +344,44 @@ fun BookReaderScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
+                    // Show bookmark indicator if returning to saved position
+                    if (hasBookmark && scrollState.value < 100) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Bookmark,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Resuming from bookmark...",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                    }
+                    
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .verticalScroll(scrollState)
+                            .padding(horizontal = 20.dp, vertical = 16.dp)
+                    ) {
                     // Book cover at the top (memoized bitmap to prevent recomposition reloads)
                     state.coverBitmap?.let { bitmap ->
                         val imageBitmap = remember(bitmap) { bitmap.asImageBitmap() }
@@ -323,6 +431,7 @@ fun BookReaderScreen(
                     )
                     
                     Spacer(modifier = Modifier.height(32.dp))
+                    }
                 }
             }
         }
