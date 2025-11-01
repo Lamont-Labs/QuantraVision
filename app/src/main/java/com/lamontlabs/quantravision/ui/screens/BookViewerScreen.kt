@@ -151,31 +151,40 @@ fun BookLockedScreen(onNavigateBack: () -> Unit) {
     }
 }
 
+/**
+ * UI state for book viewer with proper loading/error handling
+ */
+sealed class BookUiState {
+    object Loading : BookUiState()
+    data class Success(val content: String, val coverBitmap: android.graphics.Bitmap?) : BookUiState()
+    data class Error(val message: String) : BookUiState()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookReaderScreen(
     context: Context,
     onNavigateBack: () -> Unit
 ) {
-    var bookContent by remember { mutableStateOf("Loading...") }
-    var coverBitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    
-    LaunchedEffect(Unit) {
-        try {
-            bookContent = loadBookContent(context)
-            coverBitmap = loadBookCover(context)
-            isLoading = false
+    // Use produceState for proper coroutine-based state management
+    // This ensures loading happens on background thread without blocking composition
+    val bookState by produceState<BookUiState>(initialValue = BookUiState.Loading, context) {
+        value = try {
+            // Load book content and cover in parallel on IO dispatcher
+            val contentDeferred = kotlinx.coroutines.async(Dispatchers.IO) { loadBookContent(context) }
+            val coverDeferred = kotlinx.coroutines.async(Dispatchers.IO) { loadBookCover(context) }
+            
+            val content = contentDeferred.await()
+            val cover = coverDeferred.await()
+            
+            BookUiState.Success(content, cover)
         } catch (e: OutOfMemoryError) {
             // CRITICAL: Book content too large for low-end devices (~2-5%)
             android.util.Log.e("BookViewer", "OOM loading book content", e)
-            errorMessage = "Book too large for this device. Please try on a device with more memory."
-            isLoading = false
+            BookUiState.Error("Book too large for this device. Please try on a device with more memory.")
         } catch (e: Exception) {
             android.util.Log.e("BookViewer", "Error loading book", e)
-            errorMessage = "Error loading book: ${e.message}"
-            isLoading = false
+            BookUiState.Error("Error loading book: ${e.message}")
         }
     }
     
@@ -203,117 +212,153 @@ fun BookReaderScreen(
             )
         }
     ) { padding ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (errorMessage != null) {
-            // Error state - show error message to user
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+        when (val state = bookState) {
+            is BookUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "⚠️",
-                        style = MaterialTheme.typography.displayLarge
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = errorMessage!!,
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Loading book...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
-            ) {
-                // Book cover at the top
-                coverBitmap?.let { bitmap ->
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = "The Friendly Trader book cover",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(3f / 4f)
-                            .padding(bottom = 24.dp),
-                        contentScale = ContentScale.Fit
-                    )
+            
+            is BookUiState.Error -> {
+                // Error state - show error message to user
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "⚠️",
+                            style = MaterialTheme.typography.displayLarge
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = state.message,
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
-                
-                Text(
-                    text = bookContent,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        lineHeight = 28.sp,
-                        fontSize = 16.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                Divider()
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Text(
-                    text = "End of Book",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Text(
-                    text = "Thank you for reading The Friendly Trader!\nPart of QuantraVision Standard/Pro",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(32.dp))
+            }
+            
+            is BookUiState.Success -> {
+                // Success state - display book content
+                // Use Column with verticalScroll (not LazyColumn) for text-heavy content
+                // LazyColumn would be better for structured chapters, but single scroll works for continuous text
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(MaterialTheme.colorScheme.surface)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    // Book cover at the top (memoized bitmap to prevent recomposition reloads)
+                    state.coverBitmap?.let { bitmap ->
+                        val imageBitmap = remember(bitmap) { bitmap.asImageBitmap() }
+                        Image(
+                            bitmap = imageBitmap,
+                            contentDescription = "The Friendly Trader book cover",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(3f / 4f)
+                                .padding(bottom = 24.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    
+                    // Book content text
+                    Text(
+                        text = state.content,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            lineHeight = 28.sp,
+                            fontSize = 16.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    
+                    Spacer(modifier = Modifier.height(32.dp))
+                    
+                    Divider()
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Text(
+                        text = "End of Book",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Text(
+                        text = "Thank you for reading The Friendly Trader!\nPart of QuantraVision Standard/Pro",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
             }
         }
     }
 }
 
+/**
+ * Load book content from assets on IO dispatcher
+ * Uses BufferedReader with efficient text reading
+ * Throws exception on failure (handled by caller)
+ */
 private suspend fun loadBookContent(context: Context): String = withContext(Dispatchers.IO) {
-    try {
-        val inputStream = context.assets.open("book/the_friendly_trader.txt")
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        reader.readText()
-    } catch (e: Exception) {
-        "Error loading book: ${e.message}\n\nPlease contact support."
+    context.assets.open("book/the_friendly_trader.txt").use { inputStream ->
+        BufferedReader(InputStreamReader(inputStream)).use { reader ->
+            // Use StringBuilder for efficient string concatenation
+            val content = StringBuilder()
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                content.append(line).append("\n")
+            }
+            content.toString()
+        }
     }
 }
 
+/**
+ * Load book cover image from assets on IO dispatcher
+ * Returns null if cover not found (non-critical failure)
+ */
 private suspend fun loadBookCover(context: Context): android.graphics.Bitmap? = withContext(Dispatchers.IO) {
     try {
-        val inputStream = context.assets.open("book/cover.png")
-        BitmapFactory.decodeStream(inputStream)
+        context.assets.open("book/cover.png").use { inputStream ->
+            BitmapFactory.decodeStream(inputStream)
+        }
     } catch (e: Exception) {
+        android.util.Log.w("BookViewer", "Book cover not found (optional)", e)
         null // Cover is optional, book still works without it
     }
 }
