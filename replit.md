@@ -1,205 +1,57 @@
 # QuantraVision
 
 ## Overview
+QuantraVision is a professional Android application that offers advanced AI-powered chart pattern recognition for retail traders. It operates 100% offline, using a hybrid detection system combining YOLOv8 machine learning (6 core patterns) and OpenCV template matching (102 patterns) to identify 108 distinct technical analysis patterns in real-time. The app emphasizes privacy, with all processing occurring on-device, and features include predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails.
 
-QuantraVision is a professional Android application providing advanced AI-powered chart pattern recognition for retail traders. The app operates 100% offline using hybrid detection combining YOLOv8 machine learning (6 core patterns) with OpenCV template matching (102 additional patterns) to identify 108 distinct technical analysis patterns in real-time. Designed with privacy-first principles, all processing occurs on-device with zero data collection or network transmission.
-
-The application targets retail traders seeking professional-grade pattern detection without subscriptions or cloud dependencies. Key value propositions include predictive detection at 40-85% pattern formation, multi-modal alerts (voice, haptic, visual), pattern invalidation warnings, and explainable AI with full audit trails.
-
-**Unique Intelligence Stack (v1.0.0):** QuantraVision is differentiated from ALL competitors by 4 game-changing features: (1) Regime Navigator - on-device market condition analysis that tells traders WHEN patterns matter, (2) Pattern-to-Plan Engine - educational trade scenarios with entry/exit/risk calculations, (3) Behavioral Guardrails - discipline coaching that prevents emotional trading, and (4) Proof Capsules - shareable tamper-proof detection receipts for viral growth. All features are 100% offline and include comprehensive legal disclaimers (educational tools only, NOT financial advice).
+The application targets retail traders who desire professional-grade pattern detection without subscriptions or cloud dependencies. QuantraVision distinguishes itself with a unique "Intelligence Stack" comprising four key features: Regime Navigator (on-device market condition analysis), Pattern-to-Plan Engine (educational trade scenarios), Behavioral Guardrails (discipline coaching), and Proof Capsules (shareable tamper-proof detection receipts). All features are 100% offline and include comprehensive legal disclaimers, emphasizing that they are educational tools and not financial advice.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend Architecture
+### UI/UX Decisions
+The application uses Jetpack Compose with Material 3 Design System, optimized for a dark theme (#0A1218 background, #00E5FF cyan accent) to reduce eye strain. The UI is declarative and reactive, using ViewModel for state management and a modular screen architecture (Dashboard, Detection, Analytics, Education, Settings, Intelligence Stack). Key design principles include responsive layouts, custom home screen widgets, and a consistent brand identity using the Lamont Labs geometric logo. The Intelligence Stack features dedicated screens (RegimeNavigatorScreen, PatternPlanScreen, BehavioralGuardrailsScreen, ProofCapsuleScreen) with integrated disclaimers and pro-tier gating.
 
-**UI Framework**: Jetpack Compose with Material 3 Design System
-- Dark theme optimized (#0A1218 background, #00E5FF cyan accent)
-- Declarative reactive UI with ViewModel state management
-- Modular screen architecture: Dashboard, Detection, Analytics, Education, Settings, **Intelligence Stack**
-- Responsive layouts supporting various Android device sizes
-- Custom home screen widget for quick access
-
-**Intelligence Stack UI Integration (Completed November 1, 2025)**:
-- **IntelligenceScreen**: Hub for 4 flagship Pro features with feature cards and tier gating
-- **RegimeNavigatorScreen**: Market regime analysis display with educational context and charts
-- **PatternPlanScreen**: Trade scenario generator with entry/exit/risk calculations
-- **BehavioralGuardrailsScreen**: Trading psychology statistics, warnings, and cooldown status
-- **ProofCapsuleScreen**: Tamper-proof detection logs with QR codes and share functionality
-- **PatternCard Enhancements**: Regime badges (green/yellow/red), Generate Plan + Export Proof action buttons
-- **BehavioralGuardrails Integration**: Wired into OverlayService detection loop with Toast + voice warnings
-- **Legal Compliance**: Mandatory AdvancedFeaturesDisclaimerCard component on all intelligence screens
-- **Navigation Flow**: Dashboard → Intelligence button (Pro badge) → feature cards → individual screens
-- **Pro Tier Gating**: All features check ProFeatureGate, redirect to PaywallScreen if access denied
-- **Disclaimer Loading**: Runtime loading from legal/ADVANCED_FEATURES_DISCLAIMER.md with fallback text
-
-**Key Design Decisions**:
-- Material 3 chosen for modern Android design consistency and component library
-- Dark theme as primary due to trader preference for reduced eye strain during extended chart analysis
-- Compose selected over XML layouts for declarative paradigm and easier maintenance
-- Lamont Labs geometric logo (Q+V) used for consistent brand identity
-- Collapsible disclaimers balance legal compliance with user experience
-- Regime badges use traffic light colors (green/yellow/red) for instant context understanding
-
-### Backend Architecture
-
-**Pattern Detection Engine**: Hybrid dual-tier system
-- **Tier 1 (ML)**: YOLOv8 model via TensorFlow Lite detecting 6 core patterns (Head & Shoulders, Triangles, Double Top/Bottom, Trend Lines) with 93.2% mAP@0.5 accuracy
-- **Tier 2 (CV)**: OpenCV template matching against 119 reference images for 102 additional patterns
-- **Integration Layer**: HybridDetectorBridge coordinates ML and template-based detection with BayesianFusionEngine for probabilistic confidence scoring
-- **Optimization**: DeltaDetectionOptimizer uses perceptual hashing for frame-skipping on static charts (40% speedup target)
-- **Stability**: TemporalStabilizer applies 5-frame consensus voting to eliminate detection flickering
-
-**Architecture Rationale**: Hybrid approach chosen because ML models excel at chart-agnostic detection (works across platforms/themes) but are limited to patterns with sufficient training data. Template matching provides broad pattern coverage (108 total) but requires standardized chart formats. Combining both provides maximum accuracy and coverage.
-
-**Data Storage**: Room database with encrypted local storage
-- Pattern detection logs with timestamps, confidence scores, and provenance chains
-- User preferences and watchlist data
-- Achievement/gamification progress tracking
-- No cloud synchronization - all data remains on-device
-
-**State Management**: Android Architecture Components
-- ViewModels hold UI state and coordinate business logic
-- Repository pattern abstracts data access between Room DB and detection engines
-- LiveData/Flow for reactive state propagation to UI
-- Lifecycle-aware components prevent memory leaks
-
-### Authentication & Licensing
-
-**Billing System**: Google Play In-App Billing with four-tier structure (Option 1 Pricing)
-- **Free Tier**: 3 highlights/day (daily reset), 10 essential patterns, watermarked overlays, 5 lessons (trial experience)
-- **Book Add-On ($2.99)**: Complete trading book (standalone purchase OR free with Standard/Pro)
-- **Standard ($14.99)**: Unlimited highlights, 30 core patterns, Regime Navigator, free book, remove watermarks, PDF export, all 25 lessons
-- **Pro ($29.99)**: All Standard features + full 108-pattern library + 4 exclusive intelligence features (Pattern-to-Plan, Behavioral Guardrails, Proof Capsules) + voice alerts + haptic feedback + predictive detection + backtesting
-- HighlightGate enforces daily highlight quota for Free tier (3/day)
-- PatternLibraryGate restricts pattern access by tier (10 patterns for Free, 30 for Standard, all 108 for Pro)
-- BookFeatureGate controls trading book access ($2.99 standalone or free with Standard/Pro)
-- BillingManager validates purchases via Google Play and stores entitlements in encrypted SharedPreferences
-- StandardFeatureGate and ProFeatureGate read from secure encrypted prefs (cannot be spoofed)
-- No subscription model - lifetime access with single purchase
-
-**Security Architecture**:
-- IntegrityValidator interfaces with Google Play Integrity API for anti-tamper
-- SignatureVerifier validates Lamont Labs release key fingerprint
-- DebuggerDetection monitors for debugging attempts
-- RootCheck detects common root indicators
-- Fail-closed principle: blocks overlay if verification fails
-- R8 + ProGuard obfuscation with custom rules for release builds
-
-### AI/ML Architecture
-
-**Model Pipeline**:
-- PyTorch YOLOv8 model (84 MB) trained on 9,000 real trading chart screenshots
-- TensorFlow Lite conversion target with INT8 quantization (22 MB goal, 74% reduction)
-- OptimizedModelLoader supports GPU/NNAPI delegates for hardware acceleration
-- TensorPool manages memory-efficient tensor reuse (36% RAM reduction target)
-
-**Performance Optimizations**:
-- Current: ~20ms inference per frame at 500 MB RAM
-- Target: ≤8ms inference at <350 MB RAM with quantized models
-- PowerPolicyManager adjusts FPS (10/20/30/60) based on battery and thermal state
-- Thermal throttling at >65°C to prevent device overheating
-
-**Alert System**:
-- Centralized AlertManager singleton coordinates voice (Android TTS), haptic (pattern-specific vibration), and visual alerts
-- Voice announcements: "Head and Shoulders forming - 75% complete, strong confidence"
-- Haptic patterns: 2 buzzes (bullish), 3 buzzes (bearish), long buzz (high confidence), double long (invalidated)
-- Pattern strength scoring: Weak (40-60%), Moderate (60-80%), Strong (80-100%) with color coding
-
-### Real-Time Overlay System
-
-**Screen Capture**: MediaProjection API for live chart overlay
-- SYSTEM_ALERT_WINDOW permission for overlay drawing
-- FOREGROUND_SERVICE for persistent operation
-- LiveOverlayController manages frame capture and detection loop
-- Deterministic rendering with provenance logging for each detection
-
-**Feature Gating**: Tier-based feature access with billing verification
-- **Free → Standard**: Unlimited highlights (vs 3-5 quota), remove watermarks, PDF export
-- **Standard → Pro**: Full 108-pattern library (vs 30 core), voice alerts, haptic feedback, predictive detection, pattern invalidation warnings, auto-scanning watchlist, backtesting engine with CSV import, proof bundle export with SHA-256 hashes and Ed25519 signatures
-- PatternLibraryGate.STANDARD_TIER_PATTERNS defines the 30 core patterns (Head & Shoulders, Double Top/Bottom, Triangles, Flags, Pennants, basic candlesticks)
-- HighlightGate applies two-step filtering: (1) tier-based pattern filtering, (2) quota-based highlight limiting for Free tier
-
-### Performance & Power Management
-
-**Adaptive Pipeline**: PowerPolicyApplicator runs background monitoring every 5 seconds
-- Ultra Low Power (<15% battery): 10 FPS, ML disabled, template-only
-- Balanced (15-30% battery): 20 FPS, ML enabled, reduced scales
-- High Performance (>30% battery): 30-60 FPS, full pipeline
-- Thermal throttling engages above 65°C
-
-**Resource Optimization**:
-- Stride-safe YUV to Bitmap conversion prevents crashes
-- Proper Mat disposal in OpenCV to prevent memory leaks
-- Asynchronous I/O operations on Dispatchers.IO
-- ProGuard keep rules for ML Kit and OpenCV in release builds
-
-### Compliance & Provenance
-
-**Determinism**: Greyline OS v4.3 compliance standard
-- Every detection logged with SHA-256 hash of input frame
-- Pattern template catalog hashed and signed with Ed25519
-- SBOM (Software Bill of Materials) tracks all dependencies
-- verify.sh script validates integrity chain from source to binary
-
-**Legal Framework**: Global multi-jurisdictional compliance (95/100 protection score)
-- **FINANCIAL_DISCLAIMER.md**: NOT financial advice, NOT FINRA/SEC registered, trading risks disclosed, international regulatory warnings (EU, UK, Australia, Singapore, Hong Kong, Japan, Switzerland, UAE, Canada, NZ, etc.)
-- **TERMS_OF_USE.md**: Educational tool only, liability capped at purchase price ($29.99), arbitration clause (U.S.) with international alternatives for EU/UK/Australia/NZ, California jurisdiction with mandatory consumer rights preserved globally per local law
-- **INTERNATIONAL_ADDENDUM.md**: Full compliance with EU (MiFID II, GDPR, Consumer Rights Directive), UK (FCA, Consumer Rights Act 2015), Australia (ACL consumer guarantees), Canada (provincial consumer protection), New Zealand (Consumer Guarantees Act), Singapore (MAS), Hong Kong (SFC), Japan (FSA), Switzerland (FINMA), UAE (DFSA/FSRA)
-- **JURISDICTION_COMPLIANCE_SUMMARY.md**: 95/100 global protection score across 20+ jurisdictions, prohibited regions (North Korea, Iran, Syria, Crimea, Cuba - OFAC compliance), high-risk jurisdiction warnings (India, South Korea require local verification)
-- **PRIVACY_POLICY.md**: Zero data collection, 100% offline, GDPR/CCPA-compliant, no personal data processing
-- Mandatory disclaimer acceptance in onboarding flow (with versioning + timestamp)
-- Watermark on all overlays: "⚠ Illustrative Only — Not Financial Advice"
-- User compliance certification: Users certify they've verified app legality in their jurisdiction
+### Technical Implementations
+**Pattern Detection Engine**: A hybrid dual-tier system combines YOLOv8 via TensorFlow Lite for 6 core patterns and OpenCV template matching for 102 additional patterns. A HybridDetectorBridge coordinates detection, and a BayesianFusionEngine provides probabilistic confidence scoring. Optimizations like DeltaDetectionOptimizer and TemporalStabilizer enhance performance and stability.
+**Data Storage**: Utilizes an encrypted Room database for pattern detection logs, user preferences, and achievement tracking, with no cloud synchronization.
+**State Management**: Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) ensure reactive state propagation and prevent memory leaks.
+**Authentication & Licensing**: Google Play In-App Billing supports a four-tier structure (Free, Book Add-On, Standard, Pro) with lifetime access. Security measures include Google Play Integrity API integration, signature verification, debugger detection, root checks, and R8/ProGuard obfuscation.
+**AI/ML Architecture**: The PyTorch YOLOv8 model (trained on 9,000 chart screenshots) is converted to TensorFlow Lite with INT8 quantization. Optimizations include GPU/NNAPI delegates, TensorPool for memory efficiency, and a PowerPolicyManager to adjust FPS based on battery and thermal states.
+**Alert System**: A centralized AlertManager coordinates voice (Android TTS), haptic (pattern-specific vibration), and visual alerts with pattern strength scoring.
+**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay, managed by LiveOverlayController. Feature gating is tier-based, restricting access to patterns and advanced features.
+**Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts app performance (FPS, ML usage) based on battery and thermal conditions. Resource optimization includes stride-safe YUV to Bitmap conversion and proper Mat disposal in OpenCV.
+**Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, logging every detection with SHA-256 hashes, signing pattern catalogs with Ed25519, and maintaining an SBOM. Extensive legal frameworks (FINANCIAL_DISCLAIMER.md, TERMS_OF_USE.md, INTERNATIONAL_ADDENDUM.md, PRIVACY_POLICY.md) ensure global multi-jurisdictional compliance, emphasizing zero data collection and "illustrative only" disclaimers.
 
 ## External Dependencies
 
 ### Core ML/CV Libraries
-- **TensorFlow Lite** (2.14+, Apache-2.0): On-device ML inference for YOLOv8 model
-- **OpenCV** (4.8, BSD-3-Clause): Computer vision template matching and image processing
-- **YOLOv8 Model**: HuggingFace foduucom/stockmarket-pattern-detection-yolov8 (trained on 9,000 trading charts)
+- **TensorFlow Lite**: On-device ML inference for YOLOv8.
+- **OpenCV**: Computer vision for template matching and image processing.
+- **YOLOv8 Model**: HuggingFace foduucom/stockmarket-pattern-detection-yolov8.
 
 ### Android Framework
-- **Kotlin** (2.1.0): Primary language
-- **Jetpack Compose** (1.6, Apache-2.0): UI framework
-- **Room** (2.6, Apache-2.0): Local database persistence
-- **Android Architecture Components**: ViewModel, LiveData, WorkManager
-- **Material 3**: Design system and components
-- **CameraX/MediaProjection**: Screen capture APIs
+- **Kotlin**: Primary language.
+- **Jetpack Compose**: UI framework.
+- **Room**: Local database persistence.
+- **Android Architecture Components**: ViewModel, LiveData, WorkManager.
+- **Material 3**: Design system.
+- **CameraX/MediaProjection**: Screen capture APIs.
 
 ### Utilities
-- **Gson** (2.10, Apache-2.0): JSON parsing for pattern templates and configuration
-- **Google Play Billing** (Apache-2.0): In-app purchase handling
-- **Google Play Integrity API**: Anti-tamper verification
-
-### Build Tools
-- **Gradle** (8.11.1): Build system via wrapper
-- **Android SDK**: API 35 (Android 15), minimum API 26 (Android 8.0)
-- **JDK**: 17 or higher (GraalVM 22.3 in Replit environment)
-- **R8/ProGuard**: Code shrinking and obfuscation
-
-### Development Services
-- **Google Play Console**: App distribution and billing configuration
-- **Android Studio**: Ladybug (2024.2.1) IDE for development
-- **Replit**: Cloud IDE with automated Android SDK setup via scripts
+- **Gson**: JSON parsing.
+- **Google Play Billing**: In-app purchase handling.
+- **Google Play Integrity API**: Anti-tamper verification.
 
 ### Offline Assets
-- **Pattern Templates**: 119 PNG reference images + YAML configurations
-- **Legal Documents**: HTML/Markdown copies of terms, privacy policy, disclaimers
-- **Demo Charts**: Static sample charts for offline testing
-- **Educational Content**: 25 interactive lessons with quizzes
-- **Trading Book**: "The Friendly Trader" by Jesse J. Lamont (10 chapters, in-app reader, 100% offline)
+- **Pattern Templates**: 119 PNG reference images + YAML configurations.
+- **Legal Documents**: HTML/Markdown copies of terms, privacy policy, disclaimers.
+- **Demo Charts**: Static sample charts.
+- **Educational Content**: 25 interactive lessons.
+- **Trading Book**: "The Friendly Trader" by Jesse J. Lamont.
 
 ### Security & Compliance
-- **Ed25519 Cryptography**: Digital signatures for provenance chains
-- **SHA-256 Hashing**: Integrity verification for builds and templates
-- **Play Integrity API**: Runtime device/app verification
-
-**Database**: Room (SQLite) - no external database services required
-**Analytics**: None - zero telemetry or tracking
-**Crash Reporting**: Local-only crash logs, 7-day auto-deletion
-**Cloud Storage**: None - 100% offline operation
-**Network APIs**: None - INTERNET permission explicitly omitted from manifest
+- **Ed25519 Cryptography**: Digital signatures.
+- **SHA-256 Hashing**: Integrity verification.
+- **Play Integrity API**: Runtime device/app verification.
