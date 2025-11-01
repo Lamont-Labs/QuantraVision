@@ -7,6 +7,14 @@ The application targets retail traders who desire professional-grade pattern det
 
 ## Recent Changes
 
+**November 1, 2025 - Book Bookmark Feature:**
+- **Auto-Save Bookmarks**: Reading position automatically saved with 500ms debouncing
+- **Smart Resume**: Returns to saved position when reopening book
+- **Visual Feedback**: Bookmark icon (filled/outline), progress percentage (0-100%), resume indicator
+- **User Control**: Menu option to clear bookmark and start over
+- **Lightweight**: SharedPreferences storage, 81-line BookmarkManager utility
+- **Quality**: Zero LSP errors, architect approved, reactive state management
+
 **November 1, 2025 - Code Refactoring Session:**
 - **Large File Refactoring**: LessonData.kt (6,714 → 13 lines) + EducationCourse.kt (3,828 → 120 lines)
 - **Modular Architecture**: Created 58 modular files (education/model, education/lessons, education/course)
