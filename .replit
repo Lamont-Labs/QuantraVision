@@ -6,6 +6,7 @@ modules = ["java-graalvm22.3", "python-3.11", "nodejs-20"]
 
 [agent]
 expertMode = true
+integrations = ["github:1.0.0"]
 
 [workflows]
 runButton = "Project"
