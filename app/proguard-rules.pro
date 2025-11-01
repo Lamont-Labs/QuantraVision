@@ -31,4 +31,29 @@
     public static *** d(...);
     public static *** v(...);
     public static *** i(...);
+    public static *** w(...);
 }
+
+# Strip Timber logs in release
+-assumenosideeffects class timber.log.Timber {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+    public static *** w(...);
+}
+
+# Remove test/debug utilities (belt-and-suspenders; already in test source set)
+-assumenosideeffects class * {
+    void println(...);
+}
+
+# Optimize: Remove unused code and inline aggressively
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
+
+# Keep essential Android components
+-keepclassmembers class * extends android.app.Activity { *; }
+-keepclassmembers class * extends android.app.Service { *; }
+-keepclassmembers class * extends android.content.BroadcastReceiver { *; }
