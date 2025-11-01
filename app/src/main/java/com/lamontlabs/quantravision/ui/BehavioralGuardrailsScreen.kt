@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
+import com.lamontlabs.quantravision.ui.components.AdvancedFeaturesDisclaimerCard
 import kotlinx.coroutines.launch
 
 /**
@@ -59,6 +60,11 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // MANDATORY LEGAL DISCLAIMER
+            item {
+                AdvancedFeaturesDisclaimerCard(collapsible = true)
+            }
+            
             item {
                 Column {
                     Text(

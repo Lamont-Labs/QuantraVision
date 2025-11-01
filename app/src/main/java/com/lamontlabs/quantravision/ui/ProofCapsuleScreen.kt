@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.proof.ProofCapsuleGenerator
+import com.lamontlabs.quantravision.ui.components.AdvancedFeaturesDisclaimerCard
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -68,6 +69,11 @@ fun ProofCapsuleScreen(onBack: () -> Unit) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // MANDATORY LEGAL DISCLAIMER
+            item {
+                AdvancedFeaturesDisclaimerCard(collapsible = true)
+            }
+            
             item {
                 Column {
                     Text(

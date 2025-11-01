@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.licensing.ProFeatureGate
+import com.lamontlabs.quantravision.ui.components.AdvancedFeaturesDisclaimerCard
 
 /**
  * IntelligenceScreen
@@ -75,6 +76,11 @@ fun IntelligenceScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+            
+            // MANDATORY LEGAL DISCLAIMER
+            item {
+                AdvancedFeaturesDisclaimerCard(collapsible = true)
             }
             
             // Pro upgrade banner if needed

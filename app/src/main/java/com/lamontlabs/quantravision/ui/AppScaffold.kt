@@ -141,7 +141,8 @@ private fun AppNavigationHost(
         composable("detections_list") {
             DetectionListScreen(
                 db = PatternDatabase.getInstance(context),
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onShowPaywall = { navController.navigate("paywall") }
             )
         }
 

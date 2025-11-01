@@ -12,11 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.ui.components.PatternCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetectionListScreen(db: PatternDatabase, onBack: () -> Unit) {
+fun DetectionListScreen(
+    db: PatternDatabase,
+    onBack: () -> Unit,
+    onShowPaywall: (() -> Unit)? = null
+) {
     val scope = rememberCoroutineScope()
     var detections by remember { mutableStateOf(listOf<PatternMatch>()) }
 
@@ -49,7 +54,11 @@ fun DetectionListScreen(db: PatternDatabase, onBack: () -> Unit) {
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(detections) { pattern ->
-                        PatternCard(pattern)
+                        PatternCard(
+                            match = pattern,
+                            showIntelligence = true,
+                            onShowPaywall = onShowPaywall
+                        )
                     }
                 }
             }

@@ -15,6 +15,9 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.ml.PowerPolicyApplicator
+import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
+import com.lamontlabs.quantravision.detection.ProFeatureGate
+import com.lamontlabs.quantravision.alerts.AlertManager
 import kotlinx.coroutines.*
 
 class OverlayService : Service() {
@@ -23,6 +26,8 @@ class OverlayService : Service() {
     private var overlayView: View? = null
     private var scope = CoroutineScope(Dispatchers.Default)
     private var policyApplicator: PowerPolicyApplicator? = null
+    private var behavioralGuardrails: BehavioralGuardrails? = null
+    private var alertManager: AlertManager? = null
     private val TAG = "OverlayService"
 
     override fun onCreate() {
@@ -81,6 +86,11 @@ class OverlayService : Service() {
             return
         }
         
+        if (ProFeatureGate.hasAccess(this)) {
+            behavioralGuardrails = BehavioralGuardrails(this)
+            alertManager = AlertManager.getInstance(this)
+        }
+        
         startForegroundService()
         startDetectionLoop()
         startPowerPolicyApplicator()
@@ -123,6 +133,33 @@ class OverlayService : Service() {
                                         timber.log.Timber.i("HybridDetectorBridge: Processing ${imageFile.name} with optimizations")
                                         val results = detectorBridge.detectPatternsOptimized(bitmap)
                                         timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
+                                        
+                                        results.forEach { pattern ->
+                                            behavioralGuardrails?.let { guardrails ->
+                                                scope.launch {
+                                                    try {
+                                                        val warning = guardrails.recordView(pattern)
+                                                        warning?.let { w ->
+                                                            withContext(Dispatchers.Main) {
+                                                                Toast.makeText(
+                                                                    applicationContext,
+                                                                    w.message,
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            }
+                                                            
+                                                            if (alertManager?.isVoiceEnabled() == true) {
+                                                                alertManager?.announceWarning(w.voiceMessage)
+                                                            }
+                                                            
+                                                            timber.log.Timber.w("BehavioralGuardrail triggered: ${w.type.name} - ${w.message}")
+                                                        }
+                                                    } catch (e: Exception) {
+                                                        timber.log.Timber.e(e, "Error recording behavioral view")
+                                                    }
+                                                }
+                                            }
+                                        }
                                     } finally {
                                         bitmap.recycle()
                                     }
