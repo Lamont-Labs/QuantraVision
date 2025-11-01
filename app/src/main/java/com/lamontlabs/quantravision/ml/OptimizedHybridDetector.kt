@@ -14,8 +14,17 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
- * OptimizedHybridDetector - Fully integrated AI detection with all optimizations
+ * OptimizedHybridDetector - Future-Ready ML Infrastructure (NOT YET ACTIVE IN PRODUCTION)
  * 
+ * PRODUCTION STATUS: ARCHITECTURE PREP ONLY
+ * ==========================================
+ * This class represents planned future YOLOv8 ML integration. It is currently NOT used in 
+ * production detection. The current production system uses PatternDetector.kt with OpenCV 
+ * template matching (102 patterns). This class exists to establish the architecture and 
+ * optimization framework for when the YOLOv8 model integration is completed and validated.
+ * 
+ * FUTURE CAPABILITIES (when activated):
+ * =====================================
  * Combines all 5 optimization phases:
  * - Phase 1: Model compression, GPU acceleration, tensor pooling
  * - Phase 2: Bayesian fusion, temporal stabilization
@@ -23,12 +32,21 @@ import timber.log.Timber
  * - Phase 4: Incremental learning (via separate engine)
  * - Phase 5: Adaptive power management
  * 
- * Overall Performance vs. Baseline:
+ * PROJECTED PERFORMANCE (vs. template-only baseline):
+ * ===================================================
  * - Speed: 2-3x faster (30ms → 10ms end-to-end)
  * - Accuracy: +3% (93.2% → 96%+ mAP@0.5)
  * - False positives: 42% reduction
  * - RAM: 36% less (500 MB → 320 MB)
  * - Battery: 67% longer (3h → 5h in low-power mode)
+ * 
+ * INTEGRATION ROADMAP:
+ * ====================
+ * 1. Complete YOLOv8 model training and validation (in progress)
+ * 2. Implement detectWithML() with actual TensorFlow Lite inference
+ * 3. Benchmark performance and accuracy against template matching
+ * 4. Gradual rollout with A/B testing and fallback mechanisms
+ * 5. Production activation after validation period
  */
 class OptimizedHybridDetector(private val context: Context) {
     
@@ -100,28 +118,39 @@ class OptimizedHybridDetector(private val context: Context) {
     /**
      * Detect patterns using ML model (Phase 1 optimized)
      * 
-     * FUTURE ENHANCEMENT: This optimization layer is not yet active in production.
-     * Current production uses PatternDetector.kt with OpenCV template matching.
-     * When ready, integrate with YOLOv8 model using OptimizedModelLoader and TensorPool.
+     * PLACEHOLDER - NOT IMPLEMENTED
+     * =============================
+     * This method will be implemented when YOLOv8 model integration is complete.
+     * It will use OptimizedModelLoader and TensorPool for GPU-accelerated inference.
+     * 
+     * Current production uses PatternDetector.kt with OpenCV template matching only.
+     * 
+     * @return Empty list until YOLOv8 integration is completed
      */
     private suspend fun detectWithML(
         chartImage: Bitmap,
         policy: InferencePolicy
     ): List<MLDetection> = withContext(Dispatchers.Default) {
-        // Placeholder for future YOLOv8 integration
+        // PLACEHOLDER: Returns empty until YOLOv8 model integration is complete
         emptyList()
     }
     
     /**
      * Detect patterns using template matching (existing OpenCV)
      * 
-     * FUTURE ENHANCEMENT: This will integrate with PatternDetector.kt template matching
-     * when this optimization layer becomes active in production.
+     * PLACEHOLDER - NOT IMPLEMENTED
+     * =============================
+     * This method will delegate to PatternDetector.kt when this optimization layer
+     * becomes active in production. For now, returns empty to prevent accidental usage.
+     * 
+     * Current production uses PatternDetector.kt directly (not through this class).
+     * 
+     * @return Empty list until this optimization layer is activated
      */
     private suspend fun detectWithTemplates(
         chartImage: Bitmap
     ): List<TemplateDetection> = withContext(Dispatchers.Default) {
-        // Placeholder for future integration with PatternDetector
+        // PLACEHOLDER: Returns empty until this optimization layer is activated
         emptyList()
     }
     

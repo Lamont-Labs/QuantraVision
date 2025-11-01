@@ -17,14 +17,33 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
- * HybridDetectorBridge - Integration layer connecting new AI optimizations to existing detector
+ * HybridDetectorBridge - Integration layer with optimization wrappers (ACTIVE IN PRODUCTION)
  * 
- * This bridge enables gradual migration to optimized detection while maintaining compatibility:
- * - Phase 2: Bayesian fusion and temporal stabilization (ACTIVE)
- * - Phase 3: Delta detection for frame-skipping (ACTIVE)
- * - Phase 5: Adaptive power management (ACTIVE)
- * - Phase 1: Optimized models (READY when TFLite models available)
- * - Phase 4: Incremental learning (READY for user feedback integration)
+ * PRODUCTION STATUS: PARTIALLY ACTIVE
+ * ====================================
+ * This bridge wraps the existing HybridPatternDetector (which uses PatternDetector.kt internally)
+ * with optimization layers. The core detection still uses OpenCV template matching (102 patterns).
+ * The optimization layers (fusion, temporal stabilization, delta detection) are ACTIVE but wrap
+ * the existing template-based detection rather than ML inference.
+ * 
+ * CURRENT ARCHITECTURE:
+ * =====================
+ * User/Service → HybridDetectorBridge → HybridPatternDetector → PatternDetector (OpenCV templates)
+ *                       ↓                                              
+ *              Optimization Layers (fusion, temporal, delta, power)
+ * 
+ * ACTIVE OPTIMIZATION LAYERS:
+ * ===========================
+ * - Phase 2: Bayesian fusion and temporal stabilization (ACTIVE, wraps template results)
+ * - Phase 3: Delta detection for frame-skipping (ACTIVE, reduces redundant processing)
+ * - Phase 5: Adaptive power management (ACTIVE, adjusts FPS based on battery/thermal)
+ * 
+ * FUTURE ENHANCEMENT:
+ * ===================
+ * When OptimizedHybridDetector.kt becomes active with YOLOv8 integration:
+ * - Phase 1: Will add GPU-accelerated ML inference alongside template matching
+ * - Phase 4: Will enable incremental learning from user feedback
+ * - Fusion engine will combine both ML and template detections with Bayesian probability
  * 
  * Usage:
  * ```kotlin
@@ -34,7 +53,8 @@ import timber.log.Timber
  */
 class HybridDetectorBridge(private val context: Context) {
     
-    // Existing detector (uses OpenCV templates + original YOLOv8 if available)
+    // Existing detector - currently uses PatternDetector.kt with OpenCV template matching
+    // Note: HybridPatternDetector name is historical; it currently only does template matching
     private val existingDetector = HybridPatternDetector(context)
     
     // New optimization layers
