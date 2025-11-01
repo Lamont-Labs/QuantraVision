@@ -19,15 +19,30 @@ Preferred communication style: Simple, everyday language.
 **UI Framework**: Jetpack Compose with Material 3 Design System
 - Dark theme optimized (#0A1218 background, #00E5FF cyan accent)
 - Declarative reactive UI with ViewModel state management
-- Modular screen architecture: Dashboard, Detection, Analytics, Education, Settings
+- Modular screen architecture: Dashboard, Detection, Analytics, Education, Settings, **Intelligence Stack**
 - Responsive layouts supporting various Android device sizes
 - Custom home screen widget for quick access
+
+**Intelligence Stack UI Integration (Completed November 1, 2025)**:
+- **IntelligenceScreen**: Hub for 4 flagship Pro features with feature cards and tier gating
+- **RegimeNavigatorScreen**: Market regime analysis display with educational context and charts
+- **PatternPlanScreen**: Trade scenario generator with entry/exit/risk calculations
+- **BehavioralGuardrailsScreen**: Trading psychology statistics, warnings, and cooldown status
+- **ProofCapsuleScreen**: Tamper-proof detection logs with QR codes and share functionality
+- **PatternCard Enhancements**: Regime badges (green/yellow/red), Generate Plan + Export Proof action buttons
+- **BehavioralGuardrails Integration**: Wired into OverlayService detection loop with Toast + voice warnings
+- **Legal Compliance**: Mandatory AdvancedFeaturesDisclaimerCard component on all intelligence screens
+- **Navigation Flow**: Dashboard → Intelligence button (Pro badge) → feature cards → individual screens
+- **Pro Tier Gating**: All features check ProFeatureGate, redirect to PaywallScreen if access denied
+- **Disclaimer Loading**: Runtime loading from legal/ADVANCED_FEATURES_DISCLAIMER.md with fallback text
 
 **Key Design Decisions**:
 - Material 3 chosen for modern Android design consistency and component library
 - Dark theme as primary due to trader preference for reduced eye strain during extended chart analysis
 - Compose selected over XML layouts for declarative paradigm and easier maintenance
 - Lamont Labs geometric logo (Q+V) used for consistent brand identity
+- Collapsible disclaimers balance legal compliance with user experience
+- Regime badges use traffic light colors (green/yellow/red) for instant context understanding
 
 ### Backend Architecture
 
