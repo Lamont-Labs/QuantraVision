@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.licensing.BookFeatureGate
 import com.lamontlabs.quantravision.utils.BookmarkManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -172,14 +175,21 @@ fun BookReaderScreen(
 ) {
     // Scroll state with bookmark support
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
     var showMenu by remember { mutableStateOf(false) }
-    val hasBookmark = remember { BookmarkManager.hasBookmark(context) }
+    var hasBookmark by remember { mutableStateOf(BookmarkManager.hasBookmark(context)) }
+    var isRestoringBookmark by remember { mutableStateOf(false) }
     
     // Load saved bookmark position after content is loaded
     LaunchedEffect(scrollState.maxValue) {
         if (scrollState.maxValue > 0 && hasBookmark) {
             val savedPosition = BookmarkManager.getBookmark(context)
-            scrollState.scrollTo(savedPosition)
+            if (savedPosition > 0) {
+                isRestoringBookmark = true
+                scrollState.scrollTo(savedPosition)
+                kotlinx.coroutines.delay(2000)
+                isRestoringBookmark = false
+            }
         }
     }
     
@@ -188,6 +198,7 @@ fun BookReaderScreen(
         if (scrollState.value > 0) {
             kotlinx.coroutines.delay(500)
             BookmarkManager.saveBookmark(context, scrollState.value)
+            hasBookmark = true
         }
     }
     
@@ -205,8 +216,8 @@ fun BookReaderScreen(
     val bookState by produceState<BookUiState>(initialValue = BookUiState.Loading, context) {
         value = try {
             // Load book content and cover in parallel on IO dispatcher
-            val contentDeferred = kotlinx.coroutines.async(Dispatchers.IO) { loadBookContent(context) }
-            val coverDeferred = kotlinx.coroutines.async(Dispatchers.IO) { loadBookCover(context) }
+            val contentDeferred = async(Dispatchers.IO) { loadBookContent(context) }
+            val coverDeferred = async(Dispatchers.IO) { loadBookCover(context) }
             
             val content = contentDeferred.await()
             val cover = coverDeferred.await()
@@ -271,7 +282,8 @@ fun BookReaderScreen(
                             text = { Text("Clear bookmark & start over") },
                             onClick = {
                                 BookmarkManager.clearBookmark(context)
-                                kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
+                                hasBookmark = false
+                                coroutineScope.launch {
                                     scrollState.scrollTo(0)
                                 }
                                 showMenu = false
@@ -345,8 +357,8 @@ fun BookReaderScreen(
                         .fillMaxSize()
                         .padding(padding)
                 ) {
-                    // Show bookmark indicator if returning to saved position
-                    if (hasBookmark && scrollState.value < 100) {
+                    // Show bookmark indicator when actively restoring saved position
+                    if (isRestoringBookmark) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
