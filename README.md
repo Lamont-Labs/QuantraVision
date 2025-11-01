@@ -8,11 +8,11 @@
 
 *Professional-grade offline trading pattern recognition with predictive intelligence, gamification, and explainable AI*
 
-[![Android CI](https://github.com/Lamont-Labs/QuantraVision/actions/workflows/android-ci.yml/badge.svg)](https://github.com/Lamont-Labs/QuantraVision/actions/workflows/android-ci.yml)
 [![Android](https://img.shields.io/badge/Android-15%20(API%2035)-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.25-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20offline-blue.svg)](legal/PRIVACY_POLICY.md)
+[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](PRODUCTION_CERTIFICATION.md)
 
 [Features](#-features) • [Tech Stack](#-tech-stack) • [Download](#-download) • [Pricing](#-pricing) • [Legal](#-legal)
 
