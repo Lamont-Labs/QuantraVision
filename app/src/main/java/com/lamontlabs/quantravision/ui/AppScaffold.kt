@@ -45,6 +45,7 @@ private fun AppNavigationHost(
             DashboardScreen(
                 context = context,
                 onBook = { navController.navigate("book") },
+                onIntelligence = { navController.navigate("intelligence") },
                 onStartScan = { 
                     scope.launch { 
                         try {
@@ -172,6 +173,42 @@ private fun AppNavigationHost(
         composable("book") {
             com.lamontlabs.quantravision.ui.screens.BookViewerScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("intelligence") {
+            IntelligenceScreen(
+                onBack = { navController.popBackStack() },
+                onRegimeNavigator = { navController.navigate("regime_navigator") },
+                onPatternToPlan = { navController.navigate("pattern_plan") },
+                onBehavioralGuardrails = { navController.navigate("behavioral_guardrails") },
+                onProofCapsules = { navController.navigate("proof_capsules") },
+                onUpgrade = { navController.navigate("paywall") }
+            )
+        }
+
+        composable("regime_navigator") {
+            RegimeNavigatorScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("pattern_plan") {
+            PatternPlanScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("behavioral_guardrails") {
+            BehavioralGuardrailsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("proof_capsules") {
+            ProofCapsuleScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("paywall") {
+            com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
+                onDismiss = { navController.popBackStack() },
+                onBook = {},
+                onStandard = {},
+                onPro = {}
             )
         }
     }

@@ -38,7 +38,8 @@ fun DashboardScreen(
     onSimilarity: () -> Unit = {},
     onMultiChart: () -> Unit = {},
     onClearHighlights: () -> Unit = {},
-    onBook: () -> Unit = {}
+    onBook: () -> Unit = {},
+    onIntelligence: () -> Unit = {}
 ) {
     var voiceCommandStatus by remember { mutableStateOf<VoiceCommandStatus?>(null) }
     var showStatusMessage by remember { mutableStateOf(false) }
@@ -170,6 +171,17 @@ fun DashboardScreen(
             Button(onClick = onStartScan, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Visibility, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Start Detection")
+            }
+            
+            Button(
+                onClick = onIntelligence,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                )
+            ) {
+                Icon(Icons.Default.Psychology, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("🧠 Intelligence Stack (Pro)")
             }
             
             Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
