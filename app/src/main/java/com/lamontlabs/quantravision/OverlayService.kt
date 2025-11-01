@@ -18,12 +18,14 @@ import com.lamontlabs.quantravision.ml.PowerPolicyApplicator
 import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
 import com.lamontlabs.quantravision.detection.ProFeatureGate
 import com.lamontlabs.quantravision.alerts.AlertManager
+import com.lamontlabs.quantravision.ui.EnhancedOverlayView
 import kotlinx.coroutines.*
 
 class OverlayService : Service() {
 
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
+    private var enhancedOverlayView: EnhancedOverlayView? = null
     private var scope = CoroutineScope(Dispatchers.Default)
     private var policyApplicator: PowerPolicyApplicator? = null
     private var behavioralGuardrails: BehavioralGuardrails? = null
@@ -75,6 +77,13 @@ class OverlayService : Service() {
         try {
             windowManager.addView(view, params)
             overlayView = view
+            
+            enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
+            if (enhancedOverlayView == null) {
+                Log.e(TAG, "CRITICAL: EnhancedOverlayView not found in overlay_layout")
+            } else {
+                Log.i(TAG, "EnhancedOverlayView initialized successfully")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to add overlay view (permission likely revoked mid-operation)", e)
             Toast.makeText(
@@ -125,6 +134,8 @@ class OverlayService : Service() {
                     // OPTIMIZED PATH: Use HybridDetectorBridge for AI-optimized detection
                     val dir = java.io.File(applicationContext.filesDir, "demo_charts")
                     if (dir.exists()) {
+                        val allDetectedPatterns = mutableListOf<PatternMatch>()
+                        
                         dir.listFiles()?.forEach { imageFile ->
                             try {
                                 val bitmap = android.graphics.BitmapFactory.decodeFile(imageFile.absolutePath)
@@ -135,6 +146,8 @@ class OverlayService : Service() {
                                         timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
                                         
                                         results.forEach { pattern ->
+                                            allDetectedPatterns.add(pattern.toPatternMatch())
+                                            
                                             behavioralGuardrails?.let { guardrails ->
                                                 scope.launch {
                                                     try {
@@ -168,6 +181,10 @@ class OverlayService : Service() {
                                 timber.log.Timber.e(e, "Error processing ${imageFile.name} with bridge")
                             }
                         }
+                        
+                        withContext(Dispatchers.Main) {
+                            enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                        }
                     }
                 } catch (e: Exception) {
                     // FALLBACK: Use legacy detector if optimized path fails
@@ -181,6 +198,20 @@ class OverlayService : Service() {
                 delay(3000)
             }
         }
+    }
+    
+    private fun com.lamontlabs.quantravision.detection.DetectionResult.toPatternMatch(): PatternMatch {
+        return PatternMatch(
+            patternName = this.patternName,
+            boundingBox = android.graphics.RectF(
+                this.x.toFloat(),
+                this.y.toFloat(),
+                this.x.toFloat() + this.width.toFloat(),
+                this.y.toFloat() + this.height.toFloat()
+            ),
+            confidence = this.confidence,
+            timestamp = this.timestamp
+        )
     }
     
     private fun startPowerPolicyApplicator() {

@@ -4,12 +4,10 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
 
-    <ImageView
+    <com.lamontlabs.quantravision.ui.EnhancedOverlayView
         android:id="@+id/overlay_canvas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="Pattern detection overlay"
-        android:scaleType="fitXY" />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/overlay_status"
