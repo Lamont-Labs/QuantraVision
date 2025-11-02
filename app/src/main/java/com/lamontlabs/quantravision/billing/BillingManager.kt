@@ -65,6 +65,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
 
     private val unlockedKey = "qv_unlocked_tier"
     private val purchaseTokenKey = "qv_purchase_token"
+    private val bookPurchasedKey = "qv_book_purchased"
 
     var onTierChanged: ((String) -> Unit)? = null
 
@@ -114,6 +115,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
             "qv_starter_one", 
             "qv_standard_one", 
             "qv_pro_one",
+            "qv_book_standalone",
             "qv_starter_to_standard_upgrade",
             "qv_starter_to_pro_upgrade",
             "qv_standard_to_pro_upgrade"
@@ -203,12 +205,27 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                 prefs.edit()
                     .remove(unlockedKey)
                     .remove(purchaseTokenKey)
+                    .remove(bookPurchasedKey)
                     .apply()
                 onTierChanged?.invoke("")
                 Log.w("BillingManager", "Entitlements cleared")
             } catch (e: Exception) {
                 Log.e("BillingManager", "Failed to clear entitlements", e)
                 // Non-fatal - worst case user keeps access when they shouldn't
+            }
+        }
+    }
+    
+    private fun setBookPurchased(token: String) {
+        synchronized(this) {
+            try {
+                prefs.edit()
+                    .putBoolean(bookPurchasedKey, true)
+                    .putString("${bookPurchasedKey}_token", token)
+                    .apply()
+                Log.d("BillingManager", "Book purchase recorded")
+            } catch (e: Exception) {
+                Log.e("BillingManager", "Failed to save book purchase", e)
             }
         }
     }
@@ -235,6 +252,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         val upgradeSku = getUpgradeSku(currentTier, Tier.PRO)
         launchPurchase(upgradeSku ?: "qv_pro_one")
     }
+    fun purchaseBook() = launchPurchase("qv_book_standalone")
 
     /**
      * Get current tier as Tier enum
@@ -363,6 +381,13 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                     Log.d("BillingManager", "Pro upgrade from Standard granted")
                 }
             }
+            "qv_book_standalone" -> {
+                // Book purchase doesn't change tier, but we track it separately
+                setBookPurchased(purchase.purchaseToken)
+                if (!isRestoration) {
+                    Log.d("BillingManager", "Standalone book purchase granted")
+                }
+            }
         }
     }
 
@@ -406,6 +431,25 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     fun isStarter(): Boolean = getUnlockedTier() == "STARTER" || isStandard() || isPro()
     fun isStandard(): Boolean = getUnlockedTier() == "STANDARD" || isPro()
     fun isPro(): Boolean = getUnlockedTier() == "PRO"
+    
+    /**
+     * Check if user has access to the book
+     * Book is included with STANDARD/PRO or can be purchased standalone
+     */
+    fun hasBook(): Boolean {
+        // STANDARD and PRO tiers include the book
+        if (isStandard() || isPro()) return true
+        
+        // Check for standalone book purchase
+        return synchronized(this) {
+            try {
+                prefs.getBoolean(bookPurchasedKey, false)
+            } catch (e: Exception) {
+                Log.e("BillingManager", "Failed to read book purchase status", e)
+                false
+            }
+        }
+    }
     
     fun getProductDetails(sku: String): ProductDetails? = productMap[sku]
     

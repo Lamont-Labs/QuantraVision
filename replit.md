@@ -10,6 +10,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 2, 2025 - Standalone Book Purchase Feature:**
+- **New Add-On Product** - "The Friendly Trader" book now available as standalone purchase for $9.99
+- **Target Users** - FREE and STARTER tier users can buy the book separately without upgrading
+- **UI Integration** - Book purchase card added to UpgradeScreen and PaywallScreen
+  - Only displays for FREE/STARTER users who don't already have the book
+  - "Add-Ons" separator distinguishes from tier upgrades
+  - Consistent UI patterns with existing tier cards
+- **BillingManager Enhancements** - Added hasBook() method to check book ownership
+  - Tracks standalone book purchases separately from tier entitlements
+  - STANDARD/PRO users already have book bundled (no purchase needed)
+  - Book ownership persists in encrypted SharedPreferences
+- **Strategic Pricing** - $9.99 standalone keeps STANDARD ($24.99) attractive
+  - STANDARD includes 50 patterns + book + achievements + lessons + analytics
+  - Users can access education without full tier upgrade
+- **Files Modified**: BillingManager.kt, UpgradeScreen.kt, PaywallScreen.kt, README.md, replit.md
+
 **November 2, 2025 - Tier Positioning Strategy Refinement:**
 - **Strategic Pricing Fix** - Removed "most profitable patterns" claim from STARTER tier that undermined upgrade value
 - **Tier Repositioning** - Each tier now positioned as maturity progression:

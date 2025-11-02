@@ -21,7 +21,9 @@ fun Paywall(
     entitlements: Entitlements,
     onStarter: () -> Unit,
     onStandard: () -> Unit,
-    onPro: () -> Unit
+    onPro: () -> Unit,
+    onBook: (() -> Unit)? = null,
+    hasBook: Boolean = false
 ) {
     val currentTier = entitlements.tier
     
@@ -100,6 +102,37 @@ fun Paywall(
             isUpgrade = currentTier == Tier.STARTER || currentTier == Tier.STANDARD,
             onClick = onPro
         )
+
+        // Show standalone book purchase for FREE and STARTER users only
+        if ((currentTier == Tier.FREE || currentTier == Tier.STARTER) && !hasBook && onBook != null) {
+            Spacer(Modifier.height(16.dp))
+            
+            // Separator
+            Text(
+                "Add-Ons",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.height(8.dp))
+            
+            // Standalone book card
+            PaywallTierCard(
+                title = "The Friendly Trader Book",
+                price = "$9.99",
+                badge = null,
+                features = listOf(
+                    "10-chapter trading guide",
+                    "Offline reading",
+                    "Progress tracking",
+                    "Complete beginner curriculum"
+                ),
+                isCurrentTier = false,
+                isLowerTier = false,
+                isUpgrade = false,
+                onClick = onBook
+            )
+        }
 
         Spacer(Modifier.height(8.dp))
 

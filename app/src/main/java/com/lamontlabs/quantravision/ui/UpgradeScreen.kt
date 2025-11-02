@@ -146,6 +146,36 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     onPurchase = { bm.purchasePro() }
                 )
                 
+                // Show standalone book purchase for FREE and STARTER users only
+                if ((tier == "" || tier == "STARTER") && !bm.hasBook()) {
+                    Spacer(Modifier.height(24.dp))
+                    
+                    // Separator
+                    Text(
+                        "Add-Ons",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    
+                    // Standalone book card
+                    val bookProduct = bm.getProductDetails("qv_book_standalone")
+                    TierCard(
+                        title = "The Friendly Trader Book",
+                        price = bookProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$9.99",
+                        features = listOf(
+                            "10-chapter trading guide",
+                            "Offline reading",
+                            "Progress tracking",
+                            "Complete beginner curriculum"
+                        ),
+                        isCurrentTier = false,
+                        isPurchased = false,
+                        onPurchase = { bm.purchaseBook() }
+                    )
+                }
+                
                 Spacer(Modifier.height(16.dp))
                 
                 // Restore purchases button
