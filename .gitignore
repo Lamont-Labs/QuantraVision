@@ -142,3 +142,12 @@ lint-results*.html
 
 # Archived auxiliary folders
 /archive/
+
+# Debugging screenshots & temporary assets
+attached_assets/
+*.jpg
+*.png
+*.jpeg
+!app/src/main/res/**/*.png
+!app/src/main/res/**/*.jpg
+!app/src/main/assets/**/*.png
