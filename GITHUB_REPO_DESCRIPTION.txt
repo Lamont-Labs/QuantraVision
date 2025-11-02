@@ -1,50 +1,28 @@
-# Updated GitHub Repository Description
-# Copy this to: GitHub → Settings → scroll to "About" section → click Edit (pencil icon)
+# Updated GitHub Repository Description (No Pricing)
+# Copy this to: GitHub → Settings → About section → Edit
 
-## NEW DESCRIPTION (Recommended - 478 characters):
+## RECOMMENDED VERSION (343 characters):
 
-QuantraVision - Professional AI-powered chart pattern detection for Android traders. Detects 109 patterns in real-time with ultra-minimal overlay. 100% offline processing, zero data collection. One-time payment ($9.99-$49.99) with fair upgrade pricing - no subscriptions ever. Includes Intelligence Stack (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails), complete trading book, and AI learning system. Built with OpenCV + TensorFlow Lite. Apache 2.0 licensed.
-
----
-
-## SHORTER VERSION (if character limit is strict - 350 characters):
-
-Professional Android app detecting 109 chart patterns in real-time. Ultra-minimal overlay, 100% offline. One-time payment ($9.99-$49.99) with fair upgrade pricing. Includes Intelligence Stack, trading book, and AI learning. OpenCV + TensorFlow Lite. No subscriptions, no data collection. Apache 2.0 licensed.
+Professional AI-powered chart pattern detection for Android traders. Detects 109 patterns in real-time with ultra-minimal overlay. 100% offline processing, zero data collection. Includes Intelligence Stack (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails), complete trading book, and AI learning system. OpenCV + TensorFlow Lite. Apache 2.0 licensed.
 
 ---
 
-## ULTRA-SHORT VERSION (280 characters):
+## SHORTER VERSION (246 characters):
 
-AI-powered chart pattern detection for Android. 109 patterns, real-time overlay, 100% offline. One-time payment ($9.99-$49.99), fair upgrade pricing. Includes Intelligence Stack & trading book. OpenCV + TensorFlow Lite. No subscriptions. Apache 2.0.
+AI chart pattern detection for Android. 109 patterns detected in real-time with minimal overlay. 100% offline, no data collection. Includes Intelligence Stack, trading book, and AI learning. Built with OpenCV + TensorFlow Lite. Apache 2.0 licensed.
+
+---
+
+## ULTRA-SHORT VERSION (179 characters):
+
+AI-powered chart pattern detection for Android. 109 patterns, real-time overlay, 100% offline. Intelligence Stack, trading book, AI learning. OpenCV + TensorFlow Lite. Apache 2.0.
 
 ---
 
 ## HOW TO UPDATE:
 
-1. Go to your GitHub repository: https://github.com/Lamont-Labs/QuantraVision
-2. Scroll to the "About" section (right side of page)
-3. Click the ⚙️ (gear/settings icon) 
-4. Replace the description with your chosen version above
-5. Add website URL if you have one
-6. Click "Save changes"
-
----
-
-## KEY CHANGES FROM OLD DESCRIPTION:
-
-OLD (outdated):
-❌ "AI visual overlay for traders"
-❌ Mentions only triangles, channels, divergences (just 3 pattern types)
-❌ References "QuantraCore" (no longer relevant)
-❌ No pricing information
-❌ No mention of features
-
-NEW (current):
-✅ "109 patterns" (actual count)
-✅ "$9.99-$49.99 one-time" (clear pricing)
-✅ "Fair upgrade pricing" (new feature)
-✅ "Intelligence Stack" (unique features)
-✅ "Trading book" (education included)
-✅ "No subscriptions" (key selling point)
-✅ "Apache 2.0 licensed" (open source clarity)
-✅ Removes "QuantraCore" reference
+1. Go to https://github.com/Lamont-Labs/QuantraVision
+2. Scroll to "About" section (right side)
+3. Click ⚙️ gear icon
+4. Replace description
+5. Save changes
