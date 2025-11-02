@@ -109,7 +109,7 @@ QuantraVision has passed comprehensive production readiness certification:
 
 **Privacy & Pricing:**
 - **🔒 100% Offline**: Zero data collection, all processing on-device
-- **💰 One-Time Purchase**: $9.99-$24.99 - no subscriptions, no renewals
+- **💰 One-Time Purchase**: $9.99-$49.99 - no subscriptions, no renewals, lifetime access
 
 ---
 
@@ -488,63 +488,75 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 
 ## 💰 Pricing
 
-### 🆓 Free Tier (Always Free)
-- **3 pattern highlights per day** (resets daily)
+**🎉 4-Tier One-Time Purchase System — No Subscriptions Ever**
+
+### 🆓 FREE Tier (Always Free)
 - **10 essential patterns** (H&S, Double Top/Bottom, Triangles, basic candlesticks)
-- Watermarked overlays
+- Basic overlay visualization
 - 5 education lessons (teaser)
 - No credit card required
 - **Perfect trial experience**
 
-### 📚 Trading Book Add-On — $2.99 USD (Optional)
-✅ **"The Friendly Trader" by Jesse J. Lamont** (complete 10-chapter guide)  
-✅ **Integrated in-app reader** (100% offline, no internet required)  
-✅ **Standalone purchase** OR free with Standard/Pro  
-✅ **Comprehensive trading education:** Market basics, chart reading, risk management, pattern recognition, trading psychology, and more!  
-
-*Topics covered: Market fundamentals, candlestick charts, beginner tools, risk management, pattern spotting, emotional control, first demo trades, and staying in the game.*
-
-🎁 **FREE when you purchase Standard or Pro!**
-
-### ⭐ Standard Edition — $14.99 USD (One-Time)
+### 💎 STARTER Edition — $9.99 USD (One-Time)
+✅ **25 curated patterns** (most profitable setups)  
+✅ **Multi-timeframe detection** (1m, 5m, 15m, 1h, 4h, 1D)  
+✅ **Basic analytics** (win rate, frequency tracking)  
+✅ **Remove watermarks** (clean overlays)  
 ✅ **Unlimited pattern highlights** (no daily limits)  
-✅ **30 core patterns** (most profitable patterns)  
-✅ **📊 Regime Navigator** (market condition analysis - know WHEN to trade!)  
-✅ **Free trading book included** ($2.99 value)  
-✅ **Remove watermarks**  
-✅ **Export PDFs**  
-✅ **All 25 education lessons**  
-✅ **Pattern performance analytics**  
 
-💡 **Best Value:** Get Regime Navigator + 30 patterns + free book ($17.98 value) for only $14.99!
+💡 **Perfect Entry Point:** Get multi-timeframe detection + 25 proven patterns for only $9.99!
 
-### 🚀 Pro Edition — $29.99 USD (One-Time)
-✅ **Everything in Standard**  
+### ⭐ STANDARD Edition — $24.99 USD (One-Time)
+✅ **Everything in STARTER**  
+✅ **50 professional patterns** (STARTER 25 + 25 more advanced patterns)  
+✅ **🏆 50 achievements** (gamification system with rewards)  
+✅ **🎓 25 comprehensive lessons** (complete education system)  
+✅ **📚 Trading book included** ("The Friendly Trader" by Jesse J. Lamont)  
+✅ **📊 Pattern performance analytics** (detailed tracking & insights)  
+✅ **📄 PDF/CSV exports** (professional reporting)  
+
+💡 **Most Popular:** Best value with achievements, lessons, and book included!
+
+### 🚀 PRO Edition — $49.99 USD (One-Time)
+✅ **Everything in STANDARD**  
 ✅ **Full 102-pattern library** (all patterns unlocked)  
 
-**🎯 Exclusive 4-Feature Intelligence Stack (NO competitor has these):**
-✅ **📊 Regime Navigator** (market condition analysis)  
+**🎯 Exclusive Intelligence Stack (NO competitor has these):**
+✅ **📊 Regime Navigator** (market condition analysis - know WHEN to trade)  
 ✅ **🎯 Pattern-to-Plan Engine** (educational trade scenarios with entry/exit/risk)  
 ✅ **🛡️ Behavioral Guardrails** (discipline coaching prevents emotional trading)  
 ✅ **📦 Proof Capsules** (shareable tamper-proof detection receipts)  
+
+**🧠 Advanced AI Learning System:**
+✅ **10 learning algorithms** (pattern correlation, market condition learning, temporal analysis)  
+✅ **Scan learning engine** (gets smarter with every chart scan)  
+✅ **Behavioral pattern detection** (identifies overtrading, fatigue, revenge trading)  
+✅ **Predictive forecasting** (trend prediction with confidence intervals)  
 
 **📱 Professional Features:**
 ✅ **Voice alerts & announcements** (hands-free TTS)  
 ✅ **Haptic feedback patterns** (glanceable alerts)  
 ✅ **Predictive detection** (40-85% formation early warning)  
-✅ **Pattern invalidation alerts**  
-✅ **Auto-scanning watchlist**  
-✅ **Backtesting engine** (CSV import)  
-✅ **Advanced analytics dashboard**  
-✅ **Priority support**  
+✅ **Pattern invalidation alerts** (real-time breakage warnings)  
+✅ **Auto-scanning watchlist** (proactive monitoring)  
+✅ **Advanced analytics dashboard** (comprehensive insights)  
 
-🎁 **Bonus:** Free trading book included ($2.99 value)
+🎁 **Bonus:** Everything from STANDARD + complete AI learning suite
 
 ---
 
 **✨ No Subscriptions. No Renewals. Buy once, own forever.**
 
-**💰 Fair Pricing Promise:** Every tier offers clear value. Free tier is a genuine trial. Standard gets you Regime Navigator (our biggest competitive advantage). Pro unlocks the complete intelligence stack that NO other trading app offers.
+**💰 Competitive Comparison:**
+- **Competitors:** $180-$1,400/year subscriptions (forever payments)
+- **QuantraVision:** $9.99-$49.99 one-time (lifetime access)
+- **Your Savings:** $1,000s over the years with NO recurring charges
+
+**🎯 Fair Pricing Promise:** 
+- **FREE:** Genuine trial with 10 real patterns
+- **STARTER ($9.99):** Perfect impulse buy for multi-timeframe detection
+- **STANDARD ($24.99):** Most popular - best value with gamification & education
+- **PRO ($49.99):** Complete package - Intelligence Stack NO competitor offers
 
 ---
 

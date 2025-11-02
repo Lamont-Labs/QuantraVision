@@ -23,11 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Behavioral pattern detection (overtrading, fatigue)
 
 ### Changed
-- 💰 **Pricing Structure Updates** - Clarified tier offerings
-  - FREE: 10 essential patterns
-  - STANDARD: $14.99 - 30 patterns + Regime Navigator + Trading Book
-  - PRO: $29.99 - 102 patterns + Full Intelligence Stack
-  - Trading Book: $2.99 standalone (free with Standard/Pro)
+- 💰 **4-Tier Pricing Structure** - Expanded from 3 to 4 tiers for better accessibility
+  - **FREE**: 10 essential patterns (basic overlay)
+  - **STARTER**: $9.99 - 25 patterns + multi-timeframe detection + basic analytics (NEW)
+  - **STANDARD**: $24.99 - 50 patterns + achievements + lessons + book + exports
+  - **PRO**: $49.99 - 102 patterns + Intelligence Stack + AI Learning + Scan Learning Engine
+  - **Philosophy**: One-time payment, lifetime access, NO subscriptions (vs competitors' $180-$1,400/year)
 
 - 🎨 **Overlay Design Improvements** - Enhanced user experience
   - Touch-passthrough technology for full trading app interaction
