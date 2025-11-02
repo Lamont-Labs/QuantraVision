@@ -178,7 +178,21 @@ private fun AppNavigationHost(
         }
 
         composable("settings") {
-            SettingsScreenWithNav(onBack = { navController.popBackStack() })
+            SettingsScreenWithNav(navController = navController)
+        }
+
+        composable("legal/{documentType}") { backStackEntry ->
+            val documentTypeString = backStackEntry.arguments?.getString("documentType") ?: "privacy"
+            val documentType = when (documentTypeString) {
+                "privacy" -> com.lamontlabs.quantravision.ui.legal.DocumentType.PRIVACY_POLICY
+                "terms" -> com.lamontlabs.quantravision.ui.legal.DocumentType.TERMS_OF_USE
+                "disclaimer" -> com.lamontlabs.quantravision.ui.legal.DocumentType.DISCLAIMER
+                else -> com.lamontlabs.quantravision.ui.legal.DocumentType.PRIVACY_POLICY
+            }
+            com.lamontlabs.quantravision.ui.legal.LegalDocumentScreen(
+                documentType = documentType,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable("templates") {

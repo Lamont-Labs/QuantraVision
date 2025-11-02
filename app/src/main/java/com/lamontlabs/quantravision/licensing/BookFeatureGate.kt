@@ -8,10 +8,10 @@ import androidx.security.crypto.MasterKey
  * BookFeatureGate
  * Controls access to the included trading book.
  * 
- * Option 1 Pricing:
- * - Standalone: $2.99 (separate purchase)
- * - Free with Standard tier ($14.99+)
- * - Free with Pro tier ($29.99+)
+ * Pricing:
+ * - Standalone: $4.99 (separate purchase)
+ * - Free with Standard tier ($24.99+)
+ * - Free with Pro tier ($49.99+)
  * 
  * Book Content: Your complete trading book bundled in assets/book/
  * Format: HTML/Markdown for in-app viewing
@@ -45,9 +45,9 @@ object BookFeatureGate {
      * Check if user has access to the trading book.
      * 
      * Access granted if:
-     * 1. User purchased Book ($2.99) separately, OR
-     * 2. User has Standard tier ($14.99+), OR
-     * 3. User has Pro tier ($29.99+)
+     * 1. User purchased Book ($4.99) separately, OR
+     * 2. User has Standard tier ($24.99+), OR
+     * 3. User has Pro tier ($49.99+)
      */
     fun hasAccess(context: Context): Boolean {
         val prefs = getSecurePrefs(context) ?: return false

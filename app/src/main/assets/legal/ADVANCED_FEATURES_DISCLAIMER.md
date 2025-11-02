@@ -135,7 +135,7 @@ YOU are solely responsible for:
 - Behavioral patterns missed by Guardrails
 - Any financial losses whatsoever
 
-**Maximum liability is capped at the purchase price ($24.99).**
+**Maximum liability is capped at the purchase price ($49.99).**
 
 ---
 

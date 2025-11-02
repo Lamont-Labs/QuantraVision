@@ -125,7 +125,7 @@ fun AdvancedFeaturesDisclaimerCard(
                         "• You will NOT rely on these features as financial advice\n" +
                         "• You accept full responsibility for all trading decisions\n" +
                         "• QuantraVision and Lamont Labs are NOT registered investment advisors\n" +
-                        "• Maximum liability is capped at purchase price ($29.99)",
+                        "• Maximum liability is capped at purchase price ($49.99)",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )

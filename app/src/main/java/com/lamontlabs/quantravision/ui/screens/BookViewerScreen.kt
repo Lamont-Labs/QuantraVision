@@ -118,11 +118,11 @@ fun BookLockedScreen(onNavigateBack: () -> Unit) {
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
-                    Text("📚 Purchase for $2.99 (standalone)", style = MaterialTheme.typography.bodyMedium)
+                    Text("📚 Purchase for $4.99 (standalone)", style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("⭐ FREE with Standard tier ($14.99)", style = MaterialTheme.typography.bodyMedium)
+                    Text("⭐ FREE with Standard tier ($24.99)", style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("🚀 FREE with Pro tier ($29.99)", style = MaterialTheme.typography.bodyMedium)
+                    Text("🚀 FREE with Pro tier ($49.99)", style = MaterialTheme.typography.bodyMedium)
                 }
             }
             

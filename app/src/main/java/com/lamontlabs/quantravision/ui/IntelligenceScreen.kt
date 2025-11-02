@@ -70,7 +70,7 @@ fun IntelligenceScreen(
                         if (hasProAccess) {
                             "Advanced AI-powered features to enhance your trading education"
                         } else {
-                            "Unlock these premium features with Pro tier ($29.99)"
+                            "Unlock these premium features with Pro tier ($49.99)"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -114,7 +114,7 @@ fun IntelligenceScreen(
                             }
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                "Upgrade to Pro ($29.99 one-time) to unlock all 4 intelligence features plus full 108-pattern library, voice alerts, and more.",
+                                "Upgrade to Pro ($49.99 one-time) to unlock all 4 intelligence features plus full 109-pattern library, voice alerts, and more.",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(Modifier.height(12.dp))

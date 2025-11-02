@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,7 +37,7 @@ fun SettingsScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreenWithNav(onBack: () -> Unit) {
+fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) {
     val context = LocalContext.current
     val logoPrefs = com.lamontlabs.quantravision.overlay.FloatingLogoPreferences(context)
     
@@ -43,7 +46,7 @@ fun SettingsScreenWithNav(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("Settings") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
                 }
@@ -153,6 +156,57 @@ fun SettingsScreenWithNav(onBack: () -> Unit) {
                         "Onboarding reset. Restart the app to view the tour.",
                         android.widget.Toast.LENGTH_LONG
                     ).show()
+                }
+            )
+            
+            Spacer(Modifier.height(24.dp))
+            
+            Text(
+                text = "Legal & Privacy",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            
+            ListItem(
+                headlineContent = { Text("Privacy Policy") },
+                supportingContent = { Text("How we handle your data") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null
+                    )
+                },
+                modifier = Modifier.clickable {
+                    navController.navigate("legal/privacy")
+                }
+            )
+            
+            ListItem(
+                headlineContent = { Text("Terms of Use") },
+                supportingContent = { Text("Conditions for using the app") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Description,
+                        contentDescription = null
+                    )
+                },
+                modifier = Modifier.clickable {
+                    navController.navigate("legal/terms")
+                }
+            )
+            
+            ListItem(
+                headlineContent = { Text("Disclaimer") },
+                supportingContent = { Text("Educational purposes only") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null
+                    )
+                },
+                modifier = Modifier.clickable {
+                    navController.navigate("legal/disclaimer")
                 }
             )
             
