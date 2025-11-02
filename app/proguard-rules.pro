@@ -57,3 +57,21 @@
 -keepclassmembers class * extends android.app.Activity { *; }
 -keepclassmembers class * extends android.app.Service { *; }
 -keepclassmembers class * extends android.content.BroadcastReceiver { *; }
+
+# Room Database - Keep entity classes and DAOs
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keepclassmembers class * {
+    @androidx.room.* <methods>;
+}
+-keep @androidx.room.Dao class *
+
+# Keep Billing classes for Google Play integration
+-keep class com.android.billingclient.** { *; }
+-keepclassmembers class com.android.billingclient.** { *; }
+
+# Keep data classes and enums
+-keepclassmembers class * {
+    @kotlinx.serialization.* <fields>;
+}
+-keepclassmembers enum * { *; }
