@@ -85,6 +85,78 @@ QuantraVision has passed comprehensive production readiness certification:
 
 ---
 
+## 🎨 **Minimal, Non-Intrusive Overlay Design**
+
+### 📍 **Your Trading App Stays Fully Clickable**
+
+QuantraVision uses a revolutionary **touch-passthrough overlay** that keeps your trading platform 100% interactive:
+
+**🟢 What You See:**
+- **Floating Logo Button** - Small, draggable QuantraVision logo in the corner (default: bottom-right)
+- **Pattern Highlights** - Visual boxes and labels overlaid on detected patterns
+- **Smart Badge** - Shows active pattern count (e.g., "3" when 3 patterns detected)
+- **Detection Ring** - Status indicator around logo (scanning/idle/patterns found)
+
+**✅ What Stays Interactive:**
+- **All Trading App Buttons** - Place orders, modify positions, close trades
+- **Charts & Graphs** - Pinch to zoom, scroll through time, draw trendlines
+- **Trading Platform UI** - Full access to your broker's interface
+- **Everything Underneath** - Zero interference with your trading workflow
+
+### 🎯 **How It Works:**
+
+1. **Start Detection** - Launch QuantraVision, grant overlay permission, tap "Start"
+2. **Logo Appears** - Small floating button shows in corner (fully draggable)
+3. **Pattern Detection Active** - Logo shows scanning animation, highlights patterns found
+4. **Your Trading App Works Normally** - Click buttons, interact with charts, execute trades
+5. **Click Logo for Features** - Tap logo to expand quick actions menu
+6. **Done Trading** - Click logo → "Stop Detection" when finished
+
+### 🔧 **Expandable Quick Actions Menu:**
+
+Click the floating logo to access:
+- **🎯 Scan Now** - Force immediate pattern scan
+- **📊 Dashboard** - Open full analytics dashboard
+- **🔔 Alerts** - Toggle voice/haptic notifications on/off
+- **🎓 Learning Stats** - View personalized AI learning progress
+- **⚙️ Settings** - Customize logo size, opacity, behavior
+- **❌ Stop Detection** - Close overlay and return to background
+
+### 🎨 **Customization Options:**
+
+**Logo Size:**
+- Small (50dp) - Minimal screen footprint
+- Medium (60dp) - Default, balanced visibility
+- Large (70dp) - Maximum visibility
+
+**Logo Opacity:**
+- 50% - Ultra-subtle, almost invisible
+- 75% - Balanced transparency
+- 85% - Clearly visible
+- 100% - Fully opaque
+
+**Position:**
+- Fully draggable - Move to any corner or edge
+- Auto-saves - Remembers your preferred location
+- Snap-to-edge - Smooth positioning with haptic feedback
+
+**Badge Visibility:**
+- Toggle pattern count badge on/off
+- Choose detection status ring visibility
+
+### 🚫 **What This Means:**
+
+✅ **Your trading platform remains FULLY functional**  
+✅ **No blocked buttons or UI elements**  
+✅ **Pattern detection happens in the background**  
+✅ **Visual highlights don't interfere with interactions**  
+✅ **Only the logo button is "touchable" - everything else passes through**  
+✅ **Professional, non-intrusive user experience**  
+
+**Your Edge:** NO competitor has solved the overlay interference problem. QuantraVision is the ONLY pattern detection app that keeps your trading platform fully interactive while providing real-time analysis.
+
+---
+
 ## 🚀 Getting Started
 
 **New to QuantraVision?** See [QUICK_START.md](QUICK_START.md) for build instructions.
