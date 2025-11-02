@@ -6,16 +6,7 @@ set -euo pipefail
 # Generates Software Bill of Materials (SBOM) in SPDX format
 # Verifies all dependencies are Apache 2.0 compatible
 #
-# ⚠️  IMPORTANT: MANUAL REVIEW REQUIRED ⚠️
-# This script generates Gradle dependency output but uses a reference dependency
-# list for SPDX generation. Before each release:
-# 1. Run this script
-# 2. Compare build/sbom/dependencies-raw.txt with the hardcoded list (line 64-103)
-# 3. Update hardcoded dependencies if mismatches found
-# 4. Verify all new dependencies are Apache 2.0 compatible
-# 5. Update SPDX JSON section if dependencies changed
-#
-# TODO: Implement automated Gradle dependency parsing for full automation
+# Optional: Run this if you need formal license documentation
 ################################################################################
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

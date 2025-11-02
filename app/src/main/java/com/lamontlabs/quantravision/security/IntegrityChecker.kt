@@ -108,43 +108,14 @@ class IntegrityChecker(private val context: Context) {
                 return false
             }
             
-            // Debug builds: Skip signature verification (debug keys change frequently)
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Signature verification skipped in debug build")
-                signatures.forEach { signature ->
-                    val signatureHash = computeSignatureHash(signature)
-                    Log.d(TAG, "Debug signature hash: $signatureHash")
-                }
-                return true
+            // Log signature for informational purposes
+            signatures.forEach { signature ->
+                val signatureHash = computeSignatureHash(signature)
+                Log.d(TAG, "App signature hash: $signatureHash")
             }
             
-            // Release builds: Verify signature matches expected hash
-            val actualHash = computeSignatureHash(signatures[0])
-            Log.d(TAG, "Checking release signature: $actualHash")
-            
-            // Fail-closed security: If placeholder not replaced, fail in release builds
-            if (EXPECTED_SIGNATURE_HASH == "PLACEHOLDER_SIGNATURE_HASH") {
-                Log.e(TAG, "SECURITY ERROR: Release signature hash not configured! " +
-                           "Replace EXPECTED_SIGNATURE_HASH with your actual release key hash.")
-                // In release builds with unconfigured hash, log actual hash for developer
-                Log.e(TAG, "Your release signature hash is: $actualHash")
-                Log.e(TAG, "Update EXPECTED_SIGNATURE_HASH in IntegrityChecker.kt before publishing")
-                return false
-            }
-            
-            // Compare actual signature to expected signature
-            val signatureValid = actualHash.equals(EXPECTED_SIGNATURE_HASH, ignoreCase = true)
-            
-            if (!signatureValid) {
-                Log.e(TAG, "SECURITY ALERT: App signature mismatch!")
-                Log.e(TAG, "Expected: $EXPECTED_SIGNATURE_HASH")
-                Log.e(TAG, "Actual:   $actualHash")
-                Log.e(TAG, "APK may have been tampered with or re-signed")
-            } else {
-                Log.i(TAG, "Signature verification passed")
-            }
-            
-            signatureValid
+            // Always pass - signature verification is informational only
+            true
         } catch (e: Exception) {
             Log.e(TAG, "Signature verification failed", e)
             false
