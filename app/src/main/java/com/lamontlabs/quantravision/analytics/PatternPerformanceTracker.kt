@@ -1,8 +1,17 @@
 package com.lamontlabs.quantravision.analytics
 
 import android.content.Context
+import com.lamontlabs.quantravision.PatternDatabase
+import com.lamontlabs.quantravision.analytics.model.Outcome
+import com.lamontlabs.quantravision.analytics.model.PatternOutcome
+import com.lamontlabs.quantravision.analytics.model.PerformanceStats
+import com.lamontlabs.quantravision.analytics.model.TimeOfDayStats
+import com.lamontlabs.quantravision.analytics.model.WinRateStats
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -11,6 +20,8 @@ import java.util.*
  * PatternPerformanceTracker
  * Tracks pattern detection frequency, confidence trends, and accuracy
  * Helps users identify "hot patterns" and reliable signals
+ * 
+ * ENHANCED: Now supports Room database for outcome tracking and analytics
  */
 object PatternPerformanceTracker {
 
@@ -212,5 +223,135 @@ object PatternPerformanceTracker {
 
     private fun saveData(context: Context, obj: JSONObject) {
         File(context.filesDir, FILE).writeText(obj.toString(2))
+    }
+    
+    suspend fun trackOutcome(
+        context: Context,
+        patternMatchId: Int,
+        patternName: String,
+        outcome: Outcome,
+        userFeedback: String = "",
+        profitLossPercent: Double? = null,
+        timeframe: String = "unknown"
+    ) = withContext(Dispatchers.IO) {
+        try {
+            val db = PatternDatabase.getInstance(context)
+            val patternOutcome = PatternOutcome(
+                patternMatchId = patternMatchId,
+                patternName = patternName,
+                outcome = outcome,
+                timestamp = System.currentTimeMillis(),
+                userFeedback = userFeedback,
+                profitLossPercent = profitLossPercent,
+                timeframe = timeframe
+            )
+            db.patternOutcomeDao().insert(patternOutcome)
+            Timber.i("Tracked outcome for $patternName: $outcome")
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to track outcome")
+        }
+    }
+    
+    suspend fun calculateWinRate(context: Context, patternName: String): WinRateStats? = withContext(Dispatchers.IO) {
+        try {
+            val db = PatternDatabase.getInstance(context)
+            val dao = db.patternOutcomeDao()
+            
+            val wins = dao.getOutcomeCount(patternName, Outcome.WIN)
+            val losses = dao.getOutcomeCount(patternName, Outcome.LOSS)
+            val neutral = dao.getOutcomeCount(patternName, Outcome.NEUTRAL)
+            val total = dao.getTotalCount(patternName)
+            
+            if (total == 0) return@withContext null
+            
+            val winRate = wins.toDouble() / total
+            val avgProfitLoss = dao.getAvgProfitLoss(patternName) ?: 0.0
+            
+            WinRateStats(
+                patternName = patternName,
+                totalOutcomes = total,
+                wins = wins,
+                losses = losses,
+                neutral = neutral,
+                winRate = winRate,
+                avgProfitLoss = avgProfitLoss
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to calculate win rate for $patternName")
+            null
+        }
+    }
+    
+    suspend fun getBestPerformingPatterns(context: Context, limit: Int = 5): List<WinRateStats> = withContext(Dispatchers.IO) {
+        try {
+            val db = PatternDatabase.getInstance(context)
+            val outcomes = db.patternOutcomeDao().getAll()
+            
+            val patternNames = outcomes.map { it.patternName }.distinct()
+            val stats = patternNames.mapNotNull { calculateWinRate(context, it) }
+            
+            stats
+                .filter { it.totalOutcomes >= 3 }
+                .sortedByDescending { it.winRate }
+                .take(limit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get best performing patterns")
+            emptyList()
+        }
+    }
+    
+    suspend fun getWorstPerformingPatterns(context: Context, limit: Int = 5): List<WinRateStats> = withContext(Dispatchers.IO) {
+        try {
+            val db = PatternDatabase.getInstance(context)
+            val outcomes = db.patternOutcomeDao().getAll()
+            
+            val patternNames = outcomes.map { it.patternName }.distinct()
+            val stats = patternNames.mapNotNull { calculateWinRate(context, it) }
+            
+            stats
+                .filter { it.totalOutcomes >= 3 }
+                .sortedBy { it.winRate }
+                .take(limit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get worst performing patterns")
+            emptyList()
+        }
+    }
+    
+    suspend fun getTimeOfDayStats(context: Context): List<TimeOfDayStats> = withContext(Dispatchers.IO) {
+        try {
+            val db = PatternDatabase.getInstance(context)
+            val outcomes = db.patternOutcomeDao().getAll()
+            
+            val calendar = Calendar.getInstance()
+            val hourlyStats = mutableMapOf<Int, MutableList<PatternOutcome>>()
+            
+            outcomes.forEach { outcome ->
+                calendar.timeInMillis = outcome.timestamp
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                hourlyStats.getOrPut(hour) { mutableListOf() }.add(outcome)
+            }
+            
+            hourlyStats.map { (hour, outcomesList) ->
+                val detectionCount = outcomesList.size
+                val wins = outcomesList.count { it.outcome == Outcome.WIN }
+                val winRate = if (detectionCount > 0) wins.toDouble() / detectionCount else 0.0
+                
+                val avgConfidence = outcomesList
+                    .mapNotNull { it.profitLossPercent }
+                    .average()
+                    .let { if (it.isNaN()) 0.0 else it }
+                
+                TimeOfDayStats(
+                    hourOfDay = hour,
+                    detectionCount = detectionCount,
+                    winRate = winRate,
+                    avgConfidence = avgConfidence
+                )
+            }.sortedBy { it.hourOfDay }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get time of day stats")
+            emptyList()
+        }
     }
 }

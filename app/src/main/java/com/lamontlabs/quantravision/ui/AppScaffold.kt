@@ -119,7 +119,10 @@ private fun AppNavigationHost(
         }
 
         composable("analytics") {
-            AnalyticsScreen(onBack = { navController.popBackStack() })
+            com.lamontlabs.quantravision.ui.screens.analytics.AnalyticsDashboardScreen(
+                context = context,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable("predictions") {
