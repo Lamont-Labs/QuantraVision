@@ -9,6 +9,10 @@ import com.lamontlabs.quantravision.achievements.data.AchievementDao
 import com.lamontlabs.quantravision.achievements.data.AchievementEntity
 import com.lamontlabs.quantravision.analytics.data.PatternOutcomeDao
 import com.lamontlabs.quantravision.analytics.model.PatternOutcome
+import com.lamontlabs.quantravision.learning.data.LearningProfileDao
+import com.lamontlabs.quantravision.learning.model.ConfidenceProfile
+import com.lamontlabs.quantravision.learning.model.LearningMetadata
+import com.lamontlabs.quantravision.learning.model.SuppressionRule
 
 @Entity
 data class PatternMatch(
@@ -93,13 +97,14 @@ interface InvalidatedPatternDao {
     suspend fun getInvalidationCount(name: String): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class], version = 8)
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class], version = 9)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
     abstract fun invalidatedPatternDao(): InvalidatedPatternDao
     abstract fun patternOutcomeDao(): PatternOutcomeDao
     abstract fun achievementDao(): AchievementDao
+    abstract fun learningProfileDao(): LearningProfileDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -114,7 +119,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -258,6 +263,50 @@ abstract class PatternDatabase : RoomDatabase() {
                         unlockedAt INTEGER,
                         progress INTEGER NOT NULL DEFAULT 0,
                         totalRequired INTEGER NOT NULL DEFAULT 1
+                    )
+                """.trimIndent())
+            }
+        }
+        
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS confidence_profiles (
+                        patternType TEXT PRIMARY KEY NOT NULL,
+                        bucket0_30WinRate REAL NOT NULL DEFAULT 0.0,
+                        bucket30_50WinRate REAL NOT NULL DEFAULT 0.0,
+                        bucket50_70WinRate REAL NOT NULL DEFAULT 0.0,
+                        bucket70_90WinRate REAL NOT NULL DEFAULT 0.0,
+                        bucket90_100WinRate REAL NOT NULL DEFAULT 0.0,
+                        bucket0_30Count INTEGER NOT NULL DEFAULT 0,
+                        bucket30_50Count INTEGER NOT NULL DEFAULT 0,
+                        bucket50_70Count INTEGER NOT NULL DEFAULT 0,
+                        bucket70_90Count INTEGER NOT NULL DEFAULT 0,
+                        bucket90_100Count INTEGER NOT NULL DEFAULT 0,
+                        recommendedThreshold REAL NOT NULL DEFAULT 0.5,
+                        totalOutcomes INTEGER NOT NULL DEFAULT 0,
+                        lastUpdated INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS suppression_rules (
+                        patternType TEXT PRIMARY KEY NOT NULL,
+                        suppressionLevel TEXT NOT NULL,
+                        reason TEXT NOT NULL,
+                        winRate REAL NOT NULL,
+                        totalOutcomes INTEGER NOT NULL,
+                        isUserOverridden INTEGER NOT NULL DEFAULT 0,
+                        createdAt INTEGER NOT NULL,
+                        lastUpdated INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS learning_metadata (
+                        key TEXT PRIMARY KEY NOT NULL,
+                        value TEXT NOT NULL,
+                        lastUpdated INTEGER NOT NULL
                     )
                 """.trimIndent())
             }
