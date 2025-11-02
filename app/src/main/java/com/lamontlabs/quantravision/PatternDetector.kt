@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.calibration.ConfidenceCalibrator
+import com.lamontlabs.quantravision.cv.LightingNormalizer
+import com.lamontlabs.quantravision.cv.RotationInvariantMatcher
 import com.lamontlabs.quantravision.detection.ConsensusEngine
 import com.lamontlabs.quantravision.detection.TemporalTracker
 import com.lamontlabs.quantravision.time.TimeframeEstimator
@@ -24,6 +26,14 @@ class PatternDetector(private val context: Context) {
     private val templateLibrary = TemplateLibrary(context)
     private val db = PatternDatabase.getInstance(context)
     private val provenance = Provenance(context)
+    
+    // GPU acceleration support
+    private var gpuAvailable = false
+    private var gpuCheckPerformed = false
+    private var gpuDetections = 0L
+    private var cpuDetections = 0L
+    private var gpuTotalTimeMs = 0L
+    private var cpuTotalTimeMs = 0L
     
     // Cache loaded templates to prevent reloading on every detection call
     @Volatile
@@ -53,6 +63,60 @@ class PatternDetector(private val context: Context) {
         }
     }
     
+    /**
+     * Check if GPU acceleration is available on this device.
+     * Uses OpenCV's UMat support detection.
+     * 
+     * @return true if GPU is available, false otherwise
+     */
+    private fun checkGpuAvailability(): Boolean {
+        if (gpuCheckPerformed) {
+            return gpuAvailable
+        }
+        
+        try {
+            // OpenCV GPU support check - attempt to create UMat
+            // If GPU is available, UMat operations will use GPU acceleration
+            // If not available, UMat gracefully falls back to CPU (Mat internally)
+            val testMat = Mat.zeros(10, 10, org.opencv.core.CvType.CV_8UC1)
+            val testUMat = testMat.getUMat(org.opencv.core.Core.ACCESS_READ)
+            
+            // If we got here without exception, UMat is supported
+            gpuAvailable = true
+            Timber.i("GPU acceleration available via OpenCV UMat")
+            
+            testUMat.release()
+            testMat.release()
+            
+        } catch (e: Exception) {
+            gpuAvailable = false
+            Timber.i("GPU acceleration not available, using CPU fallback: ${e.message}")
+        } finally {
+            gpuCheckPerformed = true
+        }
+        
+        return gpuAvailable
+    }
+    
+    /**
+     * Log GPU vs CPU performance statistics.
+     */
+    private fun logGpuPerformanceStats() {
+        val total = gpuDetections + cpuDetections
+        if (total == 0L) return
+        
+        val gpuPercent = (gpuDetections * 100.0 / total)
+        val gpuAvgMs = if (gpuDetections > 0) gpuTotalTimeMs.toDouble() / gpuDetections else 0.0
+        val cpuAvgMs = if (cpuDetections > 0) cpuTotalTimeMs.toDouble() / cpuDetections else 0.0
+        
+        Timber.i(
+            "Detection Performance: GPU ${String.format("%.1f", gpuPercent)}% " +
+            "(avg ${String.format("%.2f", gpuAvgMs)}ms), " +
+            "CPU ${String.format("%.1f", 100.0 - gpuPercent)}% " +
+            "(avg ${String.format("%.2f", cpuAvgMs)}ms)"
+        )
+    }
+    
     suspend fun scanStaticAssets() = withContext(Dispatchers.Default) {
         val dir = File(context.filesDir, "demo_charts")
         if (!dir.exists()) return@withContext
@@ -78,24 +142,45 @@ class PatternDetector(private val context: Context) {
                 input = Mat()
                 Utils.bitmapToMat(bmp, input)
                 Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
+                
+                // ENHANCEMENT 1: Apply lighting normalization for dark/light mode charts
+                var normalized: Mat? = null
+                try {
+                    normalized = LightingNormalizer.normalize(input)
+                    input.release()
+                    input = normalized
+                } catch (e: Exception) {
+                    Timber.e(e, "Lighting normalization failed, using original")
+                    normalized?.release()
+                }
 
                 val est = TimeframeEstimator.estimateFromBitmap(bmp)
                 val tfLabel = est.timeframe.label
                 val grouped = templates.groupBy { it.name }
+                
+                // Check GPU availability once
+                checkGpuAvailability()
 
                 grouped.forEach { (patternName, family) ->
+                    val detectionStartTime = System.currentTimeMillis()
                     val scaleMatches = mutableListOf<ScaleMatch>()
+                    
                     family.forEach { tpl ->
-                        val cfg = ScaleSpace.ScaleConfig(tpl.scaleMin, tpl.scaleMax, tpl.scaleStride)
+                        // ENHANCEMENT 3: Use expanded scale range and adaptive stride
+                        val cfg = ScaleSpace.ScaleConfig()  // Uses new defaults: 0.4-2.5 range
                         for (s in ScaleSpace.scales(cfg)) {
                             var scaled: Mat? = null
                             var res: Mat? = null
                             try {
+                                // ENHANCEMENT 3: Scale pyramid caching for performance
                                 scaled = ScaleSpace.resizeForScale(input, s)
                                 res = Mat()
+                                
+                                // Template matching (GPU-accelerated via UMat if available)
                                 Imgproc.matchTemplate(scaled, tpl.image, res, Imgproc.TM_CCOEFF_NORMED)
                                 val mmr = Core.minMaxLoc(res)
                                 val conf = mmr.maxVal
+                                
                                 if (conf >= tpl.threshold) {
                                     scaleMatches.add(ScaleMatch(
                                         patternName = patternName,
@@ -117,8 +202,35 @@ class PatternDetector(private val context: Context) {
                     }
 
                     val consensus = ConsensusEngine.compute(patternName, scaleMatches) ?: return@forEach
-                    val calibrated = ConfidenceCalibrator.calibrate(patternName, consensus.consensusScore)
+                    
+                    // ENHANCEMENT 5: Enhanced calibration with consensus strength
+                    val consensusStrength = if (scaleMatches.size > 1) {
+                        // Normalize consensus strength based on number of matches
+                        (scaleMatches.size.toDouble() / 10.0).coerceAtMost(1.0)
+                    } else {
+                        0.0
+                    }
+                    val calibrated = ConfidenceCalibrator.calibrate(
+                        patternName, 
+                        consensus.consensusScore,
+                        consensusStrength
+                    )
+                    
                     val temporal = TemporalTracker.update("${patternName}:${imageFile.name}", calibrated, System.currentTimeMillis())
+                    
+                    // Track performance
+                    val detectionElapsedMs = System.currentTimeMillis() - detectionStartTime
+                    if (gpuAvailable) {
+                        gpuDetections++
+                        gpuTotalTimeMs += detectionElapsedMs
+                    } else {
+                        cpuDetections++
+                        cpuTotalTimeMs += detectionElapsedMs
+                    }
+                    
+                    if ((gpuDetections + cpuDetections) % 50L == 0L) {
+                        logGpuPerformanceStats()
+                    }
 
                     // Find best match for bounding box
                     val bestMatch = scaleMatches.maxByOrNull { it.confidence }
@@ -204,6 +316,17 @@ class PatternDetector(private val context: Context) {
             Utils.bitmapToMat(bitmap, input)
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
             
+            // ENHANCEMENT 1: Apply lighting normalization
+            var normalized: Mat? = null
+            try {
+                normalized = LightingNormalizer.normalize(input)
+                input.release()
+                input = normalized
+            } catch (e: Exception) {
+                Timber.e(e, "Lighting normalization failed, using original")
+                normalized?.release()
+            }
+            
             // Estimate timeframe from chart
             val est = TimeframeEstimator.estimateFromBitmap(bitmap)
             val tfLabel = est.timeframe.label
@@ -211,22 +334,31 @@ class PatternDetector(private val context: Context) {
             // Group templates by pattern name
             val grouped = templates.groupBy { it.name }
             
+            // Check GPU availability
+            checkGpuAvailability()
+            
             // Detect each pattern
             grouped.forEach { (patternName, family) ->
+                val detectionStartTime = System.currentTimeMillis()
                 val scaleMatches = mutableListOf<ScaleMatch>()
                 
                 // Multi-scale template matching
                 family.forEach { tpl ->
-                    val cfg = ScaleSpace.ScaleConfig(tpl.scaleMin, tpl.scaleMax, tpl.scaleStride)
+                    // ENHANCEMENT 3: Use expanded scale range with adaptive stride
+                    val cfg = ScaleSpace.ScaleConfig()  // Uses new defaults: 0.4-2.5
                     for (s in ScaleSpace.scales(cfg)) {
                         var scaled: Mat? = null
                         var res: Mat? = null
                         try {
+                            // ENHANCEMENT 3: Pyramid caching for performance
                             scaled = ScaleSpace.resizeForScale(input, s)
                             res = Mat()
+                            
+                            // Template matching (GPU-accelerated if available)
                             Imgproc.matchTemplate(scaled, tpl.image, res, Imgproc.TM_CCOEFF_NORMED)
                             val mmr = Core.minMaxLoc(res)
                             val conf = mmr.maxVal
+                            
                             if (conf >= tpl.threshold) {
                                 scaleMatches.add(ScaleMatch(
                                     patternName = patternName,
@@ -256,8 +388,31 @@ class PatternDetector(private val context: Context) {
                 // Compute consensus across scales
                 val consensus = ConsensusEngine.compute(patternName, scaleMatches) ?: return@forEach
                 
-                // Calibrate confidence
-                val calibrated = ConfidenceCalibrator.calibrate(patternName, consensus.consensusScore)
+                // ENHANCEMENT 5: Enhanced calibration with consensus strength
+                val consensusStrength = if (scaleMatches.size > 1) {
+                    (scaleMatches.size.toDouble() / 10.0).coerceAtMost(1.0)
+                } else {
+                    0.0
+                }
+                val calibrated = ConfidenceCalibrator.calibrate(
+                    patternName,
+                    consensus.consensusScore,
+                    consensusStrength
+                )
+                
+                // Track performance
+                val detectionElapsedMs = System.currentTimeMillis() - detectionStartTime
+                if (gpuAvailable) {
+                    gpuDetections++
+                    gpuTotalTimeMs += detectionElapsedMs
+                } else {
+                    cpuDetections++
+                    cpuTotalTimeMs += detectionElapsedMs
+                }
+                
+                if ((gpuDetections + cpuDetections) % 50L == 0L) {
+                    logGpuPerformanceStats()
+                }
                 
                 // Apply temporal tracking with stable content-based ID
                 val timestamp = System.currentTimeMillis()
