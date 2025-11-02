@@ -5,6 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.lamontlabs.quantravision.achievements.data.AchievementDao
+import com.lamontlabs.quantravision.achievements.data.AchievementEntity
 import com.lamontlabs.quantravision.analytics.data.PatternOutcomeDao
 import com.lamontlabs.quantravision.analytics.model.PatternOutcome
 
@@ -91,12 +93,13 @@ interface InvalidatedPatternDao {
     suspend fun getInvalidationCount(name: String): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class], version = 7)
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class], version = 8)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
     abstract fun invalidatedPatternDao(): InvalidatedPatternDao
     abstract fun patternOutcomeDao(): PatternOutcomeDao
+    abstract fun achievementDao(): AchievementDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -111,7 +114,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -241,6 +244,20 @@ abstract class PatternDatabase : RoomDatabase() {
                         userFeedback TEXT NOT NULL DEFAULT '',
                         profitLossPercent REAL,
                         timeframe TEXT NOT NULL DEFAULT 'unknown'
+                    )
+                """.trimIndent())
+            }
+        }
+        
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS achievements (
+                        id TEXT PRIMARY KEY NOT NULL,
+                        isUnlocked INTEGER NOT NULL DEFAULT 0,
+                        unlockedAt INTEGER,
+                        progress INTEGER NOT NULL DEFAULT 0,
+                        totalRequired INTEGER NOT NULL DEFAULT 1
                     )
                 """.trimIndent())
             }

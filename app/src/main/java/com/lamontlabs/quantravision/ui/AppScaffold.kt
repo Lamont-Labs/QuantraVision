@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
+import com.lamontlabs.quantravision.onboarding.OnboardingManager
 import kotlinx.coroutines.launch
 
 @Composable
@@ -21,13 +22,21 @@ fun QuantraVisionApp(context: Context) {
         val detectorBridge = remember { HybridDetectorBridge(context) }
         val legacyDetector = remember { PatternDetector(context) }
         val scope = rememberCoroutineScope()
+        val onboardingManager = remember { OnboardingManager.getInstance(context) }
+        
+        val startDestination = if (onboardingManager.hasCompletedOnboarding()) {
+            "dashboard"
+        } else {
+            "onboarding"
+        }
         
         AppNavigationHost(
             context = context,
             navController = navController,
             detectorBridge = detectorBridge,
             legacyDetector = legacyDetector,
-            scope = scope
+            scope = scope,
+            startDestination = startDestination
         )
     }
 }
@@ -38,9 +47,19 @@ private fun AppNavigationHost(
     navController: NavHostController,
     detectorBridge: HybridDetectorBridge,
     legacyDetector: PatternDetector,
-    scope: kotlinx.coroutines.CoroutineScope
+    scope: kotlinx.coroutines.CoroutineScope,
+    startDestination: String = "dashboard"
 ) {
-    NavHost(navController, startDestination = "dashboard") {
+    NavHost(navController, startDestination = startDestination) {
+        composable("onboarding") {
+            com.lamontlabs.quantravision.ui.screens.onboarding.OnboardingScreen(
+                onComplete = {
+                    navController.navigate("dashboard") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("dashboard") {
             DashboardScreen(
                 context = context,
@@ -115,7 +134,9 @@ private fun AppNavigationHost(
         }
 
         composable("achievements") {
-            AchievementsScreen(onBack = { navController.popBackStack() })
+            com.lamontlabs.quantravision.ui.screens.achievements.NewAchievementsScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable("analytics") {

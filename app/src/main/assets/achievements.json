@@ -1,0 +1,404 @@
+{
+  "achievements": [
+    {
+      "id": "first_pattern",
+      "title": "First Pattern",
+      "description": "Detect your first chart pattern",
+      "category": "DETECTION",
+      "icon": "🎯",
+      "totalRequired": 1
+    },
+    {
+      "id": "head_shoulders_hunter",
+      "title": "Head and Shoulders Hunter",
+      "description": "Detect 10 Head & Shoulders patterns",
+      "category": "DETECTION",
+      "icon": "👤",
+      "totalRequired": 10
+    },
+    {
+      "id": "triangle_tracker",
+      "title": "Triangle Tracker",
+      "description": "Detect 10 triangle patterns",
+      "category": "DETECTION",
+      "icon": "🔺",
+      "totalRequired": 10
+    },
+    {
+      "id": "double_trouble",
+      "title": "Double Trouble",
+      "description": "Detect 10 double tops or double bottoms",
+      "category": "DETECTION",
+      "icon": "⏸️",
+      "totalRequired": 10
+    },
+    {
+      "id": "flag_finder",
+      "title": "Flag Finder",
+      "description": "Detect 10 flag patterns",
+      "category": "DETECTION",
+      "icon": "🚩",
+      "totalRequired": 10
+    },
+    {
+      "id": "cup_collector",
+      "title": "Cup Collector",
+      "description": "Detect 10 cup and handle patterns",
+      "category": "DETECTION",
+      "icon": "☕",
+      "totalRequired": 10
+    },
+    {
+      "id": "pattern_rookie",
+      "title": "Pattern Rookie",
+      "description": "Detect 50 total patterns",
+      "category": "DETECTION",
+      "icon": "🌱",
+      "totalRequired": 50
+    },
+    {
+      "id": "pattern_expert",
+      "title": "Pattern Expert",
+      "description": "Detect 100 total patterns",
+      "category": "DETECTION",
+      "icon": "🎓",
+      "totalRequired": 100
+    },
+    {
+      "id": "pattern_master",
+      "title": "Pattern Master",
+      "description": "Detect 500 total patterns",
+      "category": "DETECTION",
+      "icon": "👑",
+      "totalRequired": 500
+    },
+    {
+      "id": "pattern_legend",
+      "title": "Pattern Legend",
+      "description": "Detect 1000 total patterns",
+      "category": "DETECTION",
+      "icon": "🏆",
+      "totalRequired": 1000
+    },
+    {
+      "id": "confluence_king",
+      "title": "Confluence King",
+      "description": "Detect 5 confluence zones",
+      "category": "DETECTION",
+      "icon": "🎭",
+      "totalRequired": 5
+    },
+    {
+      "id": "multi_timeframe_pro",
+      "title": "Multi-Timeframe Pro",
+      "description": "Use multi-timeframe detection 10 times",
+      "category": "DETECTION",
+      "icon": "⏱️",
+      "totalRequired": 10
+    },
+    {
+      "id": "high_confidence",
+      "title": "High Confidence",
+      "description": "Detect 10 patterns with >90% confidence",
+      "category": "DETECTION",
+      "icon": "💯",
+      "totalRequired": 10
+    },
+    {
+      "id": "pattern_diversity",
+      "title": "Pattern Diversity",
+      "description": "Detect 20 different pattern types",
+      "category": "DETECTION",
+      "icon": "🎨",
+      "totalRequired": 20
+    },
+    {
+      "id": "weekly_detective",
+      "title": "Weekly Detective",
+      "description": "Detect 50 patterns in one week",
+      "category": "DETECTION",
+      "icon": "🔍",
+      "totalRequired": 50
+    },
+    {
+      "id": "first_lesson",
+      "title": "First Lesson",
+      "description": "Complete your first lesson",
+      "category": "EDUCATION",
+      "icon": "📚",
+      "totalRequired": 1
+    },
+    {
+      "id": "lesson_learner",
+      "title": "Lesson Learner",
+      "description": "Complete 5 lessons",
+      "category": "EDUCATION",
+      "icon": "📖",
+      "totalRequired": 5
+    },
+    {
+      "id": "education_enthusiast",
+      "title": "Education Enthusiast",
+      "description": "Complete 10 lessons",
+      "category": "EDUCATION",
+      "icon": "🎓",
+      "totalRequired": 10
+    },
+    {
+      "id": "scholar",
+      "title": "Scholar",
+      "description": "Complete all 25 lessons",
+      "category": "EDUCATION",
+      "icon": "🏅",
+      "totalRequired": 25
+    },
+    {
+      "id": "book_reader",
+      "title": "Book Reader",
+      "description": "Read 10 pages of the trading book",
+      "category": "EDUCATION",
+      "icon": "📕",
+      "totalRequired": 10
+    },
+    {
+      "id": "bookworm",
+      "title": "Bookworm",
+      "description": "Read 50 pages of the trading book",
+      "category": "EDUCATION",
+      "icon": "🐛",
+      "totalRequired": 50
+    },
+    {
+      "id": "page_turner",
+      "title": "Page Turner",
+      "description": "Finish the entire trading book",
+      "category": "EDUCATION",
+      "icon": "📚",
+      "totalRequired": 100
+    },
+    {
+      "id": "pattern_expert_edu",
+      "title": "Pattern Specialist",
+      "description": "Complete all pattern-specific lessons",
+      "category": "EDUCATION",
+      "icon": "🎯",
+      "totalRequired": 10
+    },
+    {
+      "id": "strategy_student",
+      "title": "Strategy Student",
+      "description": "Complete all strategy lessons",
+      "category": "EDUCATION",
+      "icon": "♟️",
+      "totalRequired": 5
+    },
+    {
+      "id": "risk_manager",
+      "title": "Risk Manager",
+      "description": "Complete all risk management lessons",
+      "category": "EDUCATION",
+      "icon": "🛡️",
+      "totalRequired": 3
+    },
+    {
+      "id": "psychology_pro",
+      "title": "Psychology Pro",
+      "description": "Complete all psychology lessons",
+      "category": "EDUCATION",
+      "icon": "🧠",
+      "totalRequired": 3
+    },
+    {
+      "id": "quiz_master",
+      "title": "Quiz Master",
+      "description": "Pass 10 lesson quizzes",
+      "category": "EDUCATION",
+      "icon": "✅",
+      "totalRequired": 10
+    },
+    {
+      "id": "daily_dedication",
+      "title": "Daily Dedication",
+      "description": "Use app 3 days in a row",
+      "category": "STREAK",
+      "icon": "🔥",
+      "totalRequired": 3
+    },
+    {
+      "id": "weekly_warrior",
+      "title": "Weekly Warrior",
+      "description": "Use app 7 days in a row",
+      "category": "STREAK",
+      "icon": "⚔️",
+      "totalRequired": 7
+    },
+    {
+      "id": "bi_weekly_beast",
+      "title": "Bi-Weekly Beast",
+      "description": "Use app 14 days in a row",
+      "category": "STREAK",
+      "icon": "🦁",
+      "totalRequired": 14
+    },
+    {
+      "id": "monthly_master",
+      "title": "Monthly Master",
+      "description": "Use app 30 days in a row",
+      "category": "STREAK",
+      "icon": "👑",
+      "totalRequired": 30
+    },
+    {
+      "id": "consistent_learner",
+      "title": "Consistent Learner",
+      "description": "Complete 1 lesson per day for 7 days",
+      "category": "STREAK",
+      "icon": "📅",
+      "totalRequired": 7
+    },
+    {
+      "id": "pattern_hunter",
+      "title": "Pattern Hunter",
+      "description": "Detect patterns 5 days in a row",
+      "category": "STREAK",
+      "icon": "🎯",
+      "totalRequired": 5
+    },
+    {
+      "id": "early_bird",
+      "title": "Early Bird",
+      "description": "Use app before 9am for 7 days",
+      "category": "STREAK",
+      "icon": "🐦",
+      "totalRequired": 7
+    },
+    {
+      "id": "night_owl",
+      "title": "Night Owl",
+      "description": "Use app after 10pm for 7 days",
+      "category": "STREAK",
+      "icon": "🦉",
+      "totalRequired": 7
+    },
+    {
+      "id": "weekend_warrior",
+      "title": "Weekend Warrior",
+      "description": "Use app on 10 weekends",
+      "category": "STREAK",
+      "icon": "🏖️",
+      "totalRequired": 10
+    },
+    {
+      "id": "unbreakable",
+      "title": "Unbreakable",
+      "description": "Maintain 60-day streak",
+      "category": "STREAK",
+      "icon": "💪",
+      "totalRequired": 60
+    },
+    {
+      "id": "pro_upgrade",
+      "title": "Pro Upgrade",
+      "description": "Unlock Pro tier subscription",
+      "category": "MASTERY",
+      "icon": "⭐",
+      "totalRequired": 1
+    },
+    {
+      "id": "intelligence_explorer",
+      "title": "Intelligence Explorer",
+      "description": "Use all 4 intelligence features",
+      "category": "MASTERY",
+      "icon": "🧭",
+      "totalRequired": 4
+    },
+    {
+      "id": "regime_navigator",
+      "title": "Regime Navigator",
+      "description": "Use Regime Navigator 20 times",
+      "category": "MASTERY",
+      "icon": "🗺️",
+      "totalRequired": 20
+    },
+    {
+      "id": "pattern_planner",
+      "title": "Pattern Planner",
+      "description": "Generate 10 pattern-to-plan analyses",
+      "category": "MASTERY",
+      "icon": "📋",
+      "totalRequired": 10
+    },
+    {
+      "id": "behavioral_guardian",
+      "title": "Behavioral Guardian",
+      "description": "Follow 5 behavioral warnings",
+      "category": "MASTERY",
+      "icon": "🛡️",
+      "totalRequired": 5
+    },
+    {
+      "id": "proof_creator",
+      "title": "Proof Creator",
+      "description": "Create 10 proof capsules",
+      "category": "MASTERY",
+      "icon": "📸",
+      "totalRequired": 10
+    },
+    {
+      "id": "analytics_analyst",
+      "title": "Analytics Analyst",
+      "description": "Review analytics dashboard 10 times",
+      "category": "MASTERY",
+      "icon": "📊",
+      "totalRequired": 10
+    },
+    {
+      "id": "feedback_provider",
+      "title": "Feedback Provider",
+      "description": "Submit 20 pattern outcome feedbacks",
+      "category": "MASTERY",
+      "icon": "💬",
+      "totalRequired": 20
+    },
+    {
+      "id": "welcome_aboard",
+      "title": "Welcome Aboard",
+      "description": "Complete the onboarding tutorial",
+      "category": "SPECIAL",
+      "icon": "🎉",
+      "totalRequired": 1
+    },
+    {
+      "id": "settings_savant",
+      "title": "Settings Savant",
+      "description": "Customize 5 app settings",
+      "category": "SPECIAL",
+      "icon": "⚙️",
+      "totalRequired": 5
+    },
+    {
+      "id": "share_knowledge",
+      "title": "Share the Knowledge",
+      "description": "Share app with a friend",
+      "category": "SPECIAL",
+      "icon": "🤝",
+      "totalRequired": 1
+    },
+    {
+      "id": "bug_reporter",
+      "title": "Bug Reporter",
+      "description": "Report a bug or provide feedback",
+      "category": "SPECIAL",
+      "icon": "🐛",
+      "totalRequired": 1
+    },
+    {
+      "id": "early_adopter",
+      "title": "Early Adopter",
+      "description": "Install app in first month of launch",
+      "category": "SPECIAL",
+      "icon": "🚀",
+      "totalRequired": 1
+    }
+  ]
+}
