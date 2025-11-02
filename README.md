@@ -728,6 +728,143 @@ Download from Google Play Store or build from source
 
 ---
 
+## 🔧 Building & Deployment
+
+### Building Release APK
+
+**Prerequisites:**
+- Android Studio (latest stable version)
+- JDK 17 or higher
+- Android SDK API 35
+
+**Build Steps:**
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Lamont-Labs/QuantraVision.git
+   cd QuantraVision
+   ```
+
+2. **Build release APK**
+   ```bash
+   ./gradlew assembleRelease
+   ```
+   Output: `app/build/outputs/apk/release/app-release-unsigned.apk`
+
+### APK Signing for Google Play
+
+**⚠️ Important:** Google Play requires signed APKs. You have two options:
+
+#### Option 1: Manual Signing (Quick)
+
+```bash
+# Generate keystore (one-time setup)
+keytool -genkey -v -keystore quantravision.keystore \
+  -alias quantravision -keyalg RSA -keysize 2048 \
+  -validity 10000
+
+# Sign the APK
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore quantravision.keystore \
+  app/build/outputs/apk/release/app-release-unsigned.apk \
+  quantravision
+
+# Align the APK (required by Play Store)
+zipalign -v 4 app-release-unsigned.apk app-release-signed.apk
+```
+
+#### Option 2: Gradle Signing Config (Recommended for CI/CD)
+
+Add to `app/build.gradle.kts`:
+
+```kotlin
+android {
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "quantravision.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS") ?: "quantravision"
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+    
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            // ... existing config
+        }
+    }
+}
+```
+
+Then build signed APK:
+```bash
+export KEYSTORE_PASSWORD="your_keystore_password"
+export KEY_PASSWORD="your_key_password"
+./gradlew assembleRelease
+```
+
+**🔒 Security Best Practices:**
+- ✅ **Never commit keystore files to git** (add `*.keystore` to `.gitignore`)
+- ✅ **Never commit passwords to code** (use environment variables)
+- ✅ **Store keystore securely** (backup in encrypted storage)
+- ✅ **Use Google Play App Signing** (recommended) - Google manages your signing key
+
+### Production Build Configuration
+
+**Already configured in `app/build.gradle.kts`:**
+
+```kotlin
+release {
+    isMinifyEnabled = true          // ✅ R8 code shrinking enabled
+    isShrinkResources = true        // ✅ Unused resources removed
+    isDebuggable = false           // ✅ Debug mode disabled
+    
+    proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"),
+        "proguard-rules.pro"        // ✅ Custom ProGuard rules
+    )
+}
+```
+
+**ProGuard Configuration:**
+- ✅ Strips all `Log.d/v/i/w` and `Timber` logs in release
+- ✅ Keeps TensorFlow Lite classes (for future ML)
+- ✅ Keeps Room database entities (prevents reflection issues)
+- ✅ Keeps Gson serialization (JSON parsing)
+- ✅ Keeps OpenCV native methods
+- ✅ 5 optimization passes for maximum compression
+
+### Database Schemas
+
+Room database schemas are **auto-generated** when building with Android Studio:
+
+```bash
+./gradlew assembleDebug
+# Schemas generated in app/schemas/*.json
+```
+
+See [app/schemas/README.md](app/schemas/README.md) for details.
+
+### Google Play Submission
+
+1. **Build signed release APK** (see signing steps above)
+2. **Test on physical devices** (Android 8.0 through Android 14)
+3. **Verify ProGuard doesn't break features** (test all tiers, overlay, billing)
+4. **Upload to Google Play Console** (Internal Testing → Closed Testing → Production)
+5. **Complete Play Store listing** (see [GOOGLE_PLAY_STORE_LISTING.md](docs/GOOGLE_PLAY_STORE_LISTING.md))
+
+**Production Checklist:**
+- ✅ All 109 patterns working
+- ✅ 4-tier billing tested (FREE, STARTER, STANDARD, PRO)
+- ✅ Overlay touch-passthrough verified
+- ✅ Legal disclaimers displayed
+- ✅ No debug logs in release build
+- ✅ ProGuard rules tested
+- ✅ Version code/name updated
+
+---
+
 ## 🤝 Support
 
 ### Get Help
