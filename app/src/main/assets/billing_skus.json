@@ -1,7 +1,11 @@
 {
   "skus": [
-    { "sku": "qv_standard_one", "title": "QuantraVision Standard", "price": "14.99", "type": "inapp" },
-    { "sku": "qv_pro_one", "title": "QuantraVision Pro", "price": "29.99", "type": "inapp" }
+    { "sku": "qv_starter_one", "title": "QuantraVision Starter", "price": "9.99", "type": "inapp" },
+    { "sku": "qv_standard_one", "title": "QuantraVision Standard", "price": "24.99", "type": "inapp" },
+    { "sku": "qv_pro_one", "title": "QuantraVision Pro", "price": "49.99", "type": "inapp" },
+    { "sku": "qv_starter_to_standard_upgrade", "title": "Upgrade to Standard", "price": "15.00", "type": "inapp", "description": "Upgrade from Starter to Standard (25→50 patterns)" },
+    { "sku": "qv_starter_to_pro_upgrade", "title": "Upgrade to Pro", "price": "40.00", "type": "inapp", "description": "Upgrade from Starter to Pro (25→109 patterns)" },
+    { "sku": "qv_standard_to_pro_upgrade", "title": "Upgrade to Pro", "price": "25.00", "type": "inapp", "description": "Upgrade from Standard to Pro (50→109 patterns)" }
   ],
-  "notes": "Used for Play Billing SKU validation step. Keep IDs in sync with Play Console."
+  "notes": "Used for Play Billing SKU validation step. Keep IDs in sync with Play Console. Upgrade SKUs allow users to pay only the difference when upgrading between tiers."
 }

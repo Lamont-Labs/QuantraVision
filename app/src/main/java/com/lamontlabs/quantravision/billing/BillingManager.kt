@@ -110,7 +110,14 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     }
 
     private fun queryProducts() {
-        val products = listOf("qv_starter_one", "qv_standard_one", "qv_pro_one").map {
+        val products = listOf(
+            "qv_starter_one", 
+            "qv_standard_one", 
+            "qv_pro_one",
+            "qv_starter_to_standard_upgrade",
+            "qv_starter_to_pro_upgrade",
+            "qv_standard_to_pro_upgrade"
+        ).map {
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(it)
                 .setProductType(BillingClient.ProductType.INAPP)
@@ -218,8 +225,58 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     }
 
     fun purchaseStarter() = launchPurchase("qv_starter_one")
-    fun purchaseStandard() = launchPurchase("qv_standard_one")
-    fun purchasePro() = launchPurchase("qv_pro_one")
+    fun purchaseStandard() {
+        val currentTier = getCurrentTierEnum()
+        val upgradeSku = getUpgradeSku(currentTier, Tier.STANDARD)
+        launchPurchase(upgradeSku ?: "qv_standard_one")
+    }
+    fun purchasePro() {
+        val currentTier = getCurrentTierEnum()
+        val upgradeSku = getUpgradeSku(currentTier, Tier.PRO)
+        launchPurchase(upgradeSku ?: "qv_pro_one")
+    }
+
+    /**
+     * Get current tier as Tier enum
+     */
+    private fun getCurrentTierEnum(): Tier {
+        return when (getUnlockedTier()) {
+            "PRO" -> Tier.PRO
+            "STANDARD" -> Tier.STANDARD
+            "STARTER" -> Tier.STARTER
+            else -> Tier.FREE
+        }
+    }
+
+    /**
+     * Check if moving from currentTier to targetTier is an upgrade
+     */
+    fun isUpgrade(currentTier: Tier, targetTier: Tier): Boolean {
+        val tierOrder = listOf(Tier.FREE, Tier.STARTER, Tier.STANDARD, Tier.PRO)
+        val currentIndex = tierOrder.indexOf(currentTier)
+        val targetIndex = tierOrder.indexOf(targetTier)
+        return currentIndex >= 0 && targetIndex > currentIndex
+    }
+
+    /**
+     * Get the appropriate upgrade SKU based on tier transition
+     * Returns null if not an upgrade (e.g., FREE → STARTER uses regular SKU)
+     * 
+     * Upgrade SKUs available:
+     * - STARTER → STANDARD: qv_starter_to_standard_upgrade ($15.00)
+     * - STARTER → PRO: qv_starter_to_pro_upgrade ($40.00)
+     * - STANDARD → PRO: qv_standard_to_pro_upgrade ($25.00)
+     */
+    fun getUpgradeSku(currentTier: Tier, targetTier: Tier): String? {
+        if (!isUpgrade(currentTier, targetTier)) return null
+        
+        return when {
+            currentTier == Tier.STARTER && targetTier == Tier.STANDARD -> "qv_starter_to_standard_upgrade"
+            currentTier == Tier.STARTER && targetTier == Tier.PRO -> "qv_starter_to_pro_upgrade"
+            currentTier == Tier.STANDARD && targetTier == Tier.PRO -> "qv_standard_to_pro_upgrade"
+            else -> null
+        }
+    }
 
     private fun launchPurchase(sku: String) {
         val pd = productMap[sku]
@@ -284,6 +341,26 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                     if (!isRestoration) {
                         Log.d("BillingManager", "Starter unlock granted")
                     }
+                }
+            }
+            "qv_starter_to_standard_upgrade" -> {
+                if (getUnlockedTier() != "PRO") {
+                    setUnlockedSecure("STANDARD", purchase.purchaseToken)
+                    if (!isRestoration) {
+                        Log.d("BillingManager", "Standard upgrade from Starter granted")
+                    }
+                }
+            }
+            "qv_starter_to_pro_upgrade" -> {
+                setUnlockedSecure("PRO", purchase.purchaseToken)
+                if (!isRestoration) {
+                    Log.d("BillingManager", "Pro upgrade from Starter granted")
+                }
+            }
+            "qv_standard_to_pro_upgrade" -> {
+                setUnlockedSecure("PRO", purchase.purchaseToken)
+                if (!isRestoration) {
+                    Log.d("BillingManager", "Pro upgrade from Standard granted")
                 }
             }
         }

@@ -10,8 +10,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.billing.BillingManager
+import com.lamontlabs.quantravision.billing.Tier
 import android.app.Activity
 
 @Composable
@@ -70,14 +72,33 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     ),
                     isCurrentTier = tier == "STARTER",
                     isPurchased = bm.isStarter(),
+                    isUpgrade = false,
                     onPurchase = { bm.purchaseStarter() }
                 )
                 
                 // STANDARD tier
+                val currentTier = when (tier) {
+                    "PRO" -> Tier.PRO
+                    "STANDARD" -> Tier.STANDARD
+                    "STARTER" -> Tier.STARTER
+                    else -> Tier.FREE
+                }
+                
+                val standardUpgradeSku = bm.getUpgradeSku(currentTier, Tier.STANDARD)
+                val isStandardUpgrade = standardUpgradeSku != null
+                val standardUpgradeProduct = standardUpgradeSku?.let { bm.getProductDetails(it) }
                 val standardProduct = bm.getProductDetails("qv_standard_one")
+                
                 TierCard(
                     title = "STANDARD",
-                    price = standardProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$24.99",
+                    price = if (isStandardUpgrade) {
+                        standardUpgradeProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$15.00"
+                    } else {
+                        standardProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$24.99"
+                    },
+                    originalPrice = if (isStandardUpgrade) {
+                        standardProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$24.99"
+                    } else null,
                     badge = "MOST POPULAR",
                     features = listOf(
                         "50 patterns",
@@ -87,14 +108,30 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     ),
                     isCurrentTier = tier == "STANDARD",
                     isPurchased = bm.isStandard(),
+                    isUpgrade = isStandardUpgrade,
                     onPurchase = { bm.purchaseStandard() }
                 )
                 
                 // PRO tier
+                val proUpgradeSku = bm.getUpgradeSku(currentTier, Tier.PRO)
+                val isProUpgrade = proUpgradeSku != null
+                val proUpgradeProduct = proUpgradeSku?.let { bm.getProductDetails(it) }
                 val proProduct = bm.getProductDetails("qv_pro_one")
+                
                 TierCard(
                     title = "PRO",
-                    price = proProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99",
+                    price = if (isProUpgrade) {
+                        proUpgradeProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: when (currentTier) {
+                            Tier.STARTER -> "$40.00"
+                            Tier.STANDARD -> "$25.00"
+                            else -> "$49.99"
+                        }
+                    } else {
+                        proProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99"
+                    },
+                    originalPrice = if (isProUpgrade) {
+                        proProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99"
+                    } else null,
                     features = listOf(
                         "ALL 109 patterns",
                         "Intelligence Stack",
@@ -105,6 +142,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     ),
                     isCurrentTier = tier == "PRO",
                     isPurchased = bm.isPro(),
+                    isUpgrade = isProUpgrade,
                     onPurchase = { bm.purchasePro() }
                 )
                 
@@ -140,8 +178,10 @@ fun TierCard(
     features: List<String>,
     isCurrentTier: Boolean,
     isPurchased: Boolean,
+    isUpgrade: Boolean = false,
     onPurchase: () -> Unit,
-    badge: String? = null
+    badge: String? = null,
+    originalPrice: String? = null
 ) {
     Card(
         modifier = Modifier
@@ -178,12 +218,56 @@ fun TierCard(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
+                if (isUpgrade) {
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "🎁 UPGRADE",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.secondary,
+                                RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
             }
-            Text(
-                price,
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+            
+            if (isUpgrade && originalPrice != null) {
+                Text(
+                    originalPrice,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textDecoration = TextDecoration.LineThrough,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        price,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        "upgrade price",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                Text(
+                    "You pay only the difference",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            } else {
+                Text(
+                    price,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            
             Spacer(Modifier.height(8.dp))
             features.forEach { feature ->
                 Row(Modifier.padding(vertical = 2.dp)) {
@@ -201,7 +285,8 @@ fun TierCard(
                     when {
                         isCurrentTier && isPurchased -> "CURRENT PLAN ✓"
                         isPurchased -> "PURCHASED ✓"
-                        else -> "UPGRADE"
+                        isUpgrade -> "UPGRADE NOW"
+                        else -> "BUY NOW"
                     }
                 )
             }

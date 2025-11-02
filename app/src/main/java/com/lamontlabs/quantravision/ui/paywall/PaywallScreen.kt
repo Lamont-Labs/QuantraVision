@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.billing.*
 
@@ -22,6 +23,8 @@ fun Paywall(
     onStandard: () -> Unit,
     onPro: () -> Unit
 ) {
+    val currentTier = entitlements.tier
+    
     Column(
         Modifier
             .fillMaxSize()
@@ -52,12 +55,16 @@ fun Paywall(
                 "Multi-timeframe support",
                 "Basic analytics"
             ),
+            isCurrentTier = currentTier == Tier.STARTER,
+            isLowerTier = currentTier.ordinal > Tier.STARTER.ordinal,
+            isUpgrade = false,
             onClick = onStarter
         )
 
         PaywallTierCard(
             title = "STANDARD",
-            price = "$24.99",
+            price = if (currentTier == Tier.STARTER) "$15.00" else "$24.99",
+            originalPrice = if (currentTier == Tier.STARTER) "$24.99" else null,
             badge = "MOST POPULAR",
             features = listOf(
                 "50 patterns",
@@ -65,12 +72,20 @@ fun Paywall(
                 "50 achievements + 25 lessons",
                 "Trading book + exports"
             ),
+            isCurrentTier = currentTier == Tier.STANDARD,
+            isLowerTier = currentTier.ordinal > Tier.STANDARD.ordinal,
+            isUpgrade = currentTier == Tier.STARTER,
             onClick = onStandard
         )
 
         PaywallTierCard(
             title = "PRO",
-            price = "$49.99",
+            price = when (currentTier) {
+                Tier.STARTER -> "$40.00"
+                Tier.STANDARD -> "$25.00"
+                else -> "$49.99"
+            },
+            originalPrice = if (currentTier == Tier.STARTER || currentTier == Tier.STANDARD) "$49.99" else null,
             badge = "BEST VALUE",
             features = listOf(
                 "ALL 109 patterns",
@@ -80,6 +95,9 @@ fun Paywall(
                 "Proof Capsules",
                 "Everything unlocked"
             ),
+            isCurrentTier = currentTier == Tier.PRO,
+            isLowerTier = false,
+            isUpgrade = currentTier == Tier.STARTER || currentTier == Tier.STANDARD,
             onClick = onPro
         )
 
@@ -99,12 +117,19 @@ fun PaywallTierCard(
     price: String,
     badge: String?,
     features: List<String>,
+    isCurrentTier: Boolean = false,
+    isLowerTier: Boolean = false,
+    isUpgrade: Boolean = false,
+    originalPrice: String? = null,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (isCurrentTier) 
+                MaterialTheme.colorScheme.primaryContainer 
+            else 
+                MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(Modifier.padding(16.dp)) {
@@ -131,12 +156,56 @@ fun PaywallTierCard(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
+                if (isUpgrade) {
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "🎁 UPGRADE",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.secondary,
+                                RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
             }
-            Text(
-                "$price one-time",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+            
+            if (isUpgrade && originalPrice != null) {
+                Text(
+                    originalPrice,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textDecoration = TextDecoration.LineThrough,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        price,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        "upgrade price",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                Text(
+                    "You pay only the difference",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            } else {
+                Text(
+                    "$price one-time",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            
             Spacer(Modifier.height(8.dp))
             features.forEach { feature ->
                 Row(Modifier.padding(vertical = 2.dp)) {
@@ -147,9 +216,17 @@ fun PaywallTierCard(
             Spacer(Modifier.height(12.dp))
             Button(
                 onClick = onClick,
+                enabled = !isCurrentTier && !isLowerTier,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("UPGRADE TO $title")
+                Text(
+                    when {
+                        isCurrentTier -> "ALREADY OWNED ✓"
+                        isLowerTier -> "CANNOT DOWNGRADE"
+                        isUpgrade -> "UPGRADE TO $title"
+                        else -> "UPGRADE TO $title"
+                    }
+                )
             }
         }
     }
