@@ -40,6 +40,11 @@ object RegimeNavigator {
         val trendStrength: TrendStrength,
         val liquidity: LiquidityLevel,
         val overallQuality: RegimeQuality,
+        val regimeType: RegimeType,
+        val patternDensity: PatternDensity,
+        val multiTimeframeConsistency: Double,
+        val atrLikeVolatility: Double,
+        val historicalSuccessEstimate: Double,
         val educationalContext: String,
         val disclaimer: String = "⚠️ Educational context only - NOT trading advice"
     )
@@ -68,21 +73,40 @@ object RegimeNavigator {
         FAVORABLE  // 🟢 High probability environment
     }
 
+    enum class RegimeType {
+        BULL_TREND,        // Sustained upward movement
+        BEAR_TREND,        // Sustained downward movement
+        SIDEWAYS,          // Range-bound, no clear direction
+        HIGH_VOLATILITY,   // Choppy, high variance
+        LOW_VOLATILITY,    // Calm, low variance
+        TRANSITIONING      // Changing regime
+    }
+
+    enum class PatternDensity {
+        SPARSE,    // Few patterns detected
+        NORMAL,    // Average pattern frequency
+        DENSE      // High pattern frequency (high liquidity proxy)
+    }
+
     /**
-     * Analyze market regime from recent price data
+     * Analyze market regime from recent price data with enhanced metrics
      * 
      * LEGAL GATE: Requires acceptance of ADVANCED_FEATURES_DISCLAIMER.md
      * 
      * @param context Android context for checking disclaimer acceptance
      * @param priceData Recent price points (close prices)
-     * @param volumes Recent volume data (optional, can be null)
-     * @return Educational market regime classification
+     * @param patternConfidences Recent pattern detection confidences (for ATR-like calc)
+     * @param patternDetectionCount Number of patterns detected (for density)
+     * @param multiTimeframeData Optional price data from different timeframes
+     * @return Enhanced educational market regime classification
      * @throws IllegalStateException if disclaimer not accepted
      */
     suspend fun analyzeRegime(
         context: Context,
         priceData: List<Double>,
-        volumes: List<Double>? = null
+        patternConfidences: List<Double>? = null,
+        patternDetectionCount: Int = 0,
+        multiTimeframeData: Map<String, List<Double>>? = null
     ): MarketRegime = withContext(Dispatchers.Default) {
         
         // CRITICAL TIER GATE: Regime Navigator requires Standard tier ($14.99) or higher
@@ -102,6 +126,11 @@ object RegimeNavigator {
                 trendStrength = TrendStrength.WEAK,
                 liquidity = LiquidityLevel.MEDIUM,
                 overallQuality = RegimeQuality.NEUTRAL,
+                regimeType = RegimeType.SIDEWAYS,
+                patternDensity = PatternDensity.NORMAL,
+                multiTimeframeConsistency = 0.5,
+                atrLikeVolatility = 0.0,
+                historicalSuccessEstimate = 0.5,
                 educationalContext = "Insufficient data for regime analysis (need 20+ data points)"
             )
         }
@@ -109,15 +138,27 @@ object RegimeNavigator {
         val volatility = calculateVolatility(priceData)
         val trendStrength = calculateTrendStrength(priceData)
         val liquidity = calculateLiquidityProxy(priceData)
+        val atrVol = calculateATRLikeVolatility(patternConfidences ?: priceData.map { 0.5 })
+        val density = calculatePatternDensity(patternDetectionCount, priceData.size)
+        val mtfConsistency = calculateMultiTimeframeConsistency(priceData, multiTimeframeData)
+        val regimeType = classifyRegimeType(volatility, trendStrength, priceData)
         val quality = determineRegimeQuality(volatility, trendStrength, liquidity)
-        val context = generateEducationalContext(volatility, trendStrength, liquidity, quality)
+        val successEstimate = estimateSuccessRate(regimeType, quality, density)
+        val educationalContext = generateEducationalContext(
+            volatility, trendStrength, liquidity, quality, regimeType, density, mtfConsistency, successEstimate
+        )
 
         return MarketRegime(
             volatility = volatility,
             trendStrength = trendStrength,
             liquidity = liquidity,
             overallQuality = quality,
-            educationalContext = context
+            regimeType = regimeType,
+            patternDensity = density,
+            multiTimeframeConsistency = mtfConsistency,
+            atrLikeVolatility = atrVol,
+            historicalSuccessEstimate = successEstimate,
+            educationalContext = educationalContext
         )
     }
 
@@ -254,11 +295,99 @@ object RegimeNavigator {
         }
     }
 
+    private fun calculateATRLikeVolatility(confidences: List<Double>): Double {
+        if (confidences.size < 2) return 0.0
+        
+        val ranges = confidences.zipWithNext { a, b -> abs(b - a) }
+        return ranges.average()
+    }
+    
+    private fun calculatePatternDensity(detectionCount: Int, dataPoints: Int): PatternDensity {
+        if (dataPoints == 0) return PatternDensity.NORMAL
+        
+        val density = detectionCount.toDouble() / dataPoints
+        return when {
+            density > 0.15 -> PatternDensity.DENSE
+            density < 0.05 -> PatternDensity.SPARSE
+            else -> PatternDensity.NORMAL
+        }
+    }
+    
+    private fun calculateMultiTimeframeConsistency(
+        primaryData: List<Double>,
+        mtfData: Map<String, List<Double>>?
+    ): Double {
+        if (mtfData.isNullOrEmpty()) return 0.5
+        
+        val primaryTrend = calculateTrendStrength(primaryData)
+        var consistentTimeframes = 0
+        
+        mtfData.values.forEach { data ->
+            if (data.size >= 10) {
+                val timeframeTrend = calculateTrendStrength(data)
+                if (timeframeTrend == primaryTrend) {
+                    consistentTimeframes++
+                }
+            }
+        }
+        
+        return consistentTimeframes.toDouble() / mtfData.size
+    }
+    
+    private fun classifyRegimeType(
+        vol: VolatilityLevel,
+        trend: TrendStrength,
+        prices: List<Double>
+    ): RegimeType {
+        val priceChange = (prices.last() - prices.first()) / prices.first()
+        
+        return when {
+            vol == VolatilityLevel.HIGH -> RegimeType.HIGH_VOLATILITY
+            vol == VolatilityLevel.LOW && trend == TrendStrength.WEAK -> RegimeType.LOW_VOLATILITY
+            trend == TrendStrength.STRONG && priceChange > 0.05 -> RegimeType.BULL_TREND
+            trend == TrendStrength.STRONG && priceChange < -0.05 -> RegimeType.BEAR_TREND
+            trend == TrendStrength.WEAK -> RegimeType.SIDEWAYS
+            else -> RegimeType.TRANSITIONING
+        }
+    }
+    
+    private fun estimateSuccessRate(
+        regimeType: RegimeType,
+        quality: RegimeQuality,
+        density: PatternDensity
+    ): Double {
+        var baseRate = when (quality) {
+            RegimeQuality.FAVORABLE -> 0.75
+            RegimeQuality.NEUTRAL -> 0.55
+            RegimeQuality.POOR -> 0.40
+        }
+        
+        baseRate += when (regimeType) {
+            RegimeType.BULL_TREND, RegimeType.BEAR_TREND -> 0.10
+            RegimeType.LOW_VOLATILITY -> 0.05
+            RegimeType.HIGH_VOLATILITY -> -0.10
+            RegimeType.SIDEWAYS -> -0.05
+            RegimeType.TRANSITIONING -> -0.05
+        }
+        
+        baseRate += when (density) {
+            PatternDensity.DENSE -> 0.05
+            PatternDensity.NORMAL -> 0.0
+            PatternDensity.SPARSE -> -0.05
+        }
+        
+        return baseRate.coerceIn(0.30, 0.90)
+    }
+    
     private fun generateEducationalContext(
         vol: VolatilityLevel,
         trend: TrendStrength,
         liq: LiquidityLevel,
-        quality: RegimeQuality
+        quality: RegimeQuality,
+        regimeType: RegimeType,
+        density: PatternDensity,
+        mtfConsistency: Double,
+        successEstimate: Double
     ): String {
         
         val volDesc = when (vol) {
@@ -285,7 +414,32 @@ object RegimeNavigator {
             RegimeQuality.POOR -> "🔴"
         }
         
-        return "$qualityEmoji Market: $volDesc, $trendDesc, $liqDesc"
+        val regimeDesc = when (regimeType) {
+            RegimeType.BULL_TREND -> "📈 Bull Trend"
+            RegimeType.BEAR_TREND -> "📉 Bear Trend"
+            RegimeType.SIDEWAYS -> "↔️ Sideways"
+            RegimeType.HIGH_VOLATILITY -> "⚡ High Volatility"
+            RegimeType.LOW_VOLATILITY -> "😴 Low Volatility"
+            RegimeType.TRANSITIONING -> "🔄 Transitioning"
+        }
+        
+        val densityDesc = when (density) {
+            PatternDensity.DENSE -> "High pattern density (strong liquidity proxy)"
+            PatternDensity.NORMAL -> "Normal pattern density"
+            PatternDensity.SPARSE -> "Low pattern density (weak liquidity proxy)"
+        }
+        
+        val successPercent = (successEstimate * 100).toInt()
+        val mtfPercent = (mtfConsistency * 100).toInt()
+        
+        return buildString {
+            append("$qualityEmoji $regimeDesc\n")
+            append("Market: $volDesc, $trendDesc, $liqDesc\n")
+            append("$densityDesc\n")
+            append("Multi-timeframe consistency: $mtfPercent%\n")
+            append("📚 Educational: Historically patterns in similar conditions succeeded ~$successPercent% of the time\n")
+            append("⚠️ Past performance does NOT predict future results")
+        }
     }
 
     private fun estimateHistoricalSuccessRate(

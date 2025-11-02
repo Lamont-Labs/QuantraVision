@@ -52,8 +52,25 @@ class PatternToPlanEngine(private val context: Context) {
         val accountRiskPercent: Double = 1.0,
         val educationalContext: String,
         val disclaimer: String = "⚠️ EDUCATIONAL SCENARIO - NOT TRADING ADVICE",
-        val regimeContext: RegimeNavigator.MarketRegime? = null
+        val regimeContext: RegimeNavigator.MarketRegime? = null,
+        val scenarioType: ScenarioType = ScenarioType.MODERATE
     )
+    
+    /**
+     * Scenario variations for different risk appetites
+     */
+    data class ScenarioVariations(
+        val conservative: TradeScenario,
+        val moderate: TradeScenario,
+        val aggressive: TradeScenario,
+        val educationalContext: String = "📚 These are EDUCATIONAL examples showing different risk approaches. NOT recommendations."
+    )
+    
+    enum class ScenarioType {
+        CONSERVATIVE,  // Tighter stops, smaller R:R, higher win rate targets
+        MODERATE,      // Balanced approach
+        AGGRESSIVE     // Wider stops, larger R:R, swing for bigger gains
+    }
     
     /**
      * Generate educational trade scenario from pattern match
@@ -119,6 +136,121 @@ class PatternToPlanEngine(private val context: Context) {
             Timber.e(e, "Error generating trade scenario")
             throw e
         }
+    }
+    
+    /**
+     * Generate multiple scenario variations (conservative, moderate, aggressive)
+     * 
+     * ⚠️ REQUIRES: User must accept Advanced Features Disclaimer first
+     * 
+     * @param patternMatch Detected pattern to analyze
+     * @param currentPrice Current market price
+     * @param accountSize Example account size (default $10,000)
+     * @param priceData Recent price data for regime analysis (optional)
+     * @return Three educational scenarios with different risk profiles
+     * @throws IllegalStateException if user hasn't accepted disclaimer
+     */
+    suspend fun generateScenarioVariations(
+        patternMatch: PatternMatch,
+        currentPrice: Double,
+        accountSize: Double = 10000.0,
+        priceData: List<Double>? = null
+    ): ScenarioVariations = withContext(Dispatchers.Default) {
+        
+        AdvancedFeatureGate.requireAcceptance(context, "Pattern-to-Plan Engine")
+        
+        try {
+            val regime = priceData?.let { RegimeNavigator.analyzeRegime(context, it) }
+            
+            val conservativeScenario = generateScenarioForType(
+                patternMatch, currentPrice, accountSize, ScenarioType.CONSERVATIVE, regime
+            )
+            
+            val moderateScenario = generateScenarioForType(
+                patternMatch, currentPrice, accountSize, ScenarioType.MODERATE, regime
+            )
+            
+            val aggressiveScenario = generateScenarioForType(
+                patternMatch, currentPrice, accountSize, ScenarioType.AGGRESSIVE, regime
+            )
+            
+            ScenarioVariations(
+                conservative = conservativeScenario,
+                moderate = moderateScenario,
+                aggressive = aggressiveScenario
+            )
+            
+        } catch (e: Exception) {
+            Timber.e(e, "Error generating scenario variations")
+            throw e
+        }
+    }
+    
+    private suspend fun generateScenarioForType(
+        patternMatch: PatternMatch,
+        currentPrice: Double,
+        accountSize: Double,
+        scenarioType: ScenarioType,
+        regime: RegimeNavigator.MarketRegime?
+    ): TradeScenario = withContext(Dispatchers.Default) {
+        
+        val multipliers = when (scenarioType) {
+            ScenarioType.CONSERVATIVE -> Triple(0.7, 1.3, 0.5)  // tighter entry, wider stop, smaller target
+            ScenarioType.MODERATE -> Triple(1.0, 1.0, 1.0)      // standard
+            ScenarioType.AGGRESSIVE -> Triple(1.3, 0.8, 1.8)    // wider entry, tighter stop, larger target
+        }
+        
+        val riskPercent = when (scenarioType) {
+            ScenarioType.CONSERVATIVE -> 0.5
+            ScenarioType.MODERATE -> 1.0
+            ScenarioType.AGGRESSIVE -> 2.0
+        }
+        
+        val basePrices = calculateEntryExitPrices(patternMatch, currentPrice)
+        
+        val entry = basePrices.entry
+        val stopLoss = when (scenarioType) {
+            ScenarioType.CONSERVATIVE -> basePrices.entry + (basePrices.stopLoss - basePrices.entry) * multipliers.second
+            ScenarioType.MODERATE -> basePrices.stopLoss
+            ScenarioType.AGGRESSIVE -> basePrices.entry + (basePrices.stopLoss - basePrices.entry) * multipliers.second
+        }
+        val takeProfit = basePrices.entry + (basePrices.takeProfit - basePrices.entry) * multipliers.third
+        
+        val positionSize = calculatePositionSize(accountSize, riskPercent, entry, stopLoss)
+        val rrRatio = calculateRiskRewardRatio(entry, stopLoss, takeProfit)
+        
+        val typeDesc = when (scenarioType) {
+            ScenarioType.CONSERVATIVE -> "Conservative (Lower risk, higher win probability target)"
+            ScenarioType.MODERATE -> "Moderate (Balanced risk/reward)"
+            ScenarioType.AGGRESSIVE -> "Aggressive (Higher risk, larger profit potential)"
+        }
+        
+        val educationalContext = buildString {
+            append("$typeDesc\n")
+            append("This scenario demonstrates a $scenarioType risk approach. ")
+            if (rrRatio >= 2.0) {
+                append("R:R ${formatRatio(rrRatio)} is favorable. ")
+            } else if (rrRatio < 1.5) {
+                append("R:R ${formatRatio(rrRatio)} is below typical 2:1 minimum. ")
+            }
+            regime?.let {
+                append("Market: ${it.overallQuality}. ")
+            }
+            append("\n\nEDUCATIONAL ONLY - NOT advice.")
+        }
+        
+        TradeScenario(
+            patternMatch = patternMatch,
+            entryPrice = entry,
+            stopLoss = stopLoss,
+            takeProfit = takeProfit,
+            positionSizeExample = positionSize,
+            riskRewardRatio = rrRatio,
+            accountRiskPercent = riskPercent,
+            educationalContext = educationalContext,
+            regimeContext = regime,
+            scenarioType = scenarioType
+        )
     }
     
     /**

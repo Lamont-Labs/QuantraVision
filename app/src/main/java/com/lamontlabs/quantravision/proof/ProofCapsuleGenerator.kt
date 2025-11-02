@@ -54,20 +54,25 @@ class ProofCapsuleGenerator(private val context: Context) {
         if (!exists()) mkdirs()
     }
     
+    private val auditTrailFile = File(context.filesDir, "proof_audit_trail.json")
+    
     companion object {
-        private const val CAPSULE_VERSION = "1.0"
+        private const val CAPSULE_VERSION = "2.0"  // Updated for blockchain chaining
+        private const val APP_VERSION = "2.1"
         private val iso8601Format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
             timeZone = TimeZone.getTimeZone("UTC")
         }
     }
     
     /**
-     * Proof Capsule
+     * Proof Capsule with blockchain-style chaining
      * 
      * Immutable, tamper-evident package of pattern detection data
+     * Chains to previous capsule for audit trail integrity
      */
     data class ProofCapsule(
         val version: String,
+        val appVersion: String,
         val timestamp: String,
         val timestampMs: Long,
         val patternId: String,
@@ -77,17 +82,30 @@ class ProofCapsuleGenerator(private val context: Context) {
         val consensusScore: Double,
         val regimeContext: Map<String, Any>?,
         val detectionMetadata: Map<String, Any>,
-        val sha256Hash: String,
+        val previousHash: String?,  // Blockchain-style chaining
+        val chainIndex: Int,        // Position in chain
+        val sha256Hash: String,     // Hash of ALL data including previousHash
         val disclaimer: String = "⚠️ Educational detection log only - NOT proof of trading results"
     )
     
     /**
-     * Generate proof capsule from pattern match
+     * Audit trail entry
+     */
+    data class AuditEntry(
+        val capsuleHash: String,
+        val timestamp: Long,
+        val patternId: String,
+        val chainIndex: Int,
+        val verified: Boolean
+    )
+    
+    /**
+     * Generate proof capsule with blockchain-style chaining
      * 
      * @param patternMatch Pattern detection to package
      * @param screenshot Optional screenshot of detection
      * @param regimeContext Optional market regime context
-     * @return Generated proof capsule
+     * @return Generated proof capsule (chained to previous)
      */
     suspend fun generateCapsule(
         patternMatch: PatternMatch,
@@ -101,10 +119,15 @@ class ProofCapsuleGenerator(private val context: Context) {
             val timestampMs = patternMatch.timestamp
             val timestamp = iso8601Format.format(Date(timestampMs))
             
+            val previousCapsule = getLatestCapsule()
+            val previousHash = previousCapsule?.sha256Hash
+            val chainIndex = (previousCapsule?.chainIndex ?: -1) + 1
+            
             val metadata = buildMetadata(patternMatch, screenshot)
             val regimeData = regimeContext?.let { buildRegimeData(it) }
             
             val dataForHash = buildDataForHash(
+                appVersion = APP_VERSION,
                 timestamp = timestamp,
                 patternId = patternMatch.patternName,
                 confidence = patternMatch.confidence,
@@ -112,13 +135,16 @@ class ProofCapsuleGenerator(private val context: Context) {
                 scale = patternMatch.scale,
                 consensusScore = patternMatch.consensusScore,
                 metadata = metadata,
-                regimeData = regimeData
+                regimeData = regimeData,
+                previousHash = previousHash,
+                chainIndex = chainIndex
             )
             
             val hash = calculateSHA256(dataForHash)
             
             val capsule = ProofCapsule(
                 version = CAPSULE_VERSION,
+                appVersion = APP_VERSION,
                 timestamp = timestamp,
                 timestampMs = timestampMs,
                 patternId = patternMatch.patternName,
@@ -128,18 +154,99 @@ class ProofCapsuleGenerator(private val context: Context) {
                 consensusScore = patternMatch.consensusScore,
                 regimeContext = regimeData,
                 detectionMetadata = metadata,
+                previousHash = previousHash,
+                chainIndex = chainIndex,
                 sha256Hash = hash
             )
             
             saveCapsule(capsule, screenshot)
+            addToAuditTrail(capsule)
             
-            Timber.i("Proof capsule generated: ${patternMatch.patternName} (hash: ${hash.take(8)}...)")
+            Timber.i("Proof capsule generated: ${patternMatch.patternName} (chain #$chainIndex, hash: ${hash.take(8)}...)")
             
             capsule
             
         } catch (e: Exception) {
             Timber.e(e, "Error generating proof capsule")
             throw e
+        }
+    }
+    
+    /**
+     * Get latest capsule in chain
+     */
+    private suspend fun getLatestCapsule(): ProofCapsule? = withContext(Dispatchers.IO) {
+        try {
+            val capsules = listCapsules()
+            if (capsules.isEmpty()) return@withContext null
+            
+            loadCapsule(capsules.first())
+        } catch (e: Exception) {
+            Timber.w(e, "Could not load latest capsule")
+            null
+        }
+    }
+    
+    /**
+     * Add capsule to audit trail
+     */
+    private suspend fun addToAuditTrail(capsule: ProofCapsule) = withContext(Dispatchers.IO) {
+        try {
+            val trail = loadAuditTrail().toMutableList()
+            trail.add(AuditEntry(
+                capsuleHash = capsule.sha256Hash,
+                timestamp = capsule.timestampMs,
+                patternId = capsule.patternId,
+                chainIndex = capsule.chainIndex,
+                verified = true
+            ))
+            saveAuditTrail(trail)
+        } catch (e: Exception) {
+            Timber.e(e, "Error adding to audit trail")
+        }
+    }
+    
+    /**
+     * Get full audit trail
+     */
+    suspend fun getAuditTrail(): List<AuditEntry> = withContext(Dispatchers.IO) {
+        loadAuditTrail()
+    }
+    
+    /**
+     * Verify entire proof chain integrity
+     */
+    suspend fun verifyChain(): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val capsules = listCapsules().reversed() // Oldest first
+            if (capsules.isEmpty()) {
+                return@withContext Pair(true, "No capsules to verify")
+            }
+            
+            var previousHash: String? = null
+            for ((index, file) in capsules.withIndex()) {
+                val capsule = loadCapsule(file)
+                
+                if (capsule.chainIndex != index) {
+                    return@withContext Pair(false, "Chain index mismatch at #$index")
+                }
+                
+                if (capsule.previousHash != previousHash) {
+                    return@withContext Pair(false, "Chain broken at #$index (hash mismatch)")
+                }
+                
+                if (!verifyCapsule(capsule)) {
+                    return@withContext Pair(false, "Capsule #$index failed verification")
+                }
+                
+                previousHash = capsule.sha256Hash
+            }
+            
+            Pair(true, "All ${capsules.size} capsules verified successfully")
+            
+        } catch (e: Exception) {
+            Timber.e(e, "Error verifying chain")
+            Pair(false, "Verification error: ${e.message}")
         }
     }
     
@@ -251,6 +358,7 @@ class ProofCapsuleGenerator(private val context: Context) {
     suspend fun verifyCapsule(capsule: ProofCapsule): Boolean = withContext(Dispatchers.Default) {
         try {
             val dataForHash = buildDataForHash(
+                appVersion = capsule.appVersion,
                 timestamp = capsule.timestamp,
                 patternId = capsule.patternId,
                 confidence = capsule.confidence,
@@ -258,14 +366,16 @@ class ProofCapsuleGenerator(private val context: Context) {
                 scale = capsule.scale,
                 consensusScore = capsule.consensusScore,
                 metadata = capsule.detectionMetadata,
-                regimeData = capsule.regimeContext
+                regimeData = capsule.regimeContext,
+                previousHash = capsule.previousHash,
+                chainIndex = capsule.chainIndex
             )
             
             val expectedHash = calculateSHA256(dataForHash)
             val isValid = expectedHash == capsule.sha256Hash
             
             if (isValid) {
-                Timber.i("Capsule verified: ${capsule.patternId}")
+                Timber.i("Capsule verified: ${capsule.patternId} (chain #${capsule.chainIndex})")
             } else {
                 Timber.w("Capsule TAMPERED: ${capsule.patternId} (hash mismatch)")
             }
@@ -335,6 +445,7 @@ class ProofCapsuleGenerator(private val context: Context) {
     }
     
     private fun buildDataForHash(
+        appVersion: String,
         timestamp: String,
         patternId: String,
         confidence: Double,
@@ -342,10 +453,13 @@ class ProofCapsuleGenerator(private val context: Context) {
         scale: Double,
         consensusScore: Double,
         metadata: Map<String, Any>,
-        regimeData: Map<String, Any>?
+        regimeData: Map<String, Any>?,
+        previousHash: String?,
+        chainIndex: Int
     ): String {
         return buildString {
             append("version=$CAPSULE_VERSION")
+            append("|appVersion=$appVersion")
             append("|timestamp=$timestamp")
             append("|pattern=$patternId")
             append("|confidence=$confidence")
@@ -356,6 +470,8 @@ class ProofCapsuleGenerator(private val context: Context) {
             regimeData?.let {
                 append("|regime=${it.entries.sortedBy { it.key }.joinToString(",") { "${it.key}=${it.value}" }}")
             }
+            append("|previousHash=${previousHash ?: "null"}")
+            append("|chainIndex=$chainIndex")
         }
     }
     
@@ -367,6 +483,7 @@ class ProofCapsuleGenerator(private val context: Context) {
     private fun serializeCapsule(capsule: ProofCapsule): String {
         val json = JSONObject().apply {
             put("version", capsule.version)
+            put("appVersion", capsule.appVersion)
             put("timestamp", capsule.timestamp)
             put("timestampMs", capsule.timestampMs)
             put("patternId", capsule.patternId)
@@ -380,11 +497,52 @@ class ProofCapsuleGenerator(private val context: Context) {
             }
             
             put("detectionMetadata", JSONObject(capsule.detectionMetadata))
+            put("previousHash", capsule.previousHash ?: JSONObject.NULL)
+            put("chainIndex", capsule.chainIndex)
             put("sha256Hash", capsule.sha256Hash)
             put("disclaimer", capsule.disclaimer)
         }
         
         return json.toString(2)
+    }
+    
+    private fun loadAuditTrail(): List<AuditEntry> {
+        if (!auditTrailFile.exists()) return emptyList()
+        
+        return try {
+            val json = org.json.JSONArray(auditTrailFile.readText())
+            (0 until json.length()).map { i ->
+                val obj = json.getJSONObject(i)
+                AuditEntry(
+                    capsuleHash = obj.getString("capsuleHash"),
+                    timestamp = obj.getLong("timestamp"),
+                    patternId = obj.getString("patternId"),
+                    chainIndex = obj.getInt("chainIndex"),
+                    verified = obj.getBoolean("verified")
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error loading audit trail")
+            emptyList()
+        }
+    }
+    
+    private fun saveAuditTrail(trail: List<AuditEntry>) {
+        try {
+            val json = org.json.JSONArray()
+            trail.forEach { entry ->
+                json.put(JSONObject().apply {
+                    put("capsuleHash", entry.capsuleHash)
+                    put("timestamp", entry.timestamp)
+                    put("patternId", entry.patternId)
+                    put("chainIndex", entry.chainIndex)
+                    put("verified", entry.verified)
+                })
+            }
+            AtomicFile.write(auditTrailFile, json.toString(2))
+        } catch (e: Exception) {
+            Timber.e(e, "Error saving audit trail")
+        }
     }
     
     private fun deserializeCapsule(json: String): ProofCapsule {
@@ -403,6 +561,7 @@ class ProofCapsuleGenerator(private val context: Context) {
         
         return ProofCapsule(
             version = obj.getString("version"),
+            appVersion = obj.optString("appVersion", "2.1"),
             timestamp = obj.getString("timestamp"),
             timestampMs = obj.getLong("timestampMs"),
             patternId = obj.getString("patternId"),
@@ -412,6 +571,8 @@ class ProofCapsuleGenerator(private val context: Context) {
             consensusScore = obj.getDouble("consensusScore"),
             regimeContext = regimeContext,
             detectionMetadata = metadataMap,
+            previousHash = if (obj.isNull("previousHash")) null else obj.getString("previousHash"),
+            chainIndex = obj.optInt("chainIndex", 0),
             sha256Hash = obj.getString("sha256Hash"),
             disclaimer = obj.optString("disclaimer", "⚠️ Educational detection log only - NOT proof of trading results")
         )

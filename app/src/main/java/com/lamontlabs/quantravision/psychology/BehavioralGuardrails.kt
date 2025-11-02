@@ -55,7 +55,16 @@ class BehavioralGuardrails(private val context: Context) {
         val detectionViews: MutableList<ViewEvent> = mutableListOf(),
         val tradeResults: MutableList<TradeResult> = mutableListOf(),
         val cooldownSuggestions: MutableList<CooldownEvent> = mutableListOf(),
+        val disciplineScore: Int = 100,
+        val personalityProfile: PersonalityProfile = PersonalityProfile(),
         val lastUpdateTimestamp: Long = System.currentTimeMillis()
+    )
+    
+    data class PersonalityProfile(
+        var impulsivenessFactor: Double = 0.5,    // 0.0 = patient, 1.0 = very impulsive
+        var emotionalTradingIndicator: Double = 0.5,  // 0.0 = disciplined, 1.0 = emotional
+        var avgSessionDurationMs: Long = 0,
+        var preferredTimeOfDay: Int = 12  // Hour of day (0-23)
     )
     
     data class ViewEvent(
@@ -104,7 +113,7 @@ class BehavioralGuardrails(private val context: Context) {
     }
     
     /**
-     * Record pattern detection view
+     * Record pattern detection view and update discipline score
      * 
      * @param patternMatch Pattern that was viewed
      * @return Guardrail warning if triggered, null otherwise
@@ -116,12 +125,16 @@ class BehavioralGuardrails(private val context: Context) {
         
         try {
             val state = loadState()
+            val now = System.currentTimeMillis()
             
             state.detectionViews.add(ViewEvent(
-                timestamp = System.currentTimeMillis(),
+                timestamp = now,
                 patternName = patternMatch.patternName,
                 confidence = patternMatch.confidence
             ))
+            
+            updatePersonalityProfile(state, now)
+            updateDisciplineScore(state)
             
             cleanOldData(state)
             saveState(state)
@@ -132,6 +145,66 @@ class BehavioralGuardrails(private val context: Context) {
             Timber.e(e, "Error recording view")
             null
         }
+    }
+    
+    /**
+     * Update personality profile based on recent activity
+     */
+    private fun updatePersonalityProfile(state: BehavioralState, currentTimestamp: Long) {
+        val recentViews = state.detectionViews.filter {
+            (currentTimestamp - it.timestamp) < RAPID_VIEW_WINDOW_MS
+        }
+        
+        val impulsiveness = (recentViews.size.toDouble() / RAPID_VIEW_THRESHOLD).coerceIn(0.0, 1.0)
+        state.personalityProfile.impulsivenessFactor = 
+            (state.personalityProfile.impulsivenessFactor * 0.8 + impulsiveness * 0.2)
+        
+        val burstViews = state.detectionViews.filter {
+            (currentTimestamp - it.timestamp) < ACTIVITY_BURST_WINDOW_MS
+        }
+        val emotionalIndicator = (burstViews.size.toDouble() / ACTIVITY_BURST_THRESHOLD).coerceIn(0.0, 1.0)
+        state.personalityProfile.emotionalTradingIndicator =
+            (state.personalityProfile.emotionalTradingIndicator * 0.8 + emotionalIndicator * 0.2)
+    }
+    
+    /**
+     * Update discipline score based on behavior
+     */
+    private fun updateDisciplineScore(state: BehavioralState) {
+        var scoreAdjustment = 0
+        val now = System.currentTimeMillis()
+        
+        val recentViews = state.detectionViews.filter {
+            (now - it.timestamp) < RAPID_VIEW_WINDOW_MS
+        }
+        
+        if (recentViews.size >= RAPID_VIEW_THRESHOLD) {
+            scoreAdjustment -= 5
+        }
+        
+        val burstViews = state.detectionViews.filter {
+            (now - it.timestamp) < ACTIVITY_BURST_WINDOW_MS
+        }
+        if (burstViews.size >= ACTIVITY_BURST_THRESHOLD) {
+            scoreAdjustment -= 10
+        }
+        
+        val hoursSinceLastView = if (state.detectionViews.size > 1) {
+            val last = state.detectionViews[state.detectionViews.size - 2].timestamp
+            (now - last) / (60 * 60 * 1000.0)
+        } else {
+            0.0
+        }
+        
+        if (hoursSinceLastView > 1.0) {
+            scoreAdjustment += 2
+        }
+        
+        if (state.cooldownSuggestions.any { (now - it.timestamp) < it.suggestedDurationMs }) {
+            scoreAdjustment -= 15
+        }
+        
+        state.disciplineScore = (state.disciplineScore + scoreAdjustment).coerceIn(0, 100)
     }
     
     /**
@@ -193,7 +266,7 @@ class BehavioralGuardrails(private val context: Context) {
     }
     
     /**
-     * Get current behavioral statistics
+     * Get current behavioral statistics including discipline score
      * 
      * @return Behavioral statistics for UI display
      */
@@ -217,18 +290,67 @@ class BehavioralGuardrails(private val context: Context) {
             }
             
             val currentStreak = calculateCurrentStreak(state.tradeResults)
+            val disciplineLevel = calculateDisciplineLevel(state.disciplineScore)
+            val personalityInsight = generatePersonalityInsight(state)
             
             BehavioralStatistics(
                 viewsLast24h = recentViews,
                 tradesLast7d = recentTrades.size,
                 winRateLast7d = winRate,
                 currentStreak = currentStreak,
-                activeCooldown = shouldTakeBreak()
+                activeCooldown = shouldTakeBreak(),
+                disciplineScore = state.disciplineScore,
+                disciplineLevel = disciplineLevel,
+                personalityInsight = personalityInsight
             )
             
         } catch (e: Exception) {
             Timber.e(e, "Error calculating statistics")
             BehavioralStatistics()
+        }
+    }
+    
+    /**
+     * Calculate discipline level from score
+     */
+    private fun calculateDisciplineLevel(score: Int): DisciplineLevel {
+        return when {
+            score >= 90 -> DisciplineLevel.EXCELLENT
+            score >= 70 -> DisciplineLevel.GOOD
+            score >= 50 -> DisciplineLevel.FAIR
+            score >= 30 -> DisciplineLevel.POOR
+            else -> DisciplineLevel.CRITICAL
+        }
+    }
+    
+    /**
+     * Generate personalized insight based on behavioral patterns
+     */
+    private fun generatePersonalityInsight(state: BehavioralState): String {
+        return buildString {
+            val profile = state.personalityProfile
+            
+            when {
+                profile.impulsivenessFactor > 0.7 -> {
+                    append("📚 You tend to view patterns quickly. ")
+                    append("Consider taking 5 minutes between detections to maintain objectivity. ")
+                }
+                profile.impulsivenessFactor < 0.3 -> {
+                    append("✅ You maintain good pacing between pattern views. ")
+                }
+            }
+            
+            when {
+                profile.emotionalTradingIndicator > 0.7 -> {
+                    append("⚠️ Activity patterns suggest emotional decision-making. ")
+                    append("Review your trading plan before each action. ")
+                }
+                profile.emotionalTradingIndicator < 0.3 -> {
+                    append("✅ Your activity shows disciplined behavior. ")
+                }
+            }
+            
+            append("Educational coaching only - NOT psychological advice.")
         }
     }
     
@@ -268,8 +390,19 @@ class BehavioralGuardrails(private val context: Context) {
         val tradesLast7d: Int = 0,
         val winRateLast7d: Double = 0.0,
         val currentStreak: Int = 0,
-        val activeCooldown: Boolean = false
+        val activeCooldown: Boolean = false,
+        val disciplineScore: Int = 100,
+        val disciplineLevel: DisciplineLevel = DisciplineLevel.GOOD,
+        val personalityInsight: String = ""
     )
+    
+    enum class DisciplineLevel {
+        EXCELLENT,   // 90-100: Following guardrails consistently
+        GOOD,        // 70-89: Generally disciplined
+        FAIR,        // 50-69: Some emotional decisions
+        POOR,        // 30-49: Frequent emotional trading
+        CRITICAL     // 0-29: Severe emotional trading patterns
+    }
     
     private fun loadState(): BehavioralState {
         if (!stateFile.exists()) {

@@ -130,6 +130,46 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                         }
                     }
                     
+                    // Discipline Score Card
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = when (statistics.disciplineLevel) {
+                                    BehavioralGuardrails.DisciplineLevel.EXCELLENT -> MaterialTheme.colorScheme.primaryContainer
+                                    BehavioralGuardrails.DisciplineLevel.GOOD -> MaterialTheme.colorScheme.tertiaryContainer
+                                    BehavioralGuardrails.DisciplineLevel.FAIR -> MaterialTheme.colorScheme.surfaceVariant
+                                    BehavioralGuardrails.DisciplineLevel.POOR -> MaterialTheme.colorScheme.errorContainer
+                                    BehavioralGuardrails.DisciplineLevel.CRITICAL -> MaterialTheme.colorScheme.errorContainer
+                                }
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        "Discipline Score",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        statistics.disciplineLevel.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Text(
+                                    "${statistics.disciplineScore}",
+                                    style = MaterialTheme.typography.displayMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                    
                     // Stats cards
                     item {
                         Row(
@@ -176,15 +216,23 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                         }
                     }
                     
-                    // Insights
+                    // Personalized Insights
                     item {
                         Card(modifier = Modifier.fillMaxWidth()) {
                             Column(Modifier.padding(16.dp)) {
                                 Text(
-                                    "📊 Behavioral Insights",
+                                    "📊 Personalized Insights",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
+                                Spacer(Modifier.height(12.dp))
+                                
+                                Text(
+                                    statistics.personalityInsight,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                
                                 Spacer(Modifier.height(12.dp))
                                 
                                 when {
