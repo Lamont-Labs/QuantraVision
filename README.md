@@ -576,6 +576,12 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 - **STANDARD ($24.99):** ⭐ **MOST POPULAR** - Best value with 50 patterns, achievements, lessons, AND complete trading book
 - **PRO ($49.99):** Complete package - Intelligence Stack + AI Learning + Trading Book (everything unlocked)
 
+**💎 Fair Upgrade Pricing:**
+- Already have STARTER? Upgrade to STANDARD for only **$15.00** (pay the difference, not the full $24.99)
+- Already have STARTER? Upgrade to PRO for only **$40.00** (pay the difference, not the full $49.99)
+- Already have STANDARD? Upgrade to PRO for only **$25.00** (pay the difference, not the full $49.99)
+- **You only pay the difference** - fair and transparent pricing for loyal users
+
 ---
 
 ## 📚 About "The Friendly Trader" Trading Book

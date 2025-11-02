@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- 💰 **Upgrade Pricing System** - Fair pricing for tier upgrades
+  - Users only pay the difference when upgrading between tiers
+  - 3 upgrade SKU products: STARTER→STANDARD ($15), STARTER→PRO ($40), STANDARD→PRO ($25)
+  - Automatic upgrade detection in BillingManager
+  - UI enhancements showing upgrade pricing with strikethrough original price
+  - "🎁 UPGRADE" badge and "You pay only the difference" messaging
+  - Purchase history preserved, all upgrade purchases properly acknowledged
+  
 - 🎯 **Scan Learning Engine** - Learns from every chart scan
   - Pattern frequency tracking across all detections
   - Co-occurrence analysis to identify pattern sequences
