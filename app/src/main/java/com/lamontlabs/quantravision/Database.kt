@@ -20,6 +20,9 @@ import com.lamontlabs.quantravision.learning.advanced.data.MarketConditionOutcom
 import com.lamontlabs.quantravision.learning.advanced.data.TemporalDataEntity
 import com.lamontlabs.quantravision.learning.advanced.data.BehavioralEventEntity
 import com.lamontlabs.quantravision.learning.advanced.data.StrategyMetricsEntity
+import com.lamontlabs.quantravision.learning.data.ScanHistoryEntity
+import com.lamontlabs.quantravision.learning.data.PatternFrequencyEntity
+import com.lamontlabs.quantravision.learning.data.PatternCooccurrenceEntity
 
 @Entity
 data class PatternMatch(
@@ -104,7 +107,7 @@ interface InvalidatedPatternDao {
     suspend fun getInvalidationCount(name: String): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class], version = 10)
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class], version = 11)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
@@ -127,7 +130,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -392,6 +395,50 @@ abstract class PatternDatabase : RoomDatabase() {
                         lastUpdated INTEGER NOT NULL
                     )
                 """.trimIndent())
+            }
+        }
+        
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Scan History table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS scan_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        timestamp INTEGER NOT NULL,
+                        sessionId TEXT NOT NULL,
+                        patternsDetected TEXT NOT NULL,
+                        confidences TEXT NOT NULL,
+                        timeframe TEXT NOT NULL,
+                        scanDurationMs INTEGER NOT NULL,
+                        chartHash TEXT NOT NULL
+                    )
+                """.trimIndent())
+                
+                // Pattern Frequency table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS pattern_frequency (
+                        patternName TEXT PRIMARY KEY NOT NULL,
+                        totalScans INTEGER NOT NULL,
+                        totalDetections INTEGER NOT NULL,
+                        avgConfidence REAL NOT NULL,
+                        lastSeen INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                // Pattern Co-occurrence table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS pattern_cooccurrence (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        pattern1 TEXT NOT NULL,
+                        pattern2 TEXT NOT NULL,
+                        cooccurrenceCount INTEGER NOT NULL,
+                        totalOpportunities INTEGER NOT NULL,
+                        cooccurrenceRate REAL NOT NULL,
+                        lastUpdated INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                Log.i(TAG, "Migration 10 -> 11: Scan Learning Engine tables created successfully")
             }
         }
     }

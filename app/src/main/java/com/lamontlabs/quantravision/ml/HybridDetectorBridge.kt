@@ -2,6 +2,7 @@ package com.lamontlabs.quantravision.ml
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.SystemClock
 import com.lamontlabs.quantravision.analysis.HybridPatternDetector
 import com.lamontlabs.quantravision.detection.DetectionResult
 import com.lamontlabs.quantravision.ml.fusion.BayesianFusionEngine
@@ -12,7 +13,11 @@ import com.lamontlabs.quantravision.ml.fusion.TemporalStabilizer
 import com.lamontlabs.quantravision.ml.fusion.BoundingBox
 import com.lamontlabs.quantravision.ml.inference.DeltaDetectionOptimizer
 import com.lamontlabs.quantravision.ml.optimization.PowerPolicyManager
+import com.lamontlabs.quantravision.learning.ScanLearningEngine
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -66,6 +71,10 @@ class HybridDetectorBridge(private val context: Context) {
     private val deltaOptimizer = DeltaDetectionOptimizer()
     private val powerManager = PowerPolicyManager(context)
     
+    // Scan Learning Engine (PRO feature)
+    private val scanLearning = ScanLearningEngine(context)
+    private val scanLearningEnabled = ProFeatureGate.hasAccess(context)
+    
     private var frameCount = 0
     private var optimizationEnabled = true
     
@@ -82,6 +91,8 @@ class HybridDetectorBridge(private val context: Context) {
     suspend fun detectPatternsOptimized(chartImage: Bitmap): List<DetectionResult> = 
         withContext(Dispatchers.Default) {
             frameCount++
+            
+            val scanStartTime = SystemClock.elapsedRealtime()
             
             if (!optimizationEnabled) {
                 // Fallback to existing detector
@@ -119,6 +130,23 @@ class HybridDetectorBridge(private val context: Context) {
             
             // Convert back to DetectionResult format
             val optimizedResults = convertFusedToDetectionResults(stableDetections)
+            
+            if (ProFeatureGate.isActive(context)) {
+                val scanDuration = SystemClock.elapsedRealtime() - scanStartTime
+                
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        scanLearning.learnFromScan(
+                            detections = optimizedResults,
+                            timeframe = "unknown",
+                            scanDurationMs = scanDuration,
+                            chartImage = chartImage
+                        )
+                    } catch (e: Exception) {
+                        Timber.e(e, "Scan learning failed (non-critical)")
+                    }
+                }
+            }
             
             Timber.d("Detected ${optimizedResults.size} patterns with optimizations " +
                     "(cache hit rate: ${deltaOptimizer.getCacheHitRate()}, policy: ${policy.name})")

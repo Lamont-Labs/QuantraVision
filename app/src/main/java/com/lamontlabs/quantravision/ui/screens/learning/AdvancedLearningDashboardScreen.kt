@@ -27,7 +27,7 @@ fun AdvancedLearningDashboardScreen(
     val context = LocalContext.current
     
     var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Overview", "Risk", "Behavioral", "Strategy", "Forecasts", "Anomalies")
+    val tabs = listOf("Overview", "Risk", "Behavioral", "Strategy", "Forecasts", "Anomalies", "Scan Insights")
     
     Scaffold(
         topBar = {
@@ -72,6 +72,7 @@ fun AdvancedLearningDashboardScreen(
                 3 -> StrategyTab(viewModel)
                 4 -> ForecastsTab(viewModel)
                 5 -> AnomaliesTab(viewModel)
+                6 -> ScanInsightsTab()
             }
             
             EducationalDisclaimer()
@@ -364,6 +365,123 @@ fun MetricRow(label: String, value: String) {
     ) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun ScanInsightsTab() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var scanStats by remember { mutableStateOf<com.lamontlabs.quantravision.learning.ScanStatistics?>(null) }
+    var frequentPatterns by remember { mutableStateOf<List<com.lamontlabs.quantravision.learning.PatternFrequencyInfo>>(emptyList()) }
+    var topCooccurrences by remember { mutableStateOf<List<com.lamontlabs.quantravision.learning.CooccurrenceInfo>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                val engine = com.lamontlabs.quantravision.learning.ScanLearningEngine(context)
+                scanStats = engine.getScanStats()
+                frequentPatterns = engine.getMostFrequentPatterns(10)
+                topCooccurrences = engine.getPatternCooccurrences()
+            } catch (e: Exception) {
+                timber.log.Timber.e(e, "Failed to load scan insights")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+    
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text("Scan Learning Insights", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text("Intelligence from every chart scan", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        
+        if (isLoading) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+        } else {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Scan Statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        scanStats?.let { stats ->
+                            MetricRow("Scans This Week", "${stats.totalScansWeek}")
+                            MetricRow("Scans This Month", "${stats.totalScansMonth}")
+                            MetricRow("Unique Patterns", "${stats.uniquePatternsDetected}")
+                            MetricRow("Most Common", stats.mostCommonPattern)
+                        }
+                    }
+                }
+            }
+            
+            item {
+                Text("Most Frequent Patterns", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("Patterns detected most often in your scans", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            
+            if (frequentPatterns.isEmpty()) {
+                item {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Text("No scan data yet. Start scanning charts to see insights!", modifier = Modifier.padding(16.dp))
+                    }
+                }
+            } else {
+                items(frequentPatterns.size) { index ->
+                    val pattern = frequentPatterns[index]
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(pattern.patternName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            MetricRow("Total Detections", "${pattern.detectionCount}")
+                            MetricRow("Detection Rate", "${(pattern.detectionRate * 100).toInt()}%")
+                            MetricRow("Avg Confidence", "${(pattern.avgConfidence * 100).toInt()}%")
+                        }
+                    }
+                }
+            }
+            
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Pattern Co-occurrence", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("Patterns that frequently appear together", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            
+            if (topCooccurrences.isEmpty()) {
+                item {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Text("Not enough data for co-occurrence analysis", modifier = Modifier.padding(16.dp))
+                    }
+                }
+            } else {
+                items(topCooccurrences.size) { index ->
+                    val cooccurrence = topCooccurrences[index]
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(cooccurrence.pattern1, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(Icons.Default.SwapHoriz, "with", modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(cooccurrence.pattern2, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            MetricRow("Co-occurrence Count", "${cooccurrence.cooccurrenceCount}")
+                            MetricRow("Co-occurrence Rate", "${(cooccurrence.cooccurrenceRate * 100).toInt()}%")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

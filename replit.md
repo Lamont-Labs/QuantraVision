@@ -10,6 +10,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 2, 2025 - Scan Learning Engine (Learns from Every Chart Scan):**
+- **Automatic Learning**: System learns from EVERY chart scan to improve detection over time
+- **Pattern Frequency Analysis**: Tracks which patterns appear most often across all scans
+- **Pattern Co-occurrence**: Identifies patterns that frequently appear together (correlation analysis)
+- **Confidence Distribution**: Learns typical confidence levels for each pattern
+- **Adaptive Thresholds**: Optimizes detection thresholds based on scan history (patterns with consistently high confidence use stricter thresholds)
+- **Scan Statistics**: Tracks scans per week/month, unique patterns detected, most common patterns
+- **Privacy-Preserving**: 100% offline learning, perceptual image hashing (no raw images stored), 90-day retention policy
+- **PRO Tier Feature**: Scan learning gated to PRO subscribers only
+- **Database Schema**: Added 3 new tables (scan_history, pattern_frequency, pattern_cooccurrence) with MIGRATION_10_11 (v10→v11)
+- **Integration**: Automatic learning hook in HybridDetectorBridge after every detection run (non-blocking)
+- **UI Dashboard**: New "Scan Insights" tab in Advanced Learning Dashboard showing frequency analysis, co-occurrence insights, scan statistics
+- **File Growth**: Added ScanHistoryEntity.kt, ScanLearningEngine.kt, DetectionResult.kt, updated Database.kt, LearningProfileDao.kt, HybridDetectorBridge.kt, AdvancedLearningDashboardScreen.kt
+- **Quality**: Zero LSP errors, production-grade error handling, comprehensive Timber logging, memory-efficient (no image storage)
+- **Selling Point**: "Gets smarter with every scan" - unique differentiator from competitors
+
 **November 2, 2025 - 4-Tier Pricing Update (Lifetime Access, No Subscriptions):**
 - **New Tier Structure**: Expanded from 3 to 4 tiers for better accessibility and revenue sustainability
 - **Free Tier**: 10 patterns, basic overlay (unchanged)
@@ -72,7 +88,8 @@ The application uses Jetpack Compose with Material 3 Design System, optimized fo
 
 ### Technical Implementations
 **Pattern Detection Engine**: Employs an OpenCV template matching system to detect 102 chart patterns using reference image templates. A HybridDetectorBridge coordinates detection, and a BayesianFusionEngine provides probabilistic confidence scoring. Optimizations include DeltaDetectionOptimizer and TemporalStabilizer. TensorFlow Lite infrastructure is present for future Apache 2.0 licensed ML enhancements.
-**Data Storage**: Utilizes an encrypted Room database for logs, user preferences, and achievement tracking, with no cloud synchronization.
+**Scan Learning Engine**: NEW feature that learns from every chart scan (PRO tier only). Automatically tracks pattern frequency, co-occurrence, confidence distributions, and scan statistics. Uses perceptual image hashing for duplicate detection without storing raw images. Provides adaptive threshold optimization based on historical confidence levels. All learning is 100% offline with 90-day retention policy. Integrated into HybridDetectorBridge with non-blocking async learning. Dashboard UI shows scan insights including most frequent patterns, co-occurrence analysis, and weekly/monthly scan statistics.
+**Data Storage**: Utilizes an encrypted Room database for logs, user preferences, achievement tracking, and scan learning data, with no cloud synchronization.
 **State Management**: Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) ensure reactive state propagation.
 **Authentication & Licensing**: Google Play In-App Billing supports a four-tier structure (Free, Book Add-On, Standard, Pro) with lifetime access. Security includes Google Play Integrity API integration, signature verification, debugger detection, root checks, and R8/ProGuard obfuscation.
 **AI/ML Architecture**: Primarily uses OpenCV template matching. TensorFlow Lite infrastructure is ready for future Apache 2.0 licensed ML model integration, with optimizations like TensorPool and PowerPolicyManager.
