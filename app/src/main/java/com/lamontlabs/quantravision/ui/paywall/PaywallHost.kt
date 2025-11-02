@@ -10,6 +10,7 @@ fun PaywallHost(activity: Activity, billing: BillingClientManager, purchasedSkus
     Paywall(
         activity = activity,
         entitlements = ent,
+        onStarter = { billing.launchPurchase(activity, Sku.STARTER) },
         onStandard = { billing.launchPurchase(activity, Sku.STANDARD) },
         onPro = { billing.launchPurchase(activity, Sku.PRO) }
     )

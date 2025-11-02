@@ -3,12 +3,24 @@
 ## Overview
 QuantraVision is a professional Android application providing AI-powered chart pattern recognition for retail traders. It operates 100% offline, utilizing advanced OpenCV template matching to identify 102 technical analysis patterns in real-time. The app prioritizes privacy with on-device processing and offers features like predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. All technology is Apache 2.0 licensed.
 
-The application aims to offer professional-grade pattern detection without subscriptions or cloud dependencies. QuantraVision includes an "Intelligence Stack" featuring: Regime Navigator (on-device market condition analysis), Pattern-to-Plan Engine (educational trade scenarios), Behavioral Guardrails (discipline coaching), and Proof Capsules (shareable tamper-proof detection receipts). All features are offline and include legal disclaimers, emphasizing their educational nature.
+The application aims to offer professional-grade pattern detection without subscriptions or cloud dependencies. QuantraVision uses a 4-tier one-time payment structure (Free, Starter $9.99, Standard $24.99, Pro $49.99) with lifetime access. The app includes an "Intelligence Stack" featuring: Regime Navigator (on-device market condition analysis), Pattern-to-Plan Engine (educational trade scenarios), Behavioral Guardrails (discipline coaching), and Proof Capsules (shareable tamper-proof detection receipts). All features are offline and include legal disclaimers, emphasizing their educational nature.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
+
+**November 2, 2025 - 4-Tier Pricing Update (Lifetime Access, No Subscriptions):**
+- **New Tier Structure**: Expanded from 3 to 4 tiers for better accessibility and revenue sustainability
+- **Free Tier**: 10 patterns, basic overlay (unchanged)
+- **Starter Tier ($9.99)**: 25 patterns, multi-timeframe detection, basic analytics - NEW entry point for impulse buyers
+- **Standard Tier ($24.99)**: 50 patterns (was 30), full analytics, 50 achievements, 25 lessons, book, exports - MOST POPULAR tier
+- **Pro Tier ($49.99)**: All 102 patterns, Intelligence Stack, AI Learning (10 algorithms), Behavioral Guardrails, Proof Capsules
+- **Pricing Philosophy**: One-time payment, lifetime access, no subscriptions - major competitive advantage over $180-$1,400/year competitors
+- **Implementation**: Added STARTER tier enum, StarterFeatureGate.kt, qv_starter_one SKU, updated BillingManager, 4-tier UI in UpgradeScreen & PaywallScreen
+- **Pattern Distribution**: FREE=10, STARTER=25, STANDARD=50, PRO=102 (carefully curated sets with progressive unlocks)
+- **File Growth**: Added StarterFeatureGate.kt, updated 7 files (Entitlements, BillingManager, PatternLibraryGate, UpgradeScreen, PaywallScreen, PaywallHost), zero LSP errors
+- **Security**: Maintained encrypted SharedPreferences for all tiers, backward compatibility with existing purchases
 
 **November 2, 2025 - Minimal Glowing Border UI with Full App Access:**
 - **Faint Glowing Border**: Beautiful cyan glow (#00E5FF) around screen edges with two-layer effect (outer blur 8px @23% opacity + inner sharp 2px @39% opacity)

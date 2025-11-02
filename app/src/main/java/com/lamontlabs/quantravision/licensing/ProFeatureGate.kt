@@ -45,6 +45,6 @@ object ProFeatureGate {
     fun isActive(context: Context): Boolean = synchronized(lock) {
         val prefs = getSecurePrefs(context) ?: return false
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
-        return tier == "PRO"
+        return tier.uppercase() == "PRO"  // Normalize for backward compatibility
     }
 }

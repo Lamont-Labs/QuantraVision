@@ -10,10 +10,11 @@ import com.lamontlabs.quantravision.PatternMatch
  * PatternLibraryGate
  * Controls which patterns are available based on license tier.
  * 
- * Tier Structure (Option 1 Pricing):
- * - Free: 3 highlights/day, 10 BASIC patterns only
- * - Standard ($14.99): Unlimited highlights, 30 core patterns + Regime Navigator
- * - Pro ($29.99): Unlimited highlights, all 102 patterns + 4 intelligence features
+ * Tier Structure (4 Tiers):
+ * - Free: $0 - 10 patterns, basic overlay
+ * - Starter ($9.99): 25 patterns, multi-timeframe, basic analytics
+ * - Standard ($24.99): 50 patterns, full analytics, 50 achievements, 25 lessons, book, exports
+ * - Pro ($49.99): 102 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
  */
 object PatternLibraryGate {
 
@@ -40,15 +41,11 @@ object PatternLibraryGate {
     )
 
     /**
-     * Standard Tier Core Patterns (30 patterns)
+     * Starter Tier Patterns (25 patterns total = Free 10 + 15 more)
      * IDs match actual YAML filenames (lowercase snake_case)
      */
-    val STANDARD_TIER_PATTERNS = setOf(
-        // Major Reversals (10)
-        "head_and_shoulders",
-        "inverse_head_and_shoulders",
-        "double_top",
-        "double_bottom",
+    val STARTER_TIER_PATTERNS = FREE_TIER_PATTERNS + setOf(
+        // Additional Reversals (6)
         "triple_top",
         "triple_bottom",
         "rounding_top",
@@ -56,29 +53,53 @@ object PatternLibraryGate {
         "v_top",
         "v_bottom",
         
-        // Major Continuations (10)
-        "ascending_triangle",
-        "descending_triangle",
-        "symmetrical_triangle",
+        // Additional Continuations (5)
         "rising_wedge",
         "falling_wedge",
         "bull_flag",
         "bear_flag",
-        "bull_pennant",
-        "bear_pennant",
         "cup_and_handle",
         
-        // Essential Candlesticks (10)
-        "doji",
-        "hammer",
-        "hanging_man",
-        "inverted_hammer",
-        "shooting_star",
-        "bullish_engulfing",
+        // Additional Candlesticks (4)
         "bearish_engulfing",
         "morning_star",
         "evening_star",
-        "three_white_soldiers"
+        "inverted_hammer"
+    )
+
+    /**
+     * Standard Tier Patterns (50 patterns total = Starter 25 + 25 more)
+     * IDs match actual YAML filenames (lowercase snake_case)
+     */
+    val STANDARD_TIER_PATTERNS = STARTER_TIER_PATTERNS + setOf(
+        // Advanced Candlesticks (13)
+        "hanging_man",
+        "shooting_star",
+        "spinning_top",
+        "marubozu_bullish",
+        "marubozu_bearish",
+        "three_white_soldiers",
+        "three_black_crows",
+        "harami_bullish",
+        "harami_bearish",
+        "dark_cloud_cover",
+        "piercing_line",
+        "tweezer_top",
+        "tweezer_bottom",
+        
+        // Complex Patterns (12)
+        "bull_pennant",
+        "bear_pennant",
+        "diamond_top",
+        "diamond_bottom",
+        "island_reversal_top",
+        "island_reversal_bottom",
+        "broadening_top",
+        "broadening_bottom",
+        "rectangle_bullish",
+        "rectangle_bearish",
+        "ascending_channel",
+        "descending_channel"
     )
 
     /**
@@ -111,6 +132,7 @@ object PatternLibraryGate {
         return when {
             ProFeatureGate.isActive(context) -> Tier.PRO
             StandardFeatureGate.isActive(context) -> Tier.STANDARD
+            StarterFeatureGate.isActive(context) -> Tier.STARTER
             else -> Tier.FREE
         }
     }
@@ -122,6 +144,7 @@ object PatternLibraryGate {
         return when (getCurrentTier(context)) {
             Tier.PRO -> true // All 102 patterns
             Tier.STANDARD -> STANDARD_TIER_PATTERNS.contains(patternId)
+            Tier.STARTER -> STARTER_TIER_PATTERNS.contains(patternId)
             Tier.FREE -> FREE_TIER_PATTERNS.contains(patternId)
         }
     }
@@ -133,6 +156,7 @@ object PatternLibraryGate {
         return when (getCurrentTier(context)) {
             Tier.PRO -> matches // All 102 patterns available
             Tier.STANDARD -> matches.filter { STANDARD_TIER_PATTERNS.contains(it.patternId) }
+            Tier.STARTER -> matches.filter { STARTER_TIER_PATTERNS.contains(it.patternId) }
             Tier.FREE -> matches.filter { FREE_TIER_PATTERNS.contains(it.patternId) }
         }
     }
@@ -143,7 +167,8 @@ object PatternLibraryGate {
     fun getAvailablePatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
             Tier.PRO -> 102
-            Tier.STANDARD -> STANDARD_TIER_PATTERNS.size // 30
+            Tier.STANDARD -> STANDARD_TIER_PATTERNS.size // 50
+            Tier.STARTER -> STARTER_TIER_PATTERNS.size // 25
             Tier.FREE -> FREE_TIER_PATTERNS.size // 10
         }
     }
@@ -154,14 +179,16 @@ object PatternLibraryGate {
     fun getLockedPatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
             Tier.PRO -> 0
-            Tier.STANDARD -> 102 - STANDARD_TIER_PATTERNS.size // 72
+            Tier.STANDARD -> 102 - STANDARD_TIER_PATTERNS.size // 52
+            Tier.STARTER -> 102 - STARTER_TIER_PATTERNS.size // 77
             Tier.FREE -> 102 - FREE_TIER_PATTERNS.size // 92
         }
     }
 
     enum class Tier {
-        FREE,      // 3 highlights/day, 10 basic patterns
-        STANDARD,  // Unlimited highlights, 30 core patterns, Regime Navigator
-        PRO        // Unlimited highlights, all 102 patterns, 4 intelligence features
+        FREE,      // $0 - 10 patterns, basic overlay
+        STARTER,   // $9.99 - 25 patterns, multi-timeframe, basic analytics
+        STANDARD,  // $24.99 - 50 patterns, full analytics, achievements, lessons, book, exports
+        PRO        // $49.99 - 102 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
     }
 }

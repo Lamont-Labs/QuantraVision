@@ -12,7 +12,7 @@ import kotlinx.coroutines.*
  * Tier enum for compatibility with LicenseManager
  */
 enum class Tier {
-    FREE, STANDARD, PRO
+    FREE, STARTER, STANDARD, PRO
 }
 
 /**
@@ -110,7 +110,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     }
 
     private fun queryProducts() {
-        val products = listOf("qv_standard_one", "qv_pro_one").map {
+        val products = listOf("qv_starter_one", "qv_standard_one", "qv_pro_one").map {
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(it)
                 .setProductType(BillingClient.ProductType.INAPP)
@@ -217,6 +217,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
 
+    fun purchaseStarter() = launchPurchase("qv_starter_one")
     fun purchaseStandard() = launchPurchase("qv_standard_one")
     fun purchasePro() = launchPurchase("qv_pro_one")
 
@@ -264,16 +265,24 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         val sku = purchase.products.firstOrNull()
         when (sku) {
             "qv_pro_one" -> {
-                setUnlockedSecure("pro", purchase.purchaseToken)
+                setUnlockedSecure("PRO", purchase.purchaseToken)
                 if (!isRestoration) {
                     Log.d("BillingManager", "Pro unlock granted")
                 }
             }
             "qv_standard_one" -> {
-                if (getUnlockedTier() != "pro") {
-                    setUnlockedSecure("standard", purchase.purchaseToken)
+                if (getUnlockedTier() != "PRO") {
+                    setUnlockedSecure("STANDARD", purchase.purchaseToken)
                     if (!isRestoration) {
                         Log.d("BillingManager", "Standard unlock granted")
+                    }
+                }
+            }
+            "qv_starter_one" -> {
+                if (getUnlockedTier() != "PRO" && getUnlockedTier() != "STANDARD") {
+                    setUnlockedSecure("STARTER", purchase.purchaseToken)
+                    if (!isRestoration) {
+                        Log.d("BillingManager", "Starter unlock granted")
                     }
                 }
             }
@@ -283,11 +292,12 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     private fun setUnlockedSecure(tier: String, token: String) {
         synchronized(this) {
             try {
+                val normalizedTier = tier.uppercase()
                 prefs.edit()
-                    .putString(unlockedKey, tier)
+                    .putString(unlockedKey, normalizedTier)
                     .putString(purchaseTokenKey, token)
                     .apply()
-                onTierChanged?.invoke(tier)
+                onTierChanged?.invoke(normalizedTier)
             } catch (e: Exception) {
                 Log.e("BillingManager", "CRITICAL: Failed to save entitlements - purchase may not be persisted", e)
                 // Notify user of storage failure
@@ -305,7 +315,8 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     fun getUnlockedTier(): String {
         return synchronized(this) {
             try {
-                prefs.getString(unlockedKey, "") ?: ""
+                val tier = prefs.getString(unlockedKey, "") ?: ""
+                tier.uppercase()  // Normalize to uppercase for backward compatibility
             } catch (e: Exception) {
                 Log.e("BillingManager", "CRITICAL: Failed to read entitlements from secure storage", e)
                 // SECURITY: Return empty string (deny access) if we can't read secure storage
@@ -315,8 +326,9 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
     
-    fun isStandard(): Boolean = getUnlockedTier() == "standard" || isPro()
-    fun isPro(): Boolean = getUnlockedTier() == "pro"
+    fun isStarter(): Boolean = getUnlockedTier() == "STARTER" || isStandard() || isPro()
+    fun isStandard(): Boolean = getUnlockedTier() == "STANDARD" || isPro()
+    fun isPro(): Boolean = getUnlockedTier() == "PRO"
     
     fun getProductDetails(sku: String): ProductDetails? = productMap[sku]
     

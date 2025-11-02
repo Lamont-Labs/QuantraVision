@@ -58,7 +58,8 @@ object BookFeatureGate {
         
         // Check if Standard or Pro tier (book included free)
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
-        return tier == "STANDARD" || tier == "PRO"
+        val normalizedTier = tier.uppercase()
+        return normalizedTier == "STANDARD" || normalizedTier == "PRO"  // Normalize for backward compatibility
     }
     
     /**

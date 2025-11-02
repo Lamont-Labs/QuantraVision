@@ -5,19 +5,18 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
 /**
- * StandardFeatureGate
- * Single source of truth for Standard tier unlock.
+ * StarterFeatureGate
+ * Single source of truth for Starter tier unlock.
  * SECURE: Reads from BillingManager's encrypted SharedPreferences.
  * Cannot be spoofed without Google Play purchase.
  */
-object StandardFeatureGate {
+object StarterFeatureGate {
     
-    // Lock object for synchronized access to prevent race conditions (~0.01% of calls)
     private val lock = Any()
     
     /**
      * Get SharedPreferences with fallback to regular prefs if encrypted fails
-     * CRITICAL: Prevents users from losing Standard access on encryption failure
+     * CRITICAL: Prevents users from losing Starter access on encryption failure
      */
     private fun getSecurePrefs(context: Context): android.content.SharedPreferences? {
         return try {
@@ -32,20 +31,25 @@ object StandardFeatureGate {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            android.util.Log.w("StandardFeatureGate", "Encrypted prefs failed, falling back to regular prefs", e)
-            // CRITICAL: Fallback to regular SharedPreferences to prevent locking out paying users
+            android.util.Log.w("StarterFeatureGate", "Encrypted prefs failed, falling back to regular prefs", e)
             context.getSharedPreferences("qv_billing_prefs", Context.MODE_PRIVATE)
         }
     }
 
     /**
-     * Check if Standard tier is active (verified by BillingManager).
-     * Returns true for both STANDARD and PRO tiers (Pro includes Standard features)
+     * Check if Starter tier or higher is active (verified by BillingManager).
+     * Returns true for STARTER, STANDARD, and PRO tiers
      * SYNCHRONIZED: Prevents concurrent access race conditions
      */
     fun isActive(context: Context): Boolean = synchronized(lock) {
         val prefs = getSecurePrefs(context) ?: return false
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
-        return tier.uppercase() == "STANDARD" || tier.uppercase() == "PRO"  // Normalize for backward compatibility
+        val normalizedTier = tier.uppercase()
+        return normalizedTier == "STARTER" || normalizedTier == "STANDARD" || normalizedTier == "PRO"  // Normalize for backward compatibility
     }
+    
+    /**
+     * Alias for isActive() for compatibility with other feature gates
+     */
+    fun hasAccess(context: Context): Boolean = isActive(context)
 }
