@@ -13,6 +13,13 @@ import com.lamontlabs.quantravision.learning.data.LearningProfileDao
 import com.lamontlabs.quantravision.learning.model.ConfidenceProfile
 import com.lamontlabs.quantravision.learning.model.LearningMetadata
 import com.lamontlabs.quantravision.learning.model.SuppressionRule
+import com.lamontlabs.quantravision.learning.advanced.data.AdvancedLearningDao
+import com.lamontlabs.quantravision.learning.advanced.data.PatternCorrelationEntity
+import com.lamontlabs.quantravision.learning.advanced.data.PatternSequenceEntity
+import com.lamontlabs.quantravision.learning.advanced.data.MarketConditionOutcomeEntity
+import com.lamontlabs.quantravision.learning.advanced.data.TemporalDataEntity
+import com.lamontlabs.quantravision.learning.advanced.data.BehavioralEventEntity
+import com.lamontlabs.quantravision.learning.advanced.data.StrategyMetricsEntity
 
 @Entity
 data class PatternMatch(
@@ -97,7 +104,7 @@ interface InvalidatedPatternDao {
     suspend fun getInvalidationCount(name: String): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class], version = 9)
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class], version = 10)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
@@ -105,6 +112,7 @@ abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternOutcomeDao(): PatternOutcomeDao
     abstract fun achievementDao(): AchievementDao
     abstract fun learningProfileDao(): LearningProfileDao
+    abstract fun advancedLearningDao(): AdvancedLearningDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -119,7 +127,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -306,6 +314,81 @@ abstract class PatternDatabase : RoomDatabase() {
                     CREATE TABLE IF NOT EXISTS learning_metadata (
                         key TEXT PRIMARY KEY NOT NULL,
                         value TEXT NOT NULL,
+                        lastUpdated INTEGER NOT NULL
+                    )
+                """.trimIndent())
+            }
+        }
+        
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS pattern_correlations (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        pattern1 TEXT NOT NULL,
+                        pattern2 TEXT NOT NULL,
+                        correlation REAL NOT NULL,
+                        cooccurrenceCount INTEGER NOT NULL,
+                        lastUpdated INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS pattern_sequences (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        sequencePatterns TEXT NOT NULL,
+                        frequency INTEGER NOT NULL,
+                        avgSuccessRate REAL NOT NULL,
+                        avgTimeSpan INTEGER NOT NULL,
+                        lastSeen INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS market_condition_outcomes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        patternType TEXT NOT NULL,
+                        marketCondition TEXT NOT NULL,
+                        outcome TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL,
+                        volatilityLevel TEXT NOT NULL,
+                        trendStrength TEXT NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS temporal_outcomes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        patternType TEXT NOT NULL,
+                        hourOfDay INTEGER NOT NULL,
+                        dayOfWeek INTEGER NOT NULL,
+                        outcome TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS behavioral_events (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        sessionId TEXT NOT NULL,
+                        patternType TEXT NOT NULL,
+                        outcome TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL,
+                        sessionStartTime INTEGER NOT NULL,
+                        patternCountInSession INTEGER NOT NULL,
+                        timeSinceLastPattern INTEGER NOT NULL,
+                        isAfterLoss INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS strategy_metrics (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        portfolioPatterns TEXT NOT NULL,
+                        winRate REAL NOT NULL,
+                        sharpeRatio REAL NOT NULL,
+                        diversification REAL NOT NULL,
+                        sampleSize INTEGER NOT NULL,
                         lastUpdated INTEGER NOT NULL
                     )
                 """.trimIndent())
