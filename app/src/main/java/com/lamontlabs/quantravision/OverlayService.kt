@@ -19,6 +19,9 @@ import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
 import com.lamontlabs.quantravision.detection.ProFeatureGate
 import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.ui.EnhancedOverlayView
+import com.lamontlabs.quantravision.overlay.FloatingLogoButton
+import com.lamontlabs.quantravision.overlay.FloatingMenu
+import com.lamontlabs.quantravision.overlay.LogoBadge
 import kotlinx.coroutines.*
 
 class OverlayService : Service() {
@@ -26,6 +29,8 @@ class OverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
     private var enhancedOverlayView: EnhancedOverlayView? = null
+    private var floatingLogo: FloatingLogoButton? = null
+    private var floatingMenu: FloatingMenu? = null
     private var scope = CoroutineScope(Dispatchers.Default)
     private var policyApplicator: PowerPolicyApplicator? = null
     private var behavioralGuardrails: BehavioralGuardrails? = null
@@ -70,7 +75,10 @@ class OverlayService : Service() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
 
@@ -98,6 +106,18 @@ class OverlayService : Service() {
         if (ProFeatureGate.hasAccess(this)) {
             behavioralGuardrails = BehavioralGuardrails(this)
             alertManager = AlertManager.getInstance(this)
+        }
+        
+        floatingMenu = FloatingMenu(this, windowManager) {
+            stopSelf()
+        }
+        
+        floatingLogo = FloatingLogoButton(this, windowManager).apply {
+            onClickListener = {
+                floatingMenu?.show()
+            }
+            show()
+            setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
         }
         
         startForegroundService()
@@ -131,7 +151,8 @@ class OverlayService : Service() {
             
             while (isActive) {
                 try {
-                    // OPTIMIZED PATH: Use HybridDetectorBridge for AI-optimized detection
+                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
+                    
                     val dir = java.io.File(applicationContext.filesDir, "demo_charts")
                     if (dir.exists()) {
                         val allDetectedPatterns = mutableListOf<PatternMatch>()
@@ -184,10 +205,21 @@ class OverlayService : Service() {
                         
                         withContext(Dispatchers.Main) {
                             enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                            floatingLogo?.updatePatternCount(allDetectedPatterns.size)
+                            
+                            if (allDetectedPatterns.isNotEmpty()) {
+                                val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
+                                if (highConfidencePattern) {
+                                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                                } else {
+                                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                                }
+                            } else {
+                                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                            }
                         }
                     }
                 } catch (e: Exception) {
-                    // FALLBACK: Use legacy detector if optimized path fails
                     timber.log.Timber.w(e, "HybridDetectorBridge failed, falling back to legacy PatternDetector")
                     try {
                         legacyDetector.scanStaticAssets()
@@ -220,20 +252,26 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
-        // CRITICAL: Service can be killed by system under low memory
-        // Use ::isInitialized checks and individual try-catch for each cleanup operation
-        
-        // Stop power policy applicator
         try {
             policyApplicator?.stop()
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping power policy applicator on destroy", e)
         }
         
-        // Remove overlay view
+        try {
+            floatingLogo?.cleanup()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cleaning up floating logo", e)
+        }
+        
+        try {
+            floatingMenu?.cleanup()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cleaning up floating menu", e)
+        }
+        
         overlayView?.let { view ->
             try {
-                // Check if windowManager was initialized before using it
                 if (::windowManager.isInitialized) {
                     windowManager.removeView(view)
                 } else {
@@ -244,7 +282,6 @@ class OverlayService : Service() {
             }
         }
         
-        // Cancel coroutine scope
         try {
             scope.cancel()
         } catch (e: Exception) {

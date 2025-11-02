@@ -36,6 +36,7 @@ fun SettingsScreen() {
 @Composable
 fun SettingsScreenWithNav(onBack: () -> Unit) {
     val context = LocalContext.current
+    val logoPrefs = com.lamontlabs.quantravision.overlay.FloatingLogoPreferences(context)
     
     Scaffold(
         topBar = {
@@ -50,6 +51,73 @@ fun SettingsScreenWithNav(onBack: () -> Unit) {
         }
     ) { padding ->
         Column(Modifier.fillMaxWidth().padding(padding).padding(16.dp)) {
+            Text(
+                text = "Floating Logo",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            
+            Text(
+                text = "Logo Size",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.SMALL to "Small",
+                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.MEDIUM to "Medium",
+                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.LARGE to "Large"
+                ).forEach { (size, label) ->
+                    Button(
+                        onClick = { logoPrefs.saveLogoSize(size) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(label)
+                    }
+                }
+            }
+            
+            Spacer(Modifier.height(12.dp))
+            
+            Text(
+                text = "Logo Opacity",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(0.5f to "50%", 0.75f to "75%", 0.85f to "85%", 1.0f to "100%").forEach { (opacity, label) ->
+                    Button(
+                        onClick = { logoPrefs.saveLogoOpacity(opacity) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(label)
+                    }
+                }
+            }
+            
+            Spacer(Modifier.height(12.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Text("Show pattern count badge")
+                Switch(
+                    checked = logoPrefs.isBadgeVisible(),
+                    onCheckedChange = { logoPrefs.saveBadgeVisibility(it) }
+                )
+            }
+            
+            Spacer(Modifier.height(24.dp))
+            
             Text(
                 text = "General",
                 style = MaterialTheme.typography.titleMedium,

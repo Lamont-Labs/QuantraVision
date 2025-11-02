@@ -28,4 +28,22 @@
     <string name="tradeability_breakdown">Tradeability Breakdown</string>
     <string name="upgrade_title">Upgrade QuantraVision</string>
     <string name="widget_description">Quick stats for QuantraVision pattern detection</string>
+    
+    <string name="floating_logo_description">QuantraVision floating logo button</string>
+    <string name="floating_logo_menu_scan">Scan Now</string>
+    <string name="floating_logo_menu_scan_desc">Trigger immediate pattern scan</string>
+    <string name="floating_logo_menu_dashboard">Dashboard</string>
+    <string name="floating_logo_menu_dashboard_desc">Open full app dashboard</string>
+    <string name="floating_logo_menu_alerts">Alerts</string>
+    <string name="floating_logo_menu_learning">Learning Stats</string>
+    <string name="floating_logo_menu_learning_desc">View pattern learning progress</string>
+    <string name="floating_logo_menu_settings">Settings</string>
+    <string name="floating_logo_menu_settings_desc">Configure overlay preferences</string>
+    <string name="floating_logo_menu_stop">Stop Detection</string>
+    <string name="floating_logo_menu_stop_desc">Stop overlay and return to app</string>
+    <string name="floating_logo_size_small">Small (50dp)</string>
+    <string name="floating_logo_size_medium">Medium (60dp)</string>
+    <string name="floating_logo_size_large">Large (70dp)</string>
+    <string name="floating_logo_opacity_label">Logo Opacity</string>
+    <string name="floating_logo_badge_toggle">Show pattern count badge</string>
 </resources>
