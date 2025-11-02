@@ -104,7 +104,8 @@ QuantraVision has passed comprehensive production readiness certification:
 - **🎤 Voice Announcements**: Hands-free alerts via Android TTS
 - **📳 Haptic Feedback**: Multi-modal vibration patterns for glanceable alerts
 - **📊 Auto-Scanning Watchlist**: Proactive pattern monitoring
-- **🎓 Education System**: 25 comprehensive lessons with quizzes + integrated trading book ("The Friendly Trader" by Jesse J. Lamont)
+- **🎓 Education System**: 25 comprehensive lessons with quizzes + complete trading book
+- **📚 Trading Book**: "The Friendly Trader" by Jesse J. Lamont - 10-chapter guide covering market fundamentals, risk management, psychology, and pattern recognition (included with Standard/Pro)
 - **🎮 Gamification**: Achievements, streaks, progress tracking
 
 **Privacy & Pricing:**
@@ -506,16 +507,28 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 
 💡 **Perfect Entry Point:** Get multi-timeframe detection + 25 proven patterns for only $9.99!
 
-### ⭐ STANDARD Edition — $24.99 USD (One-Time)
+### ⭐ STANDARD Edition — $24.99 USD (One-Time) ⭐ **MOST POPULAR**
 ✅ **Everything in STARTER**  
 ✅ **50 professional patterns** (STARTER 25 + 25 more advanced patterns)  
 ✅ **🏆 50 achievements** (gamification system with rewards)  
 ✅ **🎓 25 comprehensive lessons** (complete education system)  
-✅ **📚 Trading book included** ("The Friendly Trader" by Jesse J. Lamont)  
 ✅ **📊 Pattern performance analytics** (detailed tracking & insights)  
 ✅ **📄 PDF/CSV exports** (professional reporting)  
 
-💡 **Most Popular:** Best value with achievements, lessons, and book included!
+**📚 BONUS: Complete Trading Book Included ($20 value)**
+✅ **"The Friendly Trader" by Jesse J. Lamont** - Full 10-chapter comprehensive guide  
+✅ **Integrated in-app reader** - Read offline, no internet required, beautiful formatting  
+✅ **Beginner to intermediate curriculum** covering:
+- 📈 Market fundamentals & how trading works
+- 🕯️ Candlestick chart reading & technical analysis basics
+- 🛠️ Essential trading tools & platform navigation
+- 💰 Risk management & position sizing strategies
+- 🎯 Pattern recognition & trade setup identification
+- 🧠 Trading psychology & emotional control techniques
+- 📊 Demo trading & building confidence
+- 🏆 Long-term success & staying disciplined
+
+💡 **Best Value:** 50 patterns + achievements + 25 lessons + complete trading book for only $24.99!
 
 ### 🚀 PRO Edition — $49.99 USD (One-Time)
 ✅ **Everything in STANDARD**  
@@ -541,7 +554,12 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 ✅ **Auto-scanning watchlist** (proactive monitoring)  
 ✅ **Advanced analytics dashboard** (comprehensive insights)  
 
-🎁 **Bonus:** Everything from STANDARD + complete AI learning suite
+**📚 Includes Complete Trading Book:**
+✅ **"The Friendly Trader"** - Same comprehensive 10-chapter guide as STANDARD tier  
+✅ Learn market fundamentals, risk management, psychology, and pattern recognition  
+✅ Perfect complement to AI-powered detection - understand the "why" behind patterns  
+
+🎁 **Ultimate Package:** 102 patterns + Intelligence Stack + AI Learning + Trading Education
 
 ---
 
@@ -555,8 +573,61 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 **🎯 Fair Pricing Promise:** 
 - **FREE:** Genuine trial with 10 real patterns
 - **STARTER ($9.99):** Perfect impulse buy for multi-timeframe detection
-- **STANDARD ($24.99):** Most popular - best value with gamification & education
-- **PRO ($49.99):** Complete package - Intelligence Stack NO competitor offers
+- **STANDARD ($24.99):** ⭐ **MOST POPULAR** - Best value with 50 patterns, achievements, lessons, AND complete trading book
+- **PRO ($49.99):** Complete package - Intelligence Stack + AI Learning + Trading Book (everything unlocked)
+
+---
+
+## 📚 About "The Friendly Trader" Trading Book
+
+**Included FREE with STANDARD & PRO tiers** (normally $20 value)
+
+Written by **Jesse J. Lamont**, this comprehensive 10-chapter guide transforms beginners into confident traders with solid fundamentals. Unlike generic trading books, this one is designed specifically to complement QuantraVision's pattern detection system.
+
+### 📖 What You'll Learn:
+
+<table>
+<tr>
+<td width="50%">
+
+**📈 Chapters 1-4: Foundations**
+- **Chapter 1:** Market Basics — How trading actually works
+- **Chapter 2:** Candlestick Charts — Reading price action like a pro
+- **Chapter 3:** Trading Tools — Platforms, indicators, and setup
+- **Chapter 4:** Risk Management — Position sizing & protecting capital
+
+</td>
+<td width="50%">
+
+**🎯 Chapters 5-8: Strategy & Psychology**
+- **Chapter 5:** Pattern Recognition — Spotting high-probability setups
+- **Chapter 6:** Trading Psychology — Mastering emotions & discipline
+- **Chapter 7:** Demo Trading — Practice without risking real money
+- **Chapter 8:** Staying in the Game — Long-term success strategies
+
+</td>
+</tr>
+</table>
+
+### ✨ Why This Book + QuantraVision = Winning Combination
+
+**The Problem:** Most traders use pattern detection apps without understanding *why* patterns work or *how* to trade them profitably.
+
+**The Solution:** "The Friendly Trader" teaches you the fundamentals while QuantraVision handles the heavy lifting of pattern detection.
+
+✅ **QuantraVision detects** → 📚 **The Friendly Trader explains**  
+✅ **AI finds the patterns** → 📖 **Book teaches you how to trade them**  
+✅ **Technology + Education** → 🏆 **Better trading decisions**
+
+### 📱 In-App Reading Experience
+
+- **Beautiful formatting** — Optimized for mobile reading with clean typography
+- **100% offline** — No internet required, read anywhere, anytime
+- **Progress tracking** — Pick up where you left off
+- **Searchable** — Find topics instantly
+- **Night mode** — Easy on the eyes for late-night study sessions
+
+**Free Preview:** All users get Chapter 1 & 2 free to try before upgrading!
 
 ---
 

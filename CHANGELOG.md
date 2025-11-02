@@ -163,11 +163,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Progress tracking
   - Visual examples with explanations
 
-- **Integrated Trading Book**
-  - "The Friendly Trader" by Jesse J. Lamont
-  - 10 chapters covering market basics to psychology
-  - 100% offline in-app reader
-  - Free with Standard/Pro, $2.99 standalone
+- **📚 Integrated Trading Book: "The Friendly Trader"**
+  - **Author:** Jesse J. Lamont (complete 10-chapter comprehensive guide)
+  - **Value:** $20 (included FREE with Standard/Pro tiers)
+  - **Format:** Beautiful in-app reader with progress tracking, search, and night mode
+  - **100% offline** - No internet required, read anywhere
+  - **Curriculum:** Beginner to intermediate traders
+  - **Chapter Coverage:**
+    - Chapters 1-4: Market fundamentals, candlestick charts, trading tools, risk management
+    - Chapters 5-8: Pattern recognition, trading psychology, demo trading, long-term success
+  - **Free Preview:** All users get Chapters 1-2 before upgrading
+  - **Perfect Complement:** Learn the "why" behind patterns while QuantraVision handles the "what"
 
 #### 🎮 **Gamification System**
 
