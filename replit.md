@@ -10,14 +10,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**November 2, 2025 - Minimal Overlay Refactor:**
-- **Floating Logo Button**: 60dp draggable logo button (only visible UI element on overlay)
-- **Touch-Passthrough Overlay**: Pattern detection overlay uses FLAG_NOT_TOUCHABLE - trading app remains fully clickable underneath
-- **Quick Actions Menu**: Expandable menu on logo click (Scan Now, Dashboard, Alerts, Learning Stats, Settings, Stop Detection)
-- **Smart Badge System**: Shows active pattern count (1-9+), detection status ring (idle/scanning/patterns found)
-- **User Customization**: Logo size (Small/Medium/Large), opacity (50%-100%), position auto-saved
-- **Non-Intrusive UX**: Trading app underneath remains 100% interactive - only logo button is touchable
-- **File Growth**: Added 6 new files (FloatingLogoButton, FloatingMenu, QuickActionsMenu, LogoBadge, FloatingLogoPreferences, floating_logo_layout.xml)
+**November 2, 2025 - Minimal Glowing Border UI:**
+- **Faint Glowing Border**: Beautiful cyan glow (#00E5FF) around screen edges with two-layer effect (outer blur 8px @23% opacity + inner sharp 2px @39% opacity)
+- **Pulsing Feedback**: Border pulses brighter when patterns detected (23%→47% opacity), returns to subtle state when idle
+- **Floating Logo Button**: Small draggable logo button provides unified access to all features
+- **Unified Quick Actions Menu**: All 6 features accessible through logo click (Scan Now, Dashboard, Alerts Toggle, Learning Stats, Settings, Stop Detection)
+- **Touch-Passthrough Architecture**: Both border and pattern overlay use FLAG_NOT_TOUCHABLE - trading app underneath remains 100% clickable
+- **Minimal Visual Footprint**: Extremely subtle design - barely noticeable glow + small logo button, zero intrusion to trading workflow
+- **Production-Grade Implementation**: Proper lifecycle management, memory cleanup, blur effects with BlurMaskFilter, 82 lines of clean code
+- **File Growth**: Added GlowingBorderView.kt (total 360 Kotlin files), zero LSP errors, production-ready
 
 **November 2, 2025 - Advanced AI Learning System (10× Stronger):**
 - **Pattern Correlation Analyzer**: Pearson correlation + sequence detection + predictive next-pattern recommendations
@@ -51,7 +52,7 @@ The application uses Jetpack Compose with Material 3 Design System, optimized fo
 **Authentication & Licensing**: Google Play In-App Billing supports a four-tier structure (Free, Book Add-On, Standard, Pro) with lifetime access. Security includes Google Play Integrity API integration, signature verification, debugger detection, root checks, and R8/ProGuard obfuscation.
 **AI/ML Architecture**: Primarily uses OpenCV template matching. TensorFlow Lite infrastructure is ready for future Apache 2.0 licensed ML model integration, with optimizations like TensorPool and PowerPolicyManager.
 **Alert System**: A centralized AlertManager coordinates voice (Android TTS), haptic, and visual alerts with pattern strength scoring.
-**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay. Features a minimal floating logo button (60dp, draggable) as the only visible UI element. Pattern detection overlay uses FLAG_NOT_TOUCHABLE to ensure full touch-passthrough - the user's trading app underneath remains 100% clickable. Logo expands to show quick actions menu (Scan, Dashboard, Alerts, Learning, Settings, Stop). Smart badge system displays active pattern count (1-9+) and detection status ring (idle/scanning/patterns found/high confidence). User customization includes logo size (Small/Medium/Large), opacity (50%-100%), and auto-saved position. Managed by LiveOverlayController with tier-based feature gating.
+**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay. Features a minimal glowing border design with faint cyan glow (#00E5FF) around screen edges (23-39% opacity, two-layer effect with outer blur and inner sharp line). Border pulses subtly when patterns detected for visual feedback. Small draggable floating logo button (60dp) provides unified access to all features via quick actions menu (Scan Now, Dashboard, Alerts Toggle, Learning Stats, Settings, Stop Detection). Both glowing border and pattern detection overlay use FLAG_NOT_TOUCHABLE to ensure full touch-passthrough - the user's trading app underneath remains 100% clickable. Smart badge system displays active pattern count (1-9+) and detection status ring (idle/scanning/patterns found/high confidence). User customization includes logo size (Small/Medium/Large), opacity (50%-100%), and auto-saved position. Managed by LiveOverlayController with tier-based feature gating.
 **Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts app performance based on battery and thermal conditions. Resource optimization includes stride-safe YUV to Bitmap conversion and proper Mat disposal in OpenCV.
 **Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, logging detections with SHA-256 hashes, signing pattern catalogs with Ed25519, and maintaining an SBOM. Extensive legal frameworks ensure global multi-jurisdictional compliance, emphasizing zero data collection and "illustrative only" disclaimers.
 
