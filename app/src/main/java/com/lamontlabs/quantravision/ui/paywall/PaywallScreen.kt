@@ -119,7 +119,7 @@ fun Paywall(
             // Standalone book card
             PaywallTierCard(
                 title = "The Friendly Trader Book",
-                price = "$9.99",
+                price = "$4.99",
                 badge = null,
                 features = listOf(
                     "10-chapter trading guide",

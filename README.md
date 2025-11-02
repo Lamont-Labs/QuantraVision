@@ -594,7 +594,7 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 
 **Included FREE with STANDARD & PRO tiers** (normally $20 value)
 
-**📖 Standalone Purchase Option:** FREE and STARTER tier users can purchase the book separately for **$9.99** without upgrading their subscription. This allows you to access the complete trading education while staying on your current tier.
+**📖 Standalone Purchase Option:** FREE and STARTER tier users can purchase the book separately for **$4.99** without upgrading their subscription. This allows you to access the complete trading education while staying on your current tier.
 
 Written by **Jesse J. Lamont**, this comprehensive 10-chapter guide transforms beginners into confident traders with solid fundamentals. Unlike generic trading books, this one is designed specifically to complement QuantraVision's pattern detection system.
 

@@ -163,7 +163,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     val bookProduct = bm.getProductDetails("qv_book_standalone")
                     TierCard(
                         title = "The Friendly Trader Book",
-                        price = bookProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$9.99",
+                        price = bookProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$4.99",
                         features = listOf(
                             "10-chapter trading guide",
                             "Offline reading",
