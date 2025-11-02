@@ -35,6 +35,7 @@ class OverlayService : Service() {
     private var policyApplicator: PowerPolicyApplicator? = null
     private var behavioralGuardrails: BehavioralGuardrails? = null
     private var alertManager: AlertManager? = null
+    private var glowingBorderView: GlowingBorderView? = null
     private val TAG = "OverlayService"
 
     override fun onCreate() {
@@ -101,6 +102,29 @@ class OverlayService : Service() {
             ).show()
             stopSelf()
             return
+        }
+        
+        // Add glowing border overlay
+        val glowingBorder = GlowingBorderView(this)
+        val borderParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            PixelFormat.TRANSLUCENT
+        )
+
+        try {
+            windowManager.addView(glowingBorder, borderParams)
+            glowingBorderView = glowingBorder
+            Log.i(TAG, "Glowing border overlay added successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add glowing border view", e)
+            // Non-critical - service continues without border
         }
         
         if (ProFeatureGate.hasAccess(this)) {
@@ -211,11 +235,14 @@ class OverlayService : Service() {
                                 val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
                                 if (highConfidencePattern) {
                                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                                    glowingBorderView?.setPulsing(true)
                                 } else {
                                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                                    glowingBorderView?.setPulsing(true)
                                 }
                             } else {
                                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                                glowingBorderView?.setPulsing(false)
                             }
                         }
                     }
@@ -269,6 +296,17 @@ class OverlayService : Service() {
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning up floating menu", e)
         }
+        
+        try {
+            glowingBorderView?.let { border ->
+                if (::windowManager.isInitialized) {
+                    windowManager.removeView(border)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error removing glowing border view", e)
+        }
+        glowingBorderView = null
         
         overlayView?.let { view ->
             try {
