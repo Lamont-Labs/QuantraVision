@@ -7,6 +7,17 @@ The application targets retail traders who desire professional-grade pattern det
 
 ## Recent Changes
 
+**November 2, 2025 - Personalized Adaptive Learning Module:**
+- **Adaptive Confidence Engine**: Bayesian learning adjusts detection thresholds based on user feedback (10+ outcomes required)
+- **Success Pattern Recommender**: Identifies user's best-performing patterns (60% win rate, 10+ samples)
+- **False Positive Suppressor**: Learns to filter patterns with low success rates (tiered suppression with user override)
+- **Pattern Difficulty Scorer**: Rates patterns as Easy/Medium/Hard based on user's success and consistency
+- **Learning Dashboard**: Visualizes adaptation over time with trends, statistics, and progress tracking
+- **Personalized Recommendations**: Actionable insights (focus on best patterns, practice struggling ones)
+- **File Growth**: Added 18 new files (313→331 Kotlin files), all <500 lines, zero LSP errors
+- **Privacy**: 100% on-device learning, no cloud sync, privacy-preserving statistical methods
+- **Quality**: Comprehensive unit tests, educational disclaimers, graceful degradation with limited data
+
 **November 2, 2025 - "10× Stronger Round 2" Enhancement Complete:**
 - **Phase 4 - Advanced Analytics**: Performance tracking dashboard with win/loss statistics, multi-timeframe detection (6 timeframes), pattern confluence engine with spatial clustering
 - **Phase 5 - User Experience**: Interactive 5-step onboarding, 50+ achievement system with gamification, advanced pattern filtering (type/confidence/timeframe/status)
