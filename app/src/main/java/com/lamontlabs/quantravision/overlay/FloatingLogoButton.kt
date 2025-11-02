@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision.overlay
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -15,6 +16,7 @@ import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import kotlin.math.abs
 
@@ -39,7 +41,10 @@ class FloatingLogoButton(
     private var pulseAnimator: ObjectAnimator? = null
     private var ringRotationAnimator: ValueAnimator? = null
     
+    private val longPressThreshold = 500L
+    
     var onClickListener: (() -> Unit)? = null
+    var onLongPressListener: (() -> Unit)? = null
 
     init {
         val inflater = LayoutInflater.from(context)
@@ -100,6 +105,13 @@ class FloatingLogoButton(
         if (prefs.isBadgeVisible()) {
             badge.setPatternCount(count)
         }
+    }
+
+    private fun openMainApp() {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        }
+        context.startActivity(intent)
     }
 
     fun setDetectionStatus(status: LogoBadge.DetectionStatus) {
@@ -180,8 +192,10 @@ class FloatingLogoButton(
                         snapToEdge()
                         prefs.savePosition(params.x, params.y)
                     } else {
-                        val touchDuration = System.currentTimeMillis() - dragStartTime
-                        if (touchDuration < 200) {
+                        val pressDuration = System.currentTimeMillis() - dragStartTime
+                        if (pressDuration >= longPressThreshold) {
+                            onLongPressListener?.invoke()
+                        } else {
                             onClickListener?.invoke()
                         }
                     }

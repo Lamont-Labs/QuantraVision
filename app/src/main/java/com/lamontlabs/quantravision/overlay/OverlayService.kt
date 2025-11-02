@@ -19,6 +19,7 @@ import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
 import com.lamontlabs.quantravision.detection.ProFeatureGate
 import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.ui.EnhancedOverlayView
+import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.PatternMatch
@@ -138,6 +139,9 @@ class OverlayService : Service() {
         
         floatingLogo = FloatingLogoButton(this, windowManager).apply {
             onClickListener = {
+                openMainApp()
+            }
+            onLongPressListener = {
                 floatingMenu?.show()
             }
             show()
@@ -271,6 +275,13 @@ class OverlayService : Service() {
             confidence = this.confidence,
             timestamp = this.timestamp
         )
+    }
+    
+    private fun openMainApp() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        }
+        startActivity(intent)
     }
     
     private fun startPowerPolicyApplicator() {
