@@ -96,7 +96,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     title = "PRO",
                     price = proProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99",
                     features = listOf(
-                        "ALL 102 patterns",
+                        "ALL 109 patterns",
                         "Intelligence Stack",
                         "AI Learning (10 algorithms)",
                         "Behavioral Guardrails",

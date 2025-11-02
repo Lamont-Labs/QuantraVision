@@ -3,7 +3,7 @@
 ## ⚠️ LICENSING COMPLIANCE UPDATE (November 2025)
 
 **PRODUCTION STATUS:**
-- **Active Detection:** OpenCV template matching only (102 patterns, Apache 2.0 licensed)
+- **Active Detection:** OpenCV template matching only (109 patterns, Apache 2.0 licensed)
 - **ML Status:** Infrastructure exists but NOT active (awaiting Apache 2.0 licensed models)
 - **YOLOv8:** Removed from project due to AGPL-3.0 licensing conflict with commercial use
 - **Compliance:** System is 100% Apache 2.0 licensed

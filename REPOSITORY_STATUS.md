@@ -293,7 +293,7 @@ keytool -genkey -v -keystore quantravision.keystore -alias quantravision \
 | **Documentation Files** | 62 (10 root + 52 detailed) |
 | **Legal Jurisdictions Covered** | 50+ |
 | **Achievements** | 50 |
-| **Chart Patterns Detected** | 102 |
+| **Chart Patterns Detected** | 109 |
 | **Educational Lessons** | 25 |
 | **Learning Algorithms** | 10 |
 | **Supported Timeframes** | 6 |

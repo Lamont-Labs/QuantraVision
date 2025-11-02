@@ -11,7 +11,7 @@ import timber.log.Timber
 
 /**
  * Pattern detection system using OpenCV template-based detection.
- * Detects 102 chart patterns using multi-scale template matching.
+ * Detects 109 chart patterns using multi-scale template matching.
  *
  * Note: Previously used hybrid ML+Template detection, but YOLOv8 was removed
  * for licensing compliance (AGPL-3.0 conflicts with commercial use).
@@ -188,7 +188,7 @@ class HybridPatternDetector(private val context: Context) {
             mlEnabled = false,  // ML detection removed for licensing compliance
             templateEnabled = templateDetectionEnabled,
             mlPatternCount = 0,  // YOLOv8 removed
-            templatePatternCount = 102
+            templatePatternCount = 109
         )
     }
     

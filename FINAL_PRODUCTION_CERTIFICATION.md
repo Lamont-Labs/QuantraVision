@@ -277,7 +277,7 @@ Replit can deploy Android apps directly. Use the deploy configuration tool to se
 ## 🎓 App Features Summary
 
 ### **Core Capabilities:**
-- 102 chart patterns (100% offline)
+- 109 chart patterns (100% offline)
 - Predictive detection (40-85% formation)
 - Multi-timeframe analysis (6 timeframes)
 - Pattern confluence engine

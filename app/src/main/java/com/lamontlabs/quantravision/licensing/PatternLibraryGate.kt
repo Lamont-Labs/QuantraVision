@@ -14,7 +14,7 @@ import com.lamontlabs.quantravision.PatternMatch
  * - Free: $0 - 10 patterns, basic overlay
  * - Starter ($9.99): 25 patterns, multi-timeframe, basic analytics
  * - Standard ($24.99): 50 patterns, full analytics, 50 achievements, 25 lessons, book, exports
- * - Pro ($49.99): 102 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
+ * - Pro ($49.99): 109 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
  */
 object PatternLibraryGate {
 
@@ -142,7 +142,7 @@ object PatternLibraryGate {
      */
     fun isPatternAvailable(context: Context, patternId: String): Boolean {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> true // All 102 patterns
+            Tier.PRO -> true // All 109 patterns
             Tier.STANDARD -> STANDARD_TIER_PATTERNS.contains(patternId)
             Tier.STARTER -> STARTER_TIER_PATTERNS.contains(patternId)
             Tier.FREE -> FREE_TIER_PATTERNS.contains(patternId)
@@ -154,7 +154,7 @@ object PatternLibraryGate {
      */
     fun filterByTier(context: Context, matches: List<PatternMatch>): List<PatternMatch> {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> matches // All 102 patterns available
+            Tier.PRO -> matches // All 109 patterns available
             Tier.STANDARD -> matches.filter { STANDARD_TIER_PATTERNS.contains(it.patternId) }
             Tier.STARTER -> matches.filter { STARTER_TIER_PATTERNS.contains(it.patternId) }
             Tier.FREE -> matches.filter { FREE_TIER_PATTERNS.contains(it.patternId) }
@@ -166,7 +166,7 @@ object PatternLibraryGate {
      */
     fun getAvailablePatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> 102
+            Tier.PRO -> 109
             Tier.STANDARD -> STANDARD_TIER_PATTERNS.size // 50
             Tier.STARTER -> STARTER_TIER_PATTERNS.size // 25
             Tier.FREE -> FREE_TIER_PATTERNS.size // 10
@@ -179,9 +179,9 @@ object PatternLibraryGate {
     fun getLockedPatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
             Tier.PRO -> 0
-            Tier.STANDARD -> 102 - STANDARD_TIER_PATTERNS.size // 52
-            Tier.STARTER -> 102 - STARTER_TIER_PATTERNS.size // 77
-            Tier.FREE -> 102 - FREE_TIER_PATTERNS.size // 92
+            Tier.STANDARD -> 109 - STANDARD_TIER_PATTERNS.size // 59
+            Tier.STARTER -> 109 - STARTER_TIER_PATTERNS.size // 84
+            Tier.FREE -> 109 - FREE_TIER_PATTERNS.size // 99
         }
     }
 
@@ -189,6 +189,6 @@ object PatternLibraryGate {
         FREE,      // $0 - 10 patterns, basic overlay
         STARTER,   // $9.99 - 25 patterns, multi-timeframe, basic analytics
         STANDARD,  // $24.99 - 50 patterns, full analytics, achievements, lessons, book, exports
-        PRO        // $49.99 - 102 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
+        PRO        // $49.99 - 109 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
     }
 }

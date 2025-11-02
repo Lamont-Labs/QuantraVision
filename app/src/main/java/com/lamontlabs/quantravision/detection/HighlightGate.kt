@@ -14,7 +14,7 @@ import com.lamontlabs.quantravision.quota.HighlightQuota
  * Option 1 Pricing:
  * Free: 3 highlights/day, 10 basic patterns
  * Standard ($14.99): Unlimited highlights, 30 core patterns
- * Pro ($29.99): Unlimited highlights, all 102 patterns
+ * Pro ($29.99): Unlimited highlights, all 109 patterns
  */
 object HighlightGate {
 

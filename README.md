@@ -9,7 +9,7 @@
 <h3>🚀 AI-Powered Chart Pattern Detection for Professional Traders</h3>
 
 <p align="center">
-  <strong>102 Patterns · 100% Offline · No Subscriptions · Lifetime Access</strong>
+  <strong>109 Patterns · 100% Offline · No Subscriptions · Lifetime Access</strong>
 </p>
 
 ---
@@ -84,7 +84,7 @@ QuantraVision has passed comprehensive production readiness certification:
 
 ## 🎯 Overview
 
-**QuantraVision** is a professional Android application providing advanced pattern recognition for retail traders. Powered by advanced AI detection (OpenCV + TensorFlow Lite), it detects 102 unique chart patterns with **predictive intelligence** that identifies patterns *before* they complete.
+**QuantraVision** is a professional Android application providing advanced pattern recognition for retail traders. Powered by advanced AI detection (OpenCV + TensorFlow Lite), it detects 109 unique chart patterns with **predictive intelligence** that identifies patterns *before* they complete.
 
 ### Why QuantraVision?
 
@@ -408,7 +408,7 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 
 ---
 
-## 📊 102 Chart Patterns
+## 📊 109 Chart Patterns
 
 ### Classic Reversal Patterns
 - Head & Shoulders (Top & Bottom)
@@ -460,7 +460,7 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 ## 🛠️ Tech Stack
 
 ### AI/ML Layer
-- **OpenCV 4.10.0** — Template matching with 102 pattern templates (100% Apache 2.0 licensed)
+- **OpenCV 4.10.0** — Template matching with 109 pattern templates (100% Apache 2.0 licensed)
 - **TensorFlow Lite 2.17.0** — Ready for future ML enhancements (Apache 2.0 licensed)
 - **ML Kit** — Robust OCR for legend recognition
 
@@ -532,7 +532,7 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 
 ### 🚀 PRO Edition — $49.99 USD (One-Time)
 ✅ **Everything in STANDARD**  
-✅ **Full 102-pattern library** (all patterns unlocked)  
+✅ **Full 109-pattern library** (all patterns unlocked)  
 
 **🎯 Exclusive Intelligence Stack (NO competitor has these):**
 ✅ **📊 Regime Navigator** (market condition analysis - know WHEN to trade)  
@@ -559,7 +559,7 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 ✅ Learn market fundamentals, risk management, psychology, and pattern recognition  
 ✅ Perfect complement to AI-powered detection - understand the "why" behind patterns  
 
-🎁 **Ultimate Package:** 102 patterns + Intelligence Stack + AI Learning + Trading Education
+🎁 **Ultimate Package:** 109 patterns + Intelligence Stack + AI Learning + Trading Education
 
 ---
 
@@ -722,7 +722,7 @@ Download from Google Play Store or build from source
 
 - [User Guide](USER_GUIDE.md) — How to use QuantraVision
 - [Architecture](docs/ARCHITECTURE.md) — Technical design
-- [Pattern Catalog](app/src/main/assets/pattern_templates/PATTERN_CATALOG.md) — All 102 patterns
+- [Pattern Catalog](app/src/main/assets/pattern_templates/PATTERN_CATALOG.md) — All 109 patterns
 - [Legal Summary](legal/LEGAL_SUMMARY.md) — Protection assessment
 - [Google Play Listing](GOOGLE_PLAY_STORE_LISTING.md) — Store submission guide
 

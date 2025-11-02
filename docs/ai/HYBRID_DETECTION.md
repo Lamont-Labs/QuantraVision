@@ -3,7 +3,7 @@
 ## ⚠️ LICENSING COMPLIANCE UPDATE (November 2025)
 
 **CURRENT PRODUCTION STATUS:**
-- **Active System:** OpenCV template matching (102 patterns, 100% Apache 2.0 licensed)
+- **Active System:** OpenCV template matching (109 patterns, 100% Apache 2.0 licensed)
 - **ML Integration:** Optional future enhancement only (requires Apache 2.0 licensed models)
 - **YOLOv8 References:** Historical documentation - NOT currently used due to AGPL-3.0 licensing conflict
 
@@ -13,7 +13,7 @@ This document describes the infrastructure for potential future ML integration. 
 
 ## Overview
 
-QuantraVision's detection system currently uses OpenCV template matching (102 patterns). The infrastructure supports future Apache 2.0 licensed ML model integration as an optional enhancement.
+QuantraVision's detection system currently uses OpenCV template matching (109 patterns). The infrastructure supports future Apache 2.0 licensed ML model integration as an optional enhancement.
 
 ---
 
@@ -42,13 +42,13 @@ QuantraVision's detection system currently uses OpenCV template matching (102 pa
 
 ---
 
-### **Tier 2: Template-Based Detection (102 Patterns)** 🟡
+### **Tier 2: Template-Based Detection (109 Patterns)** 🟡
 
 **Technology:** OpenCV template matching  
 **Templates:** 119 reference images
 
 **Patterns Detected:**
-- 102 additional patterns (total 108 minus 6 covered by ML)
+- 109 additional patterns (total 115 minus 6 covered by ML)
 - Includes niche/rare patterns like:
   - Cup and Handle
   - Falling Wedge, Rising Wedge
@@ -77,7 +77,7 @@ Screenshot captured
 ┌─────────┐   ┌─────────┐
 │ YOLOv8  │   │ OpenCV  │
 │ GPU     │   │ CPU     │
-│ 6 ptrns │   │102 ptrns│
+│ 6 ptrns │   │109 ptrns│
 └─────────┘   └─────────┘
      ↓            ↓
    ┌─────────────────┐
@@ -157,9 +157,9 @@ detector.setTemplateDetectionEnabled(false)  // ML-only mode
 
 // Get stats
 val stats = detector.getStats()
-// stats.totalPatternCount = 108
+// stats.totalPatternCount = 115
 // stats.mlPatternCount = 6
-// stats.templatePatternCount = 102
+// stats.templatePatternCount = 109
 ```
 
 ---

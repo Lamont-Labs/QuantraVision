@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **FREE**: 10 essential patterns (basic overlay)
   - **STARTER**: $9.99 - 25 patterns + multi-timeframe detection + basic analytics (NEW)
   - **STANDARD**: $24.99 - 50 patterns + achievements + lessons + book + exports
-  - **PRO**: $49.99 - 102 patterns + Intelligence Stack + AI Learning + Scan Learning Engine
+  - **PRO**: $49.99 - 109 patterns + Intelligence Stack + AI Learning + Scan Learning Engine
   - **Philosophy**: One-time payment, lifetime access, NO subscriptions (vs competitors' $180-$1,400/year)
 
 - 🎨 **Overlay Design Improvements** - Enhanced user experience
@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Initial Production Release
 
 #### 🚀 **Core Pattern Detection**
-- **102 Pattern Library** with professional-grade detection
+- **109 Pattern Library** with professional-grade detection
   - Classic reversals: Head & Shoulders, Double Tops/Bottoms, Triple patterns
   - Continuation patterns: Flags, Pennants, Rectangles, Channels
   - Triangle patterns: Ascending, Descending, Symmetrical, Broadening
@@ -282,7 +282,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **4-Tier Pricing Model**
   - FREE: 10 patterns, watermarked overlays, 5 lessons
   - STANDARD: $14.99 - 30 patterns, Regime Navigator, Free book
-  - PRO: $29.99 - 102 patterns, Full Intelligence Stack
+  - PRO: $29.99 - 109 patterns, Full Intelligence Stack
   - BOOK: $2.99 - Standalone trading book (free with Standard/Pro)
 
 - **One-Time Purchase**

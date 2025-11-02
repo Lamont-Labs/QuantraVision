@@ -20,7 +20,7 @@ import timber.log.Timber
  * ==========================================
  * This class represents optional future ML integration infrastructure. It is currently NOT used in 
  * production detection. The current production system uses PatternDetector.kt with OpenCV 
- * template matching (102 patterns, 100% Apache 2.0 licensed). This class exists to establish the 
+ * template matching (109 patterns, 100% Apache 2.0 licensed). This class exists to establish the 
  * architecture and optimization framework for potential future ML model integration (Apache 2.0 
  * licensed models only).
  * 

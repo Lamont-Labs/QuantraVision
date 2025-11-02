@@ -73,7 +73,7 @@ val QuantraBackground = Color(0xFF121212)  // Dark mode background
 - Animated logo reveal (fade-in + scale)
 - Tagline: "AI-Powered Pattern Detection for Professional Traders"
 - 3 key value propositions with icons:
-  - 🧠 "102 Patterns Detected"
+  - 🧠 "109 Patterns Detected"
   - 🔒 "100% Offline Privacy"
   - 💰 "No Subscriptions Ever"
 
@@ -109,7 +109,7 @@ val QuantraBackground = Color(0xFF121212)  // Dark mode background
 **Slide 1: Detection Power**
 - Screenshot: Head & Shoulders pattern detected on TradingView
 - Overlay: Glowing border + pattern label
-- Caption: "Detect 102 patterns with AI precision"
+- Caption: "Detect 109 patterns with AI precision"
 
 **Slide 2: Intelligence Stack**
 - Screenshot: Regime Navigator showing "High Probability - Strong Trend"
@@ -429,7 +429,7 @@ val QuantraBackground = Color(0xFF121212)  // Dark mode background
 ├──────────────────────────────────────────────────┤
 │                                                   │
 │  Total Scans:  📊 47                             │
-│  Patterns Learned:  🧠 23/102                    │
+│  Patterns Learned:  🧠 23/109                    │
 │  Personalization Level:  ⭐⭐⭐⭐☆ (80%)          │
 │                                                   │
 │  ┌────────────────────────────────────────────┐ │

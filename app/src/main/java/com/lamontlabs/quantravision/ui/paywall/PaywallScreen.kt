@@ -73,7 +73,7 @@ fun Paywall(
             price = "$49.99",
             badge = "BEST VALUE",
             features = listOf(
-                "ALL 102 patterns",
+                "ALL 109 patterns",
                 "Intelligence Stack",
                 "AI Learning (10 algorithms)",
                 "Behavioral Guardrails",

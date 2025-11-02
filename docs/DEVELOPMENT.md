@@ -117,7 +117,7 @@ bash scripts/validate-project.sh
 ✅ Android SDK configured
 ✅ Kotlin plugin detected
 ✅ OpenCV native libraries present
-✅ Pattern templates validated (102 patterns)
+✅ Pattern templates validated (109 patterns)
 ✅ TensorFlow Lite models validated
 ✅ Zero LSP errors
 ✅ Build configuration valid
@@ -377,7 +377,7 @@ QuantraVision/
 │   │   │   │   ├── values/              # Strings, colors, themes
 │   │   │   │   └── ...
 │   │   │   ├── assets/
-│   │   │   │   ├── pattern_templates/   # 102 pattern YAML + PNG
+│   │   │   │   ├── pattern_templates/   # 109 pattern YAML + PNG
 │   │   │   │   ├── models/              # TFLite models
 │   │   │   │   ├── legal/               # ToS, Privacy Policy
 │   │   │   │   └── book/                # Trading book content

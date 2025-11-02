@@ -7,7 +7,7 @@ QuantraVision uses **100% Apache 2.0 licensed technology** for pattern detection
 ### Detection Engine
 - **OpenCV 4.10.0** (Apache 2.0 License)
 - **Template Matching Algorithm**: Multi-scale normalized cross-correlation
-- **Patterns Detected**: 102 distinct technical analysis patterns
+- **Patterns Detected**: 109 distinct technical analysis patterns
 - **Performance**: ~15-30ms per frame on modern Android devices
 
 ### Pattern Library
@@ -27,7 +27,7 @@ All pattern templates are stored as PNG reference images with YAML configuration
 **Production Detection Pipeline:**
 ```
 Chart Screenshot 
-  → OpenCV Template Matching (102 patterns)
+  → OpenCV Template Matching (109 patterns)
   → Confidence Scoring
   → Multi-frame Temporal Stabilization
   → Pattern Output

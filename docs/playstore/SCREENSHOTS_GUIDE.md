@@ -54,8 +54,8 @@
 - Visual thumbnails of patterns
 
 **Annotations:**
-- "108 Professional Patterns"
-- "6 ML-Detected + 102 Template-Matched"
+- "115 Professional Patterns"
+- "6 ML-Detected + 109 Template-Matched"
 
 ---
 

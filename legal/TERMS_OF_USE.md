@@ -88,7 +88,7 @@ By downloading, installing, or using QuantraVision ("the App"), you agree to be 
 
 1. **Free Tier**: Limited features with 10 basic patterns (always free)
 2. **Standard ($9.99 USD one-time)**: 30 core patterns, remove watermarks, enhanced detection
-3. **Pro ($24.99 USD one-time)**: All 102 patterns, voice alerts, predictive detection, backtesting, advanced analytics, priority support
+3. **Pro ($24.99 USD one-time)**: All 109 patterns, voice alerts, predictive detection, backtesting, advanced analytics, priority support
 
 **Purchase Terms:**
 

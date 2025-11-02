@@ -17,7 +17,7 @@ This file lists all contributors to the QuantraVision project. Thank you to ever
 **Contributions:**
 - Initial project architecture and vision
 - Complete Android application development
-- 102-pattern detection library design
+- 109-pattern detection library design
 - OpenCV template matching engine
 - TensorFlow Lite integration
 - Intelligence Stack implementation (Regime Navigator, Pattern-to-Plan, Behavioral Guardrails, Proof Capsules)

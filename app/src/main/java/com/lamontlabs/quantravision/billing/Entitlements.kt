@@ -24,7 +24,7 @@ fun entitlementsFor(purchasedSkus: Set<String>): Entitlements = when {
         tier = Tier.PRO,
         canHighlight = true,
         maxTrialHighlights = Int.MAX_VALUE,
-        allowedPatternGroups = setOf("all"),  // All 102 patterns
+        allowedPatternGroups = setOf("all"),  // All 109 patterns
         extraFeatures = setOf("export_csv","multi_watchlist","deep_backtest","intelligence_stack","ai_learning","behavioral_guardrails","proof_capsules")
     )
     Sku.STANDARD in purchasedSkus -> Entitlements(

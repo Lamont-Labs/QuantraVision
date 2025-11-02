@@ -1,7 +1,7 @@
 # QuantraVision
 
 ## Overview
-QuantraVision is a professional Android application providing AI-powered chart pattern recognition for retail traders. It operates 100% offline, utilizing advanced OpenCV template matching to identify 102 technical analysis patterns in real-time. The app prioritizes privacy with on-device processing and offers features like predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. All technology is Apache 2.0 licensed.
+QuantraVision is a professional Android application providing AI-powered chart pattern recognition for retail traders. It operates 100% offline, utilizing advanced OpenCV template matching to identify 109 technical analysis patterns in real-time. The app prioritizes privacy with on-device processing and offers features like predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. All technology is Apache 2.0 licensed.
 
 The application aims to offer professional-grade pattern detection without subscriptions or cloud dependencies. QuantraVision uses a 4-tier one-time payment structure (Free, Starter $9.99, Standard $24.99, Pro $49.99) with lifetime access. The app includes an "Intelligence Stack" featuring: Regime Navigator (on-device market condition analysis), Pattern-to-Plan Engine (educational trade scenarios), Behavioral Guardrails (discipline coaching), and Proof Capsules (shareable tamper-proof detection receipts). All features are offline and include legal disclaimers, emphasizing their educational nature.
 
@@ -31,10 +31,10 @@ Preferred communication style: Simple, everyday language.
 - **Free Tier**: 10 patterns, basic overlay (unchanged)
 - **Starter Tier ($9.99)**: 25 patterns, multi-timeframe detection, basic analytics - NEW entry point for impulse buyers
 - **Standard Tier ($24.99)**: 50 patterns (was 30), full analytics, 50 achievements, 25 lessons, book, exports - MOST POPULAR tier
-- **Pro Tier ($49.99)**: All 102 patterns, Intelligence Stack, AI Learning (10 algorithms), Behavioral Guardrails, Proof Capsules
+- **Pro Tier ($49.99)**: All 109 patterns, Intelligence Stack, AI Learning (10 algorithms), Behavioral Guardrails, Proof Capsules
 - **Pricing Philosophy**: One-time payment, lifetime access, no subscriptions - major competitive advantage over $180-$1,400/year competitors
 - **Implementation**: Added STARTER tier enum, StarterFeatureGate.kt, qv_starter_one SKU, updated BillingManager, 4-tier UI in UpgradeScreen & PaywallScreen
-- **Pattern Distribution**: FREE=10, STARTER=25, STANDARD=50, PRO=102 (carefully curated sets with progressive unlocks)
+- **Pattern Distribution**: FREE=10, STARTER=25, STANDARD=50, PRO=109 (carefully curated sets with progressive unlocks)
 - **File Growth**: Added StarterFeatureGate.kt, updated 7 files (Entitlements, BillingManager, PatternLibraryGate, UpgradeScreen, PaywallScreen, PaywallHost), zero LSP errors
 - **Security**: Maintained encrypted SharedPreferences for all tiers, backward compatibility with existing purchases
 
@@ -51,7 +51,7 @@ Preferred communication style: Simple, everyday language.
   - Intelligence Stack (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules)
   - Advanced Learning Dashboard (6 tabs: Overview, Risk, Behavioral, Strategy, Forecasts, Anomalies)
   - Settings (basic & advanced configuration)
-  - Template management (enable/disable 102 patterns)
+  - Template management (enable/disable 109 patterns)
   - PDF/CSV export system
   - Pattern filtering & search
   - Upgrade/billing screens
@@ -87,7 +87,7 @@ Preferred communication style: Simple, everyday language.
 The application uses Jetpack Compose with Material 3 Design System, optimized for a dark theme to reduce eye strain. The UI is declarative and reactive, using ViewModel for state management and a modular screen architecture (Dashboard, Detection, Analytics, Education, Settings, Intelligence Stack). Key design principles include responsive layouts, custom home screen widgets, and a consistent brand identity. The Intelligence Stack features dedicated screens with integrated disclaimers and pro-tier gating.
 
 ### Technical Implementations
-**Pattern Detection Engine**: Employs an OpenCV template matching system to detect 102 chart patterns using reference image templates. A HybridDetectorBridge coordinates detection, and a BayesianFusionEngine provides probabilistic confidence scoring. Optimizations include DeltaDetectionOptimizer and TemporalStabilizer. TensorFlow Lite infrastructure is present for future Apache 2.0 licensed ML enhancements.
+**Pattern Detection Engine**: Employs an OpenCV template matching system to detect 109 chart patterns using reference image templates. A HybridDetectorBridge coordinates detection, and a BayesianFusionEngine provides probabilistic confidence scoring. Optimizations include DeltaDetectionOptimizer and TemporalStabilizer. TensorFlow Lite infrastructure is present for future Apache 2.0 licensed ML enhancements.
 **Scan Learning Engine**: NEW feature that learns from every chart scan (PRO tier only). Automatically tracks pattern frequency, co-occurrence, confidence distributions, and scan statistics. Uses perceptual image hashing for duplicate detection without storing raw images. Provides adaptive threshold optimization based on historical confidence levels. All learning is 100% offline with 90-day retention policy. Integrated into HybridDetectorBridge with non-blocking async learning. Dashboard UI shows scan insights including most frequent patterns, co-occurrence analysis, and weekly/monthly scan statistics.
 **Data Storage**: Utilizes an encrypted Room database for logs, user preferences, achievement tracking, and scan learning data, with no cloud synchronization.
 **State Management**: Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) ensure reactive state propagation.
@@ -118,7 +118,7 @@ The application uses Jetpack Compose with Material 3 Design System, optimized fo
 - **Google Play Integrity API**: Anti-tamper verification.
 
 ### Offline Assets
-- **Pattern Templates**: 102 PNG reference images + YAML configurations (Apache 2.0 licensed).
+- **Pattern Templates**: 109 PNG reference images + YAML configurations (Apache 2.0 licensed).
 - **Legal Documents**: HTML/Markdown copies of terms, privacy policy, disclaimers.
 - **Educational Content**: Interactive lessons.
 

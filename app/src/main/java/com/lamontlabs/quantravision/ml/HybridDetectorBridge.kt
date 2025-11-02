@@ -27,7 +27,7 @@ import timber.log.Timber
  * PRODUCTION STATUS: PARTIALLY ACTIVE
  * ====================================
  * This bridge wraps the existing HybridPatternDetector (which uses PatternDetector.kt internally)
- * with optimization layers. The core detection still uses OpenCV template matching (102 patterns).
+ * with optimization layers. The core detection still uses OpenCV template matching (109 patterns).
  * The optimization layers (fusion, temporal stabilization, delta detection) are ACTIVE but wrap
  * the existing template-based detection rather than ML inference.
  * 
@@ -84,7 +84,7 @@ class HybridDetectorBridge(private val context: Context) {
      * This method wraps the existing detector with optimization layers:
      * 1. Delta detection (skip if unchanged)
      * 2. Adaptive power policy
-     * 3. OpenCV template detection (102 patterns, Apache 2.0 licensed)
+     * 3. OpenCV template detection (109 patterns, Apache 2.0 licensed)
      * 4. Bayesian fusion
      * 5. Temporal stabilization
      */

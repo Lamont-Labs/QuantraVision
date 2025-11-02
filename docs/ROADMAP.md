@@ -25,7 +25,7 @@ Democratize professional-grade technical analysis through privacy-first, offline
 - ✅ **Proof Capsules** — Shareable tamper-proof detection receipts
 
 **Core Features:**
-- ✅ 102 chart patterns (OpenCV template matching, 100% Apache 2.0 licensed)
+- ✅ 109 chart patterns (OpenCV template matching, 100% Apache 2.0 licensed)
 - ✅ Real-time overlay via MediaProjection
 - ✅ Voice announcements (Android TTS)
 - ✅ Haptic feedback patterns
@@ -40,7 +40,7 @@ Democratize professional-grade technical analysis through privacy-first, offline
 **AI/ML Foundation:**
 - ✅ 5-phase optimization framework
 - ✅ PowerPolicy adaptive performance
-- ✅ Template matching (102 patterns, Apache 2.0 licensed)
+- ✅ Template matching (109 patterns, Apache 2.0 licensed)
 - ✅ Temporal stability (anti-flickering)
 
 ---

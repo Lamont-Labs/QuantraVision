@@ -19,7 +19,7 @@
     <string name="qv_full_disclaimer">QuantraVision is an educational tool for technical analysis pattern recognition only. It is NOT financial advice. All trading decisions and their outcomes are your sole responsibility. AI pattern detection may produce false positives/negatives. Past performance does not predict future results. Consult a licensed financial advisor before investing. Lamont Labs is NOT liable for any trading losses or financial damages.</string>
     <string name="qv_watermark">⚠ Illustrative Only — Not Financial Advice</string>
     <string name="qv_risk_warning">⚠️ WARNING: Trading involves substantial risk of loss. Only invest capital you can afford to lose.</string>
-    <string name="tier_pro_desc">All 102 patterns • Voice alerts • Predictive detection • Backtesting • Advanced analytics • No watermarks</string>
+    <string name="tier_pro_desc">All 109 patterns • Voice alerts • Predictive detection • Backtesting • Advanced analytics • No watermarks</string>
     <string name="tier_pro_name">Pro Edition</string>
     <string name="tier_pro_price">$24.99</string>
     <string name="tier_standard_desc">30 core patterns • Unlimited highlights • Remove watermarks • Export PDFs • 25 lessons</string>

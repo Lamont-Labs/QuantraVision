@@ -305,7 +305,7 @@ app/build/
 ### AI/ML Stack
 - **ML Framework:** TensorFlow Lite 2.17.0 (Apache 2.0 licensed)
 - **Computer Vision:** OpenCV 4.10.0 (Apache 2.0 licensed)
-- **Pattern Detection:** Template matching (102 patterns)
+- **Pattern Detection:** Template matching (109 patterns)
 - **Optimization:** GPU delegates, NNAPI, multi-threading
 
 ### Key Libraries
@@ -364,7 +364,7 @@ See [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) for community guidelines.
 | **Test Coverage** | Target 80%+ |
 | **Documentation** | 100KB+ markdown |
 | **Detection System** | OpenCV template matching |
-| **Supported Patterns** | 102 chart patterns |
+| **Supported Patterns** | 109 chart patterns |
 | **Lessons** | 25 interactive courses |
 
 ---
