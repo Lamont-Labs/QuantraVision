@@ -1,15 +1,32 @@
 # Contributing to QuantraVision
 
-Thank you for your interest in contributing to QuantraVision! This document provides guidelines for contributing to the project.
+<div align="center">
+
+<img src="docs/quantravision-logo.png" alt="Contributing to QuantraVision" width="400"/>
+
+**Thank you for your interest in contributing to QuantraVision!**
+
+*This guide will help you get started with contributing to our professional-grade pattern detection system.*
+
+[![Contributors](https://img.shields.io/badge/Contributors-Welcome-brightgreen?style=flat-square)](https://github.com/Lamont-Labs/QuantraVision/graphs/contributors)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square)](http://makeapullrequest.com)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
+
+</div>
+
+---
 
 ## 📋 Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Process](#development-process)
-- [Pull Request Process](#pull-request-process)
-- [Coding Standards](#coding-standards)
-- [Testing Guidelines](#testing-guidelines)
+- [Code of Conduct](#-code-of-conduct)
+- [Getting Started](#-getting-started)
+- [Development Setup](#️-development-setup)
+- [Architecture Overview](#️-architecture-overview)
+- [Coding Standards](#-coding-standards)
+- [Testing Requirements](#-testing-requirements)
+- [Pull Request Process](#-pull-request-process)
+- [Release Process](#-release-process)
+- [Recognition](#-recognition)
 
 ---
 

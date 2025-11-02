@@ -1,0 +1,21 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/Lamont-Labs/QuantraVision/discussions
+    about: Ask questions, share ideas, and discuss QuantraVision with the community
+  
+  - name: 📚 Documentation
+    url: https://github.com/Lamont-Labs/QuantraVision/wiki
+    about: Read comprehensive documentation, guides, and tutorials
+  
+  - name: 🆘 Support Email
+    url: mailto:jesse@lamont.click
+    about: Contact support for account issues, billing questions, or sensitive matters
+  
+  - name: 🎓 Education & Training
+    url: https://github.com/Lamont-Labs/QuantraVision/wiki/Education
+    about: Learn pattern recognition, trading strategies, and app features
+  
+  - name: 🔐 Security Issues
+    url: mailto:security@lamontlabs.com
+    about: Report security vulnerabilities privately (do NOT use public issues)

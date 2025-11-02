@@ -1,0 +1,182 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for QuantraVision
+title: "[Feature]: "
+labels: ["enhancement", "needs-review"]
+assignees:
+  - Lamont-Labs
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for suggesting a feature!
+        
+        We value your input and carefully consider all feature requests. Please fill out this form to help us understand your idea.
+        
+        **Before submitting:**
+        - Check [existing feature requests](https://github.com/Lamont-Labs/QuantraVision/issues?q=label%3Aenhancement) to avoid duplicates
+        - Review our [Roadmap](https://github.com/Lamont-Labs/QuantraVision/wiki/Roadmap) to see if it's already planned
+        - Join [Discussions](https://github.com/Lamont-Labs/QuantraVision/discussions) for open-ended ideas
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What's the current pain point?
+      placeholder: |
+        Example: "I trade multiple assets simultaneously and need to monitor patterns across 5+ charts at once. 
+        Currently, I have to switch between apps manually which causes me to miss trading opportunities..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work?
+      placeholder: |
+        Example: "Add a 'Multi-Chart Dashboard' that displays pattern detection results from 4-6 charts in a grid view. 
+        Each chart would show:
+        - Asset symbol (e.g., AAPL, TSLA)
+        - Active pattern count
+        - Highest confidence pattern
+        - Quick tap to expand full details..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: Which area does this feature relate to?
+      options:
+        - Pattern Detection (new patterns, detection improvements)
+        - User Interface / UX
+        - Intelligence Stack (Regime Navigator, Pattern-to-Plan, etc.)
+        - AI Learning System
+        - Analytics / Performance Tracking
+        - Education System
+        - Gamification
+        - Overlay / Visualization
+        - Voice Commands / Haptics
+        - Watchlist / Multi-Chart
+        - Export / Reporting
+        - Settings / Customization
+        - Billing / Subscriptions
+        - Accessibility
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to your workflow?
+      options:
+        - Critical (I can't use the app effectively without this)
+        - High (Major improvement to my workflow)
+        - Medium (Nice to have, improves experience)
+        - Low (Minor enhancement)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Applicable Tier
+      description: Which subscription tier(s) should have access to this feature?
+      options:
+        - Free (Available to all users)
+        - Standard ($14.99) or higher
+        - Pro ($29.99) only
+        - All tiers
+        - Not sure
+    validations:
+      required: false
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Provide 2-3 specific scenarios where this feature would be valuable
+      placeholder: |
+        **Scenario 1:** Day trader monitoring SPY, QQQ, IWM, and DIA for breakout patterns
+        **Scenario 2:** Swing trader scanning watchlist of 10 stocks before market open
+        **Scenario 3:** Options trader looking for high-confluence setups across multiple timeframes
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered alternative solutions or workarounds?
+      placeholder: |
+        Example: "I tried using multiple phones side-by-side, but it's not practical. 
+        I also considered using TradingView's multi-chart layout, but QuantraVision doesn't support scanning multiple layouts simultaneously..."
+
+  - type: textarea
+    id: mockup
+    attributes:
+      label: Mockups / Examples
+      description: |
+        Provide sketches, screenshots, or examples from other apps (if applicable).
+        Drag and drop images here.
+      placeholder: "Drag mockups/wireframes/screenshots here..."
+
+  - type: dropdown
+    id: willing-to-pay
+    attributes:
+      label: Willingness to Pay
+      description: Would you pay for this feature if it required a higher tier?
+      options:
+        - "Yes, I'd upgrade to Standard ($14.99)"
+        - "Yes, I'd upgrade to Pro ($29.99)"
+        - "Yes, I'd pay for a one-time add-on ($5-$10)"
+        - "Only if included in my current tier"
+        - "Prefer not to answer"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other details, references, or context
+      placeholder: |
+        - Links to similar features in other apps
+        - Academic papers or trading resources
+        - Specific pattern types this would benefit
+        - Technical constraints to consider
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-Submission Checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched for similar feature requests and found none
+          required: true
+        - label: This feature aligns with QuantraVision's mission (offline, privacy-first pattern detection)
+          required: true
+        - label: I have provided clear use cases and examples
+          required: true
+        - label: I have attached mockups/screenshots if applicable
+          required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **What happens next?**
+        
+        1. **Triage (1-3 days)**: We review and label your request
+        2. **Community Feedback (1-2 weeks)**: Other users can upvote and comment
+        3. **Evaluation**: We assess feasibility, demand, and alignment with roadmap
+        4. **Decision**: Accepted → Added to roadmap | Declined → Explanation provided
+        
+        **Highly upvoted requests get priority consideration!**
+        
+        **Thank you for helping shape QuantraVision's future!** 🚀
