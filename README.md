@@ -499,17 +499,21 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 - **Perfect trial experience**
 
 ### 💎 STARTER Edition — $9.99 USD (One-Time)
-✅ **25 curated patterns** (most profitable setups)  
+**Core Intraday Toolkit:** 25 high-confidence patterns for everyday trading  
+
+✅ **25 essential patterns** (common reversals, continuations, breakouts)  
 ✅ **Multi-timeframe detection** (1m, 5m, 15m, 1h, 4h, 1D)  
 ✅ **Basic analytics** (win rate, frequency tracking)  
 ✅ **Remove watermarks** (clean overlays)  
 ✅ **Unlimited pattern highlights** (no daily limits)  
 
-💡 **Perfect Entry Point:** Get multi-timeframe detection + 25 proven patterns for only $9.99!
+💡 **Perfect Entry Point:** Master the fundamentals with 25 proven intraday patterns for only $9.99!
 
 ### ⭐ STANDARD Edition — $24.99 USD (One-Time) ⭐ **MOST POPULAR**
+**Professional Expansion Pack:** 50 advanced patterns + complete trading education  
+
 ✅ **Everything in STARTER**  
-✅ **50 professional patterns** (STARTER 25 + 25 more advanced patterns)  
+✅ **50 professional patterns** (adds wedges, gaps, advanced candlesticks, harmonic setups)  
 ✅ **🏆 50 achievements** (gamification system with rewards)  
 ✅ **🎓 25 comprehensive lessons** (complete education system)  
 ✅ **📊 Pattern performance analytics** (detailed tracking & insights)  
@@ -528,11 +532,13 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 - 📊 Demo trading & building confidence
 - 🏆 Long-term success & staying disciplined
 
-💡 **Best Value:** 50 patterns + achievements + 25 lessons + complete trading book for only $24.99!
+💡 **Best Value:** Professional toolkit + comprehensive education for only $24.99!
 
 ### 🚀 PRO Edition — $49.99 USD (One-Time)
+**Elite Intelligence Suite:** Complete 109-pattern mastery + adaptive AI systems  
+
 ✅ **Everything in STANDARD**  
-✅ **Full 109-pattern library** (all patterns unlocked)  
+✅ **Full 109-pattern library** (includes rare harmonics, complex structures, specialized setups)  
 
 **🎯 Exclusive Intelligence Stack (NO competitor has these):**
 ✅ **📊 Regime Navigator** (market condition analysis - know WHEN to trade)  
@@ -571,10 +577,10 @@ QuantraVision features a breakthrough **on-device AI learning system** that pers
 - **Your Savings:** $1,000s over the years with NO recurring charges
 
 **🎯 Fair Pricing Promise:** 
-- **FREE:** Genuine trial with 10 real patterns
-- **STARTER ($9.99):** Perfect impulse buy for multi-timeframe detection
-- **STANDARD ($24.99):** ⭐ **MOST POPULAR** - Best value with 50 patterns, achievements, lessons, AND complete trading book
-- **PRO ($49.99):** Complete package - Intelligence Stack + AI Learning + Trading Book (everything unlocked)
+- **FREE:** Genuine trial with 10 foundational patterns (pattern literacy)
+- **STARTER ($9.99):** Core intraday toolkit with 25 high-confidence everyday patterns
+- **STANDARD ($24.99):** ⭐ **MOST POPULAR** - Professional expansion with 50 advanced patterns + complete education
+- **PRO ($49.99):** Elite mastery - All 109 patterns + Intelligence Stack + AI Learning (strategic edge)
 
 **💎 Fair Upgrade Pricing:**
 - Already have STARTER? Upgrade to STANDARD for only **$15.00** (pay the difference, not the full $24.99)

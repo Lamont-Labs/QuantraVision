@@ -10,6 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 2, 2025 - Tier Positioning Strategy Refinement:**
+- **Strategic Pricing Fix** - Removed "most profitable patterns" claim from STARTER tier that undermined upgrade value
+- **Tier Repositioning** - Each tier now positioned as maturity progression:
+  - FREE (10): "Pattern literacy" - foundational high-visibility patterns
+  - STARTER (25): "Core intraday toolkit" - high-confidence everyday patterns (reversals, continuations, breakouts)
+  - STANDARD (50): "Professional expansion pack" - advanced structures (wedges, gaps, harmonics, complex candlesticks)
+  - PRO (109): "Elite intelligence suite" - complete arsenal including rare/specialized patterns + AI mastery
+- **Marketing Language Updated** - Clear upgrade incentives with successive unlocks strategy
+- **Files Modified**: README.md (pricing section), replit.md
+
 **November 2, 2025 - Upgrade Pricing Implementation (Pay Only the Difference):**
 - **Fair Upgrade Pricing** - Users only pay the difference when upgrading between tiers (not full price)
   - 3 new upgrade SKU products defined with differential pricing
