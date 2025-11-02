@@ -133,6 +133,79 @@ QuantraVision isn't just pattern detection—it's your complete trading co-pilot
 
 ---
 
+### 🧠 **Advanced AI Learning System** - *Gets smarter as you trade*
+
+QuantraVision features a breakthrough **on-device AI learning system** that personalizes pattern detection based on YOUR trading style. The more you use it, the smarter it becomes—completely offline and privacy-preserving.
+
+#### **10 Advanced Learning Features:**
+
+**1. Pattern Correlation Analyzer**
+- Learns which patterns predict each other using Pearson correlation
+- Identifies common pattern sequences (e.g., "Double Top → Head & Shoulders")
+- Predicts next likely patterns with confidence scores
+- **Example:** "After Double Tops, you often see Head & Shoulders (65% correlation)"
+
+**2. Market Condition Learning**
+- Optimizes pattern selection for 5 market states (volatile/calm, trending/ranging)
+- Tracks which patterns work best for YOU in each condition
+- **Example:** "In volatile trending markets, your Flags have 80% success rate"
+
+**3. Temporal Pattern Learning**
+- Discovers your best trading times using chi-squared statistical testing (p<0.05)
+- Hour-of-day and day-of-week heatmaps
+- **Example:** "Your Triangles perform 35% better on Tuesday mornings"
+
+**4. Risk-Adjusted Performance**
+- Calculates Sharpe ratios, expected value, max drawdown for each pattern
+- Goes beyond win rate to measure true risk-adjusted returns
+- **Example:** "H&S: 70% win rate, Sharpe 1.8, expected +$25 per trade (educational)"
+
+**5. Behavioral Pattern Detection**
+- Detects overtrading, revenge trading, and fatigue patterns
+- Identifies optimal session length based on YOUR performance
+- **Example:** "Success drops 30% after 3 hours—consider shorter sessions"
+
+**6. Multi-Pattern Strategy Learning**
+- Discovers which pattern combinations work best together
+- Portfolio optimization with Herfindahl diversity index
+- **Example:** "Your best portfolio: 40% H&S, 30% Triangles, 30% Flags (diversification: 0.65)"
+
+**7. Predictive Trend Forecasting**
+- Uses linear regression + moving averages to predict future performance
+- Forecasts with confidence intervals
+- **Example:** "Predicted next-week performance: 68% win rate (±5% confidence interval)"
+
+**8. Anomaly Detection**
+- Identifies unusual patterns using z-score analysis (threshold: 2.5)
+- Alerts on sudden performance shifts or unusual streaks
+- **Example:** "Alert: Pennants win rate dropped 40% in last 7 days—review strategy"
+
+**9. Gradient Descent Calibration**
+- Machine learning optimization of confidence thresholds
+- Minimizes false positives while maximizing true positives
+- **Example:** "Optimal H&S threshold adjusted from 70% to 73% based on your feedback"
+
+**10. Comprehensive Learning Reports**
+- Weekly/monthly PDF exports with 10-section analytics dashboard
+- Executive summaries, forecasts, behavioral insights, recommendations
+- **Example:** "Monthly Report: Overall win rate +12% this month, 8 patterns personalized, overtrading detected on Fridays"
+
+#### **Statistical Algorithms:**
+- Bayesian updating, Pearson correlation, chi-squared testing
+- Linear regression, gradient descent, z-score analysis
+- Sharpe ratio calculations, expected value modeling
+- All processing 100% offline on-device
+
+#### **Privacy & Data:**
+- 🔒 100% on-device AI—no cloud sync, no server uploads
+- 📊 Privacy-preserving statistical methods only
+- 🎓 Educational disclaimers on all learning features
+- 💾 All data stays on your phone forever
+
+**Your Edge:** NO competitor offers personalized AI learning—they show the same patterns to everyone. QuantraVision adapts to YOUR unique trading style.
+
+---
+
 <table>
 <tr>
 <td width="50%">
