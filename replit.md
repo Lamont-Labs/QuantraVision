@@ -10,15 +10,28 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**November 2, 2025 - Minimal Glowing Border UI:**
+**November 2, 2025 - Minimal Glowing Border UI with Full App Access:**
 - **Faint Glowing Border**: Beautiful cyan glow (#00E5FF) around screen edges with two-layer effect (outer blur 8px @23% opacity + inner sharp 2px @39% opacity)
 - **Pulsing Feedback**: Border pulses brighter when patterns detected (23%→47% opacity), returns to subtle state when idle
-- **Floating Logo Button**: Small draggable logo button provides unified access to all features
-- **Unified Quick Actions Menu**: All 6 features accessible through logo click (Scan Now, Dashboard, Alerts Toggle, Learning Stats, Settings, Stop Detection)
+- **Floating Logo Button**: Small draggable logo button provides access to full app UI
+- **Full Feature Access**: Short click (tap) opens complete MainActivity with ALL features accessible via navigation:
+  - Dashboard with performance tracking
+  - Analytics & multi-timeframe detection
+  - Achievement system (50 achievements across 5 categories)
+  - Educational lessons (25 comprehensive lessons)
+  - Book viewer (integrated trading book)
+  - Intelligence Stack (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules)
+  - Advanced Learning Dashboard (6 tabs: Overview, Risk, Behavioral, Strategy, Forecasts, Anomalies)
+  - Settings (basic & advanced configuration)
+  - Template management (enable/disable 102 patterns)
+  - PDF/CSV export system
+  - Pattern filtering & search
+  - Upgrade/billing screens
+- **Quick Actions Shortcut**: Long press (500ms) shows quick actions menu with 6 fast shortcuts (Scan Now, Dashboard, Alerts Toggle, Learning Stats, Settings, Stop)
 - **Touch-Passthrough Architecture**: Both border and pattern overlay use FLAG_NOT_TOUCHABLE - trading app underneath remains 100% clickable
 - **Minimal Visual Footprint**: Extremely subtle design - barely noticeable glow + small logo button, zero intrusion to trading workflow
-- **Production-Grade Implementation**: Proper lifecycle management, memory cleanup, blur effects with BlurMaskFilter, 82 lines of clean code
-- **File Growth**: Added GlowingBorderView.kt (total 360 Kotlin files), zero LSP errors, production-ready
+- **Production-Grade Implementation**: Proper lifecycle management, memory cleanup, Intent flags for service context (NEW_TASK + REORDER_TO_FRONT), 261 lines FloatingLogoButton.kt
+- **File Growth**: Added GlowingBorderView.kt, updated FloatingLogoButton.kt & OverlayService.kt (total 360 Kotlin files), zero LSP errors, production-ready
 
 **November 2, 2025 - Advanced AI Learning System (10× Stronger):**
 - **Pattern Correlation Analyzer**: Pearson correlation + sequence detection + predictive next-pattern recommendations
