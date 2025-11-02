@@ -106,8 +106,8 @@ This checklist ensures QuantraVision achieves **100/100 production readiness** b
   - Test Free tier (3 highlights, 10 patterns)
   - Purchase Standard tier ($14.99)
   - Verify unlock (30 patterns, unlimited highlights)
-  - Purchase Pro tier ($29.99)
-  - Verify unlock (108 patterns, intelligence features)
+  - Purchase Pro tier ($49.99)
+  - Verify unlock (109 patterns, intelligence features)
   - Test Intelligence Stack disclaimer acceptance
   - Generate Pattern Plan, export Proof Capsule
 
@@ -156,10 +156,10 @@ This checklist ensures QuantraVision achieves **100/100 production readiness** b
 
 **2. Store Listing Content**
 - [ ] Title: "QuantraVision - AI Pattern Detection"
-- [ ] Short description (80 chars): "Offline AI chart pattern recognition for traders. 108 patterns. Zero data collection."
+- [ ] Short description (80 chars): "Offline AI chart pattern recognition for traders. 109 patterns. Zero data collection."
 - [ ] Full description (4000 chars):
-  - Key features (108 patterns, offline, intelligence stack)
-  - Pricing tiers (Free, Standard $14.99, Pro $29.99)
+  - Key features (109 patterns, offline, intelligence stack)
+  - Pricing tiers (Free, Standard $14.99, Pro $49.99)
   - Legal disclaimers (educational tool, not financial advice)
   - Privacy commitment (100% offline)
 - [ ] Category: Finance or Education
@@ -177,7 +177,7 @@ This checklist ensures QuantraVision achieves **100/100 production readiness** b
 
 **4. Google Play Console Setup**
 - [ ] Create app listing
-- [ ] Configure pricing: Standard ($14.99), Pro ($29.99), Book ($2.99)
+- [ ] Configure pricing: Standard ($14.99), Pro ($49.99), Book ($2.99)
 - [ ] Set up Google Play Billing products
 - [ ] Add countries/regions for distribution
 - [ ] Set content rating (questionnaire)

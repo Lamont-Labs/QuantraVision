@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate comprehensive YAML configuration files and template images 
-for all 108 chart patterns in QuantraVision.
+for all 109 chart patterns in QuantraVision.
 """
 
 import os

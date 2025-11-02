@@ -285,7 +285,7 @@ Launches full walkthrough again
 - ✅ Works with any chart app
 - ✅ Hands-free with voice
 - ✅ 100% offline & private
-- ✅ 108 patterns detected
+- ✅ 109 patterns detected
 - ✅ Educational lessons included
 
 ---

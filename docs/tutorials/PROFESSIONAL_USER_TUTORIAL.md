@@ -370,7 +370,7 @@ Test pattern detection accuracy on historical data to validate strategies.
 
 2. **Configure Backtest**
    - Date range: Start → End
-   - Patterns to test: Select from 108 patterns
+   - Patterns to test: Select from 109 patterns
    - Timeframe: 1m, 5m, 15m, 1h, 1d
    - Entry/exit rules: Customize
 
@@ -540,7 +540,7 @@ Find historical charts with similar pattern formations to current setup.
 
 **Guided Walkthroughs:**
 
-Each of 108 patterns includes:
+Each of 109 patterns includes:
 - **Definition:** What the pattern represents
 - **Formation:** How to identify it forming
 - **Psychology:** Why it forms (market psychology)
@@ -557,7 +557,7 @@ Each of 108 patterns includes:
 
 2. **From Pattern Library:**
    - Dashboard → Pattern Library
-   - Browse all 108 patterns
+   - Browse all 109 patterns
    - Tap any pattern for tutorial
 
 3. **From Education Tab:**

@@ -27,7 +27,7 @@
 - Tagline: "See patterns your platform can't"
 
 **Annotations:**
-- ✅ 108 Patterns Detected
+- ✅ 109 Patterns Detected
 - ✅ 100% Offline & Private
 - ✅ No Subscriptions
 
@@ -94,7 +94,7 @@
 **Annotations:**
 - "Free: 10 patterns, 3 highlights/day"
 - "Standard $14.99: 30 patterns, unlimited"
-- "Pro $29.99: All 108 patterns + intelligence"
+- "Pro $49.99: All 109 patterns + intelligence"
 
 ---
 
@@ -177,7 +177,7 @@
 ```
 "Introducing QuantraVision - professional AI pattern detection for retail traders.
 
-See 108 chart patterns in real-time, powered by hybrid YOLOv8 machine learning and OpenCV computer vision.
+See 109 chart patterns in real-time, powered by hybrid YOLOv8 machine learning and OpenCV computer vision.
 
 100% offline. Zero data collection. No subscriptions.
 
@@ -185,7 +185,7 @@ Learn with 25 interactive lessons. Track your accuracy. Make better-informed dec
 
 Free tier: 10 essential patterns.
 Standard: 30 core patterns.
-Pro: All 108 patterns plus exclusive intelligence features.
+Pro: All 109 patterns plus exclusive intelligence features.
 
 Download QuantraVision today. Your charts. Your privacy. Your edge."
 ```

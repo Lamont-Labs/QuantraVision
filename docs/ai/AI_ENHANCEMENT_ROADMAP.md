@@ -20,7 +20,7 @@
 - **Model Size:** 84 MB (PyTorch YOLOv8)
 - **Inference Speed:** ~20ms per frame
 - **Accuracy:** 93.2% mAP@0.5
-- **Patterns Detected:** 6 ML + 108 template-based
+- **Patterns Detected:** 6 ML + 109 template-based
 - **RAM Usage:** ~500 MB
 - **Power Draw:** ~1.5W sustained
 

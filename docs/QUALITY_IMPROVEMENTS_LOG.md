@@ -82,7 +82,7 @@
 - `app/src/main/java/com/lamontlabs/quantravision/App.kt`
 
 **Impact:**
-- ✅ Users understand why only 6 patterns detected instead of 108
+- ✅ Users understand why only 6 patterns detected instead of 109
 - ✅ Reduces support burden from confused users
 - ✅ Sets clear expectations for limited mode
 

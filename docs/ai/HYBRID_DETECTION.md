@@ -188,7 +188,7 @@ val stats = detector.getStats()
 ## Competitive Advantages
 
 ### vs TradingView Built-in Patterns
-- ✅ More patterns (108 vs ~30)
+- ✅ More patterns (109 vs ~30)
 - ✅ Works offline
 - ✅ Works on any chart (not just TradingView)
 

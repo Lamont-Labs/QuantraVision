@@ -32,7 +32,7 @@ Read `LAUNCH_CHECKLIST.md` for complete preparation steps.
 - App development & testing
 - Legal compliance (Privacy Policy, Terms, Disclaimers)
 - Store metadata (title, descriptions)
-- Pricing structure ($2.99, $14.99, $29.99)
+- Pricing structure ($2.99, $14.99, $49.99)
 - Documentation
 
 **⚠️ Pending (Critical):**
@@ -120,7 +120,7 @@ Create these IAP items in Play Console:
 |------------|------|-------|-------|
 | `quantravision_book` | One-time | $2.99 | The Friendly Trader Book |
 | `quantravision_standard` | One-time | $14.99 | Standard Tier |
-| `quantravision_pro` | One-time | $29.99 | Pro Tier |
+| `quantravision_pro` | One-time | $49.99 | Pro Tier |
 
 ---
 

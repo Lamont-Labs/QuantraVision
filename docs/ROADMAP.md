@@ -346,7 +346,7 @@ Democratize professional-grade technical analysis through privacy-first, offline
 
 | Version | Release Date | Key Features |
 |---------|--------------|--------------|
-| v1.0.0 | Q4 2025 | Initial release - 108 patterns, hybrid detection |
+| v1.0.0 | Q4 2025 | Initial release - 109 patterns, hybrid detection |
 | v1.1.0 | Q1 2026 | AI optimization - 2-3x performance boost |
 | v1.2.0 | Q2 2026 | Advanced analytics & backtesting |
 | v1.3.0 | Q3 2026 | Multi-language & accessibility |

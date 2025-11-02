@@ -161,7 +161,7 @@ val patternId = "${patternName}_${quantizedX}_${quantizedY}"
 2. Monitor approvedPatternIds size in field usage
 3. Confirm quota overlay only appears for new patterns exceeding quota
 4. Validate animations smooth on low-end devices
-5. Test with 108 patterns simultaneously
+5. Test with 109 patterns simultaneously
 
 ### Future Enhancements (Optional)
 1. Add telemetry for cache size and gate decisions

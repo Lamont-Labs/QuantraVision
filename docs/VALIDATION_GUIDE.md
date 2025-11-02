@@ -407,7 +407,7 @@ A: Minimum 20, ideal 50-100 for statistical significance.
 **Q: Can I use real trading charts?**  
 A: Yes! TradingView screenshots are perfect ground truth.
 
-**Q: What if I don't have 108 patterns to test?**  
+**Q: What if I don't have 109 patterns to test?**  
 A: Focus on 6-10 most common patterns first. Validate those, then expand.
 
 **Q: Should I test ML and template separately?**  

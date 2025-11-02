@@ -80,7 +80,7 @@
 - [ ] Create IAP items in Play Console:
   - [ ] `quantravision_book` - $2.99 (Trading Book)
   - [ ] `quantravision_standard` - $14.99 (Standard Tier)
-  - [ ] `quantravision_pro` - $29.99 (Pro Tier)
+  - [ ] `quantravision_pro` - $49.99 (Pro Tier)
 - [ ] Test purchases with test accounts
 
 #### Distribution
@@ -171,7 +171,7 @@
 
 ### 🚀 Go Live
 - [ ] Review all store listing info one final time
-- [ ] Confirm pricing is correct ($2.99, $14.99, $29.99)
+- [ ] Confirm pricing is correct ($2.99, $14.99, $49.99)
 - [ ] Confirm all screenshots are professional quality
 - [ ] Submit for review
 - [ ] Wait for Google approval (typically 3-7 days)

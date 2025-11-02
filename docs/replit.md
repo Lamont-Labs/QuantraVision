@@ -1,7 +1,7 @@
 # QuantraVision - Advanced AI Pattern Detection
 
 ## Overview
-QuantraVision is an offline AI pattern detection application designed for retail traders. It offers 108 chart patterns, gamification, predictive analytics, professional reporting, and educational content. The project's core purpose is to provide advanced trading tools with a focus on user privacy and on-device processing, eliminating the need for subscriptions or internet connectivity. It aims to deliver a blend of learning, engagement, and powerful analytical capabilities for traders of all experience levels.
+QuantraVision is an offline AI pattern detection application designed for retail traders. It offers 109 chart patterns, gamification, predictive analytics, professional reporting, and educational content. The project's core purpose is to provide advanced trading tools with a focus on user privacy and on-device processing, eliminating the need for subscriptions or internet connectivity. It aims to deliver a blend of learning, engagement, and powerful analytical capabilities for traders of all experience levels.
 
 ## User Preferences
 I prefer that you work iteratively, proposing changes and asking for my approval before implementing them. Please provide detailed explanations for any significant modifications you suggest or make. I value clear, concise communication and prefer that you focus on high-level solutions before diving into implementation specifics. Do not make changes to the existing project structure without explicit approval.
@@ -17,7 +17,7 @@ QuantraVision is developed using Kotlin and Jetpack Compose, following modern An
 -   **Branding:** App icon overlay button uses official Q+V geometric logo for consistent brand identity.
 
 **Technical Implementations & Feature Specifications:**
--   **Pattern Library:** 108 deterministic chart patterns with multi-scale detection, temporal stability, and confidence calibration using 119 OpenCV template reference images.
+-   **Pattern Library:** 109 deterministic chart patterns with multi-scale detection, temporal stability, and confidence calibration using 119 OpenCV template reference images.
 -   **Gamification:** Includes 15 achievements, daily streaks, and user statistics.
 -   **Predictive Intelligence:** Features early pattern detection (40-85% formation), formation velocity analysis, next pattern prediction, and key level identification.
 -   **Professional Analytics:** Tracks pattern performance (accuracy, frequency, confidence) and identifies hot patterns.
