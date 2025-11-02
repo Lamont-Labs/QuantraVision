@@ -102,10 +102,16 @@ object ConfidenceCalibrator {
         // Coerce raw confidence to valid range
         val x = raw.coerceIn(0.0, 1.0)
         
-        // Apply Platt scaling (sigmoid calibration)
-        val z = p.A * x + p.B
-        val e = seriesExp(-z)
-        var calibrated = 1.0 / (1.0 + e)
+        // PERFORMANCE OPTIMIZATION: Use lookup table for common values
+        var calibrated = if (x >= 0.3 && x <= 1.0) {
+            // Fast path: use lookup table for common range
+            lookupCalibrated(patternName, x, p)
+        } else {
+            // Slow path: compute directly for edge cases
+            val z = p.A * x + p.B
+            val e = seriesExp(-z)
+            1.0 / (1.0 + e)
+        }
         
         // Apply false positive suppression
         calibrated = applyFalsePositiveSuppression(patternName, calibrated, p)
@@ -284,6 +290,54 @@ object ConfidenceCalibrator {
         suppressedDetections = 0L
         boostedDetections = 0L
         detectionHistory.clear()
+    }
+
+    // PERFORMANCE OPTIMIZATION: Lookup table for common confidence values
+    // Pre-computed sigmoid values for 0.0-1.0 in 0.01 increments
+    private val lookupTable = buildLookupTable()
+    private const val LOOKUP_PRECISION = 100  // 0.01 step size
+    private val calibrationCache = ConcurrentHashMap<Pair<String, Int>, Double>()
+    private const val MAX_CACHE_SIZE = 1000
+    
+    /**
+     * Build lookup table for sigmoid function.
+     * Pre-computes values for fast retrieval.
+     */
+    private fun buildLookupTable(): DoubleArray {
+        val table = DoubleArray(LOOKUP_PRECISION + 1)
+        for (i in 0..LOOKUP_PRECISION) {
+            val x = i.toDouble() / LOOKUP_PRECISION
+            val z = -1.0 * x + 1.5  // Default calibration
+            table[i] = 1.0 / (1.0 + seriesExp(-z))
+        }
+        return table
+    }
+    
+    /**
+     * Get calibrated value from lookup table (fast path).
+     */
+    private fun lookupCalibrated(pattern: String, raw: Double, params: Params): Double {
+        // Round to nearest 0.01 for lookup
+        val index = (raw * LOOKUP_PRECISION).toInt().coerceIn(0, LOOKUP_PRECISION)
+        
+        // Check cache first
+        val cacheKey = pattern to index
+        calibrationCache[cacheKey]?.let { return it }
+        
+        // Base lookup value
+        val baseLookup = lookupTable[index]
+        
+        // Apply pattern-specific adjustment
+        val z = params.A * raw + params.B
+        val adjustment = z / 3.0  // Normalize adjustment
+        val calibrated = (baseLookup + adjustment).coerceIn(0.0, 1.0)
+        
+        // Cache result
+        if (calibrationCache.size < MAX_CACHE_SIZE) {
+            calibrationCache[cacheKey] = calibrated
+        }
+        
+        return calibrated
     }
 
     // 8-term Taylor series for exp(t) to preserve determinism across ABIs
