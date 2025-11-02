@@ -303,10 +303,10 @@ app/build/
 - **Target SDK:** Android 15 (API 35)
 
 ### AI/ML Stack
-- **ML Framework:** TensorFlow Lite 2.17.0
-- **Model:** YOLOv8 (HuggingFace foduucom)
-- **Computer Vision:** OpenCV 4.10.0
-- **Optimization:** GPU delegates, NNAPI, INT8 quantization
+- **ML Framework:** TensorFlow Lite 2.17.0 (Apache 2.0 licensed)
+- **Computer Vision:** OpenCV 4.10.0 (Apache 2.0 licensed)
+- **Pattern Detection:** Template matching (102 patterns)
+- **Optimization:** GPU delegates, NNAPI, multi-threading
 
 ### Key Libraries
 - Room 2.6.1 (local database)
@@ -363,8 +363,8 @@ See [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) for community guidelines.
 | **Kotlin Files** | 200+ |
 | **Test Coverage** | Target 80%+ |
 | **Documentation** | 100KB+ markdown |
-| **AI Models** | 119 templates + YOLOv8 |
-| **Supported Patterns** | 108 chart patterns |
+| **Detection System** | OpenCV template matching |
+| **Supported Patterns** | 102 chart patterns |
 | **Lessons** | 25 interactive courses |
 
 ---

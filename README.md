@@ -19,7 +19,7 @@
 ---
 
 <p align="center">
-  <img src="https://img.shields.io/badge/108-Patterns-00E5FF?style=for-the-badge" alt="108 Patterns"/>
+  <img src="https://img.shields.io/badge/102-Patterns-00E5FF?style=for-the-badge" alt="102 Patterns"/>
   <img src="https://img.shields.io/badge/100%25-Offline-00E5FF?style=for-the-badge" alt="100% Offline"/>
   <img src="https://img.shields.io/badge/No-Subscriptions-00E5FF?style=for-the-badge" alt="No Subscriptions"/>
 </p>
@@ -56,7 +56,7 @@ QuantraVision has passed comprehensive production readiness certification:
 
 ## 🎯 Overview
 
-**QuantraVision** is a professional Android application providing advanced pattern recognition for retail traders. Powered by hybrid AI detection (YOLOv8 + TensorFlow Lite + OpenCV), it detects 108 unique chart patterns with **predictive intelligence** that identifies patterns *before* they complete.
+**QuantraVision** is a professional Android application providing advanced pattern recognition for retail traders. Powered by advanced AI detection (OpenCV + TensorFlow Lite), it detects 102 unique chart patterns with **predictive intelligence** that identifies patterns *before* they complete.
 
 ### Why QuantraVision?
 
@@ -234,7 +234,7 @@ QuantraVision isn't just pattern detection—it's your complete trading co-pilot
 
 ---
 
-## 📊 108 Chart Patterns
+## 📊 102 Chart Patterns
 
 ### Classic Reversal Patterns
 - Head & Shoulders (Top & Bottom)
@@ -286,9 +286,8 @@ QuantraVision isn't just pattern detection—it's your complete trading co-pilot
 ## 🛠️ Tech Stack
 
 ### AI/ML Layer
-- **TensorFlow Lite 2.17.0** — GPU-accelerated inference
-- **YOLOv8** — HuggingFace foduucom/stockmarket-pattern-detection-yolov8 (93.2% mAP@0.5)
-- **OpenCV 4.10.0** — Template matching with 119 reference images
+- **OpenCV 4.10.0** — Template matching with 102 pattern templates (100% Apache 2.0 licensed)
+- **TensorFlow Lite 2.17.0** — Ready for future ML enhancements (Apache 2.0 licensed)
 - **ML Kit** — Robust OCR for legend recognition
 
 ### Android Framework
@@ -348,7 +347,7 @@ QuantraVision isn't just pattern detection—it's your complete trading co-pilot
 
 ### 🚀 Pro Edition — $29.99 USD (One-Time)
 ✅ **Everything in Standard**  
-✅ **Full 108-pattern library** (all patterns unlocked)  
+✅ **Full 102-pattern library** (all patterns unlocked)  
 
 **🎯 Exclusive 4-Feature Intelligence Stack (NO competitor has these):**
 ✅ **📊 Regime Navigator** (market condition analysis)  
@@ -467,7 +466,7 @@ Download from Google Play Store or build from source
 
 - [User Guide](USER_GUIDE.md) — How to use QuantraVision
 - [Architecture](docs/ARCHITECTURE.md) — Technical design
-- [Pattern Catalog](app/src/main/assets/pattern_templates/PATTERN_CATALOG.md) — All 108 patterns
+- [Pattern Catalog](app/src/main/assets/pattern_templates/PATTERN_CATALOG.md) — All 102 patterns
 - [Legal Summary](legal/LEGAL_SUMMARY.md) — Protection assessment
 - [Google Play Listing](GOOGLE_PLAY_STORE_LISTING.md) — Store submission guide
 
@@ -519,10 +518,10 @@ See [LICENSE](LICENSE) for full terms.
 
 ## 🌟 Acknowledgments
 
-- **YOLOv8 Model:** HuggingFace foduucom/stockmarket-pattern-detection-yolov8 (GPL-3.0)
-- **OpenCV:** Open-source computer vision library
-- **TensorFlow:** Google's ML framework
+- **OpenCV:** Open-source computer vision library (Apache 2.0)
+- **TensorFlow:** Google's ML framework (Apache 2.0)
 - **Android Open Source Project:** Foundation platform
+- All technology components are 100% Apache 2.0 licensed for commercial use
 
 ---
 

@@ -13,7 +13,7 @@ import com.lamontlabs.quantravision.PatternMatch
  * Tier Structure (Option 1 Pricing):
  * - Free: 3 highlights/day, 10 BASIC patterns only
  * - Standard ($14.99): Unlimited highlights, 30 core patterns + Regime Navigator
- * - Pro ($29.99): Unlimited highlights, all 108 patterns + 4 intelligence features
+ * - Pro ($29.99): Unlimited highlights, all 102 patterns + 4 intelligence features
  */
 object PatternLibraryGate {
 
@@ -120,7 +120,7 @@ object PatternLibraryGate {
      */
     fun isPatternAvailable(context: Context, patternId: String): Boolean {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> true // All 108 patterns
+            Tier.PRO -> true // All 102 patterns
             Tier.STANDARD -> STANDARD_TIER_PATTERNS.contains(patternId)
             Tier.FREE -> FREE_TIER_PATTERNS.contains(patternId)
         }
@@ -131,7 +131,7 @@ object PatternLibraryGate {
      */
     fun filterByTier(context: Context, matches: List<PatternMatch>): List<PatternMatch> {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> matches // All 108 patterns available
+            Tier.PRO -> matches // All 102 patterns available
             Tier.STANDARD -> matches.filter { STANDARD_TIER_PATTERNS.contains(it.patternId) }
             Tier.FREE -> matches.filter { FREE_TIER_PATTERNS.contains(it.patternId) }
         }
@@ -142,7 +142,7 @@ object PatternLibraryGate {
      */
     fun getAvailablePatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> 108
+            Tier.PRO -> 102
             Tier.STANDARD -> STANDARD_TIER_PATTERNS.size // 30
             Tier.FREE -> FREE_TIER_PATTERNS.size // 10
         }
@@ -154,14 +154,14 @@ object PatternLibraryGate {
     fun getLockedPatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
             Tier.PRO -> 0
-            Tier.STANDARD -> 108 - STANDARD_TIER_PATTERNS.size // 78
-            Tier.FREE -> 108 - FREE_TIER_PATTERNS.size // 98
+            Tier.STANDARD -> 102 - STANDARD_TIER_PATTERNS.size // 72
+            Tier.FREE -> 102 - FREE_TIER_PATTERNS.size // 92
         }
     }
 
     enum class Tier {
         FREE,      // 3 highlights/day, 10 basic patterns
         STANDARD,  // Unlimited highlights, 30 core patterns, Regime Navigator
-        PRO        // Unlimited highlights, all 108 patterns, 4 intelligence features
+        PRO        // Unlimited highlights, all 102 patterns, 4 intelligence features
     }
 }

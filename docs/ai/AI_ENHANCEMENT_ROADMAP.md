@@ -1,8 +1,16 @@
 # QuantraVision AI Enhancement Roadmap
 
-**Objective:** Make the AI exponentially smarter and faster while maintaining 100% offline operation  
-**Date:** October 31, 2025  
-**Status:** Strategic Plan
+## ⚠️ LICENSING COMPLIANCE UPDATE (November 2025)
+
+**CRITICAL:** All ML model references in this document are **OPTIONAL FUTURE WORK ONLY**.
+
+- **Current System:** 102 OpenCV template-based patterns (100% Apache 2.0 licensed)
+- **Future ML Integration:** Must use Apache 2.0 licensed models only (YOLOv8 removed due to AGPL-3.0 conflict)
+- **Status:** Infrastructure ready, but ML integration is optional and not currently active
+
+**Objective:** Optimize template matching performance and explore Apache 2.0 licensed ML options  
+**Date:** October 31, 2025 (Updated November 2, 2025)  
+**Status:** Research & Planning
 
 ---
 

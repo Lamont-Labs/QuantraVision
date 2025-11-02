@@ -10,24 +10,24 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
- * Hybrid pattern detection system combining:
- * 1. ML-based detection (YOLOv8) for 6 chart-agnostic premium patterns
- * 2. Template-based detection (OpenCV) for 102 additional patterns
+ * Pattern detection system using OpenCV template-based detection.
+ * Detects 102 chart patterns using multi-scale template matching.
  *
- * Provides dual-tier detection with confidence differentiation:
- * - Tier 1 (ML): High confidence, platform-agnostic (TradingView, MetaTrader, Robinhood, etc.)
- * - Tier 2 (Template): Fast matching, optimized for candlestick charts
+ * Note: Previously used hybrid ML+Template detection, but YOLOv8 was removed
+ * for licensing compliance (AGPL-3.0 conflicts with commercial use).
+ * 
+ * Name kept as "HybridPatternDetector" for backward compatibility.
+ * Uses 100% Apache 2.0 licensed OpenCV for commercial compliance.
  */
 class HybridPatternDetector(private val context: Context) {
     
-    private val yoloDetector = YoloV8Detector(context)
     private val templateDetector = PatternDetector(context)
     
-    private var mlDetectionEnabled = true
     private var templateDetectionEnabled = true
     
     enum class DetectionMethod {
-        ML_YOLO,          // Machine learning based (chart-agnostic)
+        @Deprecated("ML_YOLO removed for AGPL-3.0 licensing compliance")
+        ML_YOLO,          // Machine learning based (chart-agnostic) - DEPRECATED/UNUSED
         TEMPLATE_OPENCV   // Template matching (candlestick optimized)
     }
     
@@ -60,72 +60,34 @@ class HybridPatternDetector(private val context: Context) {
     }
     
     /**
-     * Initialize both detection systems.
-     * ML detector gracefully falls back if model file missing.
+     * Initialize detection system.
+     * OpenCV template-based detection is always available.
      */
     suspend fun initialize(): Boolean = withContext(Dispatchers.IO) {
-        val mlLoaded = yoloDetector.loadModel()
-        Timber.i("Hybrid detector initialized - ML: $mlLoaded, Template: available")
+        Timber.i("Pattern detector initialized - Template detection available")
         true
     }
     
     /**
-     * Run hybrid detection on chart screenshot.
-     * Executes both ML and template detection in parallel for performance.
+     * Run template-based detection on chart screenshot.
+     * Uses OpenCV multi-scale template matching.
      * 
      * @param bitmap The chart image to analyze
      * @param originPath The source file path or identifier for provenance tracking
      */
     suspend fun detect(bitmap: Bitmap, originPath: String = "unknown"): List<HybridDetection> = withContext(Dispatchers.Default) {
-        val results = mutableListOf<HybridDetection>()
-        
-        // Run both detectors in parallel
-        val mlJob = async { 
-            if (mlDetectionEnabled) runMLDetection(bitmap, originPath) else emptyList()
-        }
-        val templateJob = async { 
-            if (templateDetectionEnabled) runTemplateDetection(bitmap, originPath) else emptyList()
+        // Run template detection
+        val results = if (templateDetectionEnabled) {
+            runTemplateDetection(bitmap, originPath)
+        } else {
+            emptyList()
         }
         
-        val mlResults = mlJob.await()
-        val templateResults = templateJob.await()
-        
-        // Combine results
-        results.addAll(mlResults)
-        results.addAll(templateResults)
-        
-        // Remove duplicates (ML takes precedence over template for same pattern)
+        // Remove duplicates (keep highest confidence per pattern)
         val deduplicated = deduplicateResults(results)
         
         // Sort by confidence descending
         deduplicated.sortedByDescending { it.confidence }
-    }
-    
-    /**
-     * Run YOLOv8 ML-based detection
-     */
-    private suspend fun runMLDetection(bitmap: Bitmap, originPath: String): List<HybridDetection> {
-        return try {
-            val mlDetections = yoloDetector.detect(bitmap)
-            
-            mlDetections.map { detection ->
-                HybridDetection(
-                    patternName = detection.patternName,
-                    confidence = detection.confidence,
-                    method = DetectionMethod.ML_YOLO,
-                    boundingBox = detection.boundingBox,
-                    metadata = mapOf(
-                        "classIndex" to detection.classIndex,
-                        "modelVersion" to "YOLOv8s-v1.0",
-                        "chartAgnostic" to true,
-                        "originPath" to originPath
-                    )
-                )
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "ML detection failed")
-            emptyList()
-        }
     }
     
     /**
@@ -193,7 +155,7 @@ class HybridPatternDetector(private val context: Context) {
     
     /**
      * Remove duplicate detections.
-     * ML detections take precedence over template detections for same pattern.
+     * Keeps highest confidence detection for each pattern name.
      */
     private fun deduplicateResults(results: List<HybridDetection>): List<HybridDetection> {
         val uniquePatterns = mutableMapOf<String, HybridDetection>()
@@ -201,31 +163,13 @@ class HybridPatternDetector(private val context: Context) {
         for (detection in results) {
             val existing = uniquePatterns[detection.patternName]
             
-            when {
-                existing == null -> {
-                    uniquePatterns[detection.patternName] = detection
-                }
-                // ML takes precedence over template
-                detection.method == DetectionMethod.ML_YOLO && 
-                existing.method == DetectionMethod.TEMPLATE_OPENCV -> {
-                    uniquePatterns[detection.patternName] = detection
-                }
-                // Higher confidence wins
-                detection.confidence > existing.confidence -> {
-                    uniquePatterns[detection.patternName] = detection
-                }
+            // Keep the detection with higher confidence, or add if new pattern
+            if (existing == null || detection.confidence > existing.confidence) {
+                uniquePatterns[detection.patternName] = detection
             }
         }
         
         return uniquePatterns.values.toList()
-    }
-    
-    /**
-     * Enable/disable ML-based detection
-     */
-    fun setMLDetectionEnabled(enabled: Boolean) {
-        mlDetectionEnabled = enabled
-        Timber.d("ML detection ${if (enabled) "enabled" else "disabled"}")
     }
     
     /**
@@ -241,10 +185,10 @@ class HybridPatternDetector(private val context: Context) {
      */
     fun getStats(): DetectionStats {
         return DetectionStats(
-            mlEnabled = mlDetectionEnabled,
+            mlEnabled = false,  // ML detection removed for licensing compliance
             templateEnabled = templateDetectionEnabled,
-            mlPatternCount = YoloV8Detector.PATTERN_LABELS.size,
-            templatePatternCount = 102  // 108 total - 6 covered by ML
+            mlPatternCount = 0,  // YOLOv8 removed
+            templatePatternCount = 102
         )
     }
     
@@ -261,6 +205,6 @@ class HybridPatternDetector(private val context: Context) {
      * Clean up resources
      */
     fun close() {
-        yoloDetector.close()
+        // No resources to clean up for template-based detection
     }
 }

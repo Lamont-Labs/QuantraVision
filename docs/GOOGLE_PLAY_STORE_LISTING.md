@@ -16,7 +16,7 @@
 
 ## 📝 Short Description (80 characters max)
 
-**AI-powered chart pattern detection. 108 patterns. 100% offline. No subscriptions.**
+**AI-powered chart pattern detection. 102 patterns. 100% offline. No subscriptions.**
 
 ---
 
@@ -25,7 +25,7 @@
 ```
 🎯 QuantraVision: Professional AI Pattern Detection for Traders
 
-Discover chart patterns with cutting-edge AI technology. QuantraVision uses advanced computer vision (YOLOv8 + OpenCV) to detect 108 technical analysis patterns in real-time, directly on your screen. 100% offline. 100% private. No subscriptions.
+Discover chart patterns with cutting-edge AI technology. QuantraVision uses advanced computer vision (OpenCV + TensorFlow Lite) to detect 102 technical analysis patterns in real-time, directly on your screen. 100% offline. 100% private. No subscriptions. 100% Apache 2.0 licensed technology.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚡ UNIQUE COMPETITIVE FEATURES
@@ -42,7 +42,7 @@ Discover chart patterns with cutting-edge AI technology. QuantraVision uses adva
 ✅ Auto-Scanning Watchlist — Proactive pattern monitoring across multiple charts
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔥 108 CHART PATTERNS DETECTED
+🔥 102 CHART PATTERNS DETECTED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 • Head & Shoulders (Top & Bottom)
@@ -53,7 +53,7 @@ Discover chart patterns with cutting-edge AI technology. QuantraVision uses adva
 • Channels (Parallel, Regression)
 • Cup & Handle
 • Rounding Bottom
-• And 90+ more classical patterns
+• And 85+ more classical patterns
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 ADVANCED FEATURES
@@ -115,13 +115,14 @@ Discover chart patterns with cutting-edge AI technology. QuantraVision uses adva
 • Basic education lessons
 
 📦 STANDARD ($9.99 USD)
-• Full 108 pattern library
+• 30 core patterns
 • Remove watermarks
 • Enhanced detection
 • Export PDFs
 • 25 lessons
 
 🏆 PRO ($24.99 USD)
+• All 102 patterns unlocked
 • All Standard features
 • Voice alerts & announcements
 • Predictive detection
@@ -168,13 +169,13 @@ Professional-grade tools for retail traders.
 **Recommended Screenshot Set:**
 
 1. **Hero Shot**: Main pattern detection overlay with multiple patterns highlighted
-2. **Pattern Library**: Grid view of 108 patterns
+2. **Pattern Library**: Grid view of 102 patterns
 3. **Voice Alerts**: Screenshot showing voice announcement notification
 4. **Analytics Dashboard**: Performance metrics and hot patterns
 5. **Education System**: Lesson interface with quiz
 6. **Predictive Detection**: Early pattern formation (65% complete)
 7. **Pricing Tiers**: Clean comparison of Free/Standard/Pro
-8. **Privacy Focus**: "100% Offline" badge with security icons
+8. **Privacy Focus**: "100% Offline • Apache 2.0 Licensed" badge with security icons
 
 **Dimensions:** 
 - Phone: 16:9 aspect ratio (e.g., 1920x1080)
@@ -189,8 +190,8 @@ Professional-grade tools for retail traders.
 **File Location:** `store_assets/feature_graphic_1024x500.png` ✅  
 **Content:** 
 - QuantraVision branding with cyan accent (#00E5FF)
-- "108 AI Chart Patterns"
-- "100% Offline • No Subscriptions"
+- "102 AI Chart Patterns"
+- "100% Offline • Apache 2.0 Licensed"
 - Dramatic chart visualization with head & shoulders pattern
 - Dark professional theme (#0A1218 background)
 - Lamont Labs branding

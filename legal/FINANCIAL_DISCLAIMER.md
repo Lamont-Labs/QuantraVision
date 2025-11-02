@@ -22,7 +22,7 @@
 
 ## AI/ML Pattern Detection Limitations
 
-1. **Algorithmic Predictions Are Not Guarantees**: Pattern detection using computer vision (OpenCV, YOLOv8, TensorFlow Lite) is probabilistic and may produce:
+1. **Algorithmic Predictions Are Not Guarantees**: Pattern detection using computer vision (OpenCV, TensorFlow Lite) is probabilistic and may produce:
    - False positives (detecting patterns that don't exist)
    - False negatives (missing actual patterns)
    - Incorrect confidence scores

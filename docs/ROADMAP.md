@@ -25,7 +25,7 @@ Democratize professional-grade technical analysis through privacy-first, offline
 - ✅ **Proof Capsules** — Shareable tamper-proof detection receipts
 
 **Core Features:**
-- ✅ 108 chart patterns (YOLOv8 + OpenCV hybrid)
+- ✅ 102 chart patterns (OpenCV template matching, 100% Apache 2.0 licensed)
 - ✅ Real-time overlay via MediaProjection
 - ✅ Voice announcements (Android TTS)
 - ✅ Haptic feedback patterns
@@ -40,22 +40,22 @@ Democratize professional-grade technical analysis through privacy-first, offline
 **AI/ML Foundation:**
 - ✅ 5-phase optimization framework
 - ✅ PowerPolicy adaptive performance
-- ✅ Hybrid detection (ML + template matching)
+- ✅ Template matching (102 patterns, Apache 2.0 licensed)
 - ✅ Temporal stability (anti-flickering)
 
 ---
 
-### 🚀 **v1.1.0 - AI Optimization** (Q1 2026)
+### 🚀 **v1.1.0 - Performance Optimization** (Q1 2026)
 
-**Focus:** Deploy optimized ML models for 2-3x performance boost
+**Focus:** Optimize template matching performance and explore Apache 2.0 ML options
 
-**ML/AI Enhancements:**
-- [ ] Deploy INT8 quantized YOLOv8 model (84MB → 22MB)
-- [ ] Enable GPU acceleration (NNAPI delegates)
+**Performance Enhancements:**
+- [ ] Optimize OpenCV template matching (2x speed improvement goal)
+- [ ] Enable GPU acceleration for image processing (NNAPI delegates)
 - [ ] Implement TensorPool (36% RAM reduction)
 - [ ] Deploy BayesianFusionEngine (35% fewer false positives)
 - [ ] DeltaDetectionOptimizer (40% speedup via frame-skipping)
-- [ ] IncrementalLearningEngine (+20% recall on rare patterns)
+- [ ] Research Apache 2.0 licensed ML models for future enhancement (optional)
 
 **Performance Targets:**
 - Inference time: 20ms → 8ms (-60%)
@@ -144,7 +144,7 @@ Democratize professional-grade technical analysis through privacy-first, offline
 
 ### 🔬 **v2.0.0 - Advanced ML Features** (Q1 2027)
 
-**Focus:** Next-generation AI capabilities
+**Focus:** Next-generation AI capabilities (Apache 2.0 licensed models only)
 
 **Revolutionary Features:**
 - [ ] Real-time sentiment analysis (from chart patterns)
@@ -156,11 +156,11 @@ Democratize professional-grade technical analysis through privacy-first, offline
 - [ ] Support/resistance level detection (ML-based)
 - [ ] Trend strength analysis
 
-**Model Improvements:**
-- [ ] YOLOv9/v10 model upgrade
-- [ ] 200+ pattern support (expanded library)
+**Model Improvements (Apache 2.0 licensed only):**
+- [ ] Research and integrate Apache 2.0 licensed object detection models
+- [ ] 150+ pattern support (expanded library)
 - [ ] Custom model training (user data, optional)
-- [ ] Ensemble model voting (3+ models)
+- [ ] Ensemble model voting (multiple Apache 2.0 models)
 - [ ] Transfer learning for rare patterns
 
 ---

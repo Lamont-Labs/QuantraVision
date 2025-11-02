@@ -18,10 +18,17 @@ import timber.log.Timber
  * 
  * PRODUCTION STATUS: ARCHITECTURE PREP ONLY
  * ==========================================
- * This class represents planned future YOLOv8 ML integration. It is currently NOT used in 
+ * This class represents optional future ML integration infrastructure. It is currently NOT used in 
  * production detection. The current production system uses PatternDetector.kt with OpenCV 
- * template matching (102 patterns). This class exists to establish the architecture and 
- * optimization framework for when the YOLOv8 model integration is completed and validated.
+ * template matching (102 patterns, 100% Apache 2.0 licensed). This class exists to establish the 
+ * architecture and optimization framework for potential future ML model integration (Apache 2.0 
+ * licensed models only).
+ * 
+ * LICENSING COMPLIANCE:
+ * =====================
+ * - Current system: 100% Apache 2.0 licensed (OpenCV + TensorFlow Lite)
+ * - Any future ML models must be Apache 2.0 licensed for commercial use
+ * - Previous YOLOv8 references removed due to AGPL-3.0 licensing conflict
  * 
  * FUTURE CAPABILITIES (when activated):
  * =====================================
@@ -40,13 +47,14 @@ import timber.log.Timber
  * - RAM: 36% less (500 MB → 320 MB)
  * - Battery: 67% longer (3h → 5h in low-power mode)
  * 
- * INTEGRATION ROADMAP:
- * ====================
- * 1. Complete YOLOv8 model training and validation (in progress)
- * 2. Implement detectWithML() with actual TensorFlow Lite inference
- * 3. Benchmark performance and accuracy against template matching
- * 4. Gradual rollout with A/B testing and fallback mechanisms
- * 5. Production activation after validation period
+ * INTEGRATION ROADMAP (OPTIONAL FUTURE WORK):
+ * ============================================
+ * 1. Identify Apache 2.0 licensed ML models suitable for pattern detection
+ * 2. Train/adapt models on chart pattern dataset (must be Apache 2.0 licensed)
+ * 3. Implement detectWithML() with actual TensorFlow Lite inference
+ * 4. Benchmark performance and accuracy against template matching
+ * 5. Gradual rollout with A/B testing and fallback mechanisms
+ * 6. Production activation only after validation period and licensing verification
  */
 class OptimizedHybridDetector(private val context: Context) {
     

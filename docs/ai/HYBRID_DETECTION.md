@@ -1,8 +1,19 @@
-# QuantraVision Hybrid Dual-Detection System
+# QuantraVision Pattern Detection System
+
+## ⚠️ LICENSING COMPLIANCE UPDATE (November 2025)
+
+**CURRENT PRODUCTION STATUS:**
+- **Active System:** OpenCV template matching (102 patterns, 100% Apache 2.0 licensed)
+- **ML Integration:** Optional future enhancement only (requires Apache 2.0 licensed models)
+- **YOLOv8 References:** Historical documentation - NOT currently used due to AGPL-3.0 licensing conflict
+
+This document describes the infrastructure for potential future ML integration. The current production system uses **template matching only** to ensure 100% Apache 2.0 licensing compliance for commercial use.
+
+---
 
 ## Overview
 
-QuantraVision uses a **hybrid dual-tier pattern detection system** combining machine learning and traditional computer vision for maximum accuracy and coverage.
+QuantraVision's detection system currently uses OpenCV template matching (102 patterns). The infrastructure supports future Apache 2.0 licensed ML model integration as an optional enhancement.
 
 ---
 

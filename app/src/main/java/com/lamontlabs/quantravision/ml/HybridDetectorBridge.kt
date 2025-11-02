@@ -38,12 +38,15 @@ import timber.log.Timber
  * - Phase 3: Delta detection for frame-skipping (ACTIVE, reduces redundant processing)
  * - Phase 5: Adaptive power management (ACTIVE, adjusts FPS based on battery/thermal)
  * 
- * FUTURE ENHANCEMENT:
- * ===================
- * When OptimizedHybridDetector.kt becomes active with YOLOv8 integration:
- * - Phase 1: Will add GPU-accelerated ML inference alongside template matching
- * - Phase 4: Will enable incremental learning from user feedback
- * - Fusion engine will combine both ML and template detections with Bayesian probability
+ * FUTURE ENHANCEMENT (OPTIONAL):
+ * ================================
+ * The infrastructure supports future ML model integration (Apache 2.0 licensed only):
+ * - Phase 1: Could add GPU-accelerated ML inference alongside template matching
+ * - Phase 4: Could enable incremental learning from user feedback
+ * - Fusion engine ready to combine ML and template detections with Bayesian probability
+ * 
+ * NOTE: Current system is 100% Apache 2.0 licensed. Any future ML models must also be
+ * Apache 2.0 licensed. Previous YOLOv8 references removed due to AGPL-3.0 licensing conflict.
  * 
  * Usage:
  * ```kotlin
@@ -72,7 +75,7 @@ class HybridDetectorBridge(private val context: Context) {
      * This method wraps the existing detector with optimization layers:
      * 1. Delta detection (skip if unchanged)
      * 2. Adaptive power policy
-     * 3. Existing hybrid detection (ML + templates)
+     * 3. OpenCV template detection (102 patterns, Apache 2.0 licensed)
      * 4. Bayesian fusion
      * 5. Temporal stabilization
      */

@@ -43,8 +43,8 @@ By downloading, installing, or using QuantraVision ("the App"), you agree to be 
 
 **NO GUARANTEES OF ACCURACY:**
 
-1. Pattern detections use computer vision algorithms (OpenCV, YOLOv8, TensorFlow Lite) that may produce false positives, false negatives, or incorrect confidence scores
-2. AI/ML models are trained on historical data and may not generalize to current market conditions
+1. Pattern detections use computer vision algorithms (OpenCV, TensorFlow Lite) that may produce false positives, false negatives, or incorrect confidence scores
+2. Computer vision algorithms are trained on historical data and may not generalize to current market conditions
 3. Pattern detection may fail due to image quality, unusual chart formats, or technical limitations
 4. Confidence scores are probabilistic estimates, not guarantees
 5. Past pattern performance does not predict future results
@@ -86,9 +86,9 @@ By downloading, installing, or using QuantraVision ("the App"), you agree to be 
 
 **Pricing Tiers:**
 
-1. **Free Tier**: Limited features with watermarked overlays (always free)
-2. **Standard ($9.99 USD one-time)**: Full 108 pattern library, remove watermarks, enhanced detection
-3. **Pro ($24.99 USD one-time)**: All Standard features plus voice alerts, predictive detection, backtesting, advanced analytics, priority support
+1. **Free Tier**: Limited features with 10 basic patterns (always free)
+2. **Standard ($9.99 USD one-time)**: 30 core patterns, remove watermarks, enhanced detection
+3. **Pro ($24.99 USD one-time)**: All 102 patterns, voice alerts, predictive detection, backtesting, advanced analytics, priority support
 
 **Purchase Terms:**
 
@@ -150,8 +150,8 @@ You agree to indemnify, defend, and hold harmless Lamont Labs, its officers, emp
 
 1. All App content, code, models, patterns, icons, and branding are owned by Lamont Labs
 2. You do not acquire any ownership rights by using the App
-3. Third-party libraries are used under their respective open-source licenses
-4. YOLOv8 model is used under GPL-3.0 license (see attributions)
+3. Third-party libraries are used under their respective open-source licenses (Apache 2.0)
+4. All technology used in this App is 100% Apache 2.0 licensed for commercial use compliance
 
 ---
 

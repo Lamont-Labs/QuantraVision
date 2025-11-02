@@ -10,7 +10,7 @@
 
 ### What is QuantraVision?
 
-QuantraVision is a professional Android application that uses AI to detect 108 chart patterns in real-time. It operates 100% offline, protecting your privacy while providing institutional-grade pattern recognition for retail traders.
+QuantraVision is a professional Android application that uses AI to detect 102 chart patterns in real-time. It operates 100% offline, protecting your privacy while providing institutional-grade pattern recognition for retail traders. All technology is 100% Apache 2.0 licensed for commercial use compliance.
 
 ### How much does it cost?
 
@@ -121,18 +121,18 @@ Currently, QuantraVision is Android-only. iOS, web, and desktop versions are on 
 
 ### How many patterns can QuantraVision detect?
 
-**108 unique chart patterns** across three categories:
-- **Bullish:** 60 patterns
-- **Bearish:** 40 patterns
-- **Neutral/Continuation:** 8 patterns
+**102 unique chart patterns** across three categories:
+- **Bullish:** 58 patterns
+- **Bearish:** 38 patterns
+- **Neutral/Continuation:** 6 patterns
 
 ### How accurate is the pattern detection?
 
-**93.2% mAP@0.5** (Mean Average Precision)
-- YOLOv8 ML model: Trained on 9,000 real trading charts
-- OpenCV templates: 119 reference images
-- Bayesian fusion: Combines both for higher accuracy
-- Temporal stability: Eliminates false positives
+**High accuracy template matching** with optimization layers:
+- OpenCV template matching: 102 reference patterns trained on real trading charts
+- Bayesian fusion: Statistical analysis for higher accuracy
+- Temporal stability: Eliminates false positives and flickering
+- 100% Apache 2.0 licensed technology for commercial use compliance
 
 ### What do the different pattern colors mean?
 
