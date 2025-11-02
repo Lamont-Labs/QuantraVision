@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.analytics.PatternPerformanceTracker
 import com.lamontlabs.quantravision.analytics.model.Outcome
+import com.lamontlabs.quantravision.ui.success
+import com.lamontlabs.quantravision.ui.warning
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +44,7 @@ fun FeedbackSheet(
                 Icon(
                     Icons.Default.CheckCircle,
                     contentDescription = "Success",
-                    tint = Color(0xFF4CAF50),
+                    tint = MaterialTheme.colorScheme.success,
                     modifier = Modifier.size(64.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -86,15 +88,15 @@ fun FeedbackSheet(
                         onClick = { selectedOutcome = Outcome.WIN },
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = if (selectedOutcome == Outcome.WIN) 
-                                Color(0xFF4CAF50).copy(alpha = 0.2f) 
+                                MaterialTheme.colorScheme.success.copy(alpha = 0.2f) 
                             else Color.Transparent
                         ),
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.ThumbUp, "Win", tint = Color(0xFF4CAF50))
+                            Icon(Icons.Default.ThumbUp, "Win", tint = MaterialTheme.colorScheme.success)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Win", color = Color(0xFF4CAF50))
+                            Text("Win", color = MaterialTheme.colorScheme.success)
                         }
                     }
                     
@@ -102,15 +104,15 @@ fun FeedbackSheet(
                         onClick = { selectedOutcome = Outcome.NEUTRAL },
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = if (selectedOutcome == Outcome.NEUTRAL) 
-                                Color(0xFFFF9800).copy(alpha = 0.2f) 
+                                MaterialTheme.colorScheme.warning.copy(alpha = 0.2f) 
                             else Color.Transparent
                         ),
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.Remove, "Neutral", tint = Color(0xFFFF9800))
+                            Icon(Icons.Default.Remove, "Neutral", tint = MaterialTheme.colorScheme.warning)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Neutral", color = Color(0xFFFF9800))
+                            Text("Neutral", color = MaterialTheme.colorScheme.warning)
                         }
                     }
                     
@@ -118,15 +120,15 @@ fun FeedbackSheet(
                         onClick = { selectedOutcome = Outcome.LOSS },
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = if (selectedOutcome == Outcome.LOSS) 
-                                Color(0xFFF44336).copy(alpha = 0.2f) 
+                                MaterialTheme.colorScheme.error.copy(alpha = 0.2f) 
                             else Color.Transparent
                         ),
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.ThumbDown, "Loss", tint = Color(0xFFF44336))
+                            Icon(Icons.Default.ThumbDown, "Loss", tint = MaterialTheme.colorScheme.error)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Loss", color = Color(0xFFF44336))
+                            Text("Loss", color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }

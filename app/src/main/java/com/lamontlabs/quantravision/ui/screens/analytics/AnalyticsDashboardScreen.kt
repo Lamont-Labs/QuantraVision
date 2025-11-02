@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.analytics.model.WinRateStats
 import com.lamontlabs.quantravision.analytics.model.TimeOfDayStats
 import com.lamontlabs.quantravision.licensing.ProFeatureGate
+import com.lamontlabs.quantravision.ui.success
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -276,9 +277,9 @@ private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isPositive) 
-                Color(0xFF4CAF50).copy(alpha = 0.1f)
+                MaterialTheme.colorScheme.success.copy(alpha = 0.1f)
             else 
-                Color(0xFFF44336).copy(alpha = 0.1f)
+                MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
         )
     ) {
         Row(
@@ -306,7 +307,7 @@ private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
                     "${(pattern.winRate * 100).toInt()}%",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = if (isPositive) Color(0xFF4CAF50) else Color(0xFFF44336)
+                    color = if (isPositive) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error
                 )
                 Text(
                     "Win Rate",
@@ -350,7 +351,7 @@ private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
                             .height(24.dp)
                             .fillMaxWidth(widthFraction)
                             .background(
-                                Color(0xFF2196F3).copy(alpha = 0.7f),
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )

@@ -258,7 +258,7 @@ fun SimilarityResultCard(pattern: PatternSimilaritySearch.SimilarPattern) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -296,12 +296,13 @@ fun SimilarityResultCard(pattern: PatternSimilaritySearch.SimilarPattern) {
     }
 }
 
+@Composable
 private fun getSimilarityColor(similarity: Double): Color {
     return when {
-        similarity >= 0.8 -> Color(0xFF4CAF50)
-        similarity >= 0.6 -> Color(0xFF8BC34A)
-        similarity >= 0.4 -> Color(0xFFFFC107)
-        else -> Color(0xFFFF9800)
+        similarity >= 0.8 -> MaterialTheme.colorScheme.success
+        similarity >= 0.6 -> MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
+        similarity >= 0.4 -> MaterialTheme.colorScheme.warning.copy(alpha = 0.8f)
+        else -> MaterialTheme.colorScheme.warning
     }
 }
 

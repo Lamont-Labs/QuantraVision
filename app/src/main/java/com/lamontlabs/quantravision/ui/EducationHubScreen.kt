@@ -45,12 +45,12 @@ fun EducationHubScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFF0A1218),
-                        titleContentColor = Color(0xFF00E5FF)
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary
                     )
                 )
             },
-            containerColor = Color(0xFF0A1218)
+            containerColor = MaterialTheme.colorScheme.background
         ) { padding ->
             LessonListContent(
                 modifier = Modifier.padding(padding),
@@ -77,14 +77,14 @@ private fun LessonListContent(
             Text(
                 text = "Master Chart Pattern Recognition",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Complete 25 interactive lessons to earn your certification",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -95,7 +95,7 @@ private fun LessonListContent(
                 Text(
                     text = category,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -122,7 +122,7 @@ private fun LessonCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1A2530)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -134,13 +134,13 @@ private fun LessonCard(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(Color(0xFF00E5FF).copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = null,
-                    tint = Color(0xFF00E5FF)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             
@@ -152,14 +152,14 @@ private fun LessonCard(
                 Text(
                     text = lesson.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${lesson.duration} • ${lesson.quiz.questions.size} quiz questions",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -191,12 +191,12 @@ private fun LessonDetailScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFF0A1218),
-                        titleContentColor = Color(0xFF00E5FF)
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary
                     )
                 )
             },
-            containerColor = Color(0xFF0A1218)
+            containerColor = MaterialTheme.colorScheme.background
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -212,7 +212,7 @@ private fun LessonDetailScreen(
                         Text(
                             text = lesson.content,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -223,10 +223,10 @@ private fun LessonDetailScreen(
                         .fillMaxWidth()
                         .padding(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF00E5FF)
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text("Take Quiz", color = Color.Black)
+                    Text("Take Quiz", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }
@@ -257,12 +257,12 @@ private fun QuizScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0A1218),
-                    titleContentColor = Color(0xFF00E5FF)
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
         },
-        containerColor = Color(0xFF0A1218)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -273,7 +273,7 @@ private fun QuizScreen(
             LinearProgressIndicator(
                 progress = (currentQuestionIndex + 1) / quiz.questions.size.toFloat(),
                 modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF00E5FF)
+                color = MaterialTheme.colorScheme.primary
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -281,7 +281,7 @@ private fun QuizScreen(
             Text(
                 text = "Question ${currentQuestionIndex + 1} of ${quiz.questions.size}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -289,7 +289,7 @@ private fun QuizScreen(
             Text(
                 text = currentQuestion.question,
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             
@@ -314,13 +314,13 @@ private fun QuizScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1A2530)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
                     Text(
                         text = currentQuestion.explanation,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -348,14 +348,14 @@ private fun QuizScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = selectedAnswer != null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00E5FF)
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text(
                     if (!showExplanation) "Check Answer" 
                     else if (currentQuestionIndex < quiz.questions.size - 1) "Next Question"
                     else "Finish Quiz (Score: $score/${quiz.questions.size})",
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -371,16 +371,16 @@ private fun OptionCard(
     onClick: () -> Unit
 ) {
     val backgroundColor = when {
-        showResult && isCorrect -> Color(0xFF00E5FF).copy(alpha = 0.2f)
-        showResult && isSelected && !isCorrect -> Color.Red.copy(alpha = 0.2f)
-        isSelected -> Color(0xFF00E5FF).copy(alpha = 0.1f)
-        else -> Color(0xFF1A2530)
+        showResult && isCorrect -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+        showResult && isSelected && !isCorrect -> MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+        isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+        else -> MaterialTheme.colorScheme.surfaceVariant
     }
     
     val borderColor = when {
-        showResult && isCorrect -> Color(0xFF00E5FF)
-        showResult && isSelected && !isCorrect -> Color.Red
-        isSelected -> Color(0xFF00E5FF)
+        showResult && isCorrect -> MaterialTheme.colorScheme.primary
+        showResult && isSelected && !isCorrect -> MaterialTheme.colorScheme.error
+        isSelected -> MaterialTheme.colorScheme.primary
         else -> Color.Transparent
     }
     
@@ -403,7 +403,7 @@ private fun OptionCard(
             Text(
                 text = option,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
             
@@ -411,7 +411,7 @@ private fun OptionCard(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Correct",
-                    tint = Color(0xFF00E5FF)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

@@ -25,6 +25,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import com.lamontlabs.quantravision.ui.success
+import com.lamontlabs.quantravision.ui.warning
+import com.lamontlabs.quantravision.ui.error
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -286,7 +289,7 @@ fun BacktestSummaryCard(results: List<BacktestEngine.BacktestResult>) {
                 SummaryItem(
                     "Avg Profit/Loss",
                     String.format("%.2f%%", avgProfitability),
-                    color = if (avgProfitability >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                    color = if (avgProfitability >= 0) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -319,9 +322,9 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
                 Surface(
                     shape = MaterialTheme.shapes.small,
                     color = when {
-                        result.accuracy >= 70 -> Color(0xFF4CAF50)
-                        result.accuracy >= 50 -> Color(0xFFFFC107)
-                        else -> Color(0xFFF44336)
+                        result.accuracy >= 70 -> MaterialTheme.colorScheme.success
+                        result.accuracy >= 50 -> MaterialTheme.colorScheme.warning
+                        else -> MaterialTheme.colorScheme.error
                     }
                 ) {
                     Text(
@@ -329,7 +332,7 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -346,7 +349,7 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
                 MetricItem(
                     "Profitability",
                     String.format("%.2f%%", result.profitability),
-                    color = if (result.profitability >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                    color = if (result.profitability >= 0) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error
                 )
             }
             

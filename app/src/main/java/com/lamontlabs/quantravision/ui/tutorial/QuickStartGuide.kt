@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lamontlabs.quantravision.ui.success
+import com.lamontlabs.quantravision.ui.warning
 
 /**
  * QuickStartGuide - Always-accessible reference guide
@@ -35,7 +37,7 @@ fun QuickStartGuide(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        color = Color(0xFF1A2A3A),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 4.dp
     ) {
@@ -52,7 +54,7 @@ fun QuickStartGuide(
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
-                        tint = Color(0xFF00E5FF),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -60,7 +62,7 @@ fun QuickStartGuide(
                         text = "Quick Start",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
@@ -72,14 +74,14 @@ fun QuickStartGuide(
                             else 
                                 Icons.Default.ExpandMore,
                             contentDescription = "Expand",
-                            tint = Color(0xFF00E5FF)
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color(0xFFB0BEC5)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -94,7 +96,7 @@ fun QuickStartGuide(
                     icon = Icons.Default.ShowChart,
                     title = "Open Chart App FIRST",
                     description = "TradingView, Webull, Robinhood, etc.",
-                    color = Color(0xFF4CAF50)
+                    color = MaterialTheme.colorScheme.success
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -104,7 +106,7 @@ fun QuickStartGuide(
                     icon = Icons.Default.Apps,
                     title = "Open QuantraVision",
                     description = "Press Home, then open this app",
-                    color = Color(0xFF00E5FF)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -114,7 +116,7 @@ fun QuickStartGuide(
                     icon = Icons.Default.PlayArrow,
                     title = "Tap 'Start Overlay'",
                     description = "Wait 5-10 seconds for detection",
-                    color = Color(0xFFFF9800)
+                    color = MaterialTheme.colorScheme.warning
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -124,7 +126,7 @@ fun QuickStartGuide(
                     onClick = onOpenFullTutorial,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color(0xFF00E5FF)
+                        contentColor = MaterialTheme.colorScheme.primary
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -141,7 +143,7 @@ fun QuickStartGuide(
                 Text(
                     text = "Chart app → QuantraVision → Start Overlay",
                     fontSize = 14.sp,
-                    color = Color(0xFFB0BEC5)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -160,7 +162,7 @@ private fun OrderedStepCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF0A1218))
+            .background(MaterialTheme.colorScheme.background)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -176,7 +178,7 @@ private fun OrderedStepCard(
                 text = number.toString(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         
@@ -198,12 +200,12 @@ private fun OrderedStepCard(
                 text = title,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = description,
                 fontSize = 13.sp,
-                color = Color(0xFFB0BEC5)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

@@ -53,10 +53,10 @@ fun OverlayButton(
     size: Dp = 56.dp,
     glow: Boolean = true,
 ) {
-    val onCol = Color(0xFF00E5FF) // neon cyan
-    val offCol = Color(0xFF1B2A38)
+    val onCol = MaterialTheme.colorScheme.primary // neon cyan
+    val offCol = MaterialTheme.colorScheme.surfaceVariant
     val tint by animateColorAsState(
-        if (isActive) onCol else Color(0xFF7A8FA6),
+        if (isActive) onCol else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = spring(stiffness = Spring.StiffnessLow),
         label = "tint"
     )
@@ -70,13 +70,13 @@ fun OverlayButton(
             badge = {
                 AnimatedVisibility(visible = (remainingHighlights ?: -1) >= 0) {
                     Badge(
-                        containerColor = if ((remainingHighlights ?: 0) > 0) onCol else Color(0xFFFF6B6B)
+                        containerColor = if ((remainingHighlights ?: 0) > 0) onCol else MaterialTheme.colorScheme.error
                     ) {
                         Text(
                             text = "${remainingHighlights ?: 0}",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onError
                         )
                     }
                 }
@@ -168,8 +168,8 @@ private fun NeonCircle(
 
 @Composable
 private fun UpgradePill(onUpgrade: () -> Unit) {
-    val cyan = Color(0xFF00E5FF)
-    val dark = Color(0xFF0E1A24)
+    val cyan = MaterialTheme.colorScheme.primary
+    val dark = MaterialTheme.colorScheme.surface
     Surface(
         shape = CircleShape,
         color = dark.copy(alpha = 0.9f),

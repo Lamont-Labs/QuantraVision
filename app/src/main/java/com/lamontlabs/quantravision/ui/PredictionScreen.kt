@@ -142,7 +142,7 @@ fun PredictionScreen(onBack: () -> Unit) {
                                 Text(
                                     "${predictions.size} forming patterns detected",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = Color(0xFF00E5FF),
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -239,7 +239,7 @@ fun PredictionCard(prediction: PredictedPattern) {
                     Text(
                         prediction.stage.replace("_", " ").uppercase(),
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF00E5FF)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -247,7 +247,7 @@ fun PredictionCard(prediction: PredictedPattern) {
                     "${prediction.completionPercent.toInt()}%",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF00E5FF)
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 

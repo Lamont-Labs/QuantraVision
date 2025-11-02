@@ -136,7 +136,7 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
                     )
                     if (achievement.unlocked) {
                         Spacer(Modifier.width(8.dp))
-                        Text("✓", color = Color(0xFF00E5FF), fontSize = 20.sp)
+                        Text("✓", color = MaterialTheme.colorScheme.primary, fontSize = 20.sp)
                     }
                 }
                 
@@ -151,7 +151,7 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
                     Text(
                         "Reward: +${achievement.reward} highlight${if (achievement.reward > 1) "s" else ""}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF00E5FF),
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                 }

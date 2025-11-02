@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.achievements.model.Achievement
+import com.lamontlabs.quantravision.ui.gold
 import kotlinx.coroutines.delay
 
 @Composable
@@ -84,7 +85,7 @@ fun AchievementNotification(
                         imageVector = Icons.Default.EmojiEvents,
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        tint = Color(0xFFFFD700)
+                        tint = MaterialTheme.colorScheme.gold
                     )
                     
                     Spacer(modifier = Modifier.width(16.dp))

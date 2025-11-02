@@ -23,6 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lamontlabs.quantravision.ui.success
+import com.lamontlabs.quantravision.ui.warning
+import com.lamontlabs.quantravision.ui.gold
 
 /**
  * FirstTimeWalkthrough - Interactive in-app tutorial
@@ -45,14 +48,14 @@ fun FirstTimeWalkthrough(
             title = "Welcome to QuantraVision!",
             description = "The most advanced offline AI pattern detection for retail traders.\n\nLet's get you started in 4 simple steps.",
             icon = Icons.Default.Star,
-            iconColor = Color(0xFF00E5FF),
+            iconColor = MaterialTheme.colorScheme.primary,
             showOrderBadge = false
         ),
         WalkthroughStep(
             title = "Step 1: Open Your Chart App FIRST",
             description = "Before opening QuantraVision, open your trading chart:\n\n• TradingView\n• Webull\n• Robinhood\n• MetaTrader\n• Any chart app\n\nDisplay the chart you want to analyze.",
             icon = Icons.Default.ShowChart,
-            iconColor = Color(0xFF4CAF50),
+            iconColor = MaterialTheme.colorScheme.success,
             showOrderBadge = true,
             orderNumber = 1,
             emphasized = "FIRST"
@@ -61,7 +64,7 @@ fun FirstTimeWalkthrough(
             title = "Step 2: Open QuantraVision",
             description = "Now that your chart is visible on screen:\n\n1. Press Home button (chart stays in background)\n2. Open QuantraVision app\n3. You'll see the dashboard",
             icon = Icons.Default.Apps,
-            iconColor = Color(0xFF00E5FF),
+            iconColor = MaterialTheme.colorScheme.primary,
             showOrderBadge = true,
             orderNumber = 2
         ),
@@ -69,7 +72,7 @@ fun FirstTimeWalkthrough(
             title = "Step 3: Start Overlay",
             description = "From the QuantraVision dashboard:\n\n1. Tap 'Start Overlay' button\n2. Grant overlay permission if prompted\n3. QuantraVision will appear on top of your chart\n4. Wait 5-10 seconds for AI detection",
             icon = Icons.Default.Layers,
-            iconColor = Color(0xFFFF9800),
+            iconColor = MaterialTheme.colorScheme.warning,
             showOrderBadge = true,
             orderNumber = 3
         ),
@@ -77,7 +80,7 @@ fun FirstTimeWalkthrough(
             title = "Step 4: View Detections!",
             description = "You'll see patterns highlighted on your chart:\n\n🟢 Green = Bullish patterns\n🔴 Red = Bearish patterns\n🔵 Blue = Forming patterns\n\nTap any pattern to learn more!\n\nEnable voice announcements in Settings for hands-free alerts.",
             icon = Icons.Default.CheckCircle,
-            iconColor = Color(0xFF4CAF50),
+            iconColor = MaterialTheme.colorScheme.success,
             showOrderBadge = true,
             orderNumber = 4
         ),
@@ -85,7 +88,7 @@ fun FirstTimeWalkthrough(
             title = "You're All Set!",
             description = "Remember the sequence:\n\n1️⃣ Chart app FIRST\n2️⃣ QuantraVision second\n3️⃣ Start Overlay\n4️⃣ Watch the magic happen!\n\nTip: You can replay this tutorial anytime from Settings → Help → Tutorial",
             icon = Icons.Default.Celebration,
-            iconColor = Color(0xFFFFD700),
+            iconColor = MaterialTheme.colorScheme.gold,
             showOrderBadge = false
         )
     )
@@ -93,7 +96,7 @@ fun FirstTimeWalkthrough(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A1218))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -115,9 +118,9 @@ fun FirstTimeWalkthrough(
                             .clip(CircleShape)
                             .background(
                                 if (index <= currentStep) 
-                                    Color(0xFF00E5FF) 
+                                    MaterialTheme.colorScheme.primary 
                                 else 
-                                    Color(0xFF2A3A4A)
+                                    MaterialTheme.colorScheme.surfaceVariant
                             )
                     )
                     if (index < steps.size - 1) {
@@ -156,7 +159,7 @@ fun FirstTimeWalkthrough(
                 ) {
                     Text(
                         text = if (currentStep == 0) "Skip Tutorial" else "Back",
-                        color = Color(0xFF00E5FF)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 
@@ -170,8 +173,8 @@ fun FirstTimeWalkthrough(
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF00E5FF),
-                        contentColor = Color(0xFF0A1218)
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.background
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -199,7 +202,7 @@ private fun StepContent(step: WalkthroughStep) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1A2A3A))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -219,12 +222,12 @@ private fun StepContent(step: WalkthroughStep) {
                         .offset(x = 20.dp, y = (-10).dp)
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF00E5FF)),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = step.orderNumber.toString(),
-                        color = Color(0xFF0A1218),
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -239,7 +242,7 @@ private fun StepContent(step: WalkthroughStep) {
             text = step.title,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
         
@@ -249,7 +252,7 @@ private fun StepContent(step: WalkthroughStep) {
         Text(
             text = step.description,
             fontSize = 16.sp,
-            color = Color(0xFFB0BEC5),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             lineHeight = 24.sp
         )
@@ -258,13 +261,13 @@ private fun StepContent(step: WalkthroughStep) {
         if (step.emphasized != null) {
             Spacer(modifier = Modifier.height(16.dp))
             Surface(
-                color = Color(0xFF00E5FF).copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = "⚠️ Important: Open chart app ${step.emphasized}",
                     modifier = Modifier.padding(12.dp),
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center

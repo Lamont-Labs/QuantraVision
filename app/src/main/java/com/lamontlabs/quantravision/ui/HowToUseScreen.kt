@@ -26,7 +26,7 @@ fun HowToUseScreen(onBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A1015)),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -34,13 +34,13 @@ fun HowToUseScreen(onBack: () -> Unit) {
                 .padding(24.dp)
                 .verticalScroll(scroll)
                 .fillMaxWidth()
-                .background(Color(0xFF121820), shape = MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 "How to Use QuantraVision",
-                color = Color(0xFF00E5FF),
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -63,7 +63,7 @@ fun HowToUseScreen(onBack: () -> Unit) {
             steps.forEach {
                 Text(
                     it,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
@@ -74,7 +74,7 @@ fun HowToUseScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(20.dp))
             TextButton(onClick = onBack) {
-                Text("Back", color = Color(0xFF00E5FF))
+                Text("Back", color = MaterialTheme.colorScheme.primary)
             }
         }
     }

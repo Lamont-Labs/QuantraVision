@@ -25,21 +25,21 @@ fun UsageOverlay(limiter: PatternUsageLimiter) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xAA000000))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.67f))
                 .padding(10.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Free Tier: ${state.detectionsRemaining} detections left",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold
                 )
                 if (state.detectionsRemaining == 0) {
                     Text(
                         text = "Upgrade to continue detecting patterns.",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

@@ -20,6 +20,8 @@ import com.lamontlabs.quantravision.ui.paywall.ProUpgradePrompt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.lamontlabs.quantravision.ui.success
+import com.lamontlabs.quantravision.ui.warning
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -307,7 +309,7 @@ fun ComparisonSummaryCard(result: MultiChartComparison.ComparisonResult) {
                 SummaryItem(
                     "Trend Alignment",
                     String.format("%.0f%%", trendAlignment * 100),
-                    color = if (trendAlignment >= 0.7) Color(0xFF4CAF50) else Color(0xFFFFC107)
+                    color = if (trendAlignment >= 0.7) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.warning
                 )
             }
         }
@@ -340,9 +342,9 @@ fun CorrelationCard(correlation: MultiChartComparison.CrossChartCorrelation) {
                 Surface(
                     shape = MaterialTheme.shapes.small,
                     color = when (correlation.correlation) {
-                        "strong" -> Color(0xFF4CAF50)
-                        "moderate" -> Color(0xFFFFC107)
-                        else -> Color(0xFFFF9800)
+                        "strong" -> MaterialTheme.colorScheme.success
+                        "moderate" -> MaterialTheme.colorScheme.warning
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 ) {
                     Text(
@@ -350,7 +352,7 @@ fun CorrelationCard(correlation: MultiChartComparison.CrossChartCorrelation) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
