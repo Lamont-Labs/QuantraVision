@@ -486,7 +486,7 @@ fun ScanInsightsTab() {
 }
 
 @Composable
-fun EducationalDisclaimer() {
+private fun EducationalDisclaimer() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
