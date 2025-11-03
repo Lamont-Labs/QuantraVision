@@ -4,6 +4,8 @@ import android.content.Context
 import org.json.JSONObject
 import java.io.File
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.*
 
 /**

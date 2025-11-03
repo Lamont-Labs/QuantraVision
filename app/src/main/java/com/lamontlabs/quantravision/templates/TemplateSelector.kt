@@ -1,6 +1,7 @@
 package com.lamontlabs.quantravision.templates
 
 import android.content.Context
+import com.lamontlabs.quantravision.Template
 import com.lamontlabs.quantravision.TemplateLibrary
 
 /**
@@ -10,13 +11,13 @@ import com.lamontlabs.quantravision.TemplateLibrary
  */
 object TemplateSelector {
 
-    fun loadEnabledTemplates(context: Context, library: TemplateLibrary.TemplateSet): TemplateLibrary.TemplateSet {
+    fun loadEnabledTemplates(context: Context, templates: List<Template>): List<Template> {
         val enabled = PatternCatalog.enabledIds(context)
-        // Keep any template whose file id (filename without extension) is in enabled set
-        val filtered = library.templates.filter { t ->
-            val id = t.sourceId ?: t.name.replace("\\s+".toRegex(), "_").lowercase()
+        // Keep any template whose name is in enabled set
+        val filtered = templates.filter { t ->
+            val id = t.name.replace("\\s+".toRegex(), "_").lowercase()
             enabled.contains(id) || enabled.isEmpty() // if catalog not initialized yet, default to all
         }
-        return library.copy(templates = filtered)
+        return filtered
     }
 }

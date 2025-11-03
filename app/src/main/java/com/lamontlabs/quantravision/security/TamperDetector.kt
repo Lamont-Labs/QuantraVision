@@ -79,7 +79,7 @@ class TamperDetector(private val context: Context) {
                 0
             )
             
-            val sourceDir = packageInfo.applicationInfo.sourceDir
+            val sourceDir = packageInfo.applicationInfo?.sourceDir ?: return true
             val apkFile = File(sourceDir)
             
             if (!apkFile.exists()) {

@@ -191,12 +191,12 @@ object RegimeNavigator {
         AdvancedFeatureGate.requireAcceptance(context, "Regime Navigator")
         
         val historicalSuccessRate = estimateHistoricalSuccessRate(
-            match.patternId,
+            match.patternName,
             regime
         )
         
         val recommendation = generateEducationalRecommendation(
-            match.patternId,
+            match.patternName,
             regime,
             historicalSuccessRate
         )

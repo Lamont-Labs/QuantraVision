@@ -71,10 +71,12 @@ object PatternCatalog {
     private fun extractNameFromYaml(f: File): String? {
         // Lightweight parse: read first ~40 lines searching for "name:"
         var count = 0
-        f.forEachLine { line ->
-            if (count++ > 40) return@forEachLine
-            val m = Regex("""^\s*name\s*:\s*["']?(.+?)["']?\s*$""").find(line)
-            if (m != null) return m.groupValues[1].trim()
+        f.useLines { lines ->
+            for (line in lines) {
+                if (count++ > 40) break
+                val m = Regex("""^\s*name\s*:\s*["']?(.+?)["']?\s*$""").find(line)
+                if (m != null) return m.groupValues[1].trim()
+            }
         }
         return null
     }
