@@ -1,0 +1,162 @@
+workflows:
+  quantravision-android:
+    name: QuantraVision Android Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    
+    environment:
+      # Android code signing (optional - upload keystore to Codemagic for signed builds)
+      android_signing:
+        - quantravision_keystore
+      
+      # Environment variable groups (configure in Codemagic UI if needed)
+      groups:
+        - google_play  # Optional: for Google Play publishing
+      
+      # Project-specific variables
+      vars:
+        PACKAGE_NAME: "com.lamontlabs.quantravision"
+        # Gradle JVM settings for large build (OpenCV + TensorFlow Lite)
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dkotlin.daemon.jvm.options=-Xmx4g"
+      
+      java: 17  # JDK 17 required for AGP 8.7.3
+    
+    # Caching to speed up subsequent builds
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+        - $HOME/.gradle/wrapper
+        - $HOME/.android/build-cache
+        - $HOME/.konan
+    
+    # Build triggers
+    triggering:
+      events:
+        - push
+        - pull_request
+        - tag
+      branch_patterns:
+        - pattern: "main"
+          include: true
+        - pattern: "develop"
+          include: true
+        - pattern: "release/*"
+          include: true
+    
+    scripts:
+      # 1. Set up Android SDK location
+      - name: Set Android SDK location
+        script: | 
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      
+      # 2. Make gradlew executable
+      - name: Make gradlew executable
+        script: | 
+          chmod +x gradlew
+      
+      # 3. Run lint checks (optional - won't block build)
+      - name: Run Android Lint
+        script: | 
+          ./gradlew lintDebug
+        ignore_failure: true
+      
+      # 4. Run unit tests (optional)
+      - name: Run unit tests
+        script: | 
+          ./gradlew test --stacktrace
+        test_report: app/build/test-results/**/*.xml
+        ignore_failure: true
+      
+      # 5. Build debug APK (always)
+      - name: Build debug APK
+        script: | 
+          ./gradlew assembleDebug --stacktrace
+      
+      # 6. Build release APK (unsigned for testing, or signed if keystore configured)
+      - name: Build release APK
+        script: | 
+          ./gradlew assembleRelease --stacktrace
+      
+      # 7. Build release bundle (AAB) for Google Play (optional)
+      - name: Build release bundle (AAB)
+        script: | 
+          # Get latest build number from Google Play (if publishing)
+          # LATEST_BUILD=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" || echo "0")
+          # BUILD_NUMBER=$((LATEST_BUILD + 1))
+          
+          # For now, use Codemagic's auto-incrementing build number
+          ./gradlew bundleRelease \
+            -PversionCode=$BUILD_NUMBER \
+            -PversionName=1.0.$BUILD_NUMBER \
+            --stacktrace
+        ignore_failure: true  # Won't fail if signing not configured
+    
+    # Collect all build outputs
+    artifacts:
+      - app/build/outputs/**/*.apk
+      - app/build/outputs/**/*.aab
+      - app/build/outputs/mapping/release/mapping.txt  # ProGuard mapping
+      - app/build/reports/**  # Lint and test reports
+    
+    # Build notifications and publishing
+    publishing:
+      # Email notifications
+      email:
+        recipients:
+          - your-email@example.com  # Replace with your email
+        notify:
+          success: true
+          failure: true
+      
+      # Slack notifications (optional)
+      # slack:
+      #   channel: '#builds'
+      #   notify_on_build_start: false
+      #   notify:
+      #     success: true
+      #     failure: true
+      
+      # Google Play Store publishing (optional - requires setup)
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal  # Options: internal, alpha, beta, production
+      #   submit_as_draft: true
+      #   in_app_update_priority: 3
+      #   rollout_fraction: 0.25
+      #   changes_not_sent_for_review: false
+
+  # Quick debug build workflow (faster, no signing/publishing)
+  quantravision-quick:
+    name: QuantraVision Quick Build
+    max_build_duration: 60
+    instance_type: linux_x2
+    
+    environment:
+      vars:
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g"
+      java: 17
+    
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+    
+    scripts:
+      - name: Set Android SDK
+        script: | 
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      
+      - name: Build debug APK
+        script: | 
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+    
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+    
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: false
+          failure: true

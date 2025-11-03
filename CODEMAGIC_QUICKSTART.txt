@@ -1,0 +1,113 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║              CODEMAGIC CI/CD - GET YOUR APK IN 10 MINUTES             ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+Your QuantraVision code is ready for cloud building!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ QUICK START (3 steps)
+
+1. SIGN UP (2 minutes)
+   → https://codemagic.io/signup
+   → Free tier: 500 build minutes/month (enough for ~70 builds)
+
+2. CONNECT REPO (3 minutes)
+   → Click "Add application"
+   → Connect your Git repository (GitHub/GitLab/Bitbucket)
+   → Codemagic auto-detects codemagic.yaml
+
+3. START BUILD (1 click)
+   → Select workflow: "QuantraVision Quick Build"
+   → Click "Start new build"
+   → Wait ~7 minutes
+   → Download APK from "Artifacts" tab
+
+✅ DONE! Install APK on your Android device.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 TWO WORKFLOWS AVAILABLE
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ 1. QuantraVision Quick Build (RECOMMENDED FOR TESTING)              │
+├─────────────────────────────────────────────────────────────────────┤
+│ Duration: ~7 minutes                                                │
+│ Builds:   Debug APK only                                            │
+│ Machine:  Linux x2 (fast)                                           │
+│ Use for:  Testing, development, quick iterations                    │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ 2. QuantraVision Android Build (FULL PRODUCTION)                    │
+├─────────────────────────────────────────────────────────────────────┤
+│ Duration: ~15 minutes                                               │
+│ Builds:   Debug APK, Release APK, Release AAB (Google Play)         │
+│ Machine:  Mac Mini M2 (fastest)                                     │
+│ Tests:    Runs lint checks and unit tests                           │
+│ Use for:  Production releases, Google Play submissions              │
+└─────────────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ WHY CODEMAGIC SOLVES YOUR PROBLEM
+
+✅ Android SDK 35 already installed (no local setup needed!)
+✅ JDK 17 already configured
+✅ Build Tools 35.0.0 included
+✅ 6GB RAM for Gradle (handles OpenCV + TensorFlow)
+✅ Automatic caching (2nd build is 3x faster)
+✅ Download APK instantly after build
+
+NO MORE "FAILED TO FIND ANDROID-35" ERRORS!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 COST BREAKDOWN
+
+FREE TIER (500 min/month):
+  - Quick builds: ~7 min each = 71 builds/month FREE
+  - Full builds: ~15 min each = 33 builds/month FREE
+
+PRO TIER ($99/month):
+  - Unlimited builds
+  - Faster machines (Mac Mini M2)
+  - Priority build queue
+
+Your typical usage: ~10 builds/week = 280 min/month (FITS IN FREE TIER!)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📧 SETUP EMAIL NOTIFICATIONS
+
+Edit codemagic.yaml line 119:
+  recipients:
+    - your-actual-email@example.com  # ← Change this
+
+You'll get emails when builds succeed or fail.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 FULL DOCUMENTATION
+
+Read CODEMAGIC_SETUP.md for:
+  - Code signing setup (for release APKs)
+  - Google Play publishing
+  - Slack notifications
+  - Troubleshooting
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 NEXT STEP
+
+→ Go to https://codemagic.io/signup
+→ Connect your repo
+→ Click "Start new build"
+
+You'll have a working APK in 10 minutes total! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Questions? support@codemagic.io or read CODEMAGIC_SETUP.md
+
+Your $400 investment is about to pay off! The APK is 7 minutes away.

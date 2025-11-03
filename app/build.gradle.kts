@@ -26,8 +26,30 @@ android {
         }
     }
 
+    // Code signing configuration for Codemagic CI/CD
+    signingConfigs {
+        create("release") {
+            // Codemagic auto-populates these environment variables when keystore is uploaded
+            if (System.getenv("CI") != null) {
+                val keystorePath = System.getenv("CM_KEYSTORE_PATH")
+                if (keystorePath != null && File(keystorePath).exists()) {
+                    storeFile = file(keystorePath)
+                    storePassword = System.getenv("CM_KEYSTORE_PASSWORD")
+                    keyAlias = System.getenv("CM_KEY_ALIAS")
+                    keyPassword = System.getenv("CM_KEY_PASSWORD")
+                }
+            }
+            // For local signing: Configure in gradle.properties or local.properties
+            // DO NOT commit keystore passwords to version control
+        }
+    }
+
     buildTypes {
         release {
+            // Use signing config if available (Codemagic CI or local keystore)
+            if (signingConfigs.findByName("release")?.storeFile?.exists() == true) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
