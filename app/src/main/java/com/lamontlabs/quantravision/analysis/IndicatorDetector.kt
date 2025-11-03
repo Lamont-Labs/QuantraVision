@@ -160,6 +160,7 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
                     lineCount in 3..4 -> results.add(
                         IndicatorHit(IndicatorType.MA_SMA, "MA", 0.60f, Panel.MAIN)
                     )
+                    else -> Unit
                 }
             }
             
