@@ -335,9 +335,8 @@ private fun ScenarioRow(label: String, value: String) {
 
 private fun createSamplePattern(): PatternMatch {
     return PatternMatch(
-        id = "demo_hs_${System.currentTimeMillis()}",
+        id = 0,
         patternName = "Head and Shoulders",
-        patternId = "head_and_shoulders",
         confidence = 0.85,
         timestamp = System.currentTimeMillis(),
         originPath = "template",

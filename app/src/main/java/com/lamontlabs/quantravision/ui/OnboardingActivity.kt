@@ -17,17 +17,15 @@ class OnboardingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        billingManager = BillingManager(this) { success ->
-            if (success) finish()
-        }
-        billingManager.startConnection()
+        billingManager = BillingManager(this)
+        billingManager.initialize()
 
         setContent {
             QuantraVisionIntroScreen(onContinue = {
-                startActivity(Intent(this, OverlayGuide::class.java))
+                startActivity(Intent(this@OnboardingActivity, OverlayGuide::class.java))
                 finish()
             }, onPurchase = { sku ->
-                billingManager.launchPurchase(this, sku)
+                billingManager.launchPurchase(sku)
             })
         }
     }

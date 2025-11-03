@@ -81,7 +81,7 @@ class EnhancedOverlayRenderer(
 
     private fun drawEnhancedPattern(canvas: Canvas, match: PatternMatch) {
         val rect = match.boundingBox
-        val confidence = match.confidence
+        val confidence = match.confidence.toFloat()
         val style = PatternStyle.forPattern(match.patternName, confidence)
         
         val alpha = (255 * animationProgress).toInt()

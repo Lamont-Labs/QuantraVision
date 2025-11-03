@@ -23,7 +23,7 @@ object ThermalGuard {
         try {
             // ThermalService is only available on API 30+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val mgr = context.getSystemService(Context.THERMAL_SERVICE) as? android.os.PowerManager
+                val mgr = context.getSystemService("thermalservice") as? android.os.PowerManager
                 // Simplified: Just check if device is in thermal throttling via PowerManager
                 // Full ThermalService implementation requires API 30+ specific code
             }

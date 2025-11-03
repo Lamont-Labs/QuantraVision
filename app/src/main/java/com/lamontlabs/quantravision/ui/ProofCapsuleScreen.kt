@@ -406,9 +406,8 @@ private fun DetailRow(label: String, value: String) {
 
 private fun createSamplePattern(): PatternMatch {
     return PatternMatch(
-        id = "demo_proof_${System.currentTimeMillis()}",
+        id = 0,
         patternName = "Double Top",
-        patternId = "double_top",
         confidence = 0.78,
         timestamp = System.currentTimeMillis(),
         originPath = "template",

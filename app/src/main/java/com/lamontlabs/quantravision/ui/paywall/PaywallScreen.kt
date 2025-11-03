@@ -6,14 +6,64 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.billing.*
+
+/**
+ * PaywallScreen wrapper composable for navigation compatibility
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PaywallScreen(
+    onDismiss: () -> Unit,
+    onBook: (() -> Unit)? = null,
+    onStandard: (() -> Unit)? = null,
+    onPro: (() -> Unit)? = null
+) {
+    val activity = LocalContext.current as? Activity
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Upgrade") },
+                navigationIcon = {
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Default.Close, "Close")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            if (activity != null) {
+                val entitlements = remember { Entitlements.fromContext(activity) }
+                Paywall(
+                    activity = activity,
+                    entitlements = entitlements,
+                    onStarter = onStandard ?: {},
+                    onStandard = onStandard ?: {},
+                    onPro = onPro ?: {},
+                    onBook = onBook,
+                    hasBook = false
+                )
+            } else {
+                Text(
+                    "Error: Activity context required",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun Paywall(

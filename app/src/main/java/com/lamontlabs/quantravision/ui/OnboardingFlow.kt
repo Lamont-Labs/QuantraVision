@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision.ui
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -20,6 +22,7 @@ import com.lamontlabs.quantravision.system.PermissionHelper
  */
 @Composable
 fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
+    val activity = context as? Activity ?: (LocalContext.current as? Activity)
     // CRITICAL: Save and restore onboarding progress to handle force-close scenarios
     val prefs = remember { context.getSharedPreferences("qv_onboarding_prefs", Context.MODE_PRIVATE) }
     var step by remember { mutableStateOf(loadOnboardingProgress(prefs)) }
@@ -57,7 +60,7 @@ fun OnboardingFlow(context: Context, onComplete: () -> Unit) {
                     1 -> {
                         Text("Permissions", style = MaterialTheme.typography.titleLarge)
                         Text("We require overlay permission to display highlights and storage to save proof exports.")
-                        Button(onClick = { PermissionHelper.requestAll(context); step++ }) { Text("Grant") }
+                        Button(onClick = { activity?.let { PermissionHelper.requestAll(it) }; step++ }) { Text("Grant") }
                     }
                     2 -> {
                         Text("⚠️ Legal Disclaimer", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.error)

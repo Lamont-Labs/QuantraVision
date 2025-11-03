@@ -299,7 +299,7 @@ private fun QuizScreen(
                 OptionCard(
                     option = option,
                     isSelected = selectedAnswer == index,
-                    isCorrect = index == currentQuestion.correctAnswer,
+                    isCorrect = index == currentQuestion.correctAnswerIndex,
                     showResult = showExplanation,
                     onClick = {
                         if (!showExplanation) {
@@ -332,7 +332,7 @@ private fun QuizScreen(
                 onClick = {
                     if (!showExplanation) {
                         showExplanation = true
-                        if (selectedAnswer == currentQuestion.correctAnswer) {
+                        if (selectedAnswer == currentQuestion.correctAnswerIndex) {
                             score++
                         }
                     } else {
