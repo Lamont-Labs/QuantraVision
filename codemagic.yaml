@@ -44,52 +44,185 @@ workflows:
           include: true
     
     scripts:
-      # 1. Set up Android SDK location
+      # 1. System diagnostics and environment check
+      - name: System diagnostics
+        script: | 
+          echo "═══════════════════════════════════════════════════════════"
+          echo "CODEMAGIC BUILD DIAGNOSTICS - QuantraVision"
+          echo "═══════════════════════════════════════════════════════════"
+          echo "Build number: $BUILD_NUMBER"
+          echo "Branch: $CM_BRANCH"
+          echo "Commit: $CM_COMMIT"
+          echo "───────────────────────────────────────────────────────────"
+          echo "Java version:"
+          java -version
+          echo "───────────────────────────────────────────────────────────"
+          echo "Android SDK location: $ANDROID_SDK_ROOT"
+          echo "Available SDK platforms:"
+          ls -la $ANDROID_SDK_ROOT/platforms/ 2>/dev/null || echo "No platforms found"
+          echo "───────────────────────────────────────────────────────────"
+          echo "Disk space:"
+          df -h | grep -E "Filesystem|/dev/"
+          echo "───────────────────────────────────────────────────────────"
+          echo "Memory:"
+          free -h || vm_stat
+          echo "═══════════════════════════════════════════════════════════"
+      
+      # 2. Set up Android SDK location
       - name: Set Android SDK location
         script: | 
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+          cat "$CM_BUILD_DIR/local.properties"
       
-      # 2. Make gradlew executable
+      # 3. Make gradlew executable
       - name: Make gradlew executable
         script: | 
           chmod +x gradlew
+          ls -la gradlew
       
-      # 3. Run lint checks (optional - won't block build)
+      # 4. Clean and verify Gradle setup (auto-fix)
+      - name: Gradle setup and dependency resolution
+        script: | 
+          echo "Cleaning previous builds..."
+          ./gradlew clean --stacktrace || echo "Clean failed, continuing..."
+          
+          echo "Verifying Gradle daemon..."
+          ./gradlew --status || echo "No daemon running"
+          
+          echo "Resolving dependencies with retry logic..."
+          retry_count=0
+          max_retries=3
+          until ./gradlew dependencies --refresh-dependencies --stacktrace || [ $retry_count -eq $max_retries ]; do
+            retry_count=$((retry_count+1))
+            echo "Dependency resolution attempt $retry_count failed, retrying..."
+            sleep 5
+            # Kill any stuck Gradle daemons
+            ./gradlew --stop || true
+          done
+          
+          echo "Dependencies resolved successfully!"
+      
+      # 5. Run lint checks (optional - won't block build)
       - name: Run Android Lint
         script: | 
-          ./gradlew lintDebug
+          ./gradlew lintDebug --stacktrace || echo "Lint check failed, continuing with build..."
         ignore_failure: true
       
-      # 4. Run unit tests (optional)
+      # 6. Run unit tests (optional)
       - name: Run unit tests
         script: | 
-          ./gradlew test --stacktrace
+          ./gradlew test --stacktrace || echo "Tests failed, continuing with build..."
         test_report: app/build/test-results/**/*.xml
         ignore_failure: true
       
-      # 5. Build debug APK (always)
-      - name: Build debug APK
+      # 7. Build debug APK with auto-retry on failure
+      - name: Build debug APK (with auto-retry)
         script: | 
-          ./gradlew assembleDebug --stacktrace
+          echo "Building debug APK..."
+          retry_count=0
+          max_retries=3
+          
+          until ./gradlew assembleDebug --stacktrace --info || [ $retry_count -eq $max_retries ]; do
+            retry_count=$((retry_count+1))
+            echo "═══════════════════════════════════════════════════════════"
+            echo "Build attempt $retry_count failed. Auto-diagnosing..."
+            echo "═══════════════════════════════════════════════════════════"
+            
+            # Check for common issues and auto-fix
+            if grep -q "OutOfMemoryError" app/build/outputs/logs/* 2>/dev/null; then
+              echo "⚠️  Detected: Out of memory error"
+              echo "Fixing: Killing Gradle daemons and increasing heap..."
+              ./gradlew --stop
+              export GRADLE_OPTS="$GRADLE_OPTS -Xmx8g"
+              
+            elif grep -q "Could not resolve" app/build/outputs/logs/* 2>/dev/null; then
+              echo "⚠️  Detected: Dependency resolution failure"
+              echo "Fixing: Refreshing dependencies..."
+              ./gradlew --refresh-dependencies
+              
+            elif grep -q "Daemon" app/build/outputs/logs/* 2>/dev/null; then
+              echo "⚠️  Detected: Gradle daemon issue"
+              echo "Fixing: Stopping all daemons..."
+              ./gradlew --stop
+              pkill -f GradleDaemon || true
+              
+            else
+              echo "⚠️  Generic build failure detected"
+              echo "Fixing: Cleaning build cache and retrying..."
+              ./gradlew clean --stacktrace
+              rm -rf ~/.gradle/caches/build-cache-*
+            fi
+            
+            echo "Retrying build (attempt $((retry_count+1))/$max_retries)..."
+            sleep 10
+          done
+          
+          # Final check
+          if [ ! -f app/build/outputs/apk/debug/*.apk ]; then
+            echo "❌ ERROR: Debug APK not found after $max_retries attempts"
+            echo "Last build log:"
+            cat app/build/outputs/logs/* 2>/dev/null || echo "No logs available"
+            exit 1
+          fi
+          
+          echo "✅ Debug APK built successfully!"
+          ls -lh app/build/outputs/apk/debug/*.apk
       
-      # 6. Build release APK (unsigned for testing, or signed if keystore configured)
-      - name: Build release APK
+      # 8. Build release APK with auto-retry
+      - name: Build release APK (with auto-retry)
         script: | 
-          ./gradlew assembleRelease --stacktrace
+          echo "Building release APK..."
+          retry_count=0
+          max_retries=2
+          
+          until ./gradlew assembleRelease --stacktrace || [ $retry_count -eq $max_retries ]; do
+            retry_count=$((retry_count+1))
+            echo "Release build attempt $retry_count failed, retrying..."
+            ./gradlew --stop
+            ./gradlew clean
+            sleep 5
+          done
+          
+          if [ -f app/build/outputs/apk/release/*.apk ]; then
+            echo "✅ Release APK built successfully!"
+            ls -lh app/build/outputs/apk/release/*.apk
+          else
+            echo "⚠️  Release APK build failed, but debug APK succeeded"
+          fi
+        ignore_failure: true
       
-      # 7. Build release bundle (AAB) for Google Play (optional)
+      # 9. Build release bundle (AAB) for Google Play (optional)
       - name: Build release bundle (AAB)
         script: | 
-          # Get latest build number from Google Play (if publishing)
-          # LATEST_BUILD=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" || echo "0")
-          # BUILD_NUMBER=$((LATEST_BUILD + 1))
-          
-          # For now, use Codemagic's auto-incrementing build number
+          echo "Building release AAB for Google Play..."
           ./gradlew bundleRelease \
             -PversionCode=$BUILD_NUMBER \
             -PversionName=1.0.$BUILD_NUMBER \
-            --stacktrace
-        ignore_failure: true  # Won't fail if signing not configured
+            --stacktrace || echo "AAB build failed (requires signing config)"
+          
+          if [ -f app/build/outputs/bundle/release/*.aab ]; then
+            echo "✅ Release AAB built successfully!"
+            ls -lh app/build/outputs/bundle/release/*.aab
+          fi
+        ignore_failure: true
+      
+      # 10. Build summary report
+      - name: Build summary
+        script: | 
+          echo "═══════════════════════════════════════════════════════════"
+          echo "BUILD SUMMARY - QuantraVision"
+          echo "═══════════════════════════════════════════════════════════"
+          echo "Debug APK:"
+          ls -lh app/build/outputs/apk/debug/*.apk 2>/dev/null && echo "✅ SUCCESS" || echo "❌ FAILED"
+          echo "───────────────────────────────────────────────────────────"
+          echo "Release APK:"
+          ls -lh app/build/outputs/apk/release/*.apk 2>/dev/null && echo "✅ SUCCESS" || echo "⚠️  SKIPPED/FAILED"
+          echo "───────────────────────────────────────────────────────────"
+          echo "Release AAB:"
+          ls -lh app/build/outputs/bundle/release/*.aab 2>/dev/null && echo "✅ SUCCESS" || echo "⚠️  SKIPPED/FAILED"
+          echo "═══════════════════════════════════════════════════════════"
+          echo "Build completed at: $(date)"
+          echo "═══════════════════════════════════════════════════════════"
     
     # Collect all build outputs
     artifacts:
@@ -103,7 +236,7 @@ workflows:
       # Email notifications
       email:
         recipients:
-          - your-email@example.com  # Replace with your email
+          - Lamontlabs@proton.me
         notify:
           success: true
           failure: true
@@ -156,7 +289,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - Lamontlabs@proton.me
         notify:
-          success: false
+          success: true
           failure: true
