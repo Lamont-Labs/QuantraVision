@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
  * - Adaptive stride optimizes search density near natural scale (1.0x)
  *
  * Implementation:
- * - Build a geometric scale ladder [minScale..maxScale] with adaptive stride.
+ * - Build a geometric scale ladder (minScale..maxScale) with adaptive stride.
  * - Cache resized images to avoid redundant computation.
  * - Resize input up/down and run detector per scale.
  * - Keep best match per template across scales.
