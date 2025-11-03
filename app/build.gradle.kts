@@ -187,7 +187,7 @@ dependencies {
     
     // JSON & YAML parsing - Latest stable
     implementation("com.google.code.gson:gson:2.11.0")
-    implementation("org.yaml:snakeyaml:2.3")
+    implementation("org.yaml:snakeyaml:2.5")
     
     // PDF generation for trading notebooks
     implementation("com.itextpdf:itextpdf:5.5.13.3")
