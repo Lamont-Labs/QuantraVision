@@ -5,7 +5,10 @@ import android.graphics.Bitmap
 import com.lamontlabs.quantravision.ml.fusion.BayesianFusionEngine
 import com.lamontlabs.quantravision.ml.fusion.FusedPattern
 import com.lamontlabs.quantravision.ml.fusion.TemporalStabilizer
+import com.lamontlabs.quantravision.ml.fusion.MLDetection
+import com.lamontlabs.quantravision.ml.fusion.TemplateDetection
 import com.lamontlabs.quantravision.ml.inference.DeltaDetectionOptimizer
+import com.lamontlabs.quantravision.ml.optimization.InferencePolicy
 import com.lamontlabs.quantravision.ml.optimization.OptimizedModelLoader
 import com.lamontlabs.quantravision.ml.optimization.PowerPolicyManager
 import com.lamontlabs.quantravision.ml.optimization.TensorPool

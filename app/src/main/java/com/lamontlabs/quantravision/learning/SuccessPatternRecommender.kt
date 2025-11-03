@@ -39,8 +39,14 @@ class SuccessPatternRecommender(private val context: Context) {
                 )
             }
             
-            recommendations
-                .sortedByDescending { getPatternScore(it.patternType) }
+            // Compute scores for all recommendations before sorting (suspend-safe)
+            val recommendationsWithScores = recommendations.map { recommendation ->
+                recommendation to getPatternScore(recommendation.patternType)
+            }
+            
+            recommendationsWithScores
+                .sortedByDescending { (_, score) -> score }
+                .map { (recommendation, _) -> recommendation }
                 .take(topN)
         } catch (e: Exception) {
             Timber.e(e, "Failed to get best patterns")

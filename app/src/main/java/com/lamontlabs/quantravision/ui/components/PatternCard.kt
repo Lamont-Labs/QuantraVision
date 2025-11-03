@@ -39,9 +39,9 @@ fun PatternCard(
     val scope = rememberCoroutineScope()
     val time = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date(match.timestamp))
     
-    var regimeContext by remember { mutableStateOf<RegimeNavigator.RegimeContext?>(null) }
+    val regimeContext = remember { mutableStateOf<RegimeNavigator.RegimeContext?>(null) }
     var showPlanDialog by remember { mutableStateOf(false) }
-    var generatedPlan by remember { mutableStateOf<PatternToPlanEngine.TradePlan?>(null) }
+    val generatedPlan = remember { mutableStateOf<PatternToPlanEngine.TradePlan?>(null) }
     var showProofExported by remember { mutableStateOf(false) }
     
     val isPro = remember { ProFeatureGate.hasAccess(context) }
@@ -50,7 +50,7 @@ fun PatternCard(
         if (showIntelligence && isPro) {
             try {
                 val navigator = RegimeNavigator(context)
-                regimeContext = navigator.analyzeRegime()
+                regimeContext.value = navigator.analyzeRegime()
             } catch (e: Exception) {
             }
         }
@@ -86,8 +86,8 @@ fun PatternCard(
                     )
                 }
                 
-                if (showIntelligence && isPro && regimeContext != null) {
-                    RegimeBadge(regimeContext!!)
+                if (showIntelligence && isPro && regimeContext.value != null) {
+                    RegimeBadge(regimeContext.value!!)
                 }
             }
             
@@ -103,7 +103,7 @@ fun PatternCard(
                                 scope.launch {
                                     try {
                                         val engine = PatternToPlanEngine(context)
-                                        generatedPlan = engine.generatePlan(match)
+                                        generatedPlan.value = engine.generatePlan(match)
                                         showPlanDialog = true
                                     } catch (e: Exception) {
                                     }
@@ -132,7 +132,7 @@ fun PatternCard(
                                 scope.launch {
                                     try {
                                         val generator = ProofCapsuleGenerator(context)
-                                        generator.generateCapsule(match, regimeContext)
+                                        generator.generateCapsule(match, regimeContext.value)
                                         showProofExported = true
                                     } catch (e: Exception) {
                                     }
@@ -159,9 +159,9 @@ fun PatternCard(
         }
     }
     
-    if (showPlanDialog && generatedPlan != null) {
+    if (showPlanDialog && generatedPlan.value != null) {
         TradePlanDialog(
-            plan = generatedPlan!!,
+            plan = generatedPlan.value!!,
             onDismiss = { showPlanDialog = false }
         )
     }

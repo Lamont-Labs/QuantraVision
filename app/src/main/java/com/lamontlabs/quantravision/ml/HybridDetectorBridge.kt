@@ -73,7 +73,7 @@ class HybridDetectorBridge(private val context: Context) {
     
     // Scan Learning Engine (PRO feature)
     private val scanLearning = ScanLearningEngine(context)
-    private val scanLearningEnabled = ProFeatureGate.hasAccess(context)
+    private val scanLearningEnabled = ProFeatureGate.isActive(context)
     
     private var frameCount = 0
     private var optimizationEnabled = true
@@ -96,7 +96,7 @@ class HybridDetectorBridge(private val context: Context) {
             
             if (!optimizationEnabled) {
                 // Fallback to existing detector
-                return@withContext existingDetector.detectPatterns(chartImage)
+                return@withContext existingDetector.detect(chartImage)
             }
             
             // Phase 3: Check if we can skip processing (delta detection)
@@ -113,11 +113,11 @@ class HybridDetectorBridge(private val context: Context) {
             Timber.v("Power policy: ${policy.description}")
             
             // Run existing detection (this uses HybridPatternDetector)
-            val detectionResults = existingDetector.detectPatterns(chartImage)
+            val detectionResults = existingDetector.detect(chartImage)
             
             // Convert existing results to fusion format
-            val mlDetections = convertToMLDetections(detectionResults.filter { it.source == "ML" })
-            val templateDetections = convertToTemplateDetections(detectionResults.filter { it.source != "ML" })
+            val mlDetections = convertToMLDetections(detectionResults.filter { result -> result.source == "ML" })
+            val templateDetections = convertToTemplateDetections(detectionResults.filter { result -> result.source != "ML" })
             
             // Phase 2: Bayesian fusion (combine ML + template with probability)
             val fusedDetections = fusionEngine.fuseDetections(mlDetections, templateDetections)
@@ -161,7 +161,7 @@ class HybridDetectorBridge(private val context: Context) {
         return results.map { result ->
             MLDetection(
                 patternType = result.patternName,
-                confidence = result.confidence,
+                confidence = result.confidence.toFloat(),
                 bbox = BoundingBox(
                     left = result.bbox?.left?.toInt() ?: 0,
                     top = result.bbox?.top?.toInt() ?: 0,
@@ -179,7 +179,7 @@ class HybridDetectorBridge(private val context: Context) {
         return results.map { result ->
             TemplateDetection(
                 patternType = result.patternName,
-                confidence = result.confidence,
+                confidence = result.confidence.toFloat(),
                 bbox = BoundingBox(
                     left = result.bbox?.left?.toInt() ?: 0,
                     top = result.bbox?.top?.toInt() ?: 0,
@@ -197,7 +197,7 @@ class HybridDetectorBridge(private val context: Context) {
         return fusedPatterns.map { pattern ->
             DetectionResult(
                 patternName = pattern.patternType,
-                confidence = pattern.confidence,
+                confidence = pattern.confidence.toDouble(),
                 bbox = android.graphics.RectF(
                     pattern.bbox.left.toFloat(),
                     pattern.bbox.top.toFloat(),

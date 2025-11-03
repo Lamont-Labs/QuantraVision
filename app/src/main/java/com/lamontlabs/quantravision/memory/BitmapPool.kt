@@ -22,7 +22,7 @@ object BitmapPool {
     ) {
         companion object {
             fun from(bitmap: Bitmap): BitmapSpec {
-                return BitmapSpec(bitmap.width, bitmap.height, bitmap.config)
+                return BitmapSpec(bitmap.width, bitmap.height, bitmap.config ?: Bitmap.Config.ARGB_8888)
             }
         }
     }

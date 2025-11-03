@@ -46,7 +46,7 @@ object AccessibilityLocaleHelper {
         val loc = appLocale ?: return base
         val conf = base.resources.configuration
         if (Build.VERSION.SDK_INT >= 24) {
-            conf.setLocales(LocaleListCompat.create(loc).toLocaleList())
+            conf.setLocales(android.os.LocaleList(loc))
         } else {
             @Suppress("DEPRECATION")
             conf.locale = loc
@@ -67,9 +67,9 @@ object AccessibilityLocaleHelper {
             null -> ""
         }
         return if (status.isNotEmpty())
-            "${det.label}, $pct percent, $status"
+            "${det.name}, $pct percent, $status"
         else
-            "${det.label}, $pct percent"
+            "${det.name}, $pct percent"
     }
 
     /** Mark a view as important for accessibility and set its content description. */

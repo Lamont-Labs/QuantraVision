@@ -155,9 +155,9 @@ object PatternLibraryGate {
     fun filterByTier(context: Context, matches: List<PatternMatch>): List<PatternMatch> {
         return when (getCurrentTier(context)) {
             Tier.PRO -> matches // All 109 patterns available
-            Tier.STANDARD -> matches.filter { STANDARD_TIER_PATTERNS.contains(it.patternId) }
-            Tier.STARTER -> matches.filter { STARTER_TIER_PATTERNS.contains(it.patternId) }
-            Tier.FREE -> matches.filter { FREE_TIER_PATTERNS.contains(it.patternId) }
+            Tier.STANDARD -> matches.filter { STANDARD_TIER_PATTERNS.contains(it.patternName) }
+            Tier.STARTER -> matches.filter { STARTER_TIER_PATTERNS.contains(it.patternName) }
+            Tier.FREE -> matches.filter { FREE_TIER_PATTERNS.contains(it.patternName) }
         }
     }
 
