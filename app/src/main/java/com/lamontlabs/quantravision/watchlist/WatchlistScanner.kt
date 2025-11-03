@@ -108,9 +108,9 @@ class WatchlistScanner(
                             )
                         )
                         
-                        if (isBullishPattern(topPattern.name)) {
+                        if (isBullishPattern(topPattern.patternName)) {
                             bullishCount++
-                        } else if (isBearishPattern(topPattern.name)) {
+                        } else if (isBearishPattern(topPattern.patternName)) {
                             bearishCount++
                         }
                     }
@@ -133,7 +133,7 @@ class WatchlistScanner(
         return@withContext result
     }
     
-    private fun getRecentPatterns(symbol: String): List<PatternMatch> {
+    private suspend fun getRecentPatterns(symbol: String): List<PatternMatch> {
         val db = patternDetector.getDatabase()
         val allPatterns = db.patternDao().getAll()
         
