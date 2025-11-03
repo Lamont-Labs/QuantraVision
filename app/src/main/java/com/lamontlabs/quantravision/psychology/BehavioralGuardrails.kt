@@ -55,7 +55,7 @@ class BehavioralGuardrails(private val context: Context) {
         val detectionViews: MutableList<ViewEvent> = mutableListOf(),
         val tradeResults: MutableList<TradeResult> = mutableListOf(),
         val cooldownSuggestions: MutableList<CooldownEvent> = mutableListOf(),
-        val disciplineScore: Int = 100,
+        var disciplineScore: Int = 100,
         val personalityProfile: PersonalityProfile = PersonalityProfile(),
         val lastUpdateTimestamp: Long = System.currentTimeMillis()
     )
