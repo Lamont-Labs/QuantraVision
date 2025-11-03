@@ -258,15 +258,18 @@ class SessionPlayback(private val context: Context) {
                     val fmt = SimpleDateFormat("yyyy-MM-dd'T'HHmmss'Z'", Locale.US)
                     val timestamp = fmt.parse(parts[0])?.time ?: return@forEach
                     val patternName = parts[1]
-                    val confidence = parts[2].substringAfter("conf=").toFloatOrNull() ?: 0f
+                    val confidence = parts[2].substringAfter("conf=").toDoubleOrNull() ?: 0.0
                     val timeframe = parts[3].substringAfter("tf=")
                     
                     val match = PatternMatch(
                         patternName = patternName,
                         confidence = confidence,
-                        boundingBox = android.graphics.Rect(0, 0, 100, 100),
                         timestamp = timestamp,
-                        timeframe = timeframe
+                        timeframe = timeframe,
+                        scale = 1.0,
+                        consensusScore = confidence,
+                        windowMs = 0L,
+                        detectionBounds = "0,0,100,100"
                     )
                     
                     detectionsMap.getOrPut(timestamp) { mutableListOf() }.add(match)
