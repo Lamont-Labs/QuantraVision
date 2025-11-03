@@ -1,6 +1,9 @@
 package com.lamontlabs.quantravision.education.course
 
-import com.lamontlabs.quantravision.education.EducationCourse.*
+import com.lamontlabs.quantravision.education.EducationCourse.Lesson
+import com.lamontlabs.quantravision.education.EducationCourse.PatternExample
+import com.lamontlabs.quantravision.education.EducationCourse.Quiz
+import com.lamontlabs.quantravision.education.EducationCourse.Question
 
 
 val courseLesson18 = Lesson(
