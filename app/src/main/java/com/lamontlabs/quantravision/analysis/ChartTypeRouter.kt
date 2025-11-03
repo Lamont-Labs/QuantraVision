@@ -5,6 +5,7 @@ import com.lamontlabs.quantravision.detection.Detector
 import com.lamontlabs.quantravision.detection.Detection
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * Chart-Type Auto-Router v2
@@ -14,13 +15,13 @@ import kotlin.math.min
  *
  * Usage:
  *   val router = ChartTypeRouter(baseClassifier, baseDetector)
- *   router.load(context)
- *   val dets = router.analyze(frame)
+ *   router.initialize(context)
+ *   val dets = router.processFrame(frame)
  */
 class ChartTypeRouter(
   private val classifier: ChartTypeClassifier,
-  private val backend: Detector
-) : Detector {
+  private val detector: Detector
+) {
 
   // Per-type tuning. Values are conservative; adjust as needed.
   private val cfg = mapOf(
@@ -46,18 +47,19 @@ class ChartTypeRouter(
   private var lastTypeSwitchNs = 0L
   private val minHoldNs = 250_000_000L // 250 ms hold before switching
 
-  override fun load(context: android.content.Context) {
-    backend.load(context)
+  fun initialize(context: android.content.Context) {
+    detector.load(context)
   }
 
-  override fun analyze(frame: ImageProxy): List<Detection> {
+  suspend fun processFrame(frame: ImageProxy): List<Detection> {
     // 1) Classify chart type (cheap features inside classifier)
     val t = classifier.classify(frame)
     updateEma(t)
     val routed = decideType(System.nanoTime())
 
-    // 2) Run backend detector (backend is responsible for closing frame)
-    val dets = backend.analyze(frame)
+    // 2) Run backend detector
+    // Note: Frame is used for classification above; detector uses its own scanning logic
+    val dets = detector.demoScan()
 
     // 3) Apply per-type routing params and jitter suppression adjustments
     val p = cfg[routed] ?: cfg.getValue(ChartType.UNKNOWN)
@@ -104,10 +106,14 @@ class ChartTypeRouter(
       val wickAdj = p.wickBias
       val bodyAdj = p.bodyBias
       val boost = wickAdj + bodyAdj
-      d.copy(confidence = clamp01(d.confidence + boost))
+      // Convert Int confidence (0-100) to Float (0.0-1.0), apply boost, clamp, convert back to Int
+      val normalizedConf = d.confidence / 100f
+      val adjustedConf = clamp01(normalizedConf + boost)
+      d.copy(confidence = (adjustedConf * 100f).roundToInt())
     }
-    // Enforce per-type minimum confidence
-    return tuned.filter { it.confidence >= p.minConf }
+    // Enforce per-type minimum confidence (convert minConf from 0.0-1.0 to 0-100 scale)
+    val minConfInt = (p.minConf * 100f).roundToInt()
+    return tuned.filter { it.confidence >= minConfInt }
   }
 
   private fun clamp01(x: Float) = max(0f, min(1f, x))
