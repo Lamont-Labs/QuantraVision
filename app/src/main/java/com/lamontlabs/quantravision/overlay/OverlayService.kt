@@ -128,7 +128,7 @@ class OverlayService : Service() {
             // Non-critical - service continues without border
         }
         
-        if (ProFeatureGate.hasAccess(this)) {
+        if (ProFeatureGate.isActive(this)) {
             behavioralGuardrails = BehavioralGuardrails(this)
             alertManager = AlertManager.getInstance(this)
         }
@@ -195,12 +195,13 @@ class OverlayService : Service() {
                                         timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
                                         
                                         results.forEach { pattern ->
-                                            allDetectedPatterns.add(pattern.toPatternMatch())
+                                            val patternMatch = pattern.toPatternMatch()
+                                            allDetectedPatterns.add(patternMatch)
                                             
                                             behavioralGuardrails?.let { guardrails ->
                                                 scope.launch {
                                                     try {
-                                                        val warning = guardrails.recordView(pattern)
+                                                        val warning = guardrails.recordView(patternMatch)
                                                         warning?.let { w ->
                                                             withContext(Dispatchers.Main) {
                                                                 Toast.makeText(
@@ -208,10 +209,6 @@ class OverlayService : Service() {
                                                                     w.message,
                                                                     Toast.LENGTH_LONG
                                                                 ).show()
-                                                            }
-                                                            
-                                                            if (alertManager?.isVoiceEnabled() == true) {
-                                                                alertManager?.announceWarning(w.voiceMessage)
                                                             }
                                                             
                                                             timber.log.Timber.w("BehavioralGuardrail triggered: ${w.type.name} - ${w.message}")
