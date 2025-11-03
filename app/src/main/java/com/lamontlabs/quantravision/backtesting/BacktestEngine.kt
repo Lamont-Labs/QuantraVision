@@ -164,7 +164,7 @@ object BacktestEngine {
             val outcome = when {
                 detection.patternName.contains("bull", ignoreCase = true) && priceChange > 1.0 -> "success"
                 detection.patternName.contains("bear", ignoreCase = true) && priceChange < -1.0 -> "success"
-                priceChange.absoluteValue < 0.5 -> "neutral"
+                priceChange.absoluteValue() < 0.5 -> "neutral"
                 else -> "failure"
             }
 

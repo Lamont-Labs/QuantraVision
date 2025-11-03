@@ -143,7 +143,7 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Filled.Error,
+                                Icons.Filled.Warning,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.error
                             )

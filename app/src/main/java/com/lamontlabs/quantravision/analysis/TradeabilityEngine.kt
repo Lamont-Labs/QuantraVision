@@ -20,7 +20,7 @@ data class TradeabilityResult(
 
 class TradeabilityEngine {
   fun evaluate(input: TradeabilityInput): TradeabilityResult {
-    val conf = input.detection.confidence.coerceIn(0f, 1f)
+    val conf = (input.detection.confidence / 100f).coerceIn(0f, 1f)
     val mtf  = (input.mtfConfluence ?: 0.5f).coerceIn(0f, 1f)  // neutral if absent
     val volA = adjustVol(input.volRegime)                      // prefer mid volatility
     val liqA = input.liquidityProxy.coerceIn(0f, 1f)

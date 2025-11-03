@@ -221,7 +221,7 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
         val nv21 = mediaImage.toNv21(image.width, image.height)
         val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
         val out = ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 100, out)
+        yuvImage.compressToJpeg(android.graphics.Rect(0, 0, image.width, image.height), 100, out)
         return BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size())
     }
     
@@ -330,8 +330,8 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
             Imgproc.GaussianBlur(panel, blurred, Size(7.0, 7.0), 0.0)
             
             val mean = Core.mean(blurred).`val`[0]
-            val stdDev = Mat()
-            val meanMat = Mat()
+            val stdDev = MatOfDouble()
+            val meanMat = MatOfDouble()
             Core.meanStdDev(blurred, meanMat, stdDev)
             
             val variance = stdDev.get(0, 0)[0]

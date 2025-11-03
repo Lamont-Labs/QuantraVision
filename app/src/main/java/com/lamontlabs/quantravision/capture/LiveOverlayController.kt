@@ -47,7 +47,7 @@ class LiveOverlayController(
         mediaProjection = projection
 
         try {
-            imageReader = ImageReader.newInstance(width, height, ImageFormat.RGBA_8888, 2)
+            imageReader = ImageReader.newInstance(width, height, android.graphics.PixelFormat.RGBA_8888, 2)
             val reader = imageReader ?: run {
                 running.set(false)
                 throw IllegalStateException("Failed to create ImageReader")

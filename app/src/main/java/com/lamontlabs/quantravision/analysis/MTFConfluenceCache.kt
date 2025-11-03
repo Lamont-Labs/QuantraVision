@@ -20,7 +20,7 @@ class MTFConfluenceCache {
 
     fun confluenceScore(): Float {
         if (store.isEmpty()) return 0f
-        val all = store.values.map { it.dets.map { d -> d.label } }.flatten()
+        val all = store.values.map { it.dets.map { d -> d.name } }.flatten()
         if (all.isEmpty()) return 0f
         val unique = all.toSet()
         val overlap = if (unique.isEmpty()) 0f else (all.size - unique.size).toFloat() / all.size
@@ -28,7 +28,7 @@ class MTFConfluenceCache {
     }
 
     fun agreeingLabels(): List<String> {
-        val grouped = store.values.flatMap { it.dets }.groupBy { it.label }
+        val grouped = store.values.flatMap { it.dets }.groupBy { it.name }
         return grouped.filter { it.value.size > 1 }.keys.toList()
     }
 

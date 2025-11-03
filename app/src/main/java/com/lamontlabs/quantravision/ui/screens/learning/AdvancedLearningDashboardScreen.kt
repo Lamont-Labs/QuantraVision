@@ -192,7 +192,7 @@ fun BehavioralWarningCard(warning: BehavioralWarning) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     when (warning.severity) {
-                        WarningSeverity.CRITICAL -> Icons.Filled.Error
+                        WarningSeverity.CRITICAL -> Icons.Filled.Warning
                         WarningSeverity.WARNING -> Icons.Default.Warning
                         WarningSeverity.INFO -> Icons.Default.Info
                     },

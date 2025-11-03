@@ -163,16 +163,18 @@ class LegendOCROffline : LegendOCR {
         return tokens.toList()
     }
 
-    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? = try {
-        val yuv = imageToNV21(image) ?: return null
-        val yuvImage = YuvImage(yuv, ImageFormat.NV21, image.width, image.height, null)
-        val out = java.io.ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 90, out)
-        val bytes = out.toByteArray()
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-    } catch (e: Exception) {
-        Log.e(tag, "Error converting ImageProxy to Bitmap", e)
-        null
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? {
+        return try {
+            val yuv = imageToNV21(image) ?: return null
+            val yuvImage = YuvImage(yuv, ImageFormat.NV21, image.width, image.height, null)
+            val out = java.io.ByteArrayOutputStream()
+            yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 90, out)
+            val bytes = out.toByteArray()
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        } catch (e: Exception) {
+            Log.e(tag, "Error converting ImageProxy to Bitmap", e)
+            null
+        }
     }
 
     private fun imageToNV21(image: ImageProxy): ByteArray? {

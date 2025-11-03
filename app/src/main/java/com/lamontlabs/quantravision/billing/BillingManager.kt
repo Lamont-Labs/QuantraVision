@@ -9,13 +9,6 @@ import com.android.billingclient.api.*
 import kotlinx.coroutines.*
 
 /**
- * Tier enum for compatibility with LicenseManager
- */
-enum class Tier {
-    FREE, STARTER, STANDARD, PRO
-}
-
-/**
  * SECURE billing manager with:
  * - Encrypted SharedPreferences for unlock storage
  * - Purchase history verification on startup

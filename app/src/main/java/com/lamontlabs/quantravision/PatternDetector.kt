@@ -160,7 +160,7 @@ class PatternDetector(private val context: Context) {
                             var res: Mat? = null
                             try {
                                 // ENHANCEMENT 3: Scale pyramid caching for performance
-                                scaled = ScaleSpace.resizeForScale(input, s)
+                                scaled = ScaleSpace.resizeForScale(input!!, s)
                                 res = Mat()
                                 
                                 // Template matching (GPU-accelerated via UMat if available)
@@ -336,7 +336,7 @@ class PatternDetector(private val context: Context) {
                         var res: Mat? = null
                         try {
                             // ENHANCEMENT 3: Pyramid caching for performance
-                            scaled = ScaleSpace.resizeForScale(input, s)
+                            scaled = ScaleSpace.resizeForScale(input!!, s)
                             res = Mat()
                             
                             // Template matching (GPU-accelerated if available)
