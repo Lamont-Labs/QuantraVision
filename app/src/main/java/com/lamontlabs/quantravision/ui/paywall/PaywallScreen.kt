@@ -45,7 +45,23 @@ fun PaywallScreen(
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             if (activity != null) {
-                val entitlements = remember { Entitlements.fromContext(activity) }
+                val billingManager = remember { BillingManager(activity) }
+                val tierString = remember { billingManager.getUnlockedTier() }
+                val hasBook = remember { billingManager.hasBook() }
+                val tier = when (tierString) {
+                    "PRO" -> Tier.PRO
+                    "STANDARD" -> Tier.STANDARD
+                    "STARTER" -> Tier.STARTER
+                    else -> Tier.FREE
+                }
+                val entitlements = remember {
+                    when (tier) {
+                        Tier.PRO -> Entitlements(tier = Tier.PRO, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("all"), extraFeatures = setOf("export_csv","multi_watchlist","deep_backtest","intelligence_stack","ai_learning","behavioral_guardrails","proof_capsules"), hasBook = true)
+                        Tier.STANDARD -> Entitlements(tier = Tier.STANDARD, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("standard_tier"), extraFeatures = setOf("achievements","lessons","book","exports","analytics"), hasBook = true)
+                        Tier.STARTER -> Entitlements(tier = Tier.STARTER, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("starter_tier"), extraFeatures = setOf("multi_timeframe","basic_analytics"), hasBook = hasBook)
+                        else -> Entitlements(hasBook = hasBook)
+                    }
+                }
                 Paywall(
                     activity = activity,
                     entitlements = entitlements,
@@ -53,7 +69,7 @@ fun PaywallScreen(
                     onStandard = onStandard ?: {},
                     onPro = onPro ?: {},
                     onBook = onBook,
-                    hasBook = false
+                    hasBook = hasBook
                 )
             } else {
                 Text(
