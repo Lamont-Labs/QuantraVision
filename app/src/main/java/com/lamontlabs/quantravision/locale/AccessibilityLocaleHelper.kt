@@ -59,7 +59,7 @@ object AccessibilityLocaleHelper {
 
     /** Build a TalkBack label, e.g., "Head and Shoulders, 84 percent, Viable". */
     fun detectionA11yLabel(det: Detection, tradeLabel: TradeabilityLabel?): String {
-        val pct = (det.confidence.coerceIn(0f,1f) * 100f).toInt()
+        val pct = det.confidence.coerceIn(0, 100)
         val status = when (tradeLabel) {
             TradeabilityLabel.VIABLE -> "Viable"
             TradeabilityLabel.CAUTION -> "Caution"

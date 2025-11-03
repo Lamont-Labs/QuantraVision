@@ -96,7 +96,7 @@ class HybridDetectorBridge(private val context: Context) {
             
             if (!optimizationEnabled) {
                 // Fallback to existing detector
-                return@withContext existingDetector.detect(chartImage)
+                return@withContext convertHybridToDetectionResults(existingDetector.detect(chartImage))
             }
             
             // Phase 3: Check if we can skip processing (delta detection)
@@ -113,7 +113,10 @@ class HybridDetectorBridge(private val context: Context) {
             Timber.v("Power policy: ${policy.description}")
             
             // Run existing detection (this uses HybridPatternDetector)
-            val detectionResults = existingDetector.detect(chartImage)
+            val hybridDetections = existingDetector.detect(chartImage)
+            
+            // Convert to DetectionResult format first
+            val detectionResults = convertHybridToDetectionResults(hybridDetections)
             
             // Convert existing results to fusion format
             val mlDetections = convertToMLDetections(detectionResults.filter { result -> result.source == "ML" })
@@ -153,6 +156,25 @@ class HybridDetectorBridge(private val context: Context) {
             
             return@withContext optimizedResults
         }
+    
+    /**
+     * Convert HybridDetection to DetectionResult format
+     */
+    private fun convertHybridToDetectionResults(hybridDetections: List<HybridPatternDetector.HybridDetection>): List<DetectionResult> {
+        return hybridDetections.map { hybrid ->
+            DetectionResult(
+                patternName = hybrid.patternName,
+                confidence = hybrid.confidence.toDouble(),
+                bbox = hybrid.boundingBox,
+                source = when (hybrid.method) {
+                    HybridPatternDetector.DetectionMethod.ML_YOLO -> "ML"
+                    HybridPatternDetector.DetectionMethod.TEMPLATE_OPENCV -> "Template"
+                },
+                reasoning = "",
+                timestamp = System.currentTimeMillis()
+            )
+        }
+    }
     
     /**
      * Convert DetectionResult to MLDetection format

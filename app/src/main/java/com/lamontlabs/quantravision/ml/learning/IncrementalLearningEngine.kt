@@ -3,7 +3,7 @@ package com.lamontlabs.quantravision.ml.learning
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.work.*
-import com.lamontlabs.quantravision.database.PatternDatabase
+import com.lamontlabs.quantravision.PatternDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.opencv.android.Utils
