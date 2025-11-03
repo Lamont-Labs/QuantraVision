@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.ml.PowerPolicyApplicator
 import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
-import com.lamontlabs.quantravision.detection.ProFeatureGate
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.ui.EnhancedOverlayView
 import com.lamontlabs.quantravision.MainActivity
@@ -261,20 +261,6 @@ class OverlayService : Service() {
                 delay(3000)
             }
         }
-    }
-    
-    private fun com.lamontlabs.quantravision.detection.DetectionResult.toPatternMatch(): PatternMatch {
-        return PatternMatch(
-            patternName = this.patternName,
-            boundingBox = android.graphics.RectF(
-                this.x.toFloat(),
-                this.y.toFloat(),
-                this.x.toFloat() + this.width.toFloat(),
-                this.y.toFloat() + this.height.toFloat()
-            ),
-            confidence = this.confidence,
-            timestamp = this.timestamp
-        )
     }
     
     private fun openMainApp() {
