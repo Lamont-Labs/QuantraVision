@@ -115,53 +115,90 @@ workflows:
         test_report: app/build/test-results/**/*.xml
         ignore_failure: true
       
-      # 7. Build debug APK with auto-retry on failure
+      # 7. Build debug APK with auto-retry and ERROR EXTRACTION
       - name: Build debug APK (with auto-retry)
         script: | 
           echo "Building debug APK..."
           retry_count=0
           max_retries=3
+          BUILD_LOG="/tmp/gradle_build.log"
+          ERROR_SUMMARY="/tmp/build_errors.txt"
           
-          until ./gradlew assembleDebug --stacktrace --info || [ $retry_count -eq $max_retries ]; do
+          until ./gradlew assembleDebug --stacktrace 2>&1 | tee "$BUILD_LOG" | tail -100 || [ $retry_count -eq $max_retries ]; do
             retry_count=$((retry_count+1))
             echo "═══════════════════════════════════════════════════════════"
             echo "Build attempt $retry_count failed. Auto-diagnosing..."
             echo "═══════════════════════════════════════════════════════════"
             
+            # Extract and display ONLY the errors
+            echo "🔍 EXTRACTING ERRORS FROM BUILD LOG..."
+            grep -i "error\|failed\|exception\|could not" "$BUILD_LOG" | grep -v "BUILD SUCCESSFUL" | tail -30 > "$ERROR_SUMMARY"
+            
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "TOP ERRORS FOUND:"
+            cat "$ERROR_SUMMARY"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            
             # Check for common issues and auto-fix
-            if grep -q "OutOfMemoryError" app/build/outputs/logs/* 2>/dev/null; then
+            if grep -qi "OutOfMemory" "$BUILD_LOG"; then
               echo "⚠️  Detected: Out of memory error"
-              echo "Fixing: Killing Gradle daemons and increasing heap..."
+              echo "Fixing: Killing Gradle daemons and increasing heap to 8GB..."
               ./gradlew --stop
               export GRADLE_OPTS="$GRADLE_OPTS -Xmx8g"
               
-            elif grep -q "Could not resolve" app/build/outputs/logs/* 2>/dev/null; then
+            elif grep -qi "Could not resolve\|Could not find" "$BUILD_LOG"; then
               echo "⚠️  Detected: Dependency resolution failure"
               echo "Fixing: Refreshing dependencies..."
-              ./gradlew --refresh-dependencies
+              ./gradlew --refresh-dependencies --stacktrace
               
-            elif grep -q "Daemon" app/build/outputs/logs/* 2>/dev/null; then
+            elif grep -qi "Daemon\|Unable to start the daemon" "$BUILD_LOG"; then
               echo "⚠️  Detected: Gradle daemon issue"
               echo "Fixing: Stopping all daemons..."
               ./gradlew --stop
               pkill -f GradleDaemon || true
+              sleep 5
+              
+            elif grep -qi "SDK location not found\|ANDROID_HOME" "$BUILD_LOG"; then
+              echo "⚠️  Detected: SDK configuration issue"
+              echo "Fixing: Reconfiguring Android SDK..."
+              echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
               
             else
               echo "⚠️  Generic build failure detected"
               echo "Fixing: Cleaning build cache and retrying..."
               ./gradlew clean --stacktrace
-              rm -rf ~/.gradle/caches/build-cache-*
+              rm -rf ~/.gradle/caches/build-cache-* 2>/dev/null || true
             fi
             
             echo "Retrying build (attempt $((retry_count+1))/$max_retries)..."
             sleep 10
           done
           
-          # Final check
+          # Final check and error report
           if [ ! -f app/build/outputs/apk/debug/*.apk ]; then
-            echo "❌ ERROR: Debug APK not found after $max_retries attempts"
-            echo "Last build log:"
-            cat app/build/outputs/logs/* 2>/dev/null || echo "No logs available"
+            echo ""
+            echo "╔═══════════════════════════════════════════════════════════════╗"
+            echo "║  ❌ BUILD FAILED AFTER $max_retries ATTEMPTS                  ║"
+            echo "╚═══════════════════════════════════════════════════════════════╝"
+            echo ""
+            echo "📋 ERROR SUMMARY (last 50 lines):"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            grep -i "error\|failed\|exception" "$BUILD_LOG" | tail -50 || echo "Could not extract errors"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo ""
+            echo "🔍 MOST LIKELY CAUSE:"
+            if grep -qi "OutOfMemory" "$BUILD_LOG"; then
+              echo "   → Out of memory during compilation"
+            elif grep -qi "Could not resolve" "$BUILD_LOG"; then
+              echo "   → Dependency download failure"
+            elif grep -qi "Execution failed for task" "$BUILD_LOG"; then
+              echo "   → Task execution failure (check error above)"
+            elif grep -qi "Compilation failed" "$BUILD_LOG"; then
+              echo "   → Kotlin/Java compilation error (syntax issue)"
+            else
+              echo "   → Unknown - check errors above"
+            fi
+            echo ""
             exit 1
           fi
           
