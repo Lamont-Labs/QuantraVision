@@ -181,13 +181,22 @@ workflows:
             echo "║  ❌ BUILD FAILED AFTER $max_retries ATTEMPTS                  ║"
             echo "╚═══════════════════════════════════════════════════════════════╝"
             echo ""
-            echo "📋 ERROR SUMMARY (last 50 lines):"
+            
+            # Extract KSP/Kotlin compilation errors (these appear earlier in log)
+            echo "📋 KOTLIN/KSP COMPILATION ERRORS:"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            grep "^e: file:" "$BUILD_LOG" | head -20 || echo "No KSP compilation errors found"
+            echo ""
+            
+            echo "📋 GENERAL BUILD ERRORS (last 50 lines):"
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             grep -i "error\|failed\|exception" "$BUILD_LOG" | tail -50 || echo "Could not extract errors"
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo ""
             echo "🔍 MOST LIKELY CAUSE:"
-            if grep -qi "OutOfMemory" "$BUILD_LOG"; then
+            if grep -q "^e: file:" "$BUILD_LOG"; then
+              echo "   → Kotlin syntax/compilation error (see above)"
+            elif grep -qi "OutOfMemory" "$BUILD_LOG"; then
               echo "   → Out of memory during compilation"
             elif grep -qi "Could not resolve" "$BUILD_LOG"; then
               echo "   → Dependency download failure"
