@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.view.View
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.boundingBox
 import com.lamontlabs.quantravision.detection.HighlightGate
 
 /**

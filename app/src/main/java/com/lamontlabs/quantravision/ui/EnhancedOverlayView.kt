@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.boundingBox
 import com.lamontlabs.quantravision.detection.HighlightGate
 import com.lamontlabs.quantravision.overlay.EnhancedPatternHeatmap
 import timber.log.Timber
@@ -175,7 +176,7 @@ class EnhancedOverlayView @JvmOverloads constructor(
             }
             
             if (normalizedX in 0f..1f && normalizedY in 0f..1f) {
-                EnhancedPatternHeatmap.add(normalizedX, normalizedY, match.confidence, patternType)
+                EnhancedPatternHeatmap.add(normalizedX, normalizedY, match.confidence.toFloat(), patternType)
             }
         }
         
@@ -392,50 +393,5 @@ class EnhancedOverlayView @JvmOverloads constructor(
         super.onDetachedFromWindow()
         fadeAnimator.cancel()
         pulseAnimator.cancel()
-    }
-}
-
-data class PatternStyle(
-    val r: Int,
-    val g: Int,
-    val b: Int,
-    val glowIntensity: Float,
-    val cornerRadius: Float
-) {
-    companion object {
-        fun forPattern(patternName: String, confidence: Float): PatternStyle {
-            val intensity = 0.4f + 0.6f * confidence
-            
-            return when {
-                patternName.contains("head", ignoreCase = true) ||
-                patternName.contains("shoulder", ignoreCase = true) -> {
-                    PatternStyle(255, 64, 129, intensity, 8f)
-                }
-                
-                patternName.contains("triangle", ignoreCase = true) ||
-                patternName.contains("wedge", ignoreCase = true) -> {
-                    PatternStyle(0, 229, 255, intensity, 8f)
-                }
-                
-                patternName.contains("double", ignoreCase = true) ||
-                patternName.contains("triple", ignoreCase = true) -> {
-                    PatternStyle(156, 39, 176, intensity, 8f)
-                }
-                
-                patternName.contains("flag", ignoreCase = true) ||
-                patternName.contains("pennant", ignoreCase = true) -> {
-                    PatternStyle(255, 193, 7, intensity, 8f)
-                }
-                
-                patternName.contains("cup", ignoreCase = true) ||
-                patternName.contains("handle", ignoreCase = true) -> {
-                    PatternStyle(76, 175, 80, intensity, 8f)
-                }
-                
-                else -> {
-                    PatternStyle(0, 229, 255, intensity, 8f)
-                }
-            }
-        }
     }
 }

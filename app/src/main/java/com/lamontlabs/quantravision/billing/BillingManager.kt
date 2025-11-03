@@ -289,7 +289,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
 
-    private fun launchPurchase(sku: String) {
+    fun launchPurchase(sku: String) {
         val pd = productMap[sku]
         if (pd == null) {
             Log.e("BillingManager", "Product not found: $sku")

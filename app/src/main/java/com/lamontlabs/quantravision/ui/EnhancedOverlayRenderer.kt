@@ -6,6 +6,7 @@ import android.graphics.*
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.boundingBox
 import com.lamontlabs.quantravision.detection.HighlightGate
 import kotlin.math.min
 
@@ -126,7 +127,7 @@ class EnhancedOverlayRenderer(
         val glowAlpha = (alpha * 0.6f * glowIntensity).toInt()
         
         val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.STROKE
+            this.style = Paint.Style.STROKE
             strokeWidth = 8f
             color = Color.argb(glowAlpha, style.r, style.g, style.b)
             maskFilter = BlurMaskFilter(12f, BlurMaskFilter.Blur.OUTER)
@@ -163,7 +164,7 @@ class EnhancedOverlayRenderer(
         
         val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(fillAlpha, style.r, style.g, style.b)
-            this.style = Paint.Style.FILL
+            style = Paint.Style.FILL
         }
         
         canvas.drawRoundRect(rect, style.cornerRadius, style.cornerRadius, fillPaint)
@@ -172,7 +173,7 @@ class EnhancedOverlayRenderer(
     private fun drawCornerAccents(canvas: Canvas, rect: RectF, style: PatternStyle, alpha: Int) {
         val accentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(alpha, style.r, style.g, style.b)
-            this.style = Paint.Style.STROKE
+            style = Paint.Style.STROKE
             strokeWidth = 3f
             strokeCap = Paint.Cap.ROUND
         }
@@ -195,7 +196,7 @@ class EnhancedOverlayRenderer(
     private fun drawPatternLabel(canvas: Canvas, rect: RectF, match: PatternMatch, style: PatternStyle, alpha: Int) {
         val labelBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb((alpha * 0.9f).toInt(), 18, 18, 24)
-            this.style = Paint.Style.FILL
+            style = Paint.Style.FILL
             setShadowLayer(4f, 0f, 2f, Color.argb(100, 0, 0, 0))
         }
         
@@ -222,7 +223,7 @@ class EnhancedOverlayRenderer(
         
         val accentBar = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(alpha, style.r, style.g, style.b)
-            this.style = Paint.Style.FILL
+            style = Paint.Style.FILL
         }
         canvas.drawRoundRect(
             RectF(labelRect.left, labelRect.top, labelRect.left + 4f, labelRect.bottom),
@@ -244,13 +245,13 @@ class EnhancedOverlayRenderer(
         
         val outerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb((alpha * 0.9f).toInt(), 18, 18, 24)
-            this.style = Paint.Style.FILL
+            style = Paint.Style.FILL
             setShadowLayer(4f, 0f, 2f, Color.argb(100, 0, 0, 0))
         }
         canvas.drawCircle(badgeX, badgeY, badgeRadius, outerPaint)
         
         val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            this.style = Paint.Style.STROKE
+            style = Paint.Style.STROKE
             strokeWidth = 3f
             color = Color.argb(alpha, style.r, style.g, style.b)
         }

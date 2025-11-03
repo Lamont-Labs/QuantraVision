@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.education.LessonRepository
 import com.lamontlabs.quantravision.education.model.Lesson
+import com.lamontlabs.quantravision.education.model.Quiz
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -236,7 +237,7 @@ private fun LessonDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizScreen(
-    quiz: com.lamontlabs.quantravision.education.Quiz,
+    quiz: Quiz,
     lessonTitle: String,
     onBack: () -> Unit
 ) {
@@ -299,7 +300,7 @@ private fun QuizScreen(
                 OptionCard(
                     option = option,
                     isSelected = selectedAnswer == index,
-                    isCorrect = index == currentQuestion.correctAnswerIndex,
+                    isCorrect = index == currentQuestion.correctAnswer,
                     showResult = showExplanation,
                     onClick = {
                         if (!showExplanation) {
@@ -332,7 +333,7 @@ private fun QuizScreen(
                 onClick = {
                     if (!showExplanation) {
                         showExplanation = true
-                        if (selectedAnswer == currentQuestion.correctAnswerIndex) {
+                        if (selectedAnswer == currentQuestion.correctAnswer) {
                             score++
                         }
                     } else {
