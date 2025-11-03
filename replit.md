@@ -1,163 +1,27 @@
 # QuantraVision
 
 ## Overview
-QuantraVision is an offline-first Android application that provides AI-powered chart pattern recognition for retail traders. It leverages advanced OpenCV template matching to identify 109 technical analysis patterns in real-time. The app prioritizes user privacy through on-device processing and offers features such as predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. All technology is Apache 2.0 licensed.
-
-The application aims to deliver professional-grade pattern detection without subscriptions or cloud dependencies, utilizing a 4-tier one-time payment structure (Free, Starter, Standard, Pro) for lifetime access. Key features include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules. These features are entirely offline and include legal disclaimers, emphasizing their educational purpose.
+QuantraVision is an offline-first Android application that provides AI-powered chart pattern recognition for retail traders. It utilizes advanced OpenCV template matching to identify 109 technical analysis patterns in real-time. The app prioritizes user privacy through on-device processing and offers features such as predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure (Free, Starter, Standard, Pro) for lifetime access. Key features include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all designed for offline use with legal disclaimers for educational purposes.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes
-
-**November 3, 2025 - Compilation Errors Fixed (XML Syntax in Kotlin Files):**
-- **Critical Syntax Errors Discovered** - Android Studio screenshot revealed 15 compilation errors from XML closing tags in Kotlin files
-- **Root Cause** - 6 Jetpack Compose files had XML-style `</Column>` instead of Kotlin closing braces `}`
-- **Files Fixed**:
-  - Lesson25TradingPlan.kt: Removed extra closing parenthesis (line 435)
-  - MultiChartScreen.kt: Fixed 2 XML closing tags (lines 340, 420)
-  - RegimeNavigatorScreen.kt: Fixed XML closing tag (line 71)
-  - BacktestScreen.kt: Fixed XML closing tag (line 320)
-  - SimilaritySearchScreen.kt: Fixed XML closing tag (line 250)
-- **Verification Results**:
-  - 0 XML closing tags remain in codebase
-  - All brace balancing now correct
-  - LSP diagnostics: Clean (no errors)
-  - Validation workflow: PASSED ✅
-- **Architect Certification: PASS** - All syntax errors eliminated, ready for Android Studio build
-- **Status**: Codebase now compiles cleanly in both Replit and Android Studio
-
-**November 2, 2025 - Documentation Accuracy Verification 100% Complete:**
-- **Badge Accuracy Audit** - All README badges verified against actual codebase
-  - Kotlin version corrected: 2.1.0 → 1.9.25 (matches build.gradle.kts)
-  - Subjective badges replaced with objective metrics (Code Quality A+ → Material 3 Themed, Security Hardened → 109 Patterns)
-  - All technology versions verified accurate (Android 15 API 35, OpenCV 4.10.0, TensorFlow 2.17.0)
-- **Pattern Count Consistency** - Fixed remaining "108 patterns" references
-  - Updated 10+ documentation files to accurate "109 patterns"
-  - Fixed script docstrings for accuracy
-- **Pricing Transparency Completion** - Eliminated all remaining $29.99 Pro references
-  - Fixed docs/playstore documentation (3 instances)
-  - Fixed legal/PRE_LAUNCH_CHECKLIST.md (3 instances)
-- **Certification Date Accuracy** - Updated to reflect actual completion date
-  - PRODUCTION_CERTIFICATION.md: October 31 → November 2, 2025
-  - README.md Architecture Review: November 2, 2025
-  - Legal documents preserved October 31 dates (legal effective dates)
-- **Comprehensive Verification** - Zero inaccuracies remain
-  - Grep audit: 0 files with "108 patterns" (except legacy script filename)
-  - Pricing audit: 0 files with incorrect $29.99 Pro pricing
-  - Version audit: All badges match actual dependencies
-- **Status: 100% Honest and Verifiable** - All documentation can be independently verified
-
-**November 2, 2025 - Material 3 Branding Consistency 100% Achieved:**
-- **Complete Theme Enhancement** - Theme.kt expanded with comprehensive semantic color palette
-  - Added extension properties: success (#4CAF50), warning (#FF9800), error (#F44336), gold (#FFD700), info (#2196F3)
-  - Full Material 3 color scheme with containers, variants, and proper dark theme support
-  - Neon cyan primary (#00E5FF) maintained as signature QuantraVision brand color
-- **Systematic Hardcoded Color Elimination** - 100+ instances replaced across 22 UI files
-  - Removed all Color.White, Color.Black, Color.Gray, Color.Red, Color.Green literals
-  - Replaced 30+ hex colors (Color(0xFFxxxxxx)) with semantic theme references
-  - All UI elements now use MaterialTheme.colorScheme for consistent theming
-- **Files Modified** - 22 UI screens systematically updated:
-  - Core screens: HomeScreen, UpgradeScreen, PaywallScreen, SettingsScreen, IntelligenceScreen
-  - Feature screens: AnalyticsScreen, MultiChartScreen, AchievementsScreen, EducationHubScreen
-  - Overlays: UsageOverlay, SimilaritySearchScreen
-  - Components: BookFeatureGate, RegimeNavigator, HighlightGate, others
-- **Comprehensive Verification** - Repo-wide audit confirms zero hardcoded colors
-  - Grep audit: 0 files with hardcoded colors outside Theme.kt
-  - LSP diagnostics: Clean, no compilation errors
-  - Visual appearance: Maintained while using centralized theme
-- **Architect Certification: PASS** - 100% Material 3 branding consistency achieved
-- **Production Impact** - Professional brand identity, consistent UX, maintainable theming system
-
-**November 2, 2025 - Google Play Compliance Audit & Fixes:**
-- **Pricing Transparency Fixed** - All $29.99 references updated to correct $49.99 Pro pricing across entire codebase
-  - UI screens updated: IntelligenceScreen, BookViewerScreen, AdvancedFeaturesDisclaimer
-  - Feature gates updated: BookFeatureGate, RegimeNavigator, HighlightGate
-  - Legal documents updated: ADVANCED_FEATURES_DISCLAIMER.md liability cap
-- **Legal Document Accessibility** - Created in-app viewer system (Google Play requirement)
-  - New LegalDocumentScreen.kt displays HTML/TXT legal docs via WebView
-  - Settings screen enhanced with "Legal & Privacy" section
-  - Navigation routes added for Privacy Policy, Terms of Use, Disclaimer
-  - Users can now access all legal documents from Settings menu
-- **Regulatory Compliance Enhanced** - Added critical missing disclosures
-  - Refund Policy added to Terms of Use (Google Play Billing requirement)
-  - CCPA/CalOPPA rights section added to Privacy Policy (California developer requirement)
-  - Governing Law & Dispute Resolution added (California law, arbitration)
-  - All legal documents verified for completeness
-- **Architect Certification: PASS** - Ready for Google Play submission from compliance perspective
-- **Files Modified**: 13 app files, 4 legal documents
-- **Compliance Score**: 100% - All critical issues resolved
-
-**November 2, 2025 - Standalone Book Purchase Feature:**
-- **New Add-On Product** - "The Friendly Trader" book now available as standalone purchase for $4.99
-- **Target Users** - FREE and STARTER tier users can buy the book separately without upgrading
-- **UI Integration** - Book purchase card added to UpgradeScreen and PaywallScreen
-  - Only displays for FREE/STARTER users who don't already have the book
-  - "Add-Ons" separator distinguishes from tier upgrades
-  - Consistent UI patterns with existing tier cards
-- **BillingManager Enhancements** - Added hasBook() method to check book ownership
-  - Tracks standalone book purchases separately from tier entitlements
-  - STANDARD/PRO users already have book bundled (no purchase needed)
-  - Book ownership persists in encrypted SharedPreferences
-- **Strategic Pricing** - $4.99 standalone keeps STANDARD ($24.99) attractive
-  - STANDARD includes 50 patterns + book + achievements + lessons + analytics
-  - Impulse buy price point ($4.99) encourages education access without cannibalizing tier upgrades
-- **Files Modified**: BillingManager.kt, UpgradeScreen.kt, PaywallScreen.kt, README.md, replit.md
-
-**November 2, 2025 - Tier Positioning Strategy Refinement:**
-- **Strategic Pricing Fix** - Removed "most profitable patterns" claim from STARTER tier that undermined upgrade value
-- **Tier Repositioning** - Each tier now positioned as maturity progression:
-  - FREE (10): "Pattern literacy" - foundational high-visibility patterns
-  - STARTER (25): "Core intraday toolkit" - high-confidence everyday patterns (reversals, continuations, breakouts)
-  - STANDARD (50): "Professional expansion pack" - advanced structures (wedges, gaps, harmonics, complex candlesticks)
-  - PRO (109): "Elite intelligence suite" - complete arsenal including rare/specialized patterns + AI mastery
-- **Marketing Language Updated** - Clear upgrade incentives with successive unlocks strategy
-- **Files Modified**: README.md (pricing section), replit.md
-
-**November 2, 2025 - Upgrade Pricing Implementation (Pay Only the Difference):**
-- **Fair Upgrade Pricing** - Users only pay the difference when upgrading between tiers (not full price)
-  - 3 new upgrade SKU products defined with differential pricing
-  - STARTER → STANDARD: $15.00 (saves $9.99 from $24.99 full price)
-  - STARTER → PRO: $40.00 (saves $9.99 from $49.99 full price)
-  - STANDARD → PRO: $25.00 (saves $24.99 from $49.99 full price)
-- **BillingManager Upgrade Logic** - Automatically detects and uses upgrade SKUs
-  - getUpgradeSku() returns correct upgrade SKU based on tier transition
-  - purchaseStandard() and purchasePro() auto-select upgrade SKUs when applicable
-  - Upgrade purchases properly acknowledged to prevent refunds
-  - Purchase history preserved (original tier purchases remain in history)
-- **UI Enhancements** - Clear upgrade messaging in both UpgradeScreen and PaywallScreen
-  - 🎁 UPGRADE badge shown for eligible upgrades
-  - Strikethrough original price (e.g., ~~$24.99~~)
-  - Bold upgrade price prominently displayed
-  - "You pay only the difference" explanatory text
-  - "UPGRADE NOW" button (instead of "BUY NOW")
-- **Edge Cases Handled** - FREE users see full pricing, current tier shows "ALREADY OWNED ✓", lower tiers disabled
-- **Architect Certification: PASS** - Ready for production after creating 3 upgrade SKUs in Google Play Console
-- **Files Modified**: billing_skus.json, BillingManager.kt, Entitlements.kt, UpgradeScreen.kt, PaywallScreen.kt
-
-**November 2, 2025 - Pattern Count Corrected to 109:**
-- Updated all documentation and code from 102 to 109 patterns (28 files changed)
-- Database schema documentation added (app/schemas/README.md)
-- APK signing process fully documented in README
-- Production readiness upgraded from 87/100 to 96/100
-- Architect certified: Ready for Google Play release
-
 ## System Architecture
 
 ### UI/UX Decisions
-The application uses Jetpack Compose with the Material 3 Design System, optimized for a dark theme. It features a declarative and reactive UI, utilizing ViewModel for state management and a modular screen architecture. Design principles include responsive layouts, custom home screen widgets, and a consistent brand identity, with dedicated screens for the Intelligence Stack.
+The application uses Jetpack Compose with the Material 3 Design System, optimized for a dark theme, featuring a declarative and reactive UI. It utilizes ViewModel for state management, a modular screen architecture, responsive layouts, custom home screen widgets, and a consistent brand identity.
 
 ### Technical Implementations
 **Pattern Detection Engine**: Employs an OpenCV template matching system for 109 chart patterns, coordinated by a HybridDetectorBridge and utilizing a BayesianFusionEngine for confidence scoring. Includes DeltaDetectionOptimizer and TemporalStabilizer, with TensorFlow Lite infrastructure for future ML enhancements.
-**Scan Learning Engine**: (PRO tier only) Learns from every chart scan to track pattern frequency, co-occurrence, and confidence distributions. It uses perceptual image hashing for privacy-preserving, offline learning with adaptive threshold optimization and a 90-day data retention policy.
+**Scan Learning Engine**: (PRO tier only) Learns from chart scans to track pattern frequency, co-occurrence, and confidence distributions using perceptual image hashing for privacy-preserving, offline learning with adaptive threshold optimization.
 **Data Storage**: Utilizes an encrypted Room database for local storage of logs, user preferences, achievements, and scan learning data.
 **State Management**: Implements Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) for reactive state propagation.
 **Authentication & Licensing**: Manages a four-tier lifetime access model via Google Play In-App Billing, secured with Google Play Integrity API, signature verification, and R8/ProGuard obfuscation.
-**AI/ML Architecture**: Primarily OpenCV-based, with TensorFlow Lite infrastructure prepared for future Apache 2.0 licensed ML model integration.
+**AI/ML Architecture**: Primarily OpenCV-based, with TensorFlow Lite infrastructure for future Apache 2.0 licensed ML model integration.
 **Alert System**: A centralized AlertManager provides voice, haptic, and visual alerts based on pattern strength.
-**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay, featuring a minimal glowing cyan border that pulses upon pattern detection. A small, draggable floating logo button provides access to the full app UI or a quick actions menu. The overlay uses `FLAG_NOT_TOUCHABLE` for full touch-passthrough to the underlying trading app.
+**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay with a minimal, pulsing cyan border upon pattern detection, offering touch-passthrough to the underlying trading app.
 **Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts performance based on device conditions, with resource optimizations for OpenCV.
-**Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, logging detections with SHA-256 hashes, signing pattern catalogs with Ed25519, and maintaining an SBOM, with legal frameworks emphasizing privacy and "illustrative only" disclaimers.
+**Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, logging detections with SHA-256 hashes, signing pattern catalogs with Ed25519, and maintaining an SBOM.
 
 ## External Dependencies
 
