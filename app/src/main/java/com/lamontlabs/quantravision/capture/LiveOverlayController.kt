@@ -103,7 +103,7 @@ class LiveOverlayController(
     }
 
     private fun Image.toBitmap(): Bitmap? {
-        if (format != ImageFormat.RGBA_8888) return null
+        if (format != android.graphics.PixelFormat.RGBA_8888) return null
         val plane = planes.firstOrNull() ?: return null
         val buffer: ByteBuffer = plane.buffer
         val pixelStride = plane.pixelStride
