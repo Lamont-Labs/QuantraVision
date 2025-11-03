@@ -68,7 +68,7 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                </Column>
+                }
             }
             
             // Demo analysis button

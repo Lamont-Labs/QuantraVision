@@ -432,4 +432,3 @@ val lesson25TradingPlan = Lesson(
                 )
             )
         )
-        )

@@ -247,7 +247,7 @@ fun SimilarityResultCard(pattern: PatternSimilaritySearch.SimilarPattern) {
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                </Column>
+                }
                 
                 Surface(
                     shape = MaterialTheme.shapes.small,

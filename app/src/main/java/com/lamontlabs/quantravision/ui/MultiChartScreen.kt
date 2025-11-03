@@ -337,7 +337,7 @@ fun CorrelationCard(correlation: MultiChartComparison.CrossChartCorrelation) {
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                </Column>
+                }
                 
                 Surface(
                     shape = MaterialTheme.shapes.small,
@@ -417,7 +417,7 @@ fun DivergenceCard(divergence: MultiChartComparison.Divergence) {
                         divergence.pattern1.replace("_", " "),
                         style = MaterialTheme.typography.bodySmall
                     )
-                </Column>
+                }
                 
                 Icon(
                     Icons.Default.CompareArrows,

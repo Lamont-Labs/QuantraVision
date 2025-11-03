@@ -317,7 +317,7 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                </Column>
+                }
                 
                 Surface(
                     shape = MaterialTheme.shapes.small,
