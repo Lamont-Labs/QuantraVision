@@ -47,22 +47,22 @@ object InvalidationDetector {
     
     private fun checkPatternSpecificRules(pattern: PatternMatch): InvalidationResult {
         return when {
-            pattern.name.contains("Head & Shoulders", ignoreCase = true) ||
-            pattern.name.contains("Head and Shoulders", ignoreCase = true) -> {
+            pattern.patternName.contains("Head & Shoulders", ignoreCase = true) ||
+            pattern.patternName.contains("Head and Shoulders", ignoreCase = true) -> {
                 checkHeadAndShouldersInvalidation(pattern)
             }
-            pattern.name.contains("Triangle", ignoreCase = true) -> {
+            pattern.patternName.contains("Triangle", ignoreCase = true) -> {
                 checkTriangleInvalidation(pattern)
             }
-            pattern.name.contains("Double Top", ignoreCase = true) ||
-            pattern.name.contains("Double Bottom", ignoreCase = true) -> {
+            pattern.patternName.contains("Double Top", ignoreCase = true) ||
+            pattern.patternName.contains("Double Bottom", ignoreCase = true) -> {
                 checkDoublePatternInvalidation(pattern)
             }
-            pattern.name.contains("Flag", ignoreCase = true) ||
-            pattern.name.contains("Pennant", ignoreCase = true) -> {
+            pattern.patternName.contains("Flag", ignoreCase = true) ||
+            pattern.patternName.contains("Pennant", ignoreCase = true) -> {
                 checkFlagInvalidation(pattern)
             }
-            pattern.name.contains("Wedge", ignoreCase = true) -> {
+            pattern.patternName.contains("Wedge", ignoreCase = true) -> {
                 checkWedgeInvalidation(pattern)
             }
             else -> InvalidationResult(isInvalidated = false)

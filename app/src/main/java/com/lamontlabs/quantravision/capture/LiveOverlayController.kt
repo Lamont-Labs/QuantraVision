@@ -69,7 +69,7 @@ class LiveOverlayController(
             throw RuntimeException("Failed to start screen capture. Please restart the overlay service.", e)
         }
 
-        reader.setOnImageAvailableListener({ imgReader ->
+        imageReader!!.setOnImageAvailableListener({ imgReader ->
             val now = System.currentTimeMillis()
             
             if (now - lastPolicyCheckMs > 5000) {

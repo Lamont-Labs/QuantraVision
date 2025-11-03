@@ -2,6 +2,7 @@ package com.lamontlabs.quantravision.detection
 
 import androidx.camera.core.ImageProxy
 import com.lamontlabs.quantravision.billing.Entitlements
+import com.lamontlabs.quantravision.billing.Tier
 import com.lamontlabs.quantravision.core.PatternQuota
 
 class DetectorGateWrapper(
@@ -15,13 +16,13 @@ class DetectorGateWrapper(
     }
 
     suspend fun analyze(image: ImageProxy): List<Detection> {
-        val hasPro = ent.hasPro()
-        val hasHighlights = quota.remainingHighlights() > 0
+        val hasPro = ent.hasTier(Tier.PRO)
+        val hasHighlights = quota.remaining > 0
         
         return if (hasPro || hasHighlights) {
             val results = inner.demoScan()
             if (!hasPro && results.isNotEmpty()) {
-                quota.recordHighlightUsage()
+                quota.record()
             }
             results
         } else {
