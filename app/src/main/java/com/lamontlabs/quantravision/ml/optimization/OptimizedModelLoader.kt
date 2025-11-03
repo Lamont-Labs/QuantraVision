@@ -97,25 +97,15 @@ class OptimizedModelLoader(private val context: Context) {
      * Configure GPU delegate for maximum performance
      */
     private fun configureGPU(options: Interpreter.Options) {
-        val gpuOptions = GpuDelegate.Options().apply {
-            // FP16 precision (2x faster than FP32, minimal accuracy loss)
-            setPrecisionLossAllowed(true)
-            
-            // Optimize for sustained speed vs. latency
-            setInferencePreference(GpuDelegate.Options.INFERENCE_PREFERENCE_SUSTAINED_SPEED)
-            
-            // Enable quantized model support
-            setQuantizedModelsAllowed(true)
-        }
-        
+        val gpuOptions = GpuDelegate.Options()
         options.addDelegate(GpuDelegate(gpuOptions))
-        Timber.i("GPU delegate configured: FP16 precision, sustained speed mode")
+        Timber.i("GPU delegate configured for hardware acceleration")
     }
     
     /**
      * Configure NNAPI for hardware acceleration
      */
-    private fun configurerNNAPI(options: Interpreter.Options) {
+    private fun configureNNAPI(options: Interpreter.Options) {
         val nnApiOptions = NnApiDelegate.Options().apply {
             // Allow FP16 for speed
             setAllowFp16(true)
