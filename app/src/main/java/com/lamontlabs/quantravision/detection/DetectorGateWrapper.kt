@@ -16,13 +16,13 @@ class DetectorGateWrapper(
     }
 
     suspend fun analyze(image: ImageProxy): List<Detection> {
-        val hasPro = ent.hasTier(Tier.PRO)
-        val hasHighlights = quota.remaining > 0
+        val hasPro = ent.tier == Tier.PRO
+        val hasHighlights = quota.remaining(ent) > 0
         
         return if (hasPro || hasHighlights) {
             val results = inner.demoScan()
             if (!hasPro && results.isNotEmpty()) {
-                quota.record()
+                quota.consume(ent)
             }
             results
         } else {
