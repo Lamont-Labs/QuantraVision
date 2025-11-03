@@ -34,15 +34,8 @@ jobs:
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses || true
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Clean build (remove cached compiled files)
+        run: ./gradlew clean --stacktrace
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace --no-daemon
