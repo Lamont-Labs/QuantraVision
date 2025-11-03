@@ -44,25 +44,42 @@ workflows:
           include: true
     
     scripts:
-      # 1. Force fresh source checkout (fixes stale workspace cache)
-      - name: Force clean checkout
+      # 1. NUCLEAR OPTION: Force complete fresh checkout
+      - name: Force fresh checkout
         script: | 
+          set -e  # Exit on any error
           echo "═══════════════════════════════════════════════════════════"
-          echo "FORCING FRESH SOURCE CHECKOUT (clearing workspace cache)"
+          echo "NUCLEAR CACHE RESET - Forcing absolute fresh checkout"
           echo "═══════════════════════════════════════════════════════════"
-          echo "Current commit: $CM_COMMIT"
+          echo "Target commit: $CM_COMMIT"
+          echo "Build directory: $CM_BUILD_DIR"
           
-          # Remove any stale source files from cached workspace
-          find "$CM_BUILD_DIR" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} + 2>/dev/null || true
-          
-          # Force Git to reset to exact commit state
           cd "$CM_BUILD_DIR"
+          
+          # AGGRESSIVE: Remove all non-git files
+          echo "Step 1: Removing all cached source files..."
+          git clean -fdx
+          
+          # RESET: Hard reset to exact commit
+          echo "Step 2: Hard resetting to commit $CM_COMMIT..."
+          git fetch origin
           git reset --hard "$CM_COMMIT"
           git clean -fdx
           
-          echo "✅ Fresh source checkout complete"
-          echo "Files in workspace:"
-          ls -la
+          # VERIFY: Check git status
+          echo "Step 3: Verifying git status..."
+          git status
+          git log --oneline -3
+          
+          # DEBUG: Verify the fixes are actually in the files
+          echo "Step 4: VERIFICATION - Checking critical files..."
+          echo "--- AccessibilityLocaleHelper.kt line 78 should be 'view.isImportantForAccessibility = true' ---"
+          sed -n '78p' app/src/main/java/com/lamontlabs/quantravision/locale/AccessibilityLocaleHelper.kt || echo "FILE NOT FOUND!"
+          
+          echo "--- IncrementalLearningEngine.kt lines 5-13 should have WorkManager imports ---"
+          sed -n '5,13p' app/src/main/java/com/lamontlabs/quantravision/ml/learning/IncrementalLearningEngine.kt | head -9 || echo "FILE NOT FOUND!"
+          
+          echo "✅ Fresh source checkout complete and VERIFIED"
           echo "═══════════════════════════════════════════════════════════"
       
       # 2. System diagnostics and environment check
