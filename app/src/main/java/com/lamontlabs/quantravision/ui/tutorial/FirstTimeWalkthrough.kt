@@ -23,6 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lamontlabs.quantravision.ui.success
+import com.lamontlabs.quantravision.ui.warning
+import com.lamontlabs.quantravision.ui.gold
 
 /**
  * FirstTimeWalkthrough - Interactive in-app tutorial
