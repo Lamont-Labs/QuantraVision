@@ -108,7 +108,29 @@ interface InvalidatedPatternDao {
     suspend fun getInvalidationCount(name: String): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class], version = 11)
+@Entity
+data class TrainingExampleEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val features: String,
+    val labelDetected: String?,
+    val labelActual: String,
+    val userConfidence: Float,
+    val timestamp: Long
+)
+
+@Dao
+interface TrainingExampleDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(example: TrainingExampleEntity)
+
+    @Query("SELECT * FROM TrainingExampleEntity ORDER BY timestamp DESC")
+    suspend fun getAll(): List<TrainingExampleEntity>
+    
+    @Query("SELECT COUNT(*) FROM TrainingExampleEntity")
+    suspend fun getCount(): Int
+}
+
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class, TrainingExampleEntity::class], version = 12)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
@@ -117,6 +139,7 @@ abstract class PatternDatabase : RoomDatabase() {
     abstract fun achievementDao(): AchievementDao
     abstract fun learningProfileDao(): LearningProfileDao
     abstract fun advancedLearningDao(): AdvancedLearningDao
+    abstract fun trainingExampleDao(): TrainingExampleDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -131,7 +154,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -441,6 +464,51 @@ abstract class PatternDatabase : RoomDatabase() {
                 
                 Log.i(TAG, "Migration 10 -> 11: Scan Learning Engine tables created successfully")
             }
+        }
+        
+        val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Training Example table for Incremental Learning Engine
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS TrainingExampleEntity (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        features TEXT NOT NULL,
+                        labelDetected TEXT,
+                        labelActual TEXT NOT NULL,
+                        userConfidence REAL NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                
+                Log.i(TAG, "Migration 11 -> 12: Incremental Learning Engine table created successfully")
+            }
+        }
+    }
+    
+    suspend fun addTrainingExample(example: com.lamontlabs.quantravision.ml.learning.TrainingExample) {
+        val entity = TrainingExampleEntity(
+            features = example.features.joinToString(","),
+            labelDetected = example.labelDetected,
+            labelActual = example.labelActual,
+            userConfidence = example.userConfidence,
+            timestamp = example.timestamp
+        )
+        trainingExampleDao().insert(entity)
+    }
+    
+    suspend fun getTrainingExampleCount(): Int {
+        return trainingExampleDao().getCount()
+    }
+    
+    suspend fun getAllTrainingExamples(): List<com.lamontlabs.quantravision.ml.learning.TrainingExample> {
+        return trainingExampleDao().getAll().map { entity ->
+            com.lamontlabs.quantravision.ml.learning.TrainingExample(
+                features = entity.features.split(",").map { it.toFloat() }.toFloatArray(),
+                labelDetected = entity.labelDetected,
+                labelActual = entity.labelActual,
+                userConfidence = entity.userConfidence,
+                timestamp = entity.timestamp
+            )
         }
     }
 }

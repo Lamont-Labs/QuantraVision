@@ -2,7 +2,15 @@ package com.lamontlabs.quantravision.ml.learning
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.lamontlabs.quantravision.PatternDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
