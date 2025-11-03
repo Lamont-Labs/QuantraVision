@@ -171,6 +171,8 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
         exclude(group = "org.tensorflow", module = "tensorflow-lite-support-api")
+        exclude(group = "com.google.ai.edge.litert", module = "litert-support")
+        exclude(group = "com.google.ai.edge.litert", module = "litert-support-api")
     }
     // GPU delegate disabled due to compatibility issues in 2.17.0
     // implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
