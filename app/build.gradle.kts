@@ -186,7 +186,7 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
     
     // JSON & YAML parsing - Latest stable
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.13.2")
     implementation("org.yaml:snakeyaml:2.3")
     
     // PDF generation for trading notebooks
