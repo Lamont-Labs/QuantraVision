@@ -14,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.analytics.PatternPerformanceTracker
 import com.lamontlabs.quantravision.analytics.model.Outcome
-import com.lamontlabs.quantravision.ui.success
-import com.lamontlabs.quantravision.ui.warning
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

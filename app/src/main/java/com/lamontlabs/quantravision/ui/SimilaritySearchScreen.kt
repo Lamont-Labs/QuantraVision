@@ -164,7 +164,7 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Icon(
-                                Icons.Default.Error,
+                                Icons.Default.ErrorOutline,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.error
                             )

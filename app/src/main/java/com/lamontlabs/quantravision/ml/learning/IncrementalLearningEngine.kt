@@ -255,7 +255,9 @@ class RetrainingWorker(
             
             if (examples.size < 50) {
                 Timber.w("Not enough examples for retraining: ${examples.size}")
-                return@withContext Result.failure()
+                return@withContext Result.failure(
+                    androidx.work.workDataOf("error" to "Not enough examples: ${examples.size}")
+                )
             }
             
             // TODO: Implement actual retraining logic

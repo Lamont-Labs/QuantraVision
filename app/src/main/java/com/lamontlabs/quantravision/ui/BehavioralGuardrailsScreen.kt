@@ -245,7 +245,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                                     }
                                     statistics.currentStreak < -2 -> {
                                         InsightRow(
-                                            icon = Icons.Default.Error,
+                                            icon = Icons.Default.ErrorOutline,
                                             text = "Negative streak detected. This is a high-risk time for revenge trading. Step back and review your strategy.",
                                             isWarning = true
                                         )

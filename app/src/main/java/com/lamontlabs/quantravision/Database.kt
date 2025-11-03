@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.room.*
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lamontlabs.quantravision.achievements.data.AchievementDao
 import com.lamontlabs.quantravision.achievements.data.AchievementEntity

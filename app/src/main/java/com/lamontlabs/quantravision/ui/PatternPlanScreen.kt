@@ -150,7 +150,7 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Default.Error,
+                                Icons.Default.ErrorOutline,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.error
                             )

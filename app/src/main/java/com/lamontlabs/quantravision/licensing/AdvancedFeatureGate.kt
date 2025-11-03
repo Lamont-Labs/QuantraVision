@@ -97,12 +97,12 @@ object AdvancedFeatureGate {
             val isValid = accepted && disclaimerVersion == DISCLAIMER_VERSION
             cachedAcceptance = isValid
             
-            isValid
+            return isValid
             
         } catch (e: Exception) {
             Timber.e(e, "Error checking advanced features acceptance (sync)")
             cachedAcceptance = false
-            false
+            return false
         }
     }
     

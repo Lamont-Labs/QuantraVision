@@ -20,8 +20,6 @@ import com.lamontlabs.quantravision.ui.paywall.ProUpgradePrompt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.lamontlabs.quantravision.ui.success
-import com.lamontlabs.quantravision.ui.warning
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

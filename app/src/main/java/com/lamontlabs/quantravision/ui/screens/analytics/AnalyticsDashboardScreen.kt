@@ -71,7 +71,7 @@ fun AnalyticsDashboardScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            Icons.Default.Error,
+                            Icons.Default.ErrorOutline,
                             contentDescription = "Error",
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.error

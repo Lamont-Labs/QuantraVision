@@ -25,9 +25,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import com.lamontlabs.quantravision.ui.success
-import com.lamontlabs.quantravision.ui.warning
-import com.lamontlabs.quantravision.ui.error
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +181,7 @@ fun BacktestScreen(onBack: () -> Unit) {
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Icon(
-                                    Icons.Default.Error,
+                                    Icons.Default.ErrorOutline,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.error
                                 )
