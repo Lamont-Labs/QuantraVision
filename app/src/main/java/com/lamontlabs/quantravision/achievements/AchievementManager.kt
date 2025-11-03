@@ -83,6 +83,8 @@ class AchievementManager private constructor(private val context: Context) {
                 if (newAchievements.isNotEmpty()) {
                     achievementDao.insertAll(newAchievements)
                     Log.d(TAG, "Initialized ${newAchievements.size} new achievements in database")
+                } else {
+                    // No new achievements to initialize
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to initialize achievement database", e)
@@ -147,9 +149,13 @@ class AchievementManager private constructor(private val context: Context) {
                     
                     if (newProgress >= entity.totalRequired) {
                         unlock(achievementId)
+                    } else {
+                        // Progress updated but not yet unlocked
                     }
                     
                     Log.d(TAG, "Updated progress for $achievementId: $newProgress/${entity.totalRequired}")
+                } else {
+                    // Entity not found or already unlocked
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to increment progress for $achievementId", e)
@@ -173,7 +179,11 @@ class AchievementManager private constructor(private val context: Context) {
                         )
                         _achievementUnlocked.emit(unlockedAchievement)
                         Log.d(TAG, "Unlocked achievement: ${achievement.title}")
+                    } else {
+                        // Achievement definition not found
                     }
+                } else {
+                    // Entity not found or already unlocked
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to unlock achievement $achievementId", e)
