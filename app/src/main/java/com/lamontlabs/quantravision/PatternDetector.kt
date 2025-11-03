@@ -65,7 +65,10 @@ class PatternDetector(private val context: Context) {
     
     /**
      * Check if GPU acceleration is available on this device.
-     * Uses OpenCV's UMat support detection.
+     * 
+     * Note: Android OpenCV doesn't expose UMat API directly,
+     * so we assume CPU-only processing. Future versions may add
+     * GPU support through OpenCL or Vulkan backends.
      * 
      * @return true if GPU is available, false otherwise
      */
@@ -74,26 +77,12 @@ class PatternDetector(private val context: Context) {
             return gpuAvailable
         }
         
-        try {
-            // OpenCV GPU support check - attempt to create UMat
-            // If GPU is available, UMat operations will use GPU acceleration
-            // If not available, UMat gracefully falls back to CPU (Mat internally)
-            val testMat = Mat.zeros(10, 10, org.opencv.core.CvType.CV_8UC1)
-            val testUMat = testMat.getUMat(org.opencv.core.Core.ACCESS_READ)
-            
-            // If we got here without exception, UMat is supported
-            gpuAvailable = true
-            Timber.i("GPU acceleration available via OpenCV UMat")
-            
-            testUMat.release()
-            testMat.release()
-            
-        } catch (e: Exception) {
-            gpuAvailable = false
-            Timber.i("GPU acceleration not available, using CPU fallback: ${e.message}")
-        } finally {
-            gpuCheckPerformed = true
-        }
+        // Android OpenCV doesn't expose getUMat() or UMat functionality
+        // GPU acceleration would require OpenCL backend which isn't
+        // available in standard Android OpenCV builds
+        gpuAvailable = false
+        gpuCheckPerformed = true
+        Timber.i("GPU acceleration not available in Android OpenCV, using CPU")
         
         return gpuAvailable
     }
@@ -144,14 +133,12 @@ class PatternDetector(private val context: Context) {
                 Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
                 
                 // ENHANCEMENT 1: Apply lighting normalization for dark/light mode charts
-                var normalized: Mat? = null
                 try {
-                    normalized = LightingNormalizer.normalize(input)
+                    val normalized = LightingNormalizer.normalize(input)
                     input.release()
                     input = normalized
                 } catch (e: Exception) {
                     Timber.e(e, "Lighting normalization failed, using original")
-                    normalized?.release()
                 }
 
                 val est = TimeframeEstimator.estimateFromBitmap(bmp)
@@ -273,7 +260,7 @@ class PatternDetector(private val context: Context) {
                     // Integrate with new features
                     com.lamontlabs.quantravision.integration.FeatureIntegration.onPatternDetected(context, match)
 
-                    provenance.logHash(imageFile, "$patternName@${"%.2f".format(consensus.bestScale)}:${tfLabel}:c${"%.3f".format(calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
+                    provenance.logHash(imageFile, "$patternName@${String.format("%.2f", consensus.bestScale)}:${tfLabel}:c${String.format("%.3f", calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
                 }
 
                 Timber.i("Advanced detection complete for ${imageFile.name} [tf=$tfLabel]")
@@ -317,14 +304,12 @@ class PatternDetector(private val context: Context) {
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
             
             // ENHANCEMENT 1: Apply lighting normalization
-            var normalized: Mat? = null
             try {
-                normalized = LightingNormalizer.normalize(input)
+                val normalized = LightingNormalizer.normalize(input)
                 input.release()
                 input = normalized
             } catch (e: Exception) {
                 Timber.e(e, "Lighting normalization failed, using original")
-                normalized?.release()
             }
             
             // Estimate timeframe from chart
