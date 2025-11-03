@@ -294,7 +294,7 @@ class PatternToPlanEngine(private val context: Context) {
             appendLine()
             appendLine("Pattern: ${scenario.patternMatch.patternName}")
             appendLine("Confidence: ${formatPercent(scenario.patternMatch.confidence)}")
-            appendLine("Timeframe: ${scenario.patternMatch.timeframeLabel}")
+            appendLine("Timeframe: ${scenario.patternMatch.timeframe}")
             appendLine()
             appendLine("Theoretical Trade Parameters:")
             appendLine("  Entry Price:    ${formatPrice(scenario.entryPrice)}")

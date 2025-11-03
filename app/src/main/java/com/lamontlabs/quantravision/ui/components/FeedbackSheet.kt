@@ -151,11 +151,11 @@ fun FeedbackSheet(
                             if (selectedOutcome != null) {
                                 PatternPerformanceTracker.trackOutcome(
                                     context = context,
-                                    patternMatchId = patternMatch.matchId,
+                                    patternMatchId = patternMatch.id,
                                     patternName = patternMatch.patternName,
                                     outcome = selectedOutcome!!,
                                     userFeedback = userFeedback,
-                                    timeframe = patternMatch.timeframeLabel
+                                    timeframe = patternMatch.timeframe
                                 )
                                 showThankYou = true
                             }

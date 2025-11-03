@@ -131,7 +131,7 @@ class ProofCapsuleGenerator(private val context: Context) {
                 timestamp = timestamp,
                 patternId = patternMatch.patternName,
                 confidence = patternMatch.confidence,
-                timeframe = patternMatch.timeframeLabel,
+                timeframe = patternMatch.timeframe,
                 scale = patternMatch.scale,
                 consensusScore = patternMatch.consensusScore,
                 metadata = metadata,
@@ -149,7 +149,7 @@ class ProofCapsuleGenerator(private val context: Context) {
                 timestampMs = timestampMs,
                 patternId = patternMatch.patternName,
                 confidence = patternMatch.confidence,
-                timeframe = patternMatch.timeframeLabel,
+                timeframe = patternMatch.timeframe,
                 scale = patternMatch.scale,
                 consensusScore = patternMatch.consensusScore,
                 regimeContext = regimeData,
@@ -422,7 +422,7 @@ class ProofCapsuleGenerator(private val context: Context) {
     
     private fun buildMetadata(patternMatch: PatternMatch, screenshot: Bitmap?): Map<String, Any> {
         return buildMap {
-            put("id", patternMatch.matchId)
+            put("id", patternMatch.id)
             put("originPath", patternMatch.originPath)
             put("detectionBounds", patternMatch.detectionBounds ?: "null")
             put("windowMs", patternMatch.windowMs)
