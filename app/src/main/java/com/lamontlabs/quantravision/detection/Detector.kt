@@ -5,7 +5,7 @@ import kotlinx.coroutines.delay
 
 data class Detection(val id: String, val name: String, val confidence: Int)
 
-class Detector {
+open class Detector {
   suspend fun demoScan(): List<Detection> {
     delay(300)
     return if (PatternLibrary.demoBoxes)

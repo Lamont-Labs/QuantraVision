@@ -186,8 +186,8 @@ object LightingNormalizer {
             }
             
             // Check contrast (standard deviation)
-            val meanMat = org.opencv.core.Mat()
-            val stdDevMat = org.opencv.core.Mat()
+            val meanMat = org.opencv.core.MatOfDouble()
+            val stdDevMat = org.opencv.core.MatOfDouble()
             org.opencv.core.Core.meanStdDev(input, meanMat, stdDevMat)
             val stdDev = stdDevMat.get(0, 0)[0]
             

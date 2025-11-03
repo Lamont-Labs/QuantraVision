@@ -3,7 +3,7 @@ package com.lamontlabs.quantravision.debug
 import android.content.Context
 import android.os.Build
 import com.lamontlabs.quantravision.logging.Ledger
-import com.lamontlabs.quantravision.security.IntegrityWatcher
+import com.lamontlabs.quantravision.safety.IntegrityWatcher
 import java.io.File
 import java.security.MessageDigest
 

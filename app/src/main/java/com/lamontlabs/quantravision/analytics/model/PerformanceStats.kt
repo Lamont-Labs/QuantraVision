@@ -30,6 +30,14 @@ data class TimeOfDayStats(
     val timeLabel: String get() = String.format("%02d:00", hourOfDay)
 }
 
+data class PerformanceStats(
+    val patternName: String,
+    val totalDetections: Int,
+    val winRate: Double,
+    val avgConfidence: Double,
+    val lastDetected: Long
+)
+
 data class OverallPerformanceStats(
     val totalPatterns: Int,
     val totalOutcomes: Int,

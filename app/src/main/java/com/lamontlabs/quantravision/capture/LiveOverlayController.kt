@@ -69,7 +69,7 @@ class LiveOverlayController(
             throw RuntimeException("Failed to start screen capture. Please restart the overlay service.", e)
         }
 
-        reader.setOnImageAvailableListener({ reader ->
+        reader.setOnImageAvailableListener({ imgReader ->
             val now = System.currentTimeMillis()
             
             if (now - lastPolicyCheckMs > 5000) {
@@ -79,10 +79,10 @@ class LiveOverlayController(
             
             if (now - lastEmitMs < framePeriodMs) {
                 // Drop frame deterministically to meet targetFps
-                reader.acquireLatestImage()?.close()
+                imgReader.acquireLatestImage()?.close()
                 return@setOnImageAvailableListener
             }
-            val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
+            val image = imgReader.acquireLatestImage() ?: return@setOnImageAvailableListener
             val bmp = image.toBitmap()
             image.close()
             if (bmp != null) {

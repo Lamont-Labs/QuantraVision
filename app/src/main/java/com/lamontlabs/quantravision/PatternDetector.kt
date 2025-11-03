@@ -224,6 +224,11 @@ class PatternDetector(private val context: Context) {
                     val detectionBounds = bestMatch?.let {
                         "${it.matchX.toInt()},${it.matchY.toInt()},${it.templateWidth.toInt()},${it.templateHeight.toInt()}"
                     }
+                    
+                    // Calculate aspect ratio from template dimensions
+                    val aspectRatio = bestMatch?.let { 
+                        it.templateWidth / it.templateHeight 
+                    } ?: 1.0
 
                     val match = PatternMatch(
                         patternName = patternName,
@@ -260,7 +265,7 @@ class PatternDetector(private val context: Context) {
                     // Integrate with new features
                     com.lamontlabs.quantravision.integration.FeatureIntegration.onPatternDetected(context, match)
 
-                    provenance.logHash(imageFile, "$patternName@${String.format("%.2f", consensus.bestScale)}:${tfLabel}:c${String.format("%.3f", calibrated)}:t${temporal.toBigDecimal().setScale(3, java.math.RoundingMode.HALF_UP)}")
+                    provenance.logHash(imageFile, patternName, consensus.bestScale, aspectRatio, calibrated)
                 }
 
                 Timber.i("Advanced detection complete for ${imageFile.name} [tf=$tfLabel]")

@@ -28,9 +28,9 @@ class PowerGuard(private val context: Context) {
         val bm = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
         val level = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
         val temp = try {
-            if (Build.VERSION.SDK_INT >= 29)
-                bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_TEMPERATURE) / 10.0
-            else 30.0
+            val batteryIntent = context.registerReceiver(null, android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED))
+            val temperature = batteryIntent?.getIntExtra(android.os.BatteryManager.EXTRA_TEMPERATURE, 300) ?: 300
+            temperature / 10.0
         } catch (e: Exception) { 30.0 }
 
         val tooHot = temp > 42
