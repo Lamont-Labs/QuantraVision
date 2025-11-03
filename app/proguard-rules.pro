@@ -1,13 +1,24 @@
-# QuantraVision release shrink rules
-# Keep TFLite & reflection
--keep class org.tensorflow.** { *; }
--keep class com.google.gson.** { *; }
+# QuantraVision release shrink rules - Optimized for maximum code shrinking
+# Aggressive optimization passes
+-optimizationpasses 7
+-allowaccessmodification
+-mergeinterfacesaggressively
+-dontpreverify
+-dontskipnonpubliclibraryclassmembers
+
+# Keep TFLite & reflection (only what's needed)
+-keep class org.tensorflow.lite.** { *; }
+-keep interface org.tensorflow.lite.** { *; }
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
 -dontwarn org.tensorflow.**
 -dontwarn com.google.gson.**
 
-# Keep Compose metadata
--keep class androidx.compose.** { *; }
+# Keep Compose runtime (not all Compose metadata)
+-keep class androidx.compose.runtime.** { *; }
+-keep class androidx.compose.ui.platform.** { *; }
 -keep class kotlin.Metadata { *; }
+-dontwarn androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
 
 # ML Kit Text Recognition
 -keep class com.google.mlkit.** { *; }
@@ -47,11 +58,16 @@
     void println(...);
 }
 
-# Optimize: Remove unused code and inline aggressively
--optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
--optimizationpasses 5
--allowaccessmodification
--dontpreverify
+# R8 Full Mode aggressive optimizations
+-repackageclasses ''
+-overloadaggressively
+
+# Remove debug info from classes
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
+
+# Aggressive method inlining
+-optimizations code/removal/*,code/allocation/variable,method/inlining/*,method/removal/*,field/removal/*,class/merging/*
 
 # Keep essential Android components
 -keepclassmembers class * extends android.app.Activity { *; }

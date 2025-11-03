@@ -1,0 +1,22 @@
+# Baseline Profile for QuantraVision
+# Optimizes startup and Jetpack Compose performance
+
+# Core app startup
+Lcom/lamontlabs/quantravision/MainActivity;
+Lcom/lamontlabs/quantravision/QuantraVisionApp;
+
+# Critical UI components
+Lcom/lamontlabs/quantravision/ui/AppScaffold;
+Lcom/lamontlabs/quantravision/ui/HomeScreen;
+Lcom/lamontlabs/quantravision/ui/theme/Theme;
+
+# Pattern detection (hot path)
+Lcom/lamontlabs/quantravision/PatternDetector;
+Lcom/lamontlabs/quantravision/TemplateLibrary;
+
+# Billing (user interaction)
+Lcom/lamontlabs/quantravision/billing/BillingManager;
+
+# Database
+Lcom/lamontlabs/quantravision/Database;
+Lcom/lamontlabs/quantravision/PatternDatabase;
