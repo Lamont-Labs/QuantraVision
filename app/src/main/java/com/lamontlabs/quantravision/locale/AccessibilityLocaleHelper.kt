@@ -75,7 +75,7 @@ object AccessibilityLocaleHelper {
     /** Mark a view as important for accessibility and set its content description. */
     fun setContentDesc(view: View, desc: String) {
         view.contentDescription = desc
-        view.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
+        view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
     }
 
     /** Announce a transient message to TalkBack users. */
