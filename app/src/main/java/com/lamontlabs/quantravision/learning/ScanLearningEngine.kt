@@ -1,7 +1,7 @@
 package com.lamontlabs.quantravision.learning
 
 import android.content.Context
-import com.lamontlabs.quantravision.Database
+import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.detection.DetectionResult
 import com.lamontlabs.quantravision.learning.data.*
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ import java.util.UUID
  */
 class ScanLearningEngine(private val context: Context) {
     
-    private val db = Database.PatternDatabase.getInstance(context)
+    private val db = PatternDatabase.getInstance(context)
     private val dao = db.learningProfileDao()
     
     private var currentSessionId: String = UUID.randomUUID().toString()

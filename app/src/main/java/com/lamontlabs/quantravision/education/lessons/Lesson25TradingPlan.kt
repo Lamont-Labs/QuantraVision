@@ -262,12 +262,12 @@ val lesson25TradingPlan = Lesson(
                 Date: _______
                 Symbol: _______
                 Setup: _______
-                Entry: \$_______ @ _______
-                Stop: \$_______ (Risk: \$_______)
-                Target 1: \$_______
-                Target 2: \$_______
-                Position Size: _______ shares
-                Risk %: _______%
+                Entry: [AMOUNT] @ _______
+                Stop: [AMOUNT] (Risk: [AMOUNT])
+                Target 1: [AMOUNT]
+                Target 2: [AMOUNT]
+                Position Size: [VALUE] shares
+                Risk %: [VALUE] 
                 
                 Pre-Trade:
                 ☐ All entry criteria met?
@@ -275,8 +275,8 @@ val lesson25TradingPlan = Lesson(
                 ☐ Stop set?
                 
                 Outcome:
-                Exit: \$_______ @ _______
-                P&L: \$_______ (_____%)
+                Exit: [AMOUNT] @ _______
+                P&L: [AMOUNT] ([PERCENT]%)
                 R-Multiple: _______
                 
                 Emotional State:
@@ -295,22 +295,22 @@ val lesson25TradingPlan = Lesson(
                 
                 **Track These**:
                 ```
-                Win Rate: _____%
-                Average Win: \$_______
-                Average Loss: \$_______
-                Expectancy: \$_______
+                Win Rate: [PERCENT]%
+                Average Win: [AMOUNT]
+                Average Loss: [AMOUNT]
+                Expectancy: [AMOUNT]
                 Profit Factor: _______
                 Total Trades: _______
-                Max Drawdown: _____%
-                Monthly Return: _____%
+                Max Drawdown: [PERCENT]%
+                Monthly Return: [PERCENT]%
                 Sharpe Ratio: _______
                 
-                Best Trade: \$_______
-                Worst Trade: \$_______
+                Best Trade: [AMOUNT]
+                Worst Trade: [AMOUNT]
                 Largest Win Streak: _______
                 Largest Loss Streak: _______
                 
-                Rule Adherence: _____%
+                Rule Adherence: [PERCENT]%
                 ```
                 
                 ### 9. Rules for Discipline
