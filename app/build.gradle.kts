@@ -194,6 +194,12 @@ dependencies {
     
     // PDF generation for trading notebooks
     implementation("com.itextpdf:itextpdf:5.5.13.3")
+    
+    // QR Code generation - ZXing
+    implementation("com.google.zxing:core:3.5.3")
+    
+    // Material Icons Extended - For additional icons
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
 
     // Testing - Latest stable
     testImplementation("junit:junit:4.13.2")
