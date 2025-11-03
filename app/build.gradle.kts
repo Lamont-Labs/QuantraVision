@@ -171,7 +171,8 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
     }
-    implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
+    // GPU delegate disabled due to compatibility issues in 2.17.0
+    // implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
 
     // CameraX - Latest stable versions
     implementation("androidx.camera:camera-core:1.5.0")

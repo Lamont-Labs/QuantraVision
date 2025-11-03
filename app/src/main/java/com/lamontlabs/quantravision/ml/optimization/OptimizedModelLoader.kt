@@ -3,8 +3,6 @@ package com.lamontlabs.quantravision.ml.optimization
 import android.content.Context
 import android.os.Build
 import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.CompatibilityList
-import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.nnapi.NnApiDelegate
 import timber.log.Timber
 import java.io.FileInputStream
@@ -28,8 +26,6 @@ import java.nio.channels.FileChannel
  * - XNNPACK for ARM CPU optimization
  */
 class OptimizedModelLoader(private val context: Context) {
-    
-    private val compatibilityList = CompatibilityList()
     
     enum class ModelType {
         INT8_QUANTIZED,  // Primary: 22 MB, fastest
@@ -73,12 +69,6 @@ class OptimizedModelLoader(private val context: Context) {
      */
     private fun selectBestRuntime(): RuntimeType {
         return when {
-            // GPU delegate (Adreno, Mali, PowerVR)
-            compatibilityList.isDelegateSupportedOnThisDevice -> {
-                Timber.d("GPU delegate available")
-                RuntimeType.GPU
-            }
-            
             // NNAPI (Android Neural Networks API)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
                 Timber.d("NNAPI available (Android 9+)")
@@ -95,11 +85,11 @@ class OptimizedModelLoader(private val context: Context) {
     
     /**
      * Configure GPU delegate for maximum performance
+     * NOTE: Disabled due to TensorFlow Lite 2.17.0 compatibility issues
      */
     private fun configureGPU(options: Interpreter.Options) {
-        val gpuOptions = GpuDelegate.Options()
-        options.addDelegate(GpuDelegate(gpuOptions))
-        Timber.i("GPU delegate configured for hardware acceleration")
+        // GPU delegate disabled - using NNAPI or CPU instead
+        Timber.i("GPU delegate skipped, using NNAPI or CPU")
     }
     
     /**
@@ -154,7 +144,7 @@ class OptimizedModelLoader(private val context: Context) {
      */
     fun getDeviceCapabilities(): DeviceCapabilities {
         return DeviceCapabilities(
-            supportsGPU = compatibilityList.isDelegateSupportedOnThisDevice,
+            supportsGPU = false,  // GPU disabled due to TF Lite 2.17.0 issues
             supportsNNAPI = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P,
             cpuCores = Runtime.getRuntime().availableProcessors(),
             androidVersion = Build.VERSION.SDK_INT,
