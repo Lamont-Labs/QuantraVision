@@ -156,12 +156,12 @@ dependencies {
     // Navigation Compose - Latest stable
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
-    // Billing & Security - Latest stable
-    implementation("com.android.billingclient:billing-ktx:8.0.0")
+    // Billing & Security - Kotlin 1.9.25 compatible versions
+    implementation("com.android.billingclient:billing-ktx:7.1.1")  // 8.0.0 requires Kotlin 2.0+
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
-    // Coroutines - Latest stable
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    // Coroutines - Kotlin 1.9.25 compatible version
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")  // 1.10.1 requires Kotlin 2.0+
 
     // TensorFlow Lite - Latest stable versions
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
