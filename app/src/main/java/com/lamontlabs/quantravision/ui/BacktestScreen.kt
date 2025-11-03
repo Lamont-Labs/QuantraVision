@@ -181,7 +181,7 @@ fun BacktestScreen(onBack: () -> Unit) {
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Icon(
-                                    Icons.Default.ErrorOutline,
+                                    Icons.Filled.Error,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.error
                                 )
