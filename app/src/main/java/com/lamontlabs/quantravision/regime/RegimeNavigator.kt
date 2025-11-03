@@ -121,7 +121,7 @@ object RegimeNavigator {
         AdvancedFeatureGate.requireAcceptance(context, "Regime Navigator")
         
         if (priceData.size < 20) {
-            MarketRegime(
+            return@withContext MarketRegime(
                 volatility = VolatilityLevel.MEDIUM,
                 trendStrength = TrendStrength.WEAK,
                 liquidity = LiquidityLevel.MEDIUM,
@@ -133,33 +133,33 @@ object RegimeNavigator {
                 historicalSuccessEstimate = 0.5,
                 educationalContext = "Insufficient data for regime analysis (need 20+ data points)"
             )
-        } else {
-            val volatility = calculateVolatility(priceData)
-            val trendStrength = calculateTrendStrength(priceData)
-            val liquidity = calculateLiquidityProxy(priceData)
-            val atrVol = calculateATRLikeVolatility(patternConfidences ?: priceData.map { 0.5 })
-            val density = calculatePatternDensity(patternDetectionCount, priceData.size)
-            val mtfConsistency = calculateMultiTimeframeConsistency(priceData, multiTimeframeData)
-            val regimeType = classifyRegimeType(volatility, trendStrength, priceData)
-            val quality = determineRegimeQuality(volatility, trendStrength, liquidity)
-            val successEstimate = estimateSuccessRate(regimeType, quality, density)
-            val educationalContext = generateEducationalContext(
-                volatility, trendStrength, liquidity, quality, regimeType, density, mtfConsistency, successEstimate
-            )
-
-            MarketRegime(
-                volatility = volatility,
-                trendStrength = trendStrength,
-                liquidity = liquidity,
-                overallQuality = quality,
-                regimeType = regimeType,
-                patternDensity = density,
-                multiTimeframeConsistency = mtfConsistency,
-                atrLikeVolatility = atrVol,
-                historicalSuccessEstimate = successEstimate,
-                educationalContext = educationalContext
-            )
         }
+
+        val volatility = calculateVolatility(priceData)
+        val trendStrength = calculateTrendStrength(priceData)
+        val liquidity = calculateLiquidityProxy(priceData)
+        val atrVol = calculateATRLikeVolatility(patternConfidences ?: priceData.map { 0.5 })
+        val density = calculatePatternDensity(patternDetectionCount, priceData.size)
+        val mtfConsistency = calculateMultiTimeframeConsistency(priceData, multiTimeframeData)
+        val regimeType = classifyRegimeType(volatility, trendStrength, priceData)
+        val quality = determineRegimeQuality(volatility, trendStrength, liquidity)
+        val successEstimate = estimateSuccessRate(regimeType, quality, density)
+        val educationalContext = generateEducationalContext(
+            volatility, trendStrength, liquidity, quality, regimeType, density, mtfConsistency, successEstimate
+        )
+
+        MarketRegime(
+            volatility = volatility,
+            trendStrength = trendStrength,
+            liquidity = liquidity,
+            overallQuality = quality,
+            regimeType = regimeType,
+            patternDensity = density,
+            multiTimeframeConsistency = mtfConsistency,
+            atrLikeVolatility = atrVol,
+            historicalSuccessEstimate = successEstimate,
+            educationalContext = educationalContext
+        )
     }
 
     /**
