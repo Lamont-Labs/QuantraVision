@@ -20,10 +20,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.PatternMatch
-import com.lamontlabs.quantravision.intelligence.RegimeNavigator
+import com.lamontlabs.quantravision.regime.RegimeNavigator
 import com.lamontlabs.quantravision.proof.ProofCapsuleGenerator
-import com.lamontlabs.quantravision.intelligence.PatternToPlanEngine
-import com.lamontlabs.quantravision.detection.ProFeatureGate
+import com.lamontlabs.quantravision.planner.PatternToPlanEngine
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
