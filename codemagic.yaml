@@ -5,13 +5,13 @@ workflows:
     instance_type: mac_mini_m2
     
     environment:
-      # Android code signing (optional - upload keystore to Codemagic for signed builds)
-      android_signing:
-        - quantravision_keystore
+      # Android code signing (DISABLED - uncomment when you upload keystore)
+      # android_signing:
+      #   - quantravision_keystore
       
-      # Environment variable groups (configure in Codemagic UI if needed)
-      groups:
-        - google_play  # Optional: for Google Play publishing
+      # Environment variable groups (DISABLED - uncomment if needed)
+      # groups:
+      #   - google_play  # Optional: for Google Play publishing
       
       # Project-specific variables
       vars:
@@ -168,10 +168,11 @@ workflows:
           echo "✅ Debug APK built successfully!"
           ls -lh app/build/outputs/apk/debug/*.apk
       
-      # 8. Build release APK with auto-retry
-      - name: Build release APK (with auto-retry)
+      # 8. Build release APK with auto-retry (unsigned - for testing)
+      - name: Build release APK (unsigned, with auto-retry)
         script: | 
-          echo "Building release APK..."
+          echo "Building UNSIGNED release APK (for testing)..."
+          echo "Note: To get signed APK, upload keystore in Codemagic settings"
           retry_count=0
           max_retries=2
           
@@ -184,7 +185,8 @@ workflows:
           done
           
           if [ -f app/build/outputs/apk/release/*.apk ]; then
-            echo "✅ Release APK built successfully!"
+            echo "✅ UNSIGNED Release APK built successfully!"
+            echo "⚠️  This APK is UNSIGNED - install with 'adb install -r' or enable Unknown Sources"
             ls -lh app/build/outputs/apk/release/*.apk
           else
             echo "⚠️  Release APK build failed, but debug APK succeeded"
