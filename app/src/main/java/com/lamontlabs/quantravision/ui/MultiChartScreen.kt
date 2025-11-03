@@ -458,7 +458,7 @@ fun DivergenceCard(divergence: MultiChartComparison.Divergence) {
 }
 
 @Composable
-fun SummaryItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.onTertiaryContainer) {
+private fun SummaryItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.onTertiaryContainer) {
     Column {
         Text(
             label,
