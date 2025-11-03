@@ -44,7 +44,28 @@ workflows:
           include: true
     
     scripts:
-      # 1. System diagnostics and environment check
+      # 1. Force fresh source checkout (fixes stale workspace cache)
+      - name: Force clean checkout
+        script: | 
+          echo "═══════════════════════════════════════════════════════════"
+          echo "FORCING FRESH SOURCE CHECKOUT (clearing workspace cache)"
+          echo "═══════════════════════════════════════════════════════════"
+          echo "Current commit: $CM_COMMIT"
+          
+          # Remove any stale source files from cached workspace
+          find "$CM_BUILD_DIR" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} + 2>/dev/null || true
+          
+          # Force Git to reset to exact commit state
+          cd "$CM_BUILD_DIR"
+          git reset --hard "$CM_COMMIT"
+          git clean -fdx
+          
+          echo "✅ Fresh source checkout complete"
+          echo "Files in workspace:"
+          ls -la
+          echo "═══════════════════════════════════════════════════════════"
+      
+      # 2. System diagnostics and environment check
       - name: System diagnostics
         script: | 
           echo "═══════════════════════════════════════════════════════════"
@@ -68,7 +89,7 @@ workflows:
           free -h || vm_stat
           echo "═══════════════════════════════════════════════════════════"
       
-      # 2. Set up Android SDK location
+      # 3. Set up Android SDK location
       - name: Set Android SDK location
         script: | 
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
