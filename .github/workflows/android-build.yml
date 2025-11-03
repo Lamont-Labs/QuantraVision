@@ -38,15 +38,45 @@ jobs:
         run: ./gradlew clean --stacktrace
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee build-debug.log
+        continue-on-error: true
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dkotlin.daemon.jvm.options=-Xmx4g"
 
       - name: Build release APK (unsigned)
-        run: ./gradlew assembleRelease --stacktrace --no-daemon || true
+        run: ./gradlew assembleRelease --stacktrace --no-daemon 2>&1 | tee build-release.log || true
         continue-on-error: true
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dkotlin.daemon.jvm.options=-Xmx4g"
+
+      - name: Extract compilation errors
+        if: always()
+        run: |
+          mkdir -p build-logs
+          
+          # Extract Kotlin compilation errors from debug build
+          if [ -f build-debug.log ]; then
+            grep -A 5 "e: file:" build-debug.log > build-logs/compilation-errors-debug.txt || echo "No compilation errors found" > build-logs/compilation-errors-debug.txt
+            cp build-debug.log build-logs/full-build-debug.log
+          fi
+          
+          # Extract Kotlin compilation errors from release build
+          if [ -f build-release.log ]; then
+            grep -A 5 "e: file:" build-release.log > build-logs/compilation-errors-release.txt || echo "No compilation errors found" > build-logs/compilation-errors-release.txt
+            cp build-release.log build-logs/full-build-release.log
+          fi
+          
+          # Count errors
+          echo "Debug errors: $(grep -c 'e: file:' build-logs/compilation-errors-debug.txt 2>/dev/null || echo 0)" > build-logs/error-summary.txt
+          echo "Release errors: $(grep -c 'e: file:' build-logs/compilation-errors-release.txt 2>/dev/null || echo 0)" >> build-logs/error-summary.txt
+
+      - name: Upload build logs
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: build-logs
+          path: build-logs/
+          retention-days: 30
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v3
@@ -69,16 +99,40 @@ jobs:
         run: |
           echo "## Build Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Debug APK status
           if [ -f app/build/outputs/apk/debug/*.apk ]; then
             echo "✅ **Debug APK**: Built successfully" >> $GITHUB_STEP_SUMMARY
             ls -lh app/build/outputs/apk/debug/*.apk >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Debug APK**: Build failed" >> $GITHUB_STEP_SUMMARY
+            if [ -f build-logs/compilation-errors-debug.txt ]; then
+              ERROR_COUNT=$(grep -c 'e: file:' build-logs/compilation-errors-debug.txt 2>/dev/null || echo 0)
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Compilation Errors Found: $ERROR_COUNT**" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "<details><summary>Click to see first 20 errors</summary>" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              head -50 build-logs/compilation-errors-debug.txt >> $GITHUB_STEP_SUMMARY || echo "No error details available" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "</details>" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "📥 Download full error log from the 'build-logs' artifact" >> $GITHUB_STEP_SUMMARY
+            fi
           fi
+          
           echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Release APK status
           if [ -f app/build/outputs/apk/release/*.apk ]; then
             echo "✅ **Release APK**: Built successfully" >> $GITHUB_STEP_SUMMARY
             ls -lh app/build/outputs/apk/release/*.apk >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ **Release APK**: Skipped (needs signing)" >> $GITHUB_STEP_SUMMARY
           fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "💾 **Artifacts uploaded**: build-logs (always), debug-apk (on success), release-apk (on success)" >> $GITHUB_STEP_SUMMARY
