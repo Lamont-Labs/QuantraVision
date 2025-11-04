@@ -45,6 +45,10 @@
 }
 -dontwarn org.opencv.**
 
+# SnakeYAML - Suppress java.beans warnings (Desktop Java classes not on Android)
+-dontwarn java.beans.**
+-dontwarn org.yaml.snakeyaml.**
+
 # Strip logs in release
 # CRITICAL: Only strip debug/verbose. NEVER strip error/warning/info logs!
 # Reason: Exception handlers use Log.e/w/i. If stripped, catch blocks become empty
