@@ -3,10 +3,16 @@ package com.lamontlabs.quantravision.ui
 import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,11 +34,22 @@ fun QuantraVisionApp(context: Context) {
         val legacyDetector = remember { PatternDetector(context) }
         val scope = rememberCoroutineScope()
         val onboardingManager = remember { OnboardingManager.getInstance(context) }
+        val activity = context as? Activity
         
-        val startDestination = if (onboardingManager.hasCompletedOnboarding()) {
-            "dashboard"
-        } else {
-            "onboarding"
+        val hasOverlayPermission = remember {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                android.provider.Settings.canDrawOverlays(context)
+            } else {
+                true
+            }
+        }
+        
+        val isOpenedFromOverlay = activity?.intent?.getBooleanExtra("opened_from_overlay", false) ?: false
+        
+        val startDestination = when {
+            !onboardingManager.hasCompletedOnboarding() -> "onboarding"
+            onboardingManager.hasCompletedOnboarding() && !hasOverlayPermission && !isOpenedFromOverlay -> "auto_launch_overlay"
+            else -> "dashboard"
         }
         
         AppNavigationHost(
@@ -57,13 +74,265 @@ private fun AppNavigationHost(
 ) {
     NavHost(navController, startDestination = startDestination) {
         composable("onboarding") {
-            com.lamontlabs.quantravision.ui.screens.onboarding.OnboardingScreen(
+            ProfessionalOnboarding(
+                context = context,
                 onComplete = {
-                    navController.navigate("dashboard") {
+                    OnboardingManager.getInstance(context).completeOnboarding()
+                    navController.navigate("auto_launch_overlay") {
                         popUpTo("onboarding") { inclusive = true }
                     }
                 }
             )
+        }
+        
+        composable("auto_launch_overlay") {
+            var overlayPermissionGranted by remember {
+                mutableStateOf(
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        android.provider.Settings.canDrawOverlays(context)
+                    } else {
+                        true
+                    }
+                )
+            }
+            var serviceReady by remember { mutableStateOf(false) }
+            var serviceFailed by remember { mutableStateOf(false) }
+            val activity = context as? Activity
+            
+            // Register broadcast receiver to listen for service-ready signal
+            DisposableEffect(Unit) {
+                val receiver = object : android.content.BroadcastReceiver() {
+                    override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+                        if (intent?.action == "com.lamontlabs.quantravision.OVERLAY_SERVICE_READY") {
+                            serviceReady = true
+                        }
+                    }
+                }
+                
+                val filter = android.content.IntentFilter("com.lamontlabs.quantravision.OVERLAY_SERVICE_READY")
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    context.registerReceiver(receiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
+                } else {
+                    context.registerReceiver(receiver, filter)
+                }
+                
+                onDispose {
+                    try {
+                        context.unregisterReceiver(receiver)
+                    } catch (e: IllegalArgumentException) {
+                        // Already unregistered
+                    }
+                }
+            }
+            
+            // Handle service ready state - finish activity when service is ready
+            LaunchedEffect(serviceReady) {
+                if (serviceReady) {
+                    android.widget.Toast.makeText(
+                        context,
+                        "✅ Setup complete! Tap the cyan Q button anytime to open QuantraVision",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                    
+                    kotlinx.coroutines.delay(500)
+                    activity?.finish()
+                }
+            }
+            
+            // Wait for permission, start service, and set timeout
+            LaunchedEffect(Unit) {
+                // Wait for overlay permission to be granted
+                while (!overlayPermissionGranted) {
+                    kotlinx.coroutines.delay(1000)
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        overlayPermissionGranted = android.provider.Settings.canDrawOverlays(context)
+                    } else {
+                        overlayPermissionGranted = true
+                    }
+                }
+                
+                // Start the overlay service
+                val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent)
+                } else {
+                    context.startService(serviceIntent)
+                }
+                
+                // Set 5-second timeout for service to broadcast ready signal
+                kotlinx.coroutines.delay(5000)
+                if (!serviceReady) {
+                    serviceFailed = true
+                }
+            }
+            
+            // UI States
+            when {
+                serviceFailed -> {
+                    // Error screen with retry button and recovery options
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            modifier = Modifier.size(100.dp),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Text(
+                            text = "Service Failed to Start",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text(
+                            text = "Failed to start overlay service. You can retry, check permissions, or continue to the main app without overlay.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(32.dp))
+                        
+                        Button(
+                            onClick = {
+                                // Reset states and retry
+                                serviceFailed = false
+                                serviceReady = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        ) {
+                            Text("Retry")
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Button(
+                            onClick = {
+                                // Navigate to dashboard
+                                navController.navigate("dashboard") {
+                                    popUpTo("auto_launch_overlay") { inclusive = true }
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            )
+                        ) {
+                            Text("Go to Main App")
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        OutlinedButton(
+                            onClick = {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                    val intent = android.content.Intent(
+                                        android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        android.net.Uri.parse("package:${context.packageName}")
+                                    )
+                                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        ) {
+                            Text("Check Permissions")
+                        }
+                    }
+                }
+                !overlayPermissionGranted -> {
+                    // Permission request screen
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Layers,
+                            contentDescription = null,
+                            modifier = Modifier.size(100.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Text(
+                            text = "Overlay Permission Required",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text(
+                            text = "QuantraVision needs permission to display the pattern detection overlay on top of your trading apps. This is required for the app to function.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(32.dp))
+                        
+                        Button(
+                            onClick = {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                    val intent = android.content.Intent(
+                                        android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        android.net.Uri.parse("package:${context.packageName}")
+                                    )
+                                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        ) {
+                            Text("Grant Permission")
+                        }
+                    }
+                }
+                else -> {
+                    // Loading state while waiting for service to be ready
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Starting overlay service...",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
         }
         composable("dashboard") {
             val screenCaptureCoordinator = rememberScreenCaptureCoordinator()

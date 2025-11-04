@@ -39,6 +39,7 @@ class OverlayService : Service() {
         const val EXTRA_RESULT_CODE = "extra_result_code"
         const val EXTRA_RESULT_DATA = "extra_result_data"
         private const val VIRTUAL_DISPLAY_NAME = "QuantraVisionCapture"
+        private const val SERVICE_READY_ACTION = "com.lamontlabs.quantravision.OVERLAY_SERVICE_READY"
     }
 
     private lateinit var windowManager: WindowManager
@@ -160,7 +161,11 @@ class OverlayService : Service() {
         
         floatingLogo = FloatingLogoButton(this, windowManager).apply {
             onClickListener = {
-                openMainApp()
+                val intent = Intent(this@OverlayService, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    putExtra("opened_from_overlay", true)
+                }
+                startActivity(intent)
             }
             onLongPressListener = {
                 floatingMenu?.show()
@@ -169,7 +174,18 @@ class OverlayService : Service() {
             setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
         }
         
-        startForegroundService()
+        val foregroundSuccess = startForegroundService()
+        if (!foregroundSuccess) {
+            Log.e(TAG, "Failed to start foreground service, stopping service")
+            Toast.makeText(
+                this,
+                "Failed to start overlay service. Please try again.",
+                Toast.LENGTH_LONG
+            ).show()
+            stopSelf()
+            return
+        }
+        
         startPowerPolicyApplicator()
         
         // Get screen dimensions for ImageReader
@@ -178,6 +194,14 @@ class OverlayService : Service() {
         screenWidth = metrics.widthPixels
         screenHeight = metrics.heightPixels
         screenDensity = metrics.densityDpi
+        
+        try {
+            val readyIntent = Intent(SERVICE_READY_ACTION)
+            sendBroadcast(readyIntent)
+            Log.i(TAG, "OverlayService ready broadcast sent successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to send ready broadcast", e)
+        }
     }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -263,7 +287,7 @@ class OverlayService : Service() {
         Log.i(TAG, "MediaProjection initialized successfully: ${screenWidth}x${screenHeight}@${screenDensity}dpi")
     }
 
-    private fun startForegroundService() {
+    private fun startForegroundService(): Boolean {
         try {
             val channelId = "QuantraVisionOverlay"
             val channel = NotificationChannel(channelId, "Overlay", NotificationManager.IMPORTANCE_LOW)
@@ -274,11 +298,11 @@ class OverlayService : Service() {
                 .setSmallIcon(R.drawable.ic_overlay_marker)
                 .build()
             startForeground(1, notification)
+            Log.i(TAG, "Foreground service started successfully")
+            return true
         } catch (e: Exception) {
-            // CRITICAL: Notification creation can fail on custom ROMs (~0.1-0.5%)
-            Log.e(TAG, "Failed to start foreground service (custom ROM or notification restrictions)", e)
-            // Service will continue to run, just without foreground notification
-            // This prevents crashes on incompatible devices
+            Log.e(TAG, "CRITICAL: Failed to start foreground service", e)
+            return false
         }
     }
 
