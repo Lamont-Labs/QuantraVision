@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    
+    <!-- Refined QuantraVision Q for Floating Button -->
+    
+    <!-- Outer subtle glow -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.2"
+        android:pathData="M24,4 A20,20 0 1,1 24,44 A20,20 0 1,1 24,4 Z
+                          M24,6 A18,18 0 1,0 24,42 A18,18 0 1,0 24,6 Z"/>
+    
+    <!-- Main Q circle -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M24,8 A16,16 0 1,1 24,40 A16,16 0 1,1 24,8 Z"/>
+    
+    <!-- Inner cutout -->
+    <path
+        android:fillColor="#0A1628"
+        android:pathData="M24,14 A10,10 0 1,0 24,34 A10,10 0 1,0 24,14 Z"/>
+    
+    <!-- Q tail -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M32,32 L40,40 L38.5,41.5 L30.5,33.5 Z"/>
+    
+    <!-- Tail accent -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.6"
+        android:pathData="M33,33 L40,40 L38.8,41.2 L31.8,34.2 Z"/>
+</vector>
