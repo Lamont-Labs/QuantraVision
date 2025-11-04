@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Deep navy background -->
+    <path
+        android:fillColor="#0A1628"
+        android:pathData="M0,0 L108,0 L108,108 L0,108 Z"/>
+    
+    <!-- Subtle gradient effect with darker surface -->
+    <path
+        android:fillColor="#14212C"
+        android:fillAlpha="0.5"
+        android:pathData="M0,0 L108,0 L108,54 L0,54 Z"/>
+    
+    <!-- Subtle circuit board pattern for tech feel -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeAlpha="0.08"
+        android:strokeWidth="0.5"
+        android:pathData="M20,20 L88,20 L88,88 L20,88 Z"/>
+    
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeAlpha="0.05"
+        android:strokeWidth="0.5"
+        android:pathData="M54,20 L54,88"/>
+    
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeAlpha="0.05"
+        android:strokeWidth="0.5"
+        android:pathData="M20,54 L88,54"/>
+</vector>
