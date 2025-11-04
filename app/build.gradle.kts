@@ -19,6 +19,10 @@ android {
         // App description metadata
         manifestPlaceholders["appDescription"] = "Offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
         
+        // Performance optimizations
+        renderscriptTargetApi = 26
+        renderscriptSupportModeEnabled = false
+        
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
             arg("room.incremental", "true")
@@ -114,13 +118,16 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         
-        // Kotlin compiler optimizations
+        // Kotlin compiler optimizations for maximum performance
         freeCompilerArgs += listOf(
             "-opt-in=kotlin.RequiresOptIn",
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             "-Xjvm-default=all",
-            "-Xbackend-threads=0"
+            "-Xbackend-threads=0",
+            "-Xno-param-assertions",
+            "-Xno-call-assertions",
+            "-Xno-receiver-assertions"
         )
     }
     

@@ -25,7 +25,11 @@ import com.lamontlabs.quantravision.learning.data.ScanHistoryEntity
 import com.lamontlabs.quantravision.learning.data.PatternFrequencyEntity
 import com.lamontlabs.quantravision.learning.data.PatternCooccurrenceEntity
 
-@Entity
+@Entity(indices = [
+    Index(value = ["timestamp"], name = "idx_pattern_timestamp"),
+    Index(value = ["patternName"], name = "idx_pattern_name"),
+    Index(value = ["timeframe"], name = "idx_pattern_timeframe")
+])
 data class PatternMatch(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val patternName: String,
@@ -51,7 +55,10 @@ interface PatternDao {
     suspend fun getRecent(since: Long): List<PatternMatch>
 }
 
-@Entity
+@Entity(indices = [
+    Index(value = ["timestamp"], name = "idx_predicted_timestamp"),
+    Index(value = ["completionPercent"], name = "idx_predicted_completion")
+])
 data class PredictedPattern(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val patternName: String,
@@ -79,7 +86,10 @@ interface PredictedPatternDao {
     suspend fun deleteOld(before: Long)
 }
 
-@Entity
+@Entity(indices = [
+    Index(value = ["timestamp"], name = "idx_invalidated_timestamp"),
+    Index(value = ["patternName"], name = "idx_invalidated_name")
+])
 data class InvalidatedPattern(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val patternName: String,
