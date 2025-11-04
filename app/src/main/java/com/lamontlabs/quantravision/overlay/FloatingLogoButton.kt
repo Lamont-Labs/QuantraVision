@@ -142,8 +142,24 @@ class FloatingLogoButton(
             start()
         }
         
-        glowAnimator = ObjectAnimator.ofFloat(glowView, "alpha", 0f, 0.6f, 0f).apply {
-            duration = 1500
+        // Enhanced glow animation for scanning: more intense, slower pulse
+        glowAnimator = ObjectAnimator.ofFloat(glowView, "alpha", 0f, 0.9f, 0f).apply {
+            duration = 1800
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+        
+        // Subtle scale pulse on the Q letter itself during scanning
+        val scaleXAnimator = ObjectAnimator.ofFloat(logoImage, "scaleX", 1f, 1.05f, 1f).apply {
+            duration = 1800
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+        
+        val scaleYAnimator = ObjectAnimator.ofFloat(logoImage, "scaleY", 1f, 1.05f, 1f).apply {
+            duration = 1800
             repeatCount = ObjectAnimator.INFINITE
             interpolator = AccelerateDecelerateInterpolator()
             start()

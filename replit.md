@@ -25,6 +25,15 @@ QuantraVision is an offline-first Android application for retail traders, provid
 - Maintains QUANTRACORE aesthetic with appropriate spacing and color treatment
 - Complements existing Lamont Labs branding in About screen, Settings, and legal disclaimers
 
+**Custom Q Logo Integration with Scanning Glow Animation**:
+- Extracted user's professional 3D metallic Q logo with transparent background for overlay button
+- Created multiple sizes: 512x512 (full), 256x256 (overlay), 128x128 (compose)
+- Updated floating overlay button to use transparent Q PNG (`ic_qv_logo_overlay.png`)
+- Enhanced scanning glow animation: increased intensity to 90% alpha, slower 1.8s pulse
+- Added subtle 5% scale pulse to Q letter during scanning for enhanced visual feedback
+- Q letter glows with electric cyan (#00E5FF) during pattern detection scanning
+- Maintains transparency for clean overlay appearance over trading charts
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
