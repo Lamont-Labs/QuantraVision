@@ -5,6 +5,16 @@ QuantraVision is an offline-first Android application that provides AI-powered c
 
 ## Recent Changes
 
+### November 4, 2025 - Critical UX Improvements
+**STATUS: BUILD SUCCESSFUL** - User-reported UX issues resolved, all navigation entry points preserved.
+
+Addressed three critical user-reported problems:
+- **Onboarding Enhancement**: Added step-by-step overlay usage tutorial to DETECTION step explaining: 1) Tap "Start Detection" 2) Grant screen capture permission 3) Open trading app while overlay runs 4) Patterns highlighted with cyan border
+- **Overlay Launch Fix**: Fixed "Start Detection" button in AppScaffold to properly start OverlayService with SYSTEM_ALERT_WINDOW permission checks and correct API level handling (startForegroundService vs startService)
+- **Dashboard Reorganization**: Made dashboard fully scrollable, organized 15+ buttons into logical sections (Detection, Intelligence Stack, Analytics & Tools, Learn & Progress, Settings) with clear dividers, made "Start Detection" prominent, preserved all navigation callbacks (Templates, Backtesting, Multi-Chart, Clear All Detections, etc.)
+
+**Architect Review**: Passed on second iteration - all navigation entry points accessible, overlay service implementation correct.
+
 ### November 4, 2025 - Build Success! (77 Errors Fixed)
 **STATUS: BUILD SUCCESSFUL** - Zero compilation errors, APK generated successfully.
 
