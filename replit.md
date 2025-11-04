@@ -3,6 +3,14 @@
 ## Overview
 QuantraVision is an offline-first Android application for retail traders, providing AI-powered chart pattern recognition using OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. Key features include predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. The app operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment for lifetime access. It includes an "Intelligence Stack" (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules) for educational purposes, all functioning offline.
 
+## Recent Changes (2025-11-04)
+
+**Lamont Labs Branding in Onboarding**:
+- Added "by Lamont Labs" branding to welcome screen in onboarding flow
+- Positioned below "QuantraVision" title in subtle, professional style (titleSmall typography, 60% opacity)
+- Maintains QUANTRACORE aesthetic with appropriate spacing and color treatment
+- Complements existing Lamont Labs branding in About screen, Settings, and legal disclaimers
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 

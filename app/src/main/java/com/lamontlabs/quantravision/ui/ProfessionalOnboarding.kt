@@ -136,6 +136,14 @@ private fun WelcomeSlide(onNext: () -> Unit) {
             color = MaterialTheme.colorScheme.primary
         )
         
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = "by Lamont Labs",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+        
         Spacer(modifier = Modifier.height(16.dp))
         
         Text(
