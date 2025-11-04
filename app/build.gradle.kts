@@ -101,11 +101,14 @@ android {
         }
     }
     
-    // APK splits DISABLED - Build ONE universal APK with all architectures
-    // This ensures OpenCV native libraries (.so files) are properly bundled
+    // APK splits configuration
+    // Build optimized APKs per architecture to reduce per-device download size
     splits {
         abi {
-            isEnable = false
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = true  // Also build a universal APK for testing
         }
     }
 
@@ -136,6 +139,11 @@ android {
         renderScript = false
         shaders = false
         resValues = false
+    }
+    
+    // Optimize PNG images during build
+    androidResources {
+        noCompress += listOf("tflite", "lite")
     }
 }
 

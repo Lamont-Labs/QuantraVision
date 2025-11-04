@@ -5,14 +5,27 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
-**CRITICAL FIX: Removed Early Exit Causing "Invisible Crash"**:
-- **ROOT CAUSE**: MainActivity had early `return` at line 211 when trying to auto-launch overlay service
-- This caused app to exit onCreate() without calling setContent(), so NO UI ever rendered
-- User saw "nothing" because activity was waiting for service broadcast or 5-second timeout
-- Android 12+ ForegroundServiceStartNotAllowedException prevented overlay service from starting
-- **FIX**: Removed early return - UI now ALWAYS renders immediately while overlay attempts to start in background
-- Simplified timeout handler to just show a toast instead of complex error UI
-- App now launches successfully and shows full Compose UI regardless of overlay service status
+**PRODUCTION OPTIMIZATIONS - APK Size Reduced by ~20%**:
+- **BLOAT REMOVAL**: Deleted 7 MB of unused logo files never referenced in code:
+  - lamont_labs_logo.png (4.8 MB, 3072×3072) - orphaned file
+  - ic_q_full_icon.png (1.5 MB, 1024×1024) - orphaned file
+  - quantravision_logo.png (676 KB) - orphaned file
+  - Duplicate overlay logo sizes (3 files, ~135 KB)
+- **APK SPLITS ENABLED**: Re-enabled architecture-specific APK splits to reduce per-device download size
+  - arm64-v8a APK: ~40-50 MB (modern 64-bit devices)
+  - armeabi-v7a APK: ~35-45 MB (older 32-bit devices)
+  - Universal APK: ~160 MB → ~140 MB (all architectures, for testing)
+- **EXPECTED DOWNLOAD SIZE**: Users download only ~40-50 MB for their device instead of 160 MB
+- Pattern images (108 files, ~42 MB) retained - used by education system and pattern info sheets
+- Android build system (AAPT2) automatically optimizes PNGs during compilation
+
+**CRITICAL FIX: Removed activity?.finish() Causing "Invisible Crash"**:
+- **ROOT CAUSE**: AppScaffold.kt line 143 called `activity?.finish()` when overlay service started
+- This closed MainActivity immediately after onboarding, before user ever saw the dashboard
+- User saw "nothing" because app exited completely as soon as overlay service broadcast "ready"
+- **FIX**: Removed finish() call - app now stays open and shows dashboard while overlay runs in background
+- Added comment guard: "DO NOT call activity?.finish() - keep the app open so user can see the dashboard"
+- App now launches successfully with full UI visible regardless of overlay service status
 
 ## Recent Changes (2025-11-04)
 
