@@ -26,6 +26,10 @@ import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
 import com.lamontlabs.quantravision.ui.capture.rememberScreenCaptureCoordinator
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.lamontlabs.quantravision.data.PatternMatch
+import com.lamontlabs.quantravision.ui.screens.PerformanceDashboardScreen
 
 @Composable
 fun QuantraVisionApp(context: Context) {
