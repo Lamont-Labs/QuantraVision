@@ -27,7 +27,8 @@
 -dontwarn com.google.mlkit.**
 -dontwarn com.google.android.gms.**
 
-# OpenCV
+# OpenCV - Maven Central distribution (org.opencv:opencv:4.10.0)
+# Keep all OpenCV classes for native library loading
 -keep class org.opencv.** { *; }
 -keepclassmembers class org.opencv.** { *; }
 -keep class org.opencv.core.** { *; }
@@ -70,6 +71,7 @@
 -optimizations code/removal/*,code/allocation/variable,method/inlining/*,method/removal/*,field/removal/*,class/merging/*
 
 # Keep essential Android components
+-keep class * extends android.app.Application { *; }
 -keepclassmembers class * extends android.app.Activity { *; }
 -keepclassmembers class * extends android.app.Service { *; }
 -keepclassmembers class * extends android.content.BroadcastReceiver { *; }

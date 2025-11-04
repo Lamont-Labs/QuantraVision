@@ -1,9 +1,9 @@
 package com.lamontlabs.quantravision.diagnostics
 
 import android.content.Context
+import com.lamontlabs.quantravision.App
 import com.lamontlabs.quantravision.TemplateLibrary
 import com.lamontlabs.quantravision.PatternDetector
-import org.opencv.android.OpenCVLoader
 
 /**
  * Deterministic self-test. Runs synthetic chart through detector and verifies reproducibility.
@@ -19,7 +19,8 @@ object SelfTest {
     )
 
     suspend fun run(context: Context): Report {
-        OpenCVLoader.initDebug()
+        // OpenCV is already initialized in App.onCreate()
+        // No need for redundant initialization here
         val start = System.currentTimeMillis()
         val lib = TemplateLibrary(context).loadTemplates()
         val det = PatternDetector(context)
