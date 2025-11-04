@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QuantraVision Overlay</string>
+    <string name="app_name">QuantraVision</string>
     <string name="qv_buy_once">Buy once. Own forever.</string>
     <string name="qv_no_subs">No subscriptions. No renewals.</string>
     <string name="qv_unlock_standard">Unlock Standard</string>
