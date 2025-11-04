@@ -39,18 +39,35 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     
+    // VERBOSE LOGGING: Track every step so user can capture logs
+    Log.e("QV-MainActivity", "════════════════════════════════════════")
+    Log.e("QV-MainActivity", "▶ MainActivity.onCreate() STARTED")
+    Log.e("QV-MainActivity", "Android Version: ${Build.VERSION.SDK_INT} (${Build.VERSION.RELEASE})")
+    Log.e("QV-MainActivity", "Device: ${Build.MANUFACTURER} ${Build.MODEL}")
+    Log.e("QV-MainActivity", "════════════════════════════════════════")
+    
     try {
+      Log.e("QV-MainActivity", "Step 1: Getting OnboardingManager...")
       val onboardingManager = com.lamontlabs.quantravision.onboarding.OnboardingManager.getInstance(this)
-      val isOpenedFromOverlay = intent.getBooleanExtra("opened_from_overlay", false)
+      Log.e("QV-MainActivity", "✓ OnboardingManager obtained")
       
-      if (onboardingManager.hasCompletedOnboarding() && !isOpenedFromOverlay) {
+      val isOpenedFromOverlay = intent.getBooleanExtra("opened_from_overlay", false)
+      Log.e("QV-MainActivity", "Step 2: Opened from overlay: $isOpenedFromOverlay")
+      
+      val completedOnboarding = onboardingManager.hasCompletedOnboarding()
+      Log.e("QV-MainActivity", "Step 3: Onboarding completed: $completedOnboarding")
+      
+      if (completedOnboarding && !isOpenedFromOverlay) {
+        Log.e("QV-MainActivity", "Step 4: Checking overlay permission...")
         val hasOverlayPermission = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
           android.provider.Settings.canDrawOverlays(this)
         } else {
           true
         }
+        Log.e("QV-MainActivity", "✓ Overlay permission: $hasOverlayPermission")
         
         if (hasOverlayPermission) {
+          Log.e("QV-MainActivity", "Step 5: Attempting to start OverlayService...")
           serviceReadyReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
               if (intent?.action == SERVICE_READY_ACTION) {
@@ -75,10 +92,13 @@ class MainActivity : ComponentActivity() {
           }
           
           val serviceIntent = android.content.Intent(this, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+          Log.e("QV-MainActivity", "Step 6: Starting foreground service...")
           if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
+            Log.e("QV-MainActivity", "✓ Called startForegroundService()")
           } else {
             startService(serviceIntent)
+            Log.e("QV-MainActivity", "✓ Called startService()")
           }
           
           timeoutJob = lifecycleScope.launch {
@@ -96,15 +116,21 @@ class MainActivity : ComponentActivity() {
             }
           }
         } else {
+          Log.e("QV-MainActivity", "⚠ NO overlay permission - skipping service start")
           android.widget.Toast.makeText(
             this,
             "Please grant overlay permission to use QuantraVision",
             android.widget.Toast.LENGTH_LONG
           ).show()
         }
+      } else {
+        Log.e("QV-MainActivity", "Step 4: Skipping overlay service (onboarding not complete or opened from overlay)")
       }
     } catch (e: Exception) {
-      Log.e("MainActivity", "Auto-launch overlay failed (likely ForegroundServiceStartNotAllowedException on Android 12+), falling back to Compose UI", e)
+      Log.e("QV-MainActivity", "⚠⚠⚠ EXCEPTION in overlay service startup ⚠⚠⚠")
+      Log.e("QV-MainActivity", "Exception type: ${e.javaClass.name}")
+      Log.e("QV-MainActivity", "Exception message: ${e.message}")
+      Log.e("QV-MainActivity", "Stack trace:", e)
       unregisterServiceReadyReceiver()
       timeoutJob?.cancel()
       
@@ -115,12 +141,18 @@ class MainActivity : ComponentActivity() {
       ).show()
     }
     
+    Log.e("QV-MainActivity", "════════════════════════════════════════")
+    Log.e("QV-MainActivity", "Step 7: Initializing Compose UI...")
     try {
       setContent {
         QuantraVisionApp(context = this)
       }
+      Log.e("QV-MainActivity", "✓✓✓ Compose UI setContent() COMPLETED SUCCESSFULLY ✓✓✓")
     } catch (e: Exception) {
-      Log.e("MainActivity", "Fatal error initializing Compose UI", e)
+      Log.e("QV-MainActivity", "⚠⚠⚠ FATAL: Compose UI failed to initialize ⚠⚠⚠")
+      Log.e("QV-MainActivity", "Exception type: ${e.javaClass.name}")
+      Log.e("QV-MainActivity", "Exception message: ${e.message}")
+      Log.e("QV-MainActivity", "Stack trace:", e)
       
       // Fallback error screen if Compose fails to initialize
       try {
@@ -158,10 +190,17 @@ class MainActivity : ComponentActivity() {
           }
         }
       } catch (fallbackError: Exception) {
-        Log.e("MainActivity", "Fatal error in fallback UI", fallbackError)
+        Log.e("QV-MainActivity", "⚠⚠⚠ FATAL: Even fallback UI failed ⚠⚠⚠")
+        Log.e("QV-MainActivity", "Fallback exception type: ${fallbackError.javaClass.name}")
+        Log.e("QV-MainActivity", "Fallback exception message: ${fallbackError.message}")
+        Log.e("QV-MainActivity", "Fallback stack trace:", fallbackError)
         // DO NOT call finish() - let the app stay alive even if UI fails
       }
     }
+    
+    Log.e("QV-MainActivity", "════════════════════════════════════════")
+    Log.e("QV-MainActivity", "✓ MainActivity.onCreate() FINISHED")
+    Log.e("QV-MainActivity", "════════════════════════════════════════")
   }
 
   private fun unregisterServiceReadyReceiver() {
