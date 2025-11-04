@@ -130,17 +130,16 @@ private fun AppNavigationHost(
                 }
             }
             
-            // Handle service ready state - finish activity when service is ready
+            // Handle service ready state - show toast but DO NOT finish activity
             LaunchedEffect(serviceReady) {
                 if (serviceReady) {
                     android.widget.Toast.makeText(
                         context,
-                        "✅ Setup complete! Tap the cyan Q button anytime to open QuantraVision",
+                        "✅ Overlay ready! Tap the cyan Q button or use the dashboard below",
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                     
-                    kotlinx.coroutines.delay(500)
-                    activity?.finish()
+                    // DO NOT call activity?.finish() - keep the app open so user can see the dashboard
                 }
             }
             
