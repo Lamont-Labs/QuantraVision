@@ -49,7 +49,8 @@ fun DashboardScreen(
     onAdvancedLearning: () -> Unit = {},
     onExport: () -> Unit = {},
     onPerformance: () -> Unit = {},
-    onHelp: () -> Unit = {}
+    onHelp: () -> Unit = {},
+    onAbout: () -> Unit = {}
 ) {
     var voiceCommandStatus by remember { mutableStateOf<VoiceCommandStatus?>(null) }
     var showStatusMessage by remember { mutableStateOf(false) }
@@ -96,6 +97,11 @@ fun DashboardScreen(
                 is VoiceCommandResult.NavigateAchievements -> onAchievements()
                 is VoiceCommandResult.NavigateAnalytics -> onAnalytics()
                 is VoiceCommandResult.NavigatePredictions -> onPredictions()
+                is VoiceCommandResult.NavigateLearning -> onLearning()
+                is VoiceCommandResult.NavigateAdvancedLearning -> onAdvancedLearning()
+                is VoiceCommandResult.NavigateExport -> onExport()
+                is VoiceCommandResult.NavigatePerformance -> onPerformance()
+                is VoiceCommandResult.NavigateAbout -> onAbout()
                 is VoiceCommandResult.ClearHighlights -> onClearHighlights()
                 is VoiceCommandResult.RefreshDetection -> onStartScan()
                 else -> {}

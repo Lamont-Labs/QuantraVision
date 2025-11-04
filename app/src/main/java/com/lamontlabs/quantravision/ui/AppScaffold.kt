@@ -407,7 +407,8 @@ private fun AppNavigationHost(
                 onAdvancedLearning = { navController.navigate("advanced_learning") },
                 onExport = { navController.navigate("export") },
                 onPerformance = { navController.navigate("performance") },
-                onHelp = { navController.navigate("help") }
+                onHelp = { navController.navigate("help") },
+                onAbout = { navController.navigate("about") }
             )
         }
 
