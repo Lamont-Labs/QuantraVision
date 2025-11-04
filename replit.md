@@ -4,6 +4,16 @@
 QuantraVision is an offline-first Android application designed for retail traders, offering AI-powered chart pattern recognition using advanced OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. The app features predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure for lifetime access. Key capabilities include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all functioning offline for educational purposes with legal disclaimers.
 
 ## Recent Changes (2025-11-04)
+**Professional Onboarding & Overlay-First UX Flow**:
+- Created 8-step professional onboarding experience (ProfessionalOnboarding.kt) with premium QUANTRACORE aesthetic: Welcome → Permissions → Detection Power → Intelligence Stack → Voice Alerts → AI Learning → Gamification → Legal Disclaimer
+- Implemented overlay-first app flow: after onboarding completion, app auto-launches overlay service and only floating Q button remains visible
+- Built robust broadcast acknowledgement system: OverlayService emits "OVERLAY_SERVICE_READY" after successful foreground promotion; MainActivity and auto_launch_overlay wait for confirmation before finishing
+- Comprehensive error recovery: 5-second timeout with full error UI showing Retry, Go to Main App, and Check Permissions buttons - zero dead-end scenarios
+- Auto_launch_overlay screen handles permission grants with polling system and recovery navigation to dashboard
+- MainActivity timeout handling uses FLAG_ACTIVITY_CLEAR_TOP to prevent infinite loops when restarting on failures
+- Clicking Q button reopens full MainActivity UI with "opened_from_overlay" flag to distinguish from launcher launches
+- All user flows tested: first launch, subsequent launches, permission revocation, persistent service failures, and Q-button entry - all end in overlay or dashboard without dead-ends
+
 **Premium UI Theme Transformation**:
 - Upgraded color palette to match QUANTRACORE aesthetic: darker navy background (#0D1B2A), electric cyan (#00E5FF), metallic silver system (Chrome, Gunmetal, DarkSilver), amber/bronze accents (#FF9800, #FFA726, #FFD700)
 - Integrated Rajdhani font family (sharp geometric typeface) throughout entire UI for professional, modern appearance
