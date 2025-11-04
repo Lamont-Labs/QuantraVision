@@ -43,10 +43,18 @@ jobs:
       env:
         GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=512m"
       
-    - name: Upload APK
+    - name: Upload Universal APK
       uses: actions/upload-artifact@v5
       if: success()
       with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 7
+        name: quantravision-debug
+        path: app/build/outputs/apk/debug/app-universal-debug.apk
+        retention-days: 30
+        
+    - name: Upload All APK Variants
+      uses: actions/upload-artifact@v5
+      if: success()
+      with:
+        name: quantravision-all-variants
+        path: app/build/outputs/apk/debug/*.apk
+        retention-days: 30
