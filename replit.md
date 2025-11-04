@@ -5,6 +5,14 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
+**CRITICAL ICON CRASH FIX - App Now Launches Successfully**:
+- **ROOT CAUSE**: Conflicting icon resources causing crash on launch since icon change
+- Adaptive icon XML referenced BOTH PNG (`@mipmap/ic_launcher_foreground`) and vector drawable (`@drawable/ic_launcher_foreground`)
+- Android resource system was confused which to use → instant crash on launch
+- **FIX**: Deleted PNG foreground icons, updated adaptive icon XMLs to use vector drawable only
+- Result: No more resource conflicts, app launches successfully with Q logo
+- Vector drawables are better anyway: perfect scaling, smaller size, no density variants needed
+
 **PRODUCTION OPTIMIZATIONS - Release Build with APK Splits**:
 - **BLOAT REMOVAL**: Deleted 7.1 MB of unused logo files never referenced in code:
   - lamont_labs_logo.png (4.8 MB, 3072×3072) - orphaned file
