@@ -18,6 +18,11 @@ sealed class VoiceCommandResult {
     object NavigateAchievements : VoiceCommandResult()
     object NavigateAnalytics : VoiceCommandResult()
     object NavigatePredictions : VoiceCommandResult()
+    object NavigateLearning : VoiceCommandResult()
+    object NavigateAdvancedLearning : VoiceCommandResult()
+    object NavigateExport : VoiceCommandResult()
+    object NavigatePerformance : VoiceCommandResult()
+    object NavigateAbout : VoiceCommandResult()
     data class VerbalSummary(val summary: String) : VoiceCommandResult()
     data class ShowHelp(val commands: List<String>) : VoiceCommandResult()
     object CommandNotRecognized : VoiceCommandResult()
@@ -66,6 +71,21 @@ object VoiceCommandProcessor {
     
     private val predictionsCommands = setOf("show predictions", "open predictions",
         "predictions", "view predictions", "pattern predictions")
+    
+    private val learningCommands = setOf("show learning", "open learning", 
+        "show learning analytics", "learning dashboard")
+    
+    private val advancedLearningCommands = setOf("show advanced learning", 
+        "open advanced learning", "advanced analytics")
+    
+    private val exportCenterCommands = setOf("open export", "show export center", 
+        "export center")
+    
+    private val performanceCommands = setOf("show performance", "open performance", 
+        "performance dashboard", "show metrics")
+    
+    private val aboutCommands = setOf("show about", "about app", 
+        "app information", "app info")
     
     private val helpCommands = setOf("help", "show help", "available commands",
         "what can you do", "voice commands")
@@ -122,6 +142,21 @@ object VoiceCommandProcessor {
             matchesAny(normalized, predictionsCommands) -> 
                 VoiceCommandResult.NavigatePredictions
             
+            matchesAny(normalized, learningCommands) -> 
+                VoiceCommandResult.NavigateLearning
+            
+            matchesAny(normalized, advancedLearningCommands) -> 
+                VoiceCommandResult.NavigateAdvancedLearning
+            
+            matchesAny(normalized, exportCenterCommands) -> 
+                VoiceCommandResult.NavigateExport
+            
+            matchesAny(normalized, performanceCommands) -> 
+                VoiceCommandResult.NavigatePerformance
+            
+            matchesAny(normalized, aboutCommands) -> 
+                VoiceCommandResult.NavigateAbout
+            
             matchesAny(normalized, helpCommands) -> 
                 VoiceCommandResult.ShowHelp(getAllCommands())
             
@@ -177,6 +212,11 @@ object VoiceCommandProcessor {
             "Show achievements - Open achievements",
             "Show analytics - Open pattern analytics",
             "Show predictions - Open predictions",
+            "Show learning - Open learning dashboard",
+            "Show advanced learning - Open advanced learning analytics",
+            "Open export - Open export center",
+            "Show performance - Open performance dashboard",
+            "Show about - Open app information",
             "Help - Show this list"
         )
     }
@@ -207,6 +247,16 @@ object VoiceCommandProcessor {
                 "Opening pattern analytics"
             is VoiceCommandResult.NavigatePredictions -> 
                 "Opening predictions"
+            is VoiceCommandResult.NavigateLearning -> 
+                "Opening learning dashboard"
+            is VoiceCommandResult.NavigateAdvancedLearning -> 
+                "Opening advanced learning analytics"
+            is VoiceCommandResult.NavigateExport -> 
+                "Opening export center"
+            is VoiceCommandResult.NavigatePerformance -> 
+                "Opening performance dashboard"
+            is VoiceCommandResult.NavigateAbout -> 
+                "Opening app information"
             is VoiceCommandResult.VerbalSummary -> 
                 result.summary
             is VoiceCommandResult.ShowHelp -> 
