@@ -35,6 +35,13 @@ QuantraVision is an offline-first Android application designed for retail trader
 - Improved snap-to-edge logic to prefer bottom right corner when dragging
 - Verified full-screen touch pass-through: overlay scans entire screen while all touches pass through to trading apps except the Q button
 
+**Premium Visual Polish Enhancements**:
+- Implemented breathing cyan glow animation on floating Q button during SCANNING status: pulses from 0% to 60% opacity over 1.5s with AccelerateDecelerateInterpolator
+- Glow cleanly stops when scanning exits (PATTERNS_FOUND, HIGH_CONFIDENCE, IDLE states) with proper animator lifecycle management
+- Enhanced app launcher icon with multi-layered cyan glow border: 3 concentric layers at 0.12, 0.20, 0.30 opacity creating progressive depth effect
+- All animations architect-reviewed for professional quality and production readiness
+- Zero memory leaks: all animators properly cancelled and nulled on state transitions
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
