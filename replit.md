@@ -3,6 +3,19 @@
 ## Overview
 QuantraVision is an offline-first Android application that provides AI-powered chart pattern recognition for retail traders. It utilizes advanced OpenCV template matching to identify 109 technical analysis patterns in real-time. The app prioritizes user privacy through on-device processing and offers features such as predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure (Free, Starter, Standard, Pro) for lifetime access. Key features include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all designed for offline use with legal disclaimers for educational purposes.
 
+## Recent Changes
+
+### November 4, 2025 - Compilation Error Fixes
+Fixed all 58 remaining Kotlin compilation errors to make the project build-ready:
+- **Database Model Usage**: Corrected PatternMatch property references (id, timeframe) across ProofCapsuleGenerator, WatchlistScanner, and other files
+- **Paint API Conflicts**: Resolved Paint.Style vs PatternStyle naming conflicts in EnhancedOverlayRenderer using qualified references
+- **UI Component Errors**: Fixed missing imports (Icons, color extensions), duplicate function definitions (SummaryItem, EducationalDisclaimer), and Compose syntax issues
+- **PaywallScreen Critical Fix**: Corrected book access entitlement logic to properly respect BillingManager.hasBook() for all tiers (prevented unauthorized access bug)
+- **Export Functionality**: Fixed ExportViewModel database queries to use correct DAO methods
+- **Pattern Library**: Updated SimilaritySearchScreen to use PatternLibrary.patterns.map{it.name} instead of non-existent method
+
+All changes architect-reviewed and approved. Project ready for GitHub Actions build.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
