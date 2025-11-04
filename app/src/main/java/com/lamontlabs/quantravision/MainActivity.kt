@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
         }
       } catch (fallbackError: Exception) {
         Log.e("MainActivity", "Fatal error in fallback UI", fallbackError)
-        finish()
+        // DO NOT call finish() - let the app stay alive even if UI fails
       }
     }
   }
