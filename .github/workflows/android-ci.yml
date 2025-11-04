@@ -39,9 +39,25 @@ jobs:
       run: ./gradlew clean --no-daemon --warning-mode=all
       
     - name: Build debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace --warning-mode=all
+      run: ./gradlew assembleDebug --no-daemon --stacktrace --warning-mode=all 2>&1 | tee build-log.txt
       env:
         GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=512m"
+    
+    - name: Capture build summary
+      if: always()
+      run: |
+        echo "════════════════════════════════════════" >> build-summary.txt
+        echo "Build Summary - $(date)" >> build-summary.txt
+        echo "════════════════════════════════════════" >> build-summary.txt
+        echo "" >> build-summary.txt
+        echo "APK Files Generated:" >> build-summary.txt
+        find app/build/outputs/apk -name "*.apk" -exec ls -lh {} \; >> build-summary.txt || echo "No APK files found" >> build-summary.txt
+        echo "" >> build-summary.txt
+        echo "ProGuard/R8 Mappings:" >> build-summary.txt
+        find app/build/outputs/mapping -name "*.txt" -exec echo {} \; >> build-summary.txt || echo "No mapping files" >> build-summary.txt
+        echo "" >> build-summary.txt
+        echo "════════════════════════════════════════" >> build-summary.txt
+        cat build-summary.txt
       
     - name: Upload Debug APK
       uses: actions/upload-artifact@v5
@@ -49,4 +65,14 @@ jobs:
       with:
         name: quantravision-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
+    
+    - name: Upload Build Logs
+      uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: build-logs
+        path: |
+          build-log.txt
+          build-summary.txt
         retention-days: 30
