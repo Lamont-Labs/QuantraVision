@@ -217,10 +217,10 @@ fun getStepFeatures(step: OnboardingStep): List<String> {
             "100% offline, privacy-first"
         )
         OnboardingStep.DETECTION -> listOf(
-            "Detect Head & Shoulders, Triangles, Flags",
-            "Multi-timeframe analysis",
-            "Confidence scoring for each pattern",
-            "Automatic invalidation tracking"
+            "📱 HOW TO USE: Tap 'Start Detection' on dashboard",
+            "✅ Grant screen capture permission when prompted",
+            "📊 Open your trading app (TradingView, etc.)",
+            "💎 Cyan border appears when pattern is detected!"
         )
         OnboardingStep.INTELLIGENCE -> listOf(
             "Regime Navigator - Market condition analysis",

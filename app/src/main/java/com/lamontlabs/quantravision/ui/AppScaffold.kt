@@ -65,40 +65,46 @@ private fun AppNavigationHost(
                 context = context,
                 onBook = { navController.navigate("book") },
                 onIntelligence = { navController.navigate("intelligence") },
-                onStartScan = { 
-                    scope.launch { 
-                        try {
-                            // OPTIMIZED PATH: Use HybridDetectorBridge for AI-optimized detection
-                            val dir = java.io.File(context.filesDir, "demo_charts")
-                            if (dir.exists()) {
-                                timber.log.Timber.i("HybridDetectorBridge: Starting optimized scan from dashboard")
-                                dir.listFiles()?.forEach { imageFile ->
-                                    try {
-                                        val bitmap = android.graphics.BitmapFactory.decodeFile(imageFile.absolutePath)
-                                        if (bitmap != null) {
-                                            try {
-                                                val results = detectorBridge.detectPatternsOptimized(bitmap)
-                                                timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
-                                            } finally {
-                                                bitmap.recycle()
-                                            }
-                                        }
-                                    } catch (e: Exception) {
-                                        timber.log.Timber.e(e, "Error processing ${imageFile.name} with bridge")
-                                    }
-                                }
-                                timber.log.Timber.i("HybridDetectorBridge: Optimized scan complete")
+                onStartScan = {
+                    // Start the overlay service for real-time detection
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        if (!android.provider.Settings.canDrawOverlays(context)) {
+                            // Request overlay permission
+                            android.widget.Toast.makeText(
+                                context,
+                                "Please grant overlay permission to start detection",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                            val intent = android.content.Intent(
+                                android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                android.net.Uri.parse("package:${context.packageName}")
+                            )
+                            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        } else {
+                            // Start overlay service
+                            val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                context.startForegroundService(serviceIntent)
+                            } else {
+                                context.startService(serviceIntent)
                             }
-                        } catch (e: Exception) {
-                            // FALLBACK: Use legacy detector if optimized path fails
-                            timber.log.Timber.w(e, "HybridDetectorBridge failed, falling back to legacy PatternDetector")
-                            try {
-                                legacyDetector.scanStaticAssets()
-                            } catch (fallbackError: Exception) {
-                                timber.log.Timber.e(fallbackError, "Legacy detector also failed")
-                            }
+                            android.widget.Toast.makeText(
+                                context,
+                                "Overlay started! Open your trading app to see pattern detection",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
                         }
-                    } 
+                    } else {
+                        // For older Android versions
+                        val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+                        context.startService(serviceIntent)
+                        android.widget.Toast.makeText(
+                            context,
+                            "Overlay started! Open your trading app to see pattern detection",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
                 },
                 onReview = { navController.navigate("detections_list") },
                 onTutorials = { navController.navigate("tutorials") },
