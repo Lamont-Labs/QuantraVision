@@ -1,101 +1,7 @@
 # QuantraVision
 
 ## Overview
-QuantraVision is an offline-first Android application designed for retail traders, offering AI-powered chart pattern recognition using advanced OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. The app features predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure for lifetime access. Key capabilities include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all functioning offline for educational purposes with legal disclaimers.
-
-## Recent Changes (2025-11-04)
-
-**Comprehensive Navigation Integration - ALL Features Now Accessible**:
-- Added 9 new navigation routes to AppScaffold.kt making all hidden features accessible: learning_dashboard, advanced_learning, export, performance, help, about, advanced_settings, pattern_detail/{patternId}, template_editor/{templateId}
-- Created 4 new Dashboard feature cards (Learning Dashboard, Advanced Learning with ProBadge, Export Center, Performance Dashboard) with professional QUANTRACORE aesthetic
-- Added 3 Settings navigation cards (About QuantraVision, Help & Support, Advanced Settings) with ElectricCyan icons and chevron indicators
-- Made PatternCard clickable in DetectionListScreen to navigate to comprehensive pattern detail view with loading/error states and back navigation
-- Added Edit button to TemplateManagerScreen enabling navigation to template_editor with pre-selection via initialTemplateId parameter
-- Implemented 5 new voice commands with full navigation handlers: "show learning", "show advanced learning", "open export", "show performance", "show about"
-- Verified Advanced Learning Dashboard has 7 functional tabs (Overview, Risk, Behavioral, Strategy, Forecasts, Anomalies, Scan Insights) accessing all ML engines
-- Verified Education Hub displays all 25 available lessons (corrected from 53 in previous documentation) grouped by category with proper navigation
-- Confirmed all newly accessible screens (ExportScreen, PerformanceDashboardScreen, HelpScreen, AboutScreen, SettingsAdvancedScreen) have complete QUANTRACORE aesthetic
-- All navigation paths architect-reviewed and approved: zero dead ends, professional loading states, consistent back navigation throughout
-- Project validation passed - ready for Android Studio build and Play Store submission
-
-**Feature Completeness Audit & Google Play Integrity Integration**:
-- Conducted comprehensive feature audit verifying all promised features are fully implemented
-- Added Google Play Integrity API dependency (com.google.android.play:integrity:1.4.0) for app attestation
-- Verified 109 pattern PNG templates + 109 YAML configs exist (1.1MB total in pattern_templates/)
-- Confirmed Intelligence Stack is fully functional: RegimeNavigator, PatternToPlanEngine, BehavioralGuardrails, ProofCapsuleGenerator
-- Validated multi-modal alerts (voice + haptic) with AlertManager, VoiceAnnouncer, HapticFeedback implementations
-- Verified tier gating (ProFeatureGate), disclaimer enforcement (AdvancedFeatureGate), legal compliance across all features
-- Confirmed OpenCV 4.10.0 template matching is production-ready (TensorFlow Lite marked as future enhancement per models/README.md)
-- Architect-reviewed and approved as feature-complete and production-ready for Play Store submission
-
-**Enhanced App Launcher Icon with User's Q Logo**:
-- Implemented user's exact 3D geometric Q logo design with ImageMagick enhancement pipeline
-- Created perfect square icons (1056×1056 master) meeting all Android & Play Store requirements
-- Applied cyan (#00E5FF) glow effect and border frame matching QUANTRACORE aesthetic
-- Generated all standard launcher icons (mdpi through xxxhdpi): 48×48, 72×72, 96×96, 144×144, 192×192
-- Generated all adaptive icon foregrounds (mdpi through xxxhdpi): 108×108, 162×162, 216×216, 288×288, 432×432
-- Centered Q logo with cyan border and glow effect intact across all densities
-- Architect-reviewed and approved as production-ready for Play Store submission
-
-**Critical Crash Fix - Android 12+ Cold Start**:
-- Fixed immediate crash on app launch for returning users (onboarding complete) on Android 12+ devices
-- Root cause: `startForegroundService()` threw `ForegroundServiceStartNotAllowedException` during cold starts, causing crash before any UI could render
-- Solution: Wrapped auto-launch overlay block (MainActivity lines 42-221) in try-catch with graceful fallback
-- Behavior on failure: App shows dashboard UI with toast: "Starting app in dashboard mode. Tap 'Start Detection' to launch overlay."
-- Resource cleanup: Properly unregisters broadcast receiver and cancels timeout job on error to prevent memory leaks
-- User recovery: Manual overlay launch via "Start Detection" button in dashboard works normally
-- Architect-reviewed and approved for production deployment
-
-
-**Professional Onboarding & Overlay-First UX Flow**:
-- Created 8-step professional onboarding experience (ProfessionalOnboarding.kt) with premium QUANTRACORE aesthetic: Welcome → Permissions → Detection Power → Intelligence Stack → Voice Alerts → AI Learning → Gamification → Legal Disclaimer
-- Implemented overlay-first app flow: after onboarding completion, app auto-launches overlay service and only floating Q button remains visible
-- Built robust broadcast acknowledgement system: OverlayService emits "OVERLAY_SERVICE_READY" after successful foreground promotion; MainActivity and auto_launch_overlay wait for confirmation before finishing
-- Comprehensive error recovery: 5-second timeout with full error UI showing Retry, Go to Main App, and Check Permissions buttons - zero dead-end scenarios
-- Auto_launch_overlay screen handles permission grants with polling system and recovery navigation to dashboard
-- MainActivity timeout handling uses FLAG_ACTIVITY_CLEAR_TOP to prevent infinite loops when restarting on failures
-- Clicking Q button reopens full MainActivity UI with "opened_from_overlay" flag to distinguish from launcher launches
-- All user flows tested: first launch, subsequent launches, permission revocation, persistent service failures, and Q-button entry - all end in overlay or dashboard without dead-ends
-
-**Premium UI Theme Transformation**:
-- Upgraded color palette to match QUANTRACORE aesthetic: darker navy background (#0D1B2A), electric cyan (#00E5FF), metallic silver system (Chrome, Gunmetal, DarkSilver), amber/bronze accents (#FF9800, #FFA726, #FFD700)
-- Integrated Rajdhani font family (sharp geometric typeface) throughout entire UI for professional, modern appearance
-- Added cyan glow effects to hero text (12px blur shadow) for signature glowing aesthetic matching reference design
-- All text/container color pairs verified at ≥4.5:1 contrast ratio for accessibility compliance (Material 3 guidelines)
-- Complete theme creates premium trading terminal look with metallic accents and crisp typography
-
-**Performance Optimizations for UI Smoothness**:
-- Database schema upgraded to v13 with performance indexes on PatternMatch (timestamp, patternName, timeframe), PredictedPattern (timestamp, completionPercent), and InvalidatedPattern (timestamp, patternName)
-- Hardware acceleration enabled at app and activity level in AndroidManifest
-- Large heap enabled for better memory management during pattern processing
-- Config change handling optimized to prevent unnecessary Activity recreations on rotation
-- Fixed missing import (androidx.compose.ui.unit.dp) in AppScaffold.kt that caused build failures
-
-**Refined Q Logo & Overlay Positioning**:
-- Created refined QuantraVision Q logo with clean, modern design (electric cyan #00E5FF on dark navy #0A1628)
-- Updated app icon (ic_launcher_foreground.xml) and floating button (ic_qv_logo_refined.xml) with new logo
-- Floating Q button now positioned in very bottom right corner (30px margin) for easy thumb access
-- Improved snap-to-edge logic to prefer bottom right corner when dragging
-- Verified full-screen touch pass-through: overlay scans entire screen while all touches pass through to trading apps except the Q button
-
-**Premium Visual Polish Enhancements**:
-- Implemented breathing cyan glow animation on floating Q button during SCANNING status: pulses from 0% to 60% opacity over 1.5s with AccelerateDecelerateInterpolator
-- Glow cleanly stops when scanning exits (PATTERNS_FOUND, HIGH_CONFIDENCE, IDLE states) with proper animator lifecycle management
-- Enhanced app launcher icon with multi-layered cyan glow border: 3 concentric layers at 0.12, 0.20, 0.30 opacity creating progressive depth effect
-- All animations architect-reviewed for professional quality and production readiness
-- Zero memory leaks: all animators properly cancelled and nulled on state transitions
-
-**Build Compilation Fixes (Complete - 40+ Errors Resolved)**:
-- Fixed Material 3 Compose API compatibility: replaced 38+ instances of incorrect `tonalElevation` parameter with correct `defaultElevation` parameter in CardDefaults.cardElevation() across 8 screens
-  * Round 1 (23 fixes): ProofCapsuleScreen, BehavioralGuardrailsScreen, PatternPlanScreen, RegimeNavigatorScreen, IntelligenceScreen
-  * Round 2 (15 fixes): DashboardScreen, SettingsAdvancedScreen, SettingsScreen
-- Resolved all unresolved reference errors: added explicit imports for theme colors (ElectricCyan, DarkSurface, CrispWhite, DeepNavyBackground, MetallicSilver, NeonRed) and shadows (CyanGlowShadow, SubtleGlowShadow) to 5 screens in subpackages (LearningDashboardScreen, OnboardingScreen, BookViewerScreen, AdvancedLearningDashboardScreen)
-- Added missing standard library imports: mutableStateOf (SettingsScreen), FontWeight (TemplateManagerScreen)
-- Fixed final 2 compilation errors (Round 3):
-  * SettingsScreen.kt: Added delegation imports (getValue, setValue, remember) for `by` keyword with mutableStateOf
-  * BookViewerScreen.kt: Added missing `shape = RoundedCornerShape(12.dp)` parameter to border modifier
-- All Kotlin compilation errors eliminated (40+ total fixes across 10 files), LSP diagnostics clean, project validation passed
-- Build ready for successful APK assembly in GitHub Actions CI/CD pipeline
+QuantraVision is an offline-first Android application for retail traders, providing AI-powered chart pattern recognition using OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. Key features include predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. The app operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment for lifetime access. It includes an "Intelligence Stack" (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules) for educational purposes, all functioning offline.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -103,19 +9,19 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### UI/UX Decisions
-The application uses Jetpack Compose with the Material 3 Design System, optimized for a dark theme, featuring a declarative and reactive UI. It utilizes ViewModel for state management, a modular screen architecture, responsive layouts, custom home screen widgets, and a consistent brand identity with a dark, high-contrast, futuristic aesthetic.
+The application uses Jetpack Compose with the Material 3 Design System, optimized for a dark theme, featuring a declarative and reactive UI. It utilizes ViewModel for state management, a modular screen architecture, responsive layouts, and a consistent brand identity with a dark, high-contrast, futuristic aesthetic, including the Rajdhani font family and cyan glow effects. The UI is designed for professional interaction, including an overlay-first UX and a refined Q logo.
 
 ### Technical Implementations
-**Pattern Detection Engine**: Employs an OpenCV template matching system for 109 chart patterns, coordinated by a HybridDetectorBridge and utilizing a BayesianFusionEngine for confidence scoring, with TensorFlow Lite infrastructure for future ML enhancements.
+**Pattern Detection Engine**: Employs an OpenCV template matching system for 109 chart patterns, coordinated by a HybridDetectorBridge and utilizing a BayesianFusionEngine for confidence scoring. TensorFlow Lite infrastructure is in place for future ML enhancements.
 **Scan Learning Engine**: Learns from chart scans to track pattern frequency, co-occurrence, and confidence distributions using perceptual image hashing for privacy-preserving, offline learning.
 **Data Storage**: Utilizes an encrypted Room database for local storage of logs, user preferences, achievements, and scan learning data.
 **State Management**: Implements Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) for reactive state propagation.
 **Authentication & Licensing**: Manages a four-tier lifetime access model via Google Play In-App Billing, secured with Google Play Integrity API.
-**AI/ML Architecture**: Primarily OpenCV-based, with TensorFlow Lite infrastructure for future Apache 2.0 licensed ML model integration.
 **Alert System**: A centralized AlertManager provides voice, haptic, and visual alerts based on pattern strength.
 **Real-Time Overlay System**: Uses MediaProjection API for live chart overlay with touch-passthrough to the underlying trading app, featuring a minimal, pulsing cyan border upon pattern detection.
-**Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts performance based on device conditions, with resource optimizations for OpenCV.
+**Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts performance based on device conditions, with resource optimizations for OpenCV and hardware acceleration.
 **Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, logging detections with SHA-256 hashes, signing pattern catalogs with Ed25519, and maintaining an SBOM.
+**Onboarding**: Features an 8-step professional onboarding experience and an overlay-first app flow for subsequent launches.
 
 ## External Dependencies
 
@@ -144,4 +50,3 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 ### Security & Compliance
 - **Ed25519 Cryptography**: Digital signatures.
 - **SHA-256 Hashing**: Integrity verification.
-- **Play Integrity API**: Runtime device and app verification.
