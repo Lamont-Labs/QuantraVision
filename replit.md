@@ -5,6 +5,15 @@ QuantraVision is an offline-first Android application designed for retail trader
 
 ## Recent Changes (2025-11-04)
 
+**Enhanced App Launcher Icon with User's Q Logo**:
+- Implemented user's exact 3D geometric Q logo design with ImageMagick enhancement pipeline
+- Created perfect square icons (1056×1056 master) meeting all Android & Play Store requirements
+- Applied cyan (#00E5FF) glow effect and border frame matching QUANTRACORE aesthetic
+- Generated all standard launcher icons (mdpi through xxxhdpi): 48×48, 72×72, 96×96, 144×144, 192×192
+- Generated all adaptive icon foregrounds (mdpi through xxxhdpi): 108×108, 162×162, 216×216, 288×288, 432×432
+- Centered Q logo with cyan border and glow effect intact across all densities
+- Architect-reviewed and approved as production-ready for Play Store submission
+
 **Critical Crash Fix - Android 12+ Cold Start**:
 - Fixed immediate crash on app launch for returning users (onboarding complete) on Android 12+ devices
 - Root cause: `startForegroundService()` threw `ForegroundServiceStartNotAllowedException` during cold starts, causing crash before any UI could render
