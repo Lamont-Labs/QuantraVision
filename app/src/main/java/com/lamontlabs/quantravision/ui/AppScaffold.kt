@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -401,7 +402,12 @@ private fun AppNavigationHost(
                             ).show()
                         }
                     }
-                }
+                },
+                onLearning = { navController.navigate("learning_dashboard") },
+                onAdvancedLearning = { navController.navigate("advanced_learning") },
+                onExport = { navController.navigate("export") },
+                onPerformance = { navController.navigate("performance") },
+                onHelp = { navController.navigate("help") }
             )
         }
 
@@ -438,7 +444,8 @@ private fun AppNavigationHost(
             DetectionListScreen(
                 db = PatternDatabase.getInstance(context),
                 onBack = { navController.popBackStack() },
-                onShowPaywall = { navController.navigate("paywall") }
+                onShowPaywall = { navController.navigate("paywall") },
+                navController = navController
             )
         }
 
@@ -531,6 +538,151 @@ private fun AppNavigationHost(
                     modifier = Modifier.padding(16.dp)
                 )
             }
+        }
+
+        composable("learning_dashboard") {
+            com.lamontlabs.quantravision.ui.screens.learning.LearningDashboardScreen()
+        }
+
+        composable("advanced_learning") {
+            com.lamontlabs.quantravision.ui.screens.learning.AdvancedLearningDashboardScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("export") {
+            val exportViewModel = remember { com.lamontlabs.quantravision.ui.screens.export.ExportViewModel(context) }
+            com.lamontlabs.quantravision.ui.screens.export.ExportScreen(
+                viewModel = exportViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("performance") {
+            PerformanceDashboardScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("help") {
+            val helpFiles = remember { emptyList<java.io.File>() }
+            HelpScreen(
+                helpFiles = helpFiles,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("about") {
+            AboutScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("advanced_settings") {
+            SettingsAdvancedScreen(
+                context = context,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("pattern_detail/{patternId}") { backStackEntry ->
+            val patternId = backStackEntry.arguments?.getString("patternId")?.toLongOrNull()
+            if (patternId != null) {
+                val db = PatternDatabase.getInstance(context)
+                var pattern by remember { mutableStateOf<PatternMatch?>(null) }
+                var isLoading by remember { mutableStateOf(true) }
+                var error by remember { mutableStateOf<String?>(null) }
+                
+                LaunchedEffect(patternId) {
+                    scope.launch {
+                        try {
+                            pattern = db.patternDao().getById(patternId)
+                            isLoading = false
+                        } catch (e: Exception) {
+                            error = e.message
+                            isLoading = false
+                        }
+                    }
+                }
+                
+                when {
+                    isLoading -> {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(
+                                    title = { Text("Pattern Details") },
+                                    navigationIcon = {
+                                        IconButton(onClick = { navController.popBackStack() }) {
+                                            Icon(Icons.Default.ArrowBack, "Back")
+                                        }
+                                    }
+                                )
+                            }
+                        ) { padding ->
+                            Box(
+                                modifier = Modifier.fillMaxSize().padding(padding),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
+                    error != null -> {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(
+                                    title = { Text("Error") },
+                                    navigationIcon = {
+                                        IconButton(onClick = { navController.popBackStack() }) {
+                                            Icon(Icons.Default.ArrowBack, "Back")
+                                        }
+                                    }
+                                )
+                            }
+                        ) { padding ->
+                            Box(
+                                modifier = Modifier.fillMaxSize().padding(padding),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Pattern not found", color = MaterialTheme.colorScheme.error)
+                            }
+                        }
+                    }
+                    pattern != null -> {
+                        PatternDetailScreen(
+                            match = pattern!!,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                }
+            } else {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Error") },
+                            navigationIcon = {
+                                IconButton(onClick = { navController.popBackStack() }) {
+                                    Icon(Icons.Default.ArrowBack, "Back")
+                                }
+                            }
+                        )
+                    }
+                ) { padding ->
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Invalid pattern ID", color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        }
+
+        composable("template_editor/{templateId}") { backStackEntry ->
+            val templateId = backStackEntry.arguments?.getString("templateId") ?: ""
+            TemplateEditorScreen(
+                context = context,
+                initialTemplateId = templateId,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

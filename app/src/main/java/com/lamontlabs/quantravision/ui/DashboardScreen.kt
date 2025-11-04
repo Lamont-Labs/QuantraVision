@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.lamontlabs.quantravision.alerts.AlertManager
@@ -42,7 +44,12 @@ fun DashboardScreen(
     onMultiChart: () -> Unit = {},
     onClearHighlights: () -> Unit = {},
     onBook: () -> Unit = {},
-    onIntelligence: () -> Unit = {}
+    onIntelligence: () -> Unit = {},
+    onLearning: () -> Unit = {},
+    onAdvancedLearning: () -> Unit = {},
+    onExport: () -> Unit = {},
+    onPerformance: () -> Unit = {},
+    onHelp: () -> Unit = {}
 ) {
     var voiceCommandStatus by remember { mutableStateOf<VoiceCommandStatus?>(null) }
     var showStatusMessage by remember { mutableStateOf(false) }
@@ -272,6 +279,164 @@ fun DashboardScreen(
                 }
             }
             
+            Spacer(Modifier.height(24.dp))
+            
+            Text(
+                "📊 LEARNING & ANALYTICS",
+                style = MaterialTheme.typography.titleMedium.copy(shadow = CyanGlowShadow),
+                color = ElectricCyan,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Spacer(Modifier.height(12.dp))
+            
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable { onLearning() },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Analytics,
+                        contentDescription = null,
+                        tint = ElectricCyan,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "Learning Dashboard",
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                            color = CrispWhite,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "View scan history and learning progress",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                }
+            }
+            
+            Spacer(Modifier.height(12.dp))
+            
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable { onAdvancedLearning() },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Psychology,
+                        contentDescription = null,
+                        tint = AmberAccent,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "Advanced Learning",
+                                style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                                color = CrispWhite,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            ProBadge()
+                        }
+                        Text(
+                            "ML-powered insights, forecasting, anomaly detection",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                }
+            }
+            
+            Spacer(Modifier.height(24.dp))
+            
+            Text(
+                "💾 EXPORT & PERFORMANCE",
+                style = MaterialTheme.typography.titleMedium.copy(shadow = CyanGlowShadow),
+                color = ElectricCyan,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Spacer(Modifier.height(12.dp))
+            
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable { onExport() },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Download,
+                        contentDescription = null,
+                        tint = ElectricCyan,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "Export Center",
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                            color = CrispWhite,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "Export patterns as PDF, CSV, or proof capsules",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                }
+            }
+            
+            Spacer(Modifier.height(12.dp))
+            
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable { onPerformance() },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Speed,
+                        contentDescription = null,
+                        tint = ElectricCyan,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "Performance Dashboard",
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                            color = CrispWhite,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "FPS, battery, memory, thermal metrics",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                }
+            }
+            
             HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
             
             Text(
@@ -393,6 +558,12 @@ fun DashboardScreen(
                         Text("Settings")
                     }
                     
+                    OutlinedButton(onClick = onHelp, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Help, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Help & Support")
+                    }
+                    
                     OutlinedButton(
                         onClick = onClearHighlights,
                         modifier = Modifier.fillMaxWidth(),
@@ -495,5 +666,22 @@ fun AlertSettingsCard(context: Context) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ProBadge() {
+    Surface(
+        color = BronzeGlow,
+        shape = MaterialTheme.shapes.extraSmall,
+        modifier = Modifier
+    ) {
+        Text(
+            text = "PRO",
+            style = MaterialTheme.typography.labelSmall,
+            color = DeepNavyBackground,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+        )
     }
 }

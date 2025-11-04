@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 fun DetectionListScreen(
     db: PatternDatabase,
     onBack: () -> Unit,
-    onShowPaywall: (() -> Unit)? = null
+    onShowPaywall: (() -> Unit)? = null,
+    navController: androidx.navigation.NavHostController? = null
 ) {
     val scope = rememberCoroutineScope()
     var detections by remember { mutableStateOf(listOf<PatternMatch>()) }
@@ -56,6 +57,7 @@ fun DetectionListScreen(
                     items(detections) { pattern ->
                         PatternCard(
                             match = pattern,
+                            onClick = { navController?.navigate("pattern_detail/${pattern.id}") },
                             showIntelligence = true,
                             onShowPaywall = onShowPaywall
                         )

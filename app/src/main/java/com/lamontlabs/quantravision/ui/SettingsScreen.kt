@@ -9,6 +9,10 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -373,7 +377,153 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
                 }
             }
             
+            Spacer(Modifier.height(24.dp))
+
             HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                "ℹ️ INFORMATION & HELP",
+                style = MaterialTheme.typography.titleMedium.copy(shadow = CyanGlowShadow),
+                color = ElectricCyan,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            // About Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate("about") },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = ElectricCyan,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "About QuantraVision",
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                            color = CrispWhite,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "Version, licenses, attributions",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = MetallicSilver
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Help & Support Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate("help") },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Help,
+                        contentDescription = null,
+                        tint = ElectricCyan,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "Help & Support",
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                            color = CrispWhite,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "User guide, FAQs, troubleshooting",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = MetallicSilver
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Advanced Settings Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate("advanced_settings") },
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = null,
+                        tint = AmberAccent,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "Advanced Settings",
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                            color = CrispWhite,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "Power users, debugging, performance tuning",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MetallicSilver
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = MetallicSilver
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+
+            Spacer(Modifier.height(24.dp))
             
             Text("Lamont Labs", color = MaterialTheme.colorScheme.metallic)
             Text("QuantraVision Overlay • v2.x", color = MaterialTheme.colorScheme.textSecondary)

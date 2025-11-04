@@ -53,6 +53,9 @@ interface PatternDao {
     
     @Query("SELECT * FROM PatternMatch WHERE timestamp > :since ORDER BY timestamp DESC")
     suspend fun getRecent(since: Long): List<PatternMatch>
+    
+    @Query("SELECT * FROM PatternMatch WHERE id = :patternId LIMIT 1")
+    suspend fun getById(patternId: Long): PatternMatch?
 }
 
 @Entity(indices = [

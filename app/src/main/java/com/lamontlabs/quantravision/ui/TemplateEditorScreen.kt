@@ -17,11 +17,15 @@ import com.lamontlabs.quantravision.templates.TemplateEditor
  * Per-pattern editor for threshold and scale parameters.
  */
 @Composable
-fun TemplateEditorScreen(context: Context, onBack: () -> Unit) {
+fun TemplateEditorScreen(
+    context: Context, 
+    initialTemplateId: String? = null,
+    onBack: () -> Unit
+) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val items = remember(query.text) { PatternCatalog.list(context, query.text) }
 
-    var selected by remember { mutableStateOf<String?>(null) }
+    var selected by remember { mutableStateOf(initialTemplateId) }
     var threshold by remember { mutableStateOf("0.72") }
     var min by remember { mutableStateOf("0.60") }
     var max by remember { mutableStateOf("1.80") }
