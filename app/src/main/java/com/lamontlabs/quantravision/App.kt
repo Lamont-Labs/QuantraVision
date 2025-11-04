@@ -22,16 +22,20 @@ class App : Application() {
         // Initialize OpenCV native library for Maven Central distribution
         // CRITICAL: Use System.loadLibrary() for org.opencv:opencv:4.10.0
         // OpenCVLoader.initDebug() is ONLY for OpenCV Android SDK development and will CRASH in release builds
+        // ProGuard NOTE: We keep Log.e/w/i to ensure catch blocks have side effects and aren't stripped
         try {
             System.loadLibrary("opencv_java4")
             openCVInitialized = true
-            Log.i("QuantraVision", "✓ OpenCV loaded successfully - full pattern detection available")
+            Log.i("QuantraVision", "OpenCV loaded successfully")
         } catch (e: UnsatisfiedLinkError) {
+            // CRITICAL: This catch block MUST have code that ProGuard won't strip
+            // Otherwise the exception will crash the app
             openCVInitialized = false
-            Log.w("QuantraVision", "⚠ OpenCV native library not available - app will run in ML-only mode (6 core patterns)", e)
+            Log.e("QuantraVision", "OpenCV library not found - ML mode only")
         } catch (e: Exception) {
+            // CRITICAL: Keep this catch block with unstripped code
             openCVInitialized = false
-            Log.w("QuantraVision", "⚠ OpenCV initialization failed - limited functionality enabled", e)
+            Log.e("QuantraVision", "OpenCV init failed - limited mode")
         }
     }
 }

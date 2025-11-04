@@ -38,12 +38,10 @@
 }
 -dontwarn org.opencv.**
 
-# Strip logs in release
+# Strip logs in release (keep warnings and info for critical paths)
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
-    public static *** i(...);
-    public static *** w(...);
 }
 
 # Strip Timber logs in release

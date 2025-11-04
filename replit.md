@@ -8,15 +8,17 @@ QuantraVision is an offline-first Android application for retail traders, provid
 **CRITICAL: Application Crash Fix & Professional Q Logo Launcher Icons**:
 - Fixed fatal crash: Removed Toast messages from Application.onCreate() which caused instant crash before any Activity could start
 - Root cause: Android doesn't allow showing Toast from Application class before the UI is ready - this was causing the "app has a bug" crash
+- **CRITICAL ProGuard Fix**: ProGuard was stripping Log.i() and Log.w() calls, causing exception catch blocks to become empty and crash the app
+- Updated ProGuard rules to keep Log.e/w/i calls in release builds, preventing catch block removal
+- Changed all App.kt logging to Log.e() to ensure exception handlers aren't stripped by R8/ProGuard optimization
 - Fixed OpenCV initialization from `OpenCVLoader.initDebug()` to `System.loadLibrary("opencv_java4")` for Maven Central compatibility
-- Changed error handling to use Log.w() instead of Toast to prevent UI-related crashes during app initialization
 - Replaced generic launcher icons with user's professional 3D Q logo featuring electric cyan glow and metallic finish
 - Generated all Android launcher icon densities (mdpi through xxxhdpi): 48×48, 72×72, 96×96, 144×144, 192×192 for legacy icons
 - Generated all adaptive icon foregrounds (mdpi through xxxhdpi): 108×108, 162×162, 216×216, 288×288, 432×432
 - Updated adaptive icon configuration to use PNG foregrounds from user's Q logo design
 - Added missing `android:roundIcon` attribute to AndroidManifest.xml (prevents crashes on some OEM launchers)
 - Fixed app display name from "QuantraVision Overlay" to "QuantraVision" in strings.xml
-- Enhanced ProGuard rules to protect Application class from being stripped
+- Enhanced ProGuard rules to protect Application class and critical exception handlers from being stripped
 - App now launches successfully in release builds with graceful fallback to ML-only mode if OpenCV fails to load
 
 **Lamont Labs Branding in Onboarding**:
