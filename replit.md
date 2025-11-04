@@ -4,6 +4,13 @@
 QuantraVision is an offline-first Android application designed for retail traders, offering AI-powered chart pattern recognition using advanced OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. The app features predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure for lifetime access. Key capabilities include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all functioning offline for educational purposes with legal disclaimers.
 
 ## Recent Changes (2025-11-04)
+**Premium UI Theme Transformation**:
+- Upgraded color palette to match QUANTRACORE aesthetic: darker navy background (#0D1B2A), electric cyan (#00E5FF), metallic silver system (Chrome, Gunmetal, DarkSilver), amber/bronze accents (#FF9800, #FFA726, #FFD700)
+- Integrated Rajdhani font family (sharp geometric typeface) throughout entire UI for professional, modern appearance
+- Added cyan glow effects to hero text (12px blur shadow) for signature glowing aesthetic matching reference design
+- All text/container color pairs verified at ≥4.5:1 contrast ratio for accessibility compliance (Material 3 guidelines)
+- Complete theme creates premium trading terminal look with metallic accents and crisp typography
+
 **Performance Optimizations for UI Smoothness**:
 - Database schema upgraded to v13 with performance indexes on PatternMatch (timestamp, patternName, timeframe), PredictedPattern (timestamp, completionPercent), and InvalidatedPattern (timestamp, patternName)
 - Hardware acceleration enabled at app and activity level in AndroidManifest
