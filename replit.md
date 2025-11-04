@@ -11,6 +11,13 @@ QuantraVision is an offline-first Android application designed for retail trader
 - Config change handling optimized to prevent unnecessary Activity recreations on rotation
 - Fixed missing import (androidx.compose.ui.unit.dp) in AppScaffold.kt that caused build failures
 
+**Refined Q Logo & Overlay Positioning**:
+- Created refined QuantraVision Q logo with clean, modern design (electric cyan #00E5FF on dark navy #0A1628)
+- Updated app icon (ic_launcher_foreground.xml) and floating button (ic_qv_logo_refined.xml) with new logo
+- Floating Q button now positioned in very bottom right corner (30px margin) for easy thumb access
+- Improved snap-to-edge logic to prefer bottom right corner when dragging
+- Verified full-screen touch pass-through: overlay scans entire screen while all touches pass through to trading apps except the Q button
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 

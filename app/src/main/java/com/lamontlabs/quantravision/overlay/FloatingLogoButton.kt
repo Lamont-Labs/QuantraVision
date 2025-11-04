@@ -57,8 +57,9 @@ class FloatingLogoButton(
         val sizePx = (logoSize.dp * context.resources.displayMetrics.density).toInt()
         
         val displayMetrics = context.resources.displayMetrics
-        val defaultX = displayMetrics.widthPixels - sizePx - 20
-        val defaultY = displayMetrics.heightPixels - sizePx - 100
+        // Position in very bottom right corner with small margin
+        val defaultX = displayMetrics.widthPixels - sizePx - 30
+        val defaultY = displayMetrics.heightPixels - sizePx - 30
         
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -218,31 +219,46 @@ class FloatingLogoButton(
         val centerX = params.x + logoWidth / 2
         val centerY = params.y + logoHeight / 2
         
-        val snapMargin = 20
+        val snapMargin = 30
         
         val targetX: Int
         val targetY: Int
         
-        if (centerX < screenWidth / 3) {
+        // Snap horizontally - prefer right side for trading apps
+        if (centerX < screenWidth / 2) {
+            // Left half of screen - snap to left edge
             targetX = snapMargin
-        } else if (centerX > 2 * screenWidth / 3) {
-            targetX = screenWidth - logoWidth - snapMargin
         } else {
-            targetX = params.x
+            // Right half of screen - snap to right edge (preferred for trading)
+            targetX = screenWidth - logoWidth - snapMargin
         }
         
-        targetY = params.y.coerceIn(snapMargin, screenHeight - logoHeight - snapMargin)
+        // Snap vertically - prefer bottom for easy thumb access
+        if (centerY < screenHeight / 2) {
+            // Top half - snap to top
+            targetY = snapMargin
+        } else {
+            // Bottom half - snap to bottom (preferred position)
+            targetY = screenHeight - logoHeight - snapMargin
+        }
         
-        val animator = ValueAnimator.ofInt(params.x, targetX)
-        animator.addUpdateListener { animation ->
+        // Animate horizontal movement
+        val animatorX = ValueAnimator.ofInt(params.x, targetX)
+        animatorX.addUpdateListener { animation ->
             params.x = animation.animatedValue as Int
             windowManager.updateViewLayout(logoView, params)
         }
-        animator.duration = 200
-        animator.start()
+        animatorX.duration = 200
+        animatorX.start()
         
-        params.y = targetY
-        windowManager.updateViewLayout(logoView, params)
+        // Animate vertical movement
+        val animatorY = ValueAnimator.ofInt(params.y, targetY)
+        animatorY.addUpdateListener { animation ->
+            params.y = animation.animatedValue as Int
+            windowManager.updateViewLayout(logoView, params)
+        }
+        animatorY.duration = 200
+        animatorY.start()
         
         val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
