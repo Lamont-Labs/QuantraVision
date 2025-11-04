@@ -1,133 +1,149 @@
-# QuantraVision
+# QuantraVision - AI Pattern Detection for Traders
 
 ## Overview
-QuantraVision is an offline-first Android application for retail traders, providing AI-powered chart pattern recognition using OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. Key features include predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. The app operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment for lifetime access. It includes an "Intelligence Stack" (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules) for educational purposes, all functioning offline.
 
-## Recent Changes (2025-11-04)
+QuantraVision is a professional Android application that provides real-time chart pattern detection using computer vision and machine learning. Built with privacy-first principles, the app operates 100% offline, running all AI/ML computations on-device without collecting or transmitting user data.
 
-**CRITICAL ICON CRASH FIX - App Now Launches Successfully**:
-- **ROOT CAUSE**: Conflicting icon resources causing crash on launch since icon change
-- Adaptive icon XML referenced BOTH PNG (`@mipmap/ic_launcher_foreground`) and vector drawable (`@drawable/ic_launcher_foreground`)
-- Android resource system was confused which to use → instant crash on launch
-- **FIX**: Deleted PNG foreground icons, updated adaptive icon XMLs to use vector drawable only
-- Result: No more resource conflicts, app launches successfully with Q logo
-- Vector drawables are better anyway: perfect scaling, smaller size, no density variants needed
+The application serves as an educational tool for technical analysis, detecting 109 chart patterns across multiple timeframes and providing visual overlays, voice announcements, and haptic feedback. It follows a freemium model with 3-5 free pattern highlights, then offers Standard ($9.99) and Pro ($24.99) one-time purchase tiers.
 
-**PRODUCTION OPTIMIZATIONS - Release Build with APK Splits**:
-- **BLOAT REMOVAL**: Deleted 7.1 MB of unused logo files never referenced in code:
-  - lamont_labs_logo.png (4.8 MB, 3072×3072) - orphaned file
-  - ic_q_full_icon.png (1.5 MB, 1024×1024) - orphaned file
-  - quantravision_logo.png (676 KB) - orphaned file
-  - Duplicate overlay logo sizes (3 files, ~135 KB)
-- **RELEASE BUILD ENABLED**: Changed GitHub workflow from debug to release builds
-  - Enables R8 code shrinking and ProGuard optimization
-  - Enables resource shrinking (removes unused resources)
-  - Removes debugging symbols and optimizes bytecode
-  - Debug builds were 264 MB, release builds are ~140 MB (47% smaller!)
-- **APK SPLITS ENABLED**: Re-enabled architecture-specific APK splits to reduce per-device download size
-  - arm64-v8a APK: ~45 MB (modern 64-bit devices, release build)
-  - armeabi-v7a APK: ~40 MB (older 32-bit devices, release build)
-  - Universal APK: ~140 MB (all architectures, release build)
-- **EXPECTED DOWNLOAD SIZE**: Users download only ~45 MB for their device instead of 264 MB (83% reduction!)
-- Pattern images (108 files, ~42 MB) retained - used by education system and pattern info sheets
-
-**CRITICAL FIX: Removed activity?.finish() Causing "Invisible Crash"**:
-- **ROOT CAUSE**: AppScaffold.kt line 143 called `activity?.finish()` when overlay service started
-- This closed MainActivity immediately after onboarding, before user ever saw the dashboard
-- User saw "nothing" because app exited completely as soon as overlay service broadcast "ready"
-- **FIX**: Removed finish() call - app now stays open and shows dashboard while overlay runs in background
-- Added comment guard: "DO NOT call activity?.finish() - keep the app open so user can see the dashboard"
-- App now launches successfully with full UI visible regardless of overlay service status
-
-## Recent Changes (2025-11-04)
-
-**CRITICAL FIX: Disabled APK Splits to Fix Instant Crash**:
-- **ROOT CAUSE FOUND**: APK splits were creating multiple APKs without bundling OpenCV native libraries (.so files)
-- Disabled APK splits in build.gradle.kts - now builds ONE universal APK with all native libraries
-- Added `pickFirsts` packaging rule to ensure all .so files (including OpenCV) are included
-- Removed hardcoded `android:debuggable="false"` from AndroidManifest (now controlled by buildType)
-- Ultra-simplified App.kt initialization with triple-nested exception protection
-- All logs use Log.e() which ProGuard NEVER strips, ensuring catch blocks remain
-- Expected result: App launches successfully, shows UI, with graceful OpenCV fallback if library load fails
-
-**CRITICAL: Application Crash Fix & Professional Q Logo Launcher Icons**:
-- Fixed fatal crash: Removed Toast messages from Application.onCreate() which caused instant crash before any Activity could start
-- Root cause: Android doesn't allow showing Toast from Application class before the UI is ready - this was causing the "app has a bug" crash
-- **CRITICAL ProGuard Fix**: ProGuard was stripping Log.i() and Log.w() calls, causing exception catch blocks to become empty and crash the app
-- Updated ProGuard rules to keep Log.e/w/i calls in release builds, preventing catch block removal
-- Changed all App.kt logging to Log.e() to ensure exception handlers aren't stripped by R8/ProGuard optimization
-- Fixed OpenCV initialization from `OpenCVLoader.initDebug()` to `System.loadLibrary("opencv_java4")` for Maven Central compatibility
-- Replaced generic launcher icons with user's professional 3D Q logo featuring electric cyan glow and metallic finish
-- Generated all Android launcher icon densities (mdpi through xxxhdpi): 48×48, 72×72, 96×96, 144×144, 192×192 for legacy icons
-- Generated all adaptive icon foregrounds (mdpi through xxxhdpi): 108×108, 162×162, 216×216, 288×288, 432×432
-- Updated adaptive icon configuration to use PNG foregrounds from user's Q logo design
-- Added missing `android:roundIcon` attribute to AndroidManifest.xml (prevents crashes on some OEM launchers)
-- Fixed app display name from "QuantraVision Overlay" to "QuantraVision" in strings.xml
-- Enhanced ProGuard rules to protect Application class and critical exception handlers from being stripped
-- App now launches successfully in release builds with graceful fallback to ML-only mode if OpenCV fails to load
-
-**Lamont Labs Branding in Onboarding**:
-- Added "by Lamont Labs" branding to welcome screen in onboarding flow
-- Positioned below "QuantraVision" title in subtle, professional style (titleSmall typography, 60% opacity)
-- Maintains QUANTRACORE aesthetic with appropriate spacing and color treatment
-- Complements existing Lamont Labs branding in About screen, Settings, and legal disclaimers
-
-**Custom Q Logo Integration with Scanning Glow Animation**:
-- Extracted user's professional 3D metallic Q logo with transparent background for overlay button
-- Created multiple sizes: 512x512 (full), 256x256 (overlay), 128x128 (compose)
-- Updated floating overlay button to use transparent Q PNG (`ic_qv_logo_overlay.png`)
-- Enhanced scanning glow animation: increased intensity to 90% alpha, slower 1.8s pulse
-- Added subtle 5% scale pulse to Q letter during scanning for enhanced visual feedback
-- Q letter glows with electric cyan (#00E5FF) during pattern detection scanning
-- Maintains transparency for clean overlay appearance over trading charts
+**Core Purpose:** Democratize professional-grade technical analysis through privacy-first, offline AI pattern detection that rivals institutional-level tools.
 
 ## User Preferences
+
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### UI/UX Decisions
-The application uses Jetpack Compose with the Material 3 Design System, optimized for a dark theme, featuring a declarative and reactive UI. It utilizes ViewModel for state management, a modular screen architecture, responsive layouts, and a consistent brand identity with a dark, high-contrast, futuristic aesthetic, including the Rajdhani font family and cyan glow effects. The UI is designed for professional interaction, including an overlay-first UX and a refined Q logo.
+### Application Architecture Pattern
 
-### Technical Implementations
-**Pattern Detection Engine**: Employs an OpenCV template matching system for 109 chart patterns, coordinated by a HybridDetectorBridge and utilizing a BayesianFusionEngine for confidence scoring. TensorFlow Lite infrastructure is in place for future ML enhancements.
-**Scan Learning Engine**: Learns from chart scans to track pattern frequency, co-occurrence, and confidence distributions using perceptual image hashing for privacy-preserving, offline learning.
-**Data Storage**: Utilizes an encrypted Room database for local storage of logs, user preferences, achievements, and scan learning data.
-**State Management**: Implements Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) for reactive state propagation.
-**Authentication & Licensing**: Manages a four-tier lifetime access model via Google Play In-App Billing, secured with Google Play Integrity API.
-**Alert System**: A centralized AlertManager provides voice, haptic, and visual alerts based on pattern strength.
-**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay with touch-passthrough to the underlying trading app, featuring a minimal, pulsing cyan border upon pattern detection.
-**Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts performance based on device conditions, with resource optimizations for OpenCV and hardware acceleration.
-**Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, logging detections with SHA-256 hashes, signing pattern catalogs with Ed25519, and maintaining an SBOM.
-**Onboarding**: Features an 8-step professional onboarding experience and an overlay-first app flow for subsequent launches.
+**Clean Architecture with MVVM** - The application follows a three-layer architecture with clear separation of concerns:
+
+1. **Presentation Layer** - Jetpack Compose UI with Material 3 design system, ViewModels managing UI state, custom theme with Lamont Labs branding (#0A1218 background, #00E5FF cyan accent)
+
+2. **Domain Layer** - Business logic including pattern detection algorithms, educational content, gamification systems, and billing management
+
+3. **Data Layer** - Room database for local persistence, SharedPreferences for settings, encrypted storage for billing data
+
+**Design Rationale:** Clean architecture ensures testability, maintainability, and clear boundaries between UI, business logic, and data access. MVVM pattern provides reactive UI updates and lifecycle-aware state management.
+
+### Pattern Detection Pipeline
+
+**Hybrid Detection System** combining computer vision and machine learning:
+
+- **Template Matching (OpenCV)** - 119 reference template images for 109 deterministic chart patterns, multi-scale detection with configurable thresholds (0.70-0.80), temporal stability filtering to prevent flickering
+- **Machine Learning Enhancement (TensorFlow Lite)** - Bayesian fusion for confidence calibration, pattern similarity search, early formation detection (40-85% complete)
+- **5-Phase Optimization Framework** - PowerPolicy for adaptive performance based on battery/thermal state, model pooling to reduce memory overhead, intelligent caching
+
+**Design Rationale:** Template matching provides deterministic, reproducible results essential for educational trust. ML enhancement adds probabilistic refinement without sacrificing transparency. Hybrid approach balances accuracy with on-device performance constraints.
+
+### Real-Time Overlay System
+
+**MediaProjection-based overlay** drawing pattern highlights over any chart application:
+
+- **LiveOverlayController** - Manages VirtualDisplay creation, ImageReader for frame capture, stride-safe YUV→Bitmap conversion to prevent crashes
+- **EnhancedOverlayView** - Custom View with 7-layer rendering (shadow, glow, border, fill, corner accents, labels, confidence badges), zero per-frame allocations (13 cached Paints), 60 FPS capable
+- **HighlightGate** - Quota management system enforcing free tier limits (3-5 highlights), pattern deduplication via quantized position IDs
+
+**Design Rationale:** MediaProjection API enables universal chart compatibility without requiring integration with specific trading platforms. Custom rendering with object pooling ensures smooth 60 FPS performance. Quota system protects freemium business model while providing meaningful free trial.
+
+### Data Persistence Strategy
+
+**Room Database (11 entities)** - Local storage for pattern outcomes, achievements, learning metadata, confidence profiles, suppression rules, pattern correlations
+
+**EncryptedSharedPreferences** - Billing data (purchase status, license tier) with fail-closed security pattern (throws SecurityException if encryption initialization fails, no plaintext fallback)
+
+**Scoped Storage** - Proof exports and PDF reports stored in app-internal directory, auto-cleanup with configurable TTL
+
+**Design Rationale:** Room provides type-safe database access with migration support. Encrypted storage protects sensitive billing data from compromise. Scoped storage complies with Android 10+ privacy requirements while maintaining export functionality.
+
+### Educational System Architecture
+
+**Modular Lesson Structure** - 25 interactive lessons refactored from monolithic 6,714-line file into 28 modular files (<500 lines each), LessonRegistry aggregator pattern for centralized access, shared data models for consistency
+
+**Gamification Engine** - 15 achievements with unlock conditions, daily streak tracking, pattern performance statistics, user progress analytics
+
+**Pattern-to-Plan Engine** - Generates hypothetical trade scenarios (entry/exit points, stop losses, position sizing) with extensive legal disclaimers clarifying educational-only purpose
+
+**Design Rationale:** Modular lesson architecture improves maintainability and IDE performance. Gamification increases engagement and learning retention. Hypothetical scenarios teach practical application while legal disclaimers protect against misuse as financial advice.
+
+### Multi-Modal Alert System
+
+**Centralized AlertManager singleton** - Thread-safe with double-checked locking, coordinates voice (Android TTS), haptic (pattern-specific vibrations: 2 buzzes=bullish, 3=bearish, long=high confidence), and visual alerts
+
+**Voice Announcements** - Natural language pattern alerts ("Head and Shoulders forming - 75% complete, strong confidence"), hands-free operation for active trading, user-configurable enable/disable
+
+**Haptic Feedback** - Multi-modal vibration patterns providing glanceable confirmation, pattern type and confidence level encoded in vibration sequence
+
+**Design Rationale:** Centralized manager prevents alert conflicts and ensures consistent behavior. Multi-modal alerts accommodate different usage contexts (eyes-free via voice/haptic, visual for quiet environments). Singleton pattern with application context prevents memory leaks.
+
+### Billing & Licensing System
+
+**Google Play Billing Library 7.x** - One-time purchases (no subscriptions), secure purchase verification, encrypted local storage of license state
+
+**Offline License Validation** - Cached license status enables offline operation, fail-closed pattern (app blocks overlay if license validation fails), periodic refresh when online
+
+**Feature Gating** - Free tier quota (3-5 highlights), Standard tier (unlimited highlights), Pro tier (advanced features: PDF reports, backtesting, multi-chart comparison, pattern similarity search)
+
+**Design Rationale:** One-time purchases align with user preference against subscriptions. Offline license caching maintains functionality without constant network checks. Tiered feature gating provides clear upgrade incentives while preserving core value in free tier.
+
+### Security Architecture
+
+**Fail-Closed Principles** - Encryption failures throw exceptions (no plaintext fallback), MediaProjection errors trigger graceful cleanup with user guidance, signature verification blocks overlay service if tampered
+
+**ProGuard/R8 Obfuscation** - Comprehensive keep rules for ML Kit and OpenCV, release builds fully obfuscated
+
+**Privacy Guarantees** - No network permissions except Play Billing, all processing on-device, no analytics or crash reporting, GDPR/CCPA compliant by design (no data collection)
+
+**Design Rationale:** Fail-closed security prevents silent degradation into insecure states. Obfuscation protects intellectual property. Privacy-first design eliminates regulatory compliance overhead while building user trust.
 
 ## External Dependencies
 
-### Core ML/CV Libraries
-- **OpenCV**: Computer vision for template matching and image processing.
-- **TensorFlow Lite**: Infrastructure for future ML enhancements.
+### Android Platform
 
-### Android Framework
-- **Kotlin**: Primary programming language.
-- **Jetpack Compose**: UI framework.
-- **Room**: Local database persistence.
-- **Android Architecture Components**: ViewModel, LiveData, WorkManager.
-- **Material 3**: Design system.
-- **MediaProjection**: Screen capture APIs.
+- **Minimum SDK:** API 26 (Android 8.0 Oreo)
+- **Target SDK:** API 34 (Android 14)
+- **Compile SDK:** API 34
+- **Jetpack Compose:** 1.7.5 with Material 3 design system
+- **Java Toolchain:** JDK 17 (GraalVM 22.3 or Temurin)
 
-### Utilities
-- **Gson**: JSON parsing.
-- **Google Play Billing**: In-app purchase handling.
-- **Google Play Integrity API**: Anti-tamper verification.
+### Computer Vision & Machine Learning
 
-### Offline Assets
-- **Pattern Templates**: 109 PNG reference images and YAML configurations.
-- **Legal Documents**: HTML/Markdown for terms and privacy policy.
-- **Educational Content**: Interactive lessons.
+- **OpenCV:** 4.8.0 (BSD-3-Clause license) - Template matching, image preprocessing, multi-scale detection
+- **TensorFlow Lite:** 2.14.0 (Apache-2.0 license) - On-device inference for pattern similarity and early detection
+- **ML Kit (future consideration)** - Explored for potential text recognition in indicator legends
 
-### Security & Compliance
-- **Ed25519 Cryptography**: Digital signatures.
-- **SHA-256 Hashing**: Integrity verification.
+### Data & Persistence
 
-## Build Status
-CRITICAL FIX - Removed finish() call in overlay service receiver: 2025-11-04 19:45 UTC
+- **Room:** 2.6.x (Apache-2.0 license) - Local SQLite database with type-safe queries and migration support
+- **Gson:** 2.10 (Apache-2.0 license) - JSON serialization for pattern templates and configuration files
+- **EncryptedSharedPreferences (Jetpack Security)** - AES256-GCM encryption for sensitive billing data
+
+### Build & Development
+
+- **Gradle:** 8.7 with Kotlin DSL
+- **Kotlin:** 1.9.x
+- **KSP (Kotlin Symbol Processing)** - Room annotation processing
+- **Android Gradle Plugin:** 8.7.3
+- **ProGuard/R8** - Code obfuscation and optimization for release builds
+
+### Payment Processing
+
+- **Google Play Billing Library:** 7.x - In-app purchases (one-time, non-consumable products)
+
+### Testing & Quality
+
+- **JUnit 4** - Unit testing framework
+- **Espresso** - UI testing (planned)
+- **Validation Framework** - Custom accuracy testing with ground truth datasets
+
+### Key Architectural Decisions
+
+**No Backend Dependency:** All features operate offline except Google Play Billing, reducing operational costs and privacy concerns while ensuring functionality in poor network conditions.
+
+**Template-First Detection:** OpenCV template matching chosen over pure ML for determinism and reproducibility, essential for educational credibility and user trust.
+
+**Modular Refactoring:** Large monolithic files (6,714 lines) refactored into <500 line modules for improved maintainability, IDE performance, and collaborative development.
+
+**Encrypted Billing Storage:** Fail-closed security pattern prevents revenue loss from corrupted purchase records while protecting user payment data.
+
+**MediaProjection API:** Enables universal chart overlay without requiring partnerships or integrations with specific trading platforms, maximizing addressable market.
