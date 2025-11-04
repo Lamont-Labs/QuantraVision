@@ -26,6 +26,7 @@ class FloatingMenu(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
         PixelFormat.TRANSLUCENT
     ).apply {
@@ -143,15 +144,25 @@ class FloatingMenu(
             try {
                 windowManager.addView(menuView, params)
                 isAdded = true
+                isMenuVisible.value = true
             } catch (e: Exception) {
                 android.util.Log.e("FloatingMenu", "Failed to add menu view", e)
             }
+        } else {
+            isMenuVisible.value = true
         }
-        isMenuVisible.value = true
     }
 
     fun hide() {
         isMenuVisible.value = false
+        if (isAdded) {
+            try {
+                windowManager.removeView(menuView)
+                isAdded = false
+            } catch (e: Exception) {
+                android.util.Log.e("FloatingMenu", "Failed to remove menu view", e)
+            }
+        }
     }
 
     fun cleanup() {

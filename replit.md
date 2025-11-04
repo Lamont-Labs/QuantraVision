@@ -5,6 +5,23 @@ QuantraVision is an offline-first Android application that provides AI-powered c
 
 ## Recent Changes
 
+### November 4, 2025 - Touch-Passthrough FIXED! 
+**STATUS: PRODUCTION READY** - Overlay now has full touch-passthrough, allowing users to interact with trading app underneath.
+
+Fixed critical bug where FloatingMenu blocked ALL screen touches:
+- **Root Cause**: FloatingMenu was MATCH_PARENT (full screen) without FLAG_NOT_TOUCH_MODAL, blocking all touches even when hidden
+- **Fix 1**: Added FLAG_NOT_TOUCH_MODAL to FloatingMenu window params so touches outside menu area pass through
+- **Fix 2**: Modified hide() to actually REMOVE view from WindowManager instead of just hiding it (prevents persistent touch-blocking)
+- **Fix 3**: Enhanced MediaProjection.Callback to call cleanupMediaProjection() immediately before stopSelf() for faster resource release
+
+**Result**: Users can now:
+- ✅ Tap charts, buttons, and sliders in TradingView/Webull while overlay runs
+- ✅ Drag/click the floating Q button (60dp area remains interactive)
+- ✅ See cyan border pulse when patterns detected
+- ✅ Full touch control of trading app with minimal overlay interference
+
+**Files Modified**: FloatingMenu.kt (window flags + show/hide lifecycle), OverlayService.kt (cleanup ordering)
+
 ### November 4, 2025 - MediaProjection Screen Capture IMPLEMENTED
 **STATUS: FULLY FUNCTIONAL** - Overlay now captures and analyzes LIVE trading app screen in real-time.
 
