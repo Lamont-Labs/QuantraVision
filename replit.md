@@ -5,6 +5,17 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
+**CRITICAL FIX: Removed Early Exit Causing "Invisible Crash"**:
+- **ROOT CAUSE**: MainActivity had early `return` at line 211 when trying to auto-launch overlay service
+- This caused app to exit onCreate() without calling setContent(), so NO UI ever rendered
+- User saw "nothing" because activity was waiting for service broadcast or 5-second timeout
+- Android 12+ ForegroundServiceStartNotAllowedException prevented overlay service from starting
+- **FIX**: Removed early return - UI now ALWAYS renders immediately while overlay attempts to start in background
+- Simplified timeout handler to just show a toast instead of complex error UI
+- App now launches successfully and shows full Compose UI regardless of overlay service status
+
+## Recent Changes (2025-11-04)
+
 **CRITICAL FIX: Disabled APK Splits to Fix Instant Crash**:
 - **ROOT CAUSE FOUND**: APK splits were creating multiple APKs without bundling OpenCV native libraries (.so files)
 - Disabled APK splits in build.gradle.kts - now builds ONE universal APK with all native libraries

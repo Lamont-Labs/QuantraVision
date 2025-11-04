@@ -86,129 +86,17 @@ class MainActivity : ComponentActivity() {
           timeoutJob = lifecycleScope.launch {
             delay(SERVICE_START_TIMEOUT_MS)
             
-            Log.e("MainActivity", "OverlayService failed to start within timeout")
+            Log.e("MainActivity", "OverlayService failed to start within timeout - user can still use main UI")
             unregisterServiceReadyReceiver()
             
             runOnUiThread {
-              try {
-                setContent {
-                  MaterialTheme {
-                    Surface(modifier = Modifier.fillMaxSize()) {
-                      Column(
-                        modifier = Modifier
-                          .fillMaxSize()
-                          .padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                      ) {
-                        Icon(
-                          imageVector = Icons.Default.Warning,
-                          contentDescription = null,
-                          modifier = Modifier.size(100.dp),
-                          tint = MaterialTheme.colorScheme.error
-                        )
-                        
-                        Spacer(modifier = Modifier.height(24.dp))
-                        
-                        Text(
-                          text = "Service Failed to Start",
-                          style = MaterialTheme.typography.headlineMedium,
-                          color = MaterialTheme.colorScheme.error,
-                          textAlign = TextAlign.Center
-                        )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Text(
-                          text = "Failed to start overlay service. Please check permissions and try again.",
-                          style = MaterialTheme.typography.bodyLarge,
-                          color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                          textAlign = TextAlign.Center
-                        )
-                        
-                        Spacer(modifier = Modifier.height(32.dp))
-                        
-                        Button(
-                          onClick = {
-                            val retryIntent = Intent(this@MainActivity, MainActivity::class.java).apply {
-                              flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            }
-                            finish()
-                            startActivity(retryIntent)
-                          },
-                          modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                        ) {
-                          Text("Retry")
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Button(
-                          onClick = {
-                            val mainAppIntent = Intent(this@MainActivity, MainActivity::class.java).apply {
-                              flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                              putExtra("opened_from_overlay", true)
-                            }
-                            finish()
-                            startActivity(mainAppIntent)
-                          },
-                          modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                          colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                          )
-                        ) {
-                          Text("Go to Main App")
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        OutlinedButton(
-                          onClick = {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                              val permIntent = android.content.Intent(
-                                android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                android.net.Uri.parse("package:$packageName")
-                              )
-                              permIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                              startActivity(permIntent)
-                            }
-                          },
-                          modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                        ) {
-                          Text("Check Permissions")
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        TextButton(
-                          onClick = { finish() },
-                          modifier = Modifier.fillMaxWidth()
-                        ) {
-                          Text("Close App")
-                        }
-                      }
-                    }
-                  }
-                }
-              } catch (e: Exception) {
-                Log.e("MainActivity", "Failed to show error UI", e)
-                android.widget.Toast.makeText(
-                  this@MainActivity,
-                  "Failed to start overlay service. Please check permissions and try again.",
-                  android.widget.Toast.LENGTH_LONG
-                ).show()
-                finish()
-              }
+              android.widget.Toast.makeText(
+                this@MainActivity,
+                "Overlay service timeout. Using main UI mode.",
+                android.widget.Toast.LENGTH_SHORT
+              ).show()
             }
           }
-          
-          return
         } else {
           android.widget.Toast.makeText(
             this,
