@@ -133,7 +133,7 @@ fun PatternCard(
                                 scope.launch {
                                     try {
                                         val generator = ProofCapsuleGenerator(context)
-                                        generator.generateCapsule(match, regimeContext.value)
+                                        generator.generateCapsule(match, screenshot = null, regimeContext = regimeContext.value)
                                         showProofExported = true
                                     } catch (e: Exception) {
                                     }
