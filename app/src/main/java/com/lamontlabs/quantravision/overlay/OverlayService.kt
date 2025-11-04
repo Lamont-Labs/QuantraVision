@@ -181,6 +181,16 @@ class OverlayService : Service() {
                 try {
                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
                     
+                    // ========================================
+                    // DEMO MODE: Currently scanning demo files from local storage
+                    // ========================================
+                    // TODO: Implement real screen capture using MediaProjection API
+                    // TODO: Request MEDIA_PROJECTION permission from user
+                    // TODO: Capture live screen content instead of reading from demo_charts directory
+                    // TODO: Process captured screen bitmap for real-time pattern detection
+                    // This is a demonstration mode that processes pre-saved chart images
+                    // to showcase the pattern detection capabilities without requiring
+                    // MediaProjection permission setup.
                     val dir = java.io.File(applicationContext.filesDir, "demo_charts")
                     if (dir.exists()) {
                         val allDetectedPatterns = mutableListOf<PatternMatch>()

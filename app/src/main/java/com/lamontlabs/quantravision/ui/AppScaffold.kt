@@ -106,6 +106,15 @@ private fun AppNavigationHost(
                         ).show()
                     }
                 },
+                onStopScan = {
+                    // Stop the overlay service
+                    context.stopService(android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java))
+                    android.widget.Toast.makeText(
+                        context,
+                        "Overlay stopped",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                },
                 onReview = { navController.navigate("detections_list") },
                 onTutorials = { navController.navigate("tutorials") },
                 onSettings = { navController.navigate("settings") },

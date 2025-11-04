@@ -29,6 +29,7 @@ import kotlinx.coroutines.delay
 fun DashboardScreen(
     context: Context,
     onStartScan: () -> Unit,
+    onStopScan: () -> Unit,
     onReview: () -> Unit,
     onTutorials: () -> Unit,
     onSettings: () -> Unit,
@@ -191,6 +192,17 @@ fun DashboardScreen(
             ) {
                 Icon(Icons.Default.Visibility, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Start Detection")
+            }
+            
+            Button(
+                onClick = onStopScan,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(Icons.Default.Stop, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Stop Detection")
             }
             
             Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
