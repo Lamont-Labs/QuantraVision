@@ -30,6 +30,7 @@
     <string name="widget_description">Quick stats for QuantraVision pattern detection</string>
     
     <string name="floating_logo_description">QuantraVision floating logo button</string>
+    <string name="floating_logo_glow_description">Glowing effect for active scanning</string>
     <string name="floating_logo_menu_scan">Scan Now</string>
     <string name="floating_logo_menu_scan_desc">Trigger immediate pattern scan</string>
     <string name="floating_logo_menu_dashboard">Dashboard</string>

@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -27,6 +28,7 @@ class FloatingLogoButton(
     private val prefs = FloatingLogoPreferences(context)
     private val logoView: View
     private val logoImage: ImageView
+    private val glowView: ImageView
     private val badge: LogoBadge
     private var params: WindowManager.LayoutParams
     private var isAdded = false
@@ -40,6 +42,7 @@ class FloatingLogoButton(
     
     private var pulseAnimator: ObjectAnimator? = null
     private var ringRotationAnimator: ValueAnimator? = null
+    private var glowAnimator: ObjectAnimator? = null
     
     private val longPressThreshold = 500L
     
@@ -51,6 +54,7 @@ class FloatingLogoButton(
         logoView = inflater.inflate(R.layout.floating_logo_layout, null) as FrameLayout
         
         logoImage = logoView.findViewById(R.id.logo_image)
+        glowView = logoView.findViewById(R.id.logo_glow)
         badge = logoView.findViewById(R.id.logo_badge)
         
         val logoSize = prefs.getLogoSize()
@@ -137,6 +141,13 @@ class FloatingLogoButton(
             }
             start()
         }
+        
+        glowAnimator = ObjectAnimator.ofFloat(glowView, "alpha", 0f, 0.6f, 0f).apply {
+            duration = 1500
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
     }
 
     private fun startPulseAnimation() {
@@ -151,6 +162,9 @@ class FloatingLogoButton(
     private fun stopScanningAnimation() {
         ringRotationAnimator?.cancel()
         ringRotationAnimator = null
+        glowAnimator?.cancel()
+        glowAnimator = null
+        glowView.alpha = 0f
     }
 
     private fun stopAllAnimations() {
@@ -158,7 +172,10 @@ class FloatingLogoButton(
         pulseAnimator = null
         ringRotationAnimator?.cancel()
         ringRotationAnimator = null
+        glowAnimator?.cancel()
+        glowAnimator = null
         logoImage.alpha = 1f
+        glowView.alpha = 0f
     }
 
     private fun setupTouchListener() {

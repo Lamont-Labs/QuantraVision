@@ -10,6 +10,17 @@
         android:layout_height="match_parent" />
 
     <ImageView
+        android:id="@+id/logo_glow"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/floating_logo_glow"
+        android:alpha="0"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:layout_gravity="center"
+        android:contentDescription="@string/floating_logo_glow_description" />
+
+    <ImageView
         android:id="@+id/logo_image"
         android:layout_width="50dp"
         android:layout_height="50dp"

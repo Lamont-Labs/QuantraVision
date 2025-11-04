@@ -6,11 +6,25 @@
     android:viewportHeight="108">
     
     <!-- Refined QuantraVision Q Logo -->
-    <!-- Outer subtle glow ring -->
+    <!-- Layer 1 - Outermost subtle glow (largest, most transparent) -->
     <path
         android:fillColor="#00E5FF"
-        android:fillAlpha="0.15"
+        android:fillAlpha="0.12"
+        android:pathData="M54,18 A36,36 0 1,1 54,90 A36,36 0 1,1 54,18 Z
+                          M54,20 A34,34 0 1,0 54,88 A34,34 0 1,0 54,20 Z"/>
+    
+    <!-- Layer 2 - Middle glow (medium size, medium transparency) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.20"
         android:pathData="M54,20 A34,34 0 1,1 54,88 A34,34 0 1,1 54,20 Z
+                          M54,22 A32,32 0 1,0 54,86 A32,32 0 1,0 54,22 Z"/>
+    
+    <!-- Layer 3 - Innermost glow (smallest, most visible) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.30"
+        android:pathData="M54,22 A32,32 0 1,1 54,86 A32,32 0 1,1 54,22 Z
                           M54,24 A30,30 0 1,0 54,84 A30,30 0 1,0 54,24 Z"/>
     
     <!-- Main Q shape - outer circle -->
@@ -22,6 +36,12 @@
     <path
         android:fillColor="#0A1628"
         android:pathData="M54,36 A18,18 0 1,0 54,72 A18,18 0 1,0 54,36 Z"/>
+    
+    <!-- Tail glow accent -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.25"
+        android:pathData="M65,65 L77,77 L73,81 L61,69 Z"/>
     
     <!-- Q tail - sleek diagonal line extending from bottom right -->
     <path
