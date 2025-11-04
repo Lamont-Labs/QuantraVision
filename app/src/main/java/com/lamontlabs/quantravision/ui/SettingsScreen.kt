@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -129,6 +130,37 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
             )
             Text("Theme: Follows system (Dark optimized)")
             Text("Overlay opacity: Adjustable in Quick Controls")
+            
+            Spacer(Modifier.height(24.dp))
+            
+            Text(
+                text = "Upgrade & Plans",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                ListItem(
+                    headlineContent = { Text("View All Pricing Tiers") },
+                    supportingContent = { Text("FREE • STARTER $9.99 • STANDARD $24.99 • PRO $49.99") },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    modifier = Modifier.clickable {
+                        navController.navigate("paywall")
+                    }
+                )
+            }
             
             Spacer(Modifier.height(24.dp))
             

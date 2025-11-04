@@ -1,16 +1,19 @@
 package com.lamontlabs.quantravision.ui
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternDetector
+import com.lamontlabs.quantravision.billing.BillingManager
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
 import com.lamontlabs.quantravision.ui.capture.rememberScreenCaptureCoordinator
@@ -242,12 +245,22 @@ private fun AppNavigationHost(
         }
 
         composable("paywall") {
-            com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
-                onDismiss = { navController.popBackStack() },
-                onBook = {},
-                onStandard = {},
-                onPro = {}
-            )
+            val activity = LocalContext.current as? Activity
+            if (activity != null) {
+                val billingManager = remember { BillingManager(activity) }
+                
+                com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
+                    onDismiss = { navController.popBackStack() },
+                    onBook = { billingManager.purchaseBook() },
+                    onStandard = { billingManager.purchaseStandard() },
+                    onPro = { billingManager.purchasePro() }
+                )
+            } else {
+                Text(
+                    "Error: Purchase unavailable",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
     }
 }
