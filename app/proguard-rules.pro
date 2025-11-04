@@ -1,4 +1,11 @@
 # QuantraVision release shrink rules - Optimized for maximum code shrinking
+# 
+# CRITICAL WARNING: This file caused a production crash bug in Nov 2024
+# Issue: -assumenosideeffects on Log.i/w/e caused empty catch blocks to be removed
+# Result: Uncaught exceptions crashed the app instantly on launch
+# Fix: Only strip debug/verbose logs, ALWAYS keep error/warning/info logs
+# Rule: Never use -assumenosideeffects on code that appears in exception handlers
+#
 # Aggressive optimization passes
 -optimizationpasses 7
 -allowaccessmodification
@@ -38,11 +45,15 @@
 }
 -dontwarn org.opencv.**
 
-# Strip logs in release (keep warnings and info for critical paths)
+# Strip logs in release
+# CRITICAL: Only strip debug/verbose. NEVER strip error/warning/info logs!
+# Reason: Exception handlers use Log.e/w/i. If stripped, catch blocks become empty
+# and ProGuard removes them entirely, causing crashes.
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
 }
+# DO NOT ADD Log.e/w/i here - they are needed for exception handling
 
 # Strip Timber logs in release
 -assumenosideeffects class timber.log.Timber {
@@ -68,11 +79,24 @@
 # Aggressive method inlining
 -optimizations code/removal/*,code/allocation/variable,method/inlining/*,method/removal/*,field/removal/*,class/merging/*
 
-# Keep essential Android components
--keep class * extends android.app.Application { *; }
+# Keep essential Android components - CRITICAL for app stability
+-keep class * extends android.app.Application { 
+    *; 
+}
+-keep class com.lamontlabs.quantravision.App { 
+    *; 
+}
 -keepclassmembers class * extends android.app.Activity { *; }
 -keepclassmembers class * extends android.app.Service { *; }
 -keepclassmembers class * extends android.content.BroadcastReceiver { *; }
+
+# CRITICAL: Prevent stripping of Log.e() calls - needed for exception handlers
+-keep class android.util.Log {
+    public static int e(...);
+}
+-keepclassmembers class android.util.Log {
+    public static int e(...);
+}
 
 # Room Database - Keep entity classes and DAOs
 -keep class * extends androidx.room.RoomDatabase
