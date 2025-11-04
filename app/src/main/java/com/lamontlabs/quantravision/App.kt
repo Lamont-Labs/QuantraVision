@@ -25,27 +25,13 @@ class App : Application() {
         try {
             System.loadLibrary("opencv_java4")
             openCVInitialized = true
-            Log.i("QuantraVision", "OpenCV loaded successfully - full pattern detection available")
+            Log.i("QuantraVision", "✓ OpenCV loaded successfully - full pattern detection available")
         } catch (e: UnsatisfiedLinkError) {
             openCVInitialized = false
-            Log.e("QuantraVision", "OpenCV native library not found: ${e.message} - pattern detection limited to ML-only mode", e)
-            
-            // Notify user that pattern detection is running in limited mode
-            android.widget.Toast.makeText(
-                this,
-                "⚠️ Limited Mode: Advanced pattern detection unavailable. App will detect only 6 core patterns via ML.",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+            Log.w("QuantraVision", "⚠ OpenCV native library not available - app will run in ML-only mode (6 core patterns)", e)
         } catch (e: Exception) {
             openCVInitialized = false
-            Log.e("QuantraVision", "OpenCV initialization exception: ${e.message} - limited mode enabled", e)
-            
-            // Notify user about limited functionality
-            android.widget.Toast.makeText(
-                this,
-                "⚠️ Limited Mode: Template matching disabled. Only 6 ML patterns available.",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+            Log.w("QuantraVision", "⚠ OpenCV initialization failed - limited functionality enabled", e)
         }
     }
 }

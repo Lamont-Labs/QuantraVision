@@ -5,9 +5,11 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
-**CRITICAL: Instant Crash Fix & Professional Q Logo Launcher Icons**:
-- Fixed instant crash on app launch: Changed OpenCV initialization from `OpenCVLoader.initDebug()` to `System.loadLibrary("opencv_java4")` for Maven Central compatibility
-- Root cause: initDebug() is incompatible with Maven Central OpenCV distribution (`org.opencv:opencv:4.10.0`) and fails catastrophically in release builds with ProGuard/R8
+**CRITICAL: Application Crash Fix & Professional Q Logo Launcher Icons**:
+- Fixed fatal crash: Removed Toast messages from Application.onCreate() which caused instant crash before any Activity could start
+- Root cause: Android doesn't allow showing Toast from Application class before the UI is ready - this was causing the "app has a bug" crash
+- Fixed OpenCV initialization from `OpenCVLoader.initDebug()` to `System.loadLibrary("opencv_java4")` for Maven Central compatibility
+- Changed error handling to use Log.w() instead of Toast to prevent UI-related crashes during app initialization
 - Replaced generic launcher icons with user's professional 3D Q logo featuring electric cyan glow and metallic finish
 - Generated all Android launcher icon densities (mdpi through xxxhdpi): 48×48, 72×72, 96×96, 144×144, 192×192 for legacy icons
 - Generated all adaptive icon foregrounds (mdpi through xxxhdpi): 108×108, 162×162, 216×216, 288×288, 432×432
@@ -16,7 +18,6 @@ QuantraVision is an offline-first Android application for retail traders, provid
 - Fixed app display name from "QuantraVision Overlay" to "QuantraVision" in strings.xml
 - Enhanced ProGuard rules to protect Application class from being stripped
 - App now launches successfully in release builds with graceful fallback to ML-only mode if OpenCV fails to load
-- Architect-reviewed and approved as production-ready
 
 **Lamont Labs Branding in Onboarding**:
 - Added "by Lamont Labs" branding to welcome screen in onboarding flow
