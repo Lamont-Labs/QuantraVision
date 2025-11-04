@@ -48,12 +48,26 @@ fun PredictionScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pattern Predictions") },
+                title = { 
+                    Text(
+                        "Pattern Predictions",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -115,34 +129,39 @@ fun PredictionScreen(onBack: () -> Unit) {
                     .fillMaxSize()
                     .padding(padding)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Header
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
                         )
                     ) {
                         Column(Modifier.padding(16.dp)) {
                             Text(
                                 "🔮 Forming Patterns",
-                                style = MaterialTheme.typography.titleLarge,
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    shadow = CyanGlowShadow
+                                ),
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(12.dp))
                             Text(
                                 "Early detection of patterns before they complete",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.textSecondary
                             )
                             if (predictions.isNotEmpty()) {
-                                Spacer(Modifier.height(8.dp))
+                                Spacer(Modifier.height(12.dp))
                                 Text(
                                     "${predictions.size} forming patterns detected",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.amber,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -152,7 +171,15 @@ fun PredictionScreen(onBack: () -> Unit) {
 
                 if (predictions.isEmpty()) {
                     item {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp
+                            )
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -162,14 +189,15 @@ fun PredictionScreen(onBack: () -> Unit) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(
                                         "No forming patterns detected",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
-                                    Spacer(Modifier.height(8.dp))
+                                    Spacer(Modifier.height(12.dp))
                                     Text(
                                         "Patterns will appear here as they begin to form",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.textSecondary
                                     )
                                 }
                             }
@@ -181,26 +209,32 @@ fun PredictionScreen(onBack: () -> Unit) {
                     }
                 }
 
-                // Info section
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
                         )
                     ) {
                         Column(Modifier.padding(16.dp)) {
                             Text(
                                 "How It Works",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    shadow = SubtleGlowShadow
+                                ),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(16.dp))
                             Text(
                                 "• Early: Pattern is just starting (40-50% complete)\n" +
                                 "• Developing: Pattern structure forming (50-70%)\n" +
                                 "• Nearly Complete: Pattern about to trigger (70-85%)",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.textSecondary
                             )
                         }
                     }
@@ -212,18 +246,28 @@ fun PredictionScreen(onBack: () -> Unit) {
 
 @Composable
 fun PredictionCard(prediction: PredictedPattern) {
+    val cardColor = when (prediction.stage) {
+        "nearly_complete" -> MaterialTheme.colorScheme.amber.copy(alpha = 0.12f)
+        "developing" -> MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+        else -> MaterialTheme.colorScheme.surface
+    }
+    
+    val accentColor = when (prediction.stage) {
+        "nearly_complete" -> MaterialTheme.colorScheme.amber
+        "developing" -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.metallic
+    }
+    
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = when (prediction.stage) {
-                "nearly_complete" -> MaterialTheme.colorScheme.tertiaryContainer
-                "developing" -> MaterialTheme.colorScheme.secondaryContainer
-                else -> MaterialTheme.colorScheme.surfaceVariant
-            }
+            containerColor = cardColor
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
         )
     ) {
         Column(Modifier.padding(16.dp)) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -232,45 +276,62 @@ fun PredictionCard(prediction: PredictedPattern) {
                 Column {
                     Text(
                         prediction.patternName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        prediction.stage.replace("_", " ").uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Spacer(Modifier.height(8.dp))
+                    Surface(
+                        color = accentColor.copy(alpha = 0.2f),
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            prediction.stage.replace("_", " ").uppercase(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = accentColor,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
                 }
 
                 Text(
                     "${prediction.completionPercent.toInt()}%",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        shadow = SubtleGlowShadow
+                    ),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = accentColor
                 )
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Progress bar
             Column {
                 LinearProgressIndicator(
                     progress = (prediction.completionPercent / 100f).toFloat(),
-                    modifier = Modifier.fillMaxWidth(),
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp),
+                    color = accentColor,
+                    trackColor = MaterialTheme.colorScheme.surface
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     "${prediction.completionPercent.toInt()}% complete",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.textSecondary
                 )
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
 
-            // Details
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -279,17 +340,16 @@ fun PredictionCard(prediction: PredictedPattern) {
                 DetailItem("Est. Completion", prediction.estimatedCompletion)
             }
             
-            // Velocity indicator
             if (prediction.formationVelocity > 0) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
                         "Formation Speed:",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                     Text(
                         when {
@@ -297,8 +357,9 @@ fun PredictionCard(prediction: PredictedPattern) {
                             prediction.formationVelocity > 0.005 -> "→ Moderate"
                             else -> "🐌 Slow"
                         },
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor
                     )
                 }
             }
@@ -311,13 +372,15 @@ fun DetailItem(label: String, value: String) {
     Column {
         Text(
             label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.textSecondary
         )
+        Spacer(Modifier.height(4.dp))
         Text(
             value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

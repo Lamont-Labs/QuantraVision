@@ -80,12 +80,26 @@ fun MultiChartScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Multi-Chart Comparison") },
+                title = { 
+                    Text(
+                        "Multi-Chart Comparison",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -103,26 +117,32 @@ fun MultiChartScreen(onBack: () -> Unit) {
                     .fillMaxSize()
                     .padding(padding)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
                         )
                     ) {
                         Column(Modifier.padding(16.dp)) {
                             Text(
                                 "Select Charts to Compare",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    shadow = CyanGlowShadow
+                                ),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(12.dp))
                             Text(
                                 "Choose 2-4 symbols for correlation analysis",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.textSecondary
                             )
                             Spacer(Modifier.height(12.dp))
                             
@@ -158,9 +178,16 @@ fun MultiChartScreen(onBack: () -> Unit) {
                             Button(
                                 onClick = { runComparison() },
                                 enabled = selectedSymbols.size >= 2 && !isLoading,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                                Icon(Icons.Default.TrendingUp, contentDescription = null)
+                                Icon(
+                                    Icons.Default.TrendingUp,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Compare Charts (${selectedSymbols.size})")
                             }
@@ -170,7 +197,15 @@ fun MultiChartScreen(onBack: () -> Unit) {
                 
                 if (isLoading) {
                     item {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp
+                            )
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -181,10 +216,13 @@ fun MultiChartScreen(onBack: () -> Unit) {
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    CircularProgressIndicator()
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                     Text(
                                         "Analyzing correlations...",
-                                        style = MaterialTheme.typography.bodyMedium
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.textSecondary
                                     )
                                 }
                             }
@@ -197,8 +235,11 @@ fun MultiChartScreen(onBack: () -> Unit) {
                         item {
                             Text(
                                 "Comparison Results",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    shadow = CyanGlowShadow
+                                ),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         
@@ -210,8 +251,11 @@ fun MultiChartScreen(onBack: () -> Unit) {
                             item {
                                 Text(
                                     "Cross-Chart Correlations",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        shadow = SubtleGlowShadow
+                                    ),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             
@@ -224,8 +268,11 @@ fun MultiChartScreen(onBack: () -> Unit) {
                             item {
                                 Text(
                                     "Detected Divergences",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        shadow = SubtleGlowShadow
+                                    ),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.error
                                 )
                             }
                             
@@ -238,7 +285,15 @@ fun MultiChartScreen(onBack: () -> Unit) {
                 
                 if (comparisonResult == null && !isLoading) {
                     item {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp
+                            )
+                        ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -249,18 +304,19 @@ fun MultiChartScreen(onBack: () -> Unit) {
                                 Icon(
                                     Icons.Default.CompareArrows,
                                     contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
+                                    modifier = Modifier.size(64.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     "No comparison yet",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     "Select 2-4 charts above to start correlation analysis",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.textSecondary
                                 )
                             }
                         }
@@ -278,16 +334,28 @@ fun ComparisonSummaryCard(result: MultiChartComparison.ComparisonResult) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
         )
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 "Summary",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleLarge.copy(
+                    shadow = SubtleGlowShadow
+                ),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -297,7 +365,7 @@ fun ComparisonSummaryCard(result: MultiChartComparison.ComparisonResult) {
                 SummaryItem("Correlations Found", "${result.correlations.size}")
             }
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -316,7 +384,21 @@ fun ComparisonSummaryCard(result: MultiChartComparison.ComparisonResult) {
 
 @Composable
 fun CorrelationCard(correlation: MultiChartComparison.CrossChartCorrelation) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    val correlationColor = when (correlation.correlation) {
+        "strong" -> MaterialTheme.colorScheme.success
+        "moderate" -> MaterialTheme.colorScheme.amber
+        else -> MaterialTheme.colorScheme.metallic
+    }
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
+    ) {
         Column(Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -326,49 +408,53 @@ fun CorrelationCard(correlation: MultiChartComparison.CrossChartCorrelation) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         correlation.pattern.replace("_", " ").uppercase(),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "Found in ${correlation.symbols.size} charts",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
                 
                 Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = when (correlation.correlation) {
-                        "strong" -> MaterialTheme.colorScheme.success
-                        "moderate" -> MaterialTheme.colorScheme.warning
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    shape = MaterialTheme.shapes.medium,
+                    color = correlationColor.copy(alpha = 0.2f)
                 ) {
                     Text(
                         correlation.correlation.uppercase(),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = correlationColor
                     )
                 }
             }
             
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
             
             Text(
                 "Symbols: ${correlation.symbols.joinToString(", ")}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.textSecondary
             )
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             
             Text(
                 "Avg Confidence: ${String.format("%.2f", correlation.avgConfidence)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -379,95 +465,119 @@ fun DivergenceCard(divergence: MultiChartComparison.Divergence) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+            containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.10f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
         )
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.Default.Warning,
                     contentDescription = null,
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
                 Text(
                     "Divergence Detected",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
                 )
             }
             
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
                         divergence.symbol1,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
                     )
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         divergence.pattern1.replace("_", " "),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
                 
                 Icon(
                     Icons.Default.CompareArrows,
                     contentDescription = null,
+                    modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
                 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         divergence.symbol2,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
                     )
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         divergence.pattern2.replace("_", " "),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
             }
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
             
             LinearProgressIndicator(
                 progress = divergence.significance.toFloat(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(4.dp),
-                color = MaterialTheme.colorScheme.error
+                    .height(8.dp),
+                color = MaterialTheme.colorScheme.error,
+                trackColor = MaterialTheme.colorScheme.surface
             )
             
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(8.dp))
             
             Text(
                 "Significance: ${String.format("%.0f%%", divergence.significance * 100)}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+                fontWeight = FontWeight.Bold
             )
         }
     }
 }
 
 @Composable
-private fun SummaryItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.onTertiaryContainer) {
+private fun SummaryItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.primary) {
     Column {
         Text(
             label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.textSecondary
         )
+        Spacer(Modifier.height(4.dp))
         Text(
             value,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                shadow = SubtleGlowShadow
+            ),
             fontWeight = FontWeight.Bold,
             color = color
         )

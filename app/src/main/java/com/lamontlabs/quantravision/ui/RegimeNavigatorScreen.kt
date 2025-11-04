@@ -34,10 +34,21 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Regime Navigator") },
+                title = { 
+                    Text(
+                        "Regime Navigator",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
@@ -48,7 +59,7 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // MANDATORY LEGAL DISCLAIMER
             item {
@@ -59,8 +70,11 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                 Column {
                     Text(
                         "📊 Market Regime Analysis",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            shadow = CyanGlowShadow
+                        ),
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -77,7 +91,8 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                    ),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
@@ -109,18 +124,25 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = !isAnalyzing
+                            enabled = !isAnalyzing,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
                         ) {
                             if (isAnalyzing) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
+                                    modifier = Modifier.size(20.dp),
                                     strokeWidth = 2.dp,
                                     color = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Analyzing...")
                             } else {
-                                Icon(Icons.Default.Analytics, contentDescription = null)
+                                Icon(
+                                    Icons.Default.Analytics,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Analyze Sample Data")
                             }
@@ -136,7 +158,8 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
+                        ),
+                        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -145,7 +168,8 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                             Icon(
                                 Icons.Filled.Warning,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(24.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
@@ -167,14 +191,26 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
             
             // Educational info
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text(
-                            "ℹ️ How It Works",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "How It Works",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(Modifier.height(12.dp))
                         Text(
                             "Regime Navigator analyzes three key market dimensions:\n\n" +
                             "• Volatility: Measures price fluctuation intensity\n" +
@@ -204,9 +240,10 @@ private fun RegimeResultCard(regime: RegimeNavigator.MarketRegime) {
             containerColor = when (regime.overallQuality) {
                 RegimeNavigator.RegimeQuality.FAVORABLE -> MaterialTheme.colorScheme.tertiaryContainer
                 RegimeNavigator.RegimeQuality.POOR -> MaterialTheme.colorScheme.errorContainer
-                else -> MaterialTheme.colorScheme.surfaceVariant
+                else -> MaterialTheme.colorScheme.surface
             }
-        )
+        ),
+        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(
@@ -230,7 +267,10 @@ private fun RegimeResultCard(regime: RegimeNavigator.MarketRegime) {
                 )
             }
             
-            Divider(Modifier.padding(vertical = 12.dp))
+            HorizontalDivider(
+                Modifier.padding(vertical = 12.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
             
             RegimeMetricRow("Volatility", regime.volatility.name)
             RegimeMetricRow("Trend Strength", regime.trendStrength.name)
@@ -278,7 +318,8 @@ private fun DisclaimerCard() {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
-        )
+        ),
+        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -287,7 +328,8 @@ private fun DisclaimerCard() {
             Icon(
                 Icons.Default.Warning,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(24.dp)
             )
             Spacer(Modifier.width(12.dp))
             Text(

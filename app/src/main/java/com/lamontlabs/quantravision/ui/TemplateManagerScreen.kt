@@ -38,34 +38,54 @@ fun TemplateManagerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Template Manager") },
+                title = { 
+                    Text(
+                        "Template Manager",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            shadow = CyanGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Back") }
                 },
                 actions = {
                     TextButton(onClick = {
                         PatternCatalog.enableAll(context); refresh++
-                    }) { Text("Enable All") }
+                    }) { Text("Enable All", color = ElectricCyan) }
                     TextButton(onClick = {
                         PatternCatalog.disableAll(context); refresh++
-                    }) { Text("Disable All") }
-                }
+                    }) { Text("Disable All", color = ElectricCyan) }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
+                )
             )
-        }
+        },
+        containerColor = DeepNavyBackground
     ) { padding ->
-        Column(Modifier.padding(padding).padding(16.dp)) {
+        Column(Modifier.padding(padding).padding(24.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 placeholder = { Text("Search patterns") },
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = ElectricCyan,
+                    focusedLabelColor = ElectricCyan
+                )
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "Total: ${items.size}   Enabled: ${items.count { it.enabled }}", 
+                style = MaterialTheme.typography.labelMedium,
+                color = MetallicSilver
             )
             Spacer(Modifier.height(12.dp))
-            Text("Total: ${items.size}   Enabled: ${items.count { it.enabled }}", style = MaterialTheme.typography.labelMedium)
-            Spacer(Modifier.height(8.dp))
-            Divider()
+            Divider(color = ElectricCyan.copy(alpha = 0.3f))
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(vertical = 8.dp),
@@ -93,20 +113,43 @@ private fun TemplateRow(
     enabled: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
-    Card(Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(name, style = MaterialTheme.typography.titleMedium)
-                Text(id, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    name, 
+                    style = MaterialTheme.typography.titleMedium,
+                    color = CrispWhite,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    id, 
+                    style = MaterialTheme.typography.bodySmall, 
+                    color = MetallicSilver
+                )
             }
             IconToggleButton(checked = enabled, onCheckedChange = onToggle) {
-                if (enabled) Icon(Icons.Default.Check, contentDescription = "Enabled")
-                else Icon(Icons.Default.Close, contentDescription = "Disabled")
+                if (enabled) Icon(
+                    Icons.Default.Check, 
+                    contentDescription = "Enabled",
+                    tint = ElectricCyan
+                )
+                else Icon(
+                    Icons.Default.Close, 
+                    contentDescription = "Disabled",
+                    tint = MetallicSilver
+                )
             }
         }
     }

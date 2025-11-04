@@ -36,10 +36,21 @@ fun PatternPlanScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pattern-to-Plan Engine") },
+                title = { 
+                    Text(
+                        "Pattern-to-Plan Engine",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
@@ -50,7 +61,7 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // MANDATORY LEGAL DISCLAIMER
             item {
@@ -61,8 +72,11 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                 Column {
                     Text(
                         "📚 Trade Scenario Generator",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            shadow = CyanGlowShadow
+                        ),
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -79,7 +93,8 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                    ),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
@@ -116,18 +131,25 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = !isGenerating
+                            enabled = !isGenerating,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
                         ) {
                             if (isGenerating) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
+                                    modifier = Modifier.size(20.dp),
                                     strokeWidth = 2.dp,
                                     color = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Generating...")
                             } else {
-                                Icon(Icons.Default.AutoAwesome, contentDescription = null)
+                                Icon(
+                                    Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Generate Scenario")
                             }
@@ -143,7 +165,8 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
+                        ),
+                        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -152,7 +175,8 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                             Icon(
                                 Icons.Filled.Warning,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(24.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
@@ -174,14 +198,26 @@ fun PatternPlanScreen(onBack: () -> Unit) {
             
             // Educational info
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text(
-                            "ℹ️ How It Works",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "How It Works",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(Modifier.height(12.dp))
                         Text(
                             "Pattern-to-Plan analyzes detected patterns and generates hypothetical trade scenarios including:\n\n" +
                             "• Theoretical entry price (pattern breakout/breakdown)\n" +
@@ -203,7 +239,8 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
+                    ),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -212,7 +249,8 @@ fun PatternPlanScreen(onBack: () -> Unit) {
                         Icon(
                             Icons.Default.Warning,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(24.dp)
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
@@ -237,7 +275,8 @@ private fun TradeScenarioCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        )
+        ),
+        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
@@ -258,7 +297,10 @@ private fun TradeScenarioCard(
                 style = MaterialTheme.typography.bodyMedium
             )
             
-            Divider(Modifier.padding(vertical = 12.dp))
+            HorizontalDivider(
+                Modifier.padding(vertical = 12.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
             
             Text(
                 "Theoretical Trade Parameters:",
@@ -303,9 +345,16 @@ private fun TradeScenarioCard(
                 onClick = {
                     planEngine.announceScenario(scenario, includeDisclaimer = true)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             ) {
-                Icon(Icons.Default.VolumeUp, contentDescription = null)
+                Icon(
+                    Icons.Default.VolumeUp,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
                 Spacer(Modifier.width(8.dp))
                 Text("Announce Scenario (Voice)")
             }

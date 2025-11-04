@@ -41,10 +41,21 @@ fun IntelligenceScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Intelligence Stack") },
+                title = { 
+                    Text(
+                        "Intelligence Stack",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
@@ -55,15 +66,18 @@ fun IntelligenceScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Header
             item {
                 Column {
                     Text(
                         "🧠 Intelligence Features",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            shadow = CyanGlowShadow
+                        ),
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -96,14 +110,16 @@ fun IntelligenceScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer
-                        )
+                        ),
+                        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                     ) {
                         Column(Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     Icons.Default.Lock,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Text(
@@ -120,9 +136,16 @@ fun IntelligenceScreen(
                             Spacer(Modifier.height(12.dp))
                             Button(
                                 onClick = onUpgrade,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                                Icon(Icons.Default.Upgrade, contentDescription = null)
+                                Icon(
+                                    Icons.Default.Upgrade,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Upgrade to Pro")
                             }
@@ -178,14 +201,16 @@ fun IntelligenceScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
+                    ),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.Top) {
                             Icon(
                                 Icons.Default.Warning,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(24.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Column {
@@ -227,7 +252,8 @@ private fun IntelligenceFeatureCard(
             } else {
                 MaterialTheme.colorScheme.surface
             }
-        )
+        ),
+        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier
@@ -245,7 +271,8 @@ private fun IntelligenceFeatureCard(
                             MaterialTheme.colorScheme.onSurfaceVariant
                         } else {
                             MaterialTheme.colorScheme.primary
-                        }
+                        },
+                        modifier = Modifier.size(24.dp)
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(
@@ -271,13 +298,15 @@ private fun IntelligenceFeatureCard(
                 Icon(
                     Icons.Default.Lock,
                     contentDescription = "Locked",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
                     Icons.Default.ChevronRight,
                     contentDescription = "Open",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }

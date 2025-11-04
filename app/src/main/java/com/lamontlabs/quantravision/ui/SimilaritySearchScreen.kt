@@ -78,12 +78,26 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pattern Similarity Search") },
+                title = { 
+                    Text(
+                        "Pattern Similarity Search",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -92,35 +106,48 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
                     )
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
                             "Find Similar Patterns",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "Upload a chart image to find visually similar pattern templates",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                shadow = CyanGlowShadow
+                            ),
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.height(12.dp))
+                        Text(
+                            "Upload a chart image to find visually similar pattern templates",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.textSecondary
+                        )
+                        Spacer(Modifier.height(16.dp))
                         
                         Button(
                             onClick = { imagePicker.launch("image/*") },
                             enabled = !isLoading,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
                         ) {
-                            Icon(Icons.Default.Image, contentDescription = null)
+                            Icon(
+                                Icons.Default.Image,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
                             Spacer(Modifier.width(8.dp))
                             Text("Upload Chart Image")
                         }
@@ -130,7 +157,15 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
             
             if (isLoading) {
                 item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
+                        )
+                    ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -141,10 +176,13 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                                 Text(
                                     "Analyzing image...",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.textSecondary
                                 )
                             }
                         }
@@ -183,8 +221,11 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                 item {
                     Text(
                         "Similar Patterns Found",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            shadow = CyanGlowShadow
+                        ),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 
@@ -195,7 +236,15 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
             
             if (results.isEmpty() && !isLoading && errorMessage == null) {
                 item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
+                        )
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -206,18 +255,19 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                             Icon(
                                 Icons.Default.Search,
                                 contentDescription = null,
-                                modifier = Modifier.size(48.dp),
+                                modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 "No search performed yet",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 "Upload a chart image to find similar patterns in our database",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.textSecondary
                             )
                         }
                     }
@@ -229,7 +279,17 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
 
 @Composable
 fun SimilarityResultCard(pattern: PatternSimilaritySearch.SimilarPattern) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    val similarityColor = getSimilarityColor(pattern.similarity)
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
+    ) {
         Column(Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -239,58 +299,68 @@ fun SimilarityResultCard(pattern: PatternSimilaritySearch.SimilarPattern) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         pattern.patternName.replace("_", " ").uppercase(),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "Visual similarity match",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
                 
                 Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = getSimilarityColor(pattern.similarity)
+                    shape = MaterialTheme.shapes.medium,
+                    color = similarityColor.copy(alpha = 0.2f)
                 ) {
                     Text(
                         String.format("%.1f%%", pattern.similarity * 100),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            shadow = SubtleGlowShadow
+                        ),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = similarityColor
                     )
                 }
             }
             
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             
             LinearProgressIndicator(
                 progress = pattern.similarity.toFloat(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp),
-                color = getSimilarityColor(pattern.similarity),
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                color = similarityColor,
+                trackColor = MaterialTheme.colorScheme.surface
             )
             
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.Default.Info,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     getSimilarityDescription(pattern.similarity),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.textSecondary
                 )
             }
         }

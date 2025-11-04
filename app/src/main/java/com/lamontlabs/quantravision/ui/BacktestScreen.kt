@@ -76,12 +76,26 @@ fun BacktestScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pattern Backtesting") },
+                title = { 
+                    Text(
+                        "Pattern Backtesting",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -99,45 +113,59 @@ fun BacktestScreen(onBack: () -> Unit) {
                     .fillMaxSize()
                     .padding(padding)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
                         )
                     ) {
                         Column(Modifier.padding(16.dp)) {
                             Text(
                                 "Import Historical Data",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    shadow = CyanGlowShadow
+                                ),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(12.dp))
                             Text(
                                 "Upload a CSV file with columns: timestamp, open, high, low, close, volume",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.textSecondary
                             )
                             Spacer(Modifier.height(12.dp))
                             
                             Button(
                                 onClick = { csvPicker.launch("*/*") },
                                 enabled = !isLoading,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                                Icon(Icons.Default.Upload, contentDescription = null)
+                                Icon(
+                                    Icons.Default.Upload,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text(if (selectedFileName != null) "Change CSV File" else "Import CSV File")
                             }
                             
                             if (selectedFileName != null) {
-                                Spacer(Modifier.height(8.dp))
+                                Spacer(Modifier.height(12.dp))
                                 Text(
                                     "Loaded: $selectedFileName",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.success,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -146,7 +174,15 @@ fun BacktestScreen(onBack: () -> Unit) {
                 
                 if (isLoading) {
                     item {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp
+                            )
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -157,10 +193,13 @@ fun BacktestScreen(onBack: () -> Unit) {
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    CircularProgressIndicator()
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                     Text(
                                         "Running backtest...",
-                                        style = MaterialTheme.typography.bodyMedium
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.textSecondary
                                     )
                                 }
                             }
@@ -199,8 +238,11 @@ fun BacktestScreen(onBack: () -> Unit) {
                     item {
                         Text(
                             "Backtest Results",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                shadow = CyanGlowShadow
+                            ),
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     
@@ -215,7 +257,15 @@ fun BacktestScreen(onBack: () -> Unit) {
                 
                 if (results.isEmpty() && !isLoading && selectedFileName == null && errorMessage == null) {
                     item {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp
+                            )
+                        ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -226,18 +276,19 @@ fun BacktestScreen(onBack: () -> Unit) {
                                 Icon(
                                     Icons.Default.Upload,
                                     contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
+                                    modifier = Modifier.size(64.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     "No backtest data yet",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     "Import a CSV file to start backtesting patterns",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.textSecondary
                                 )
                             }
                         }
@@ -257,16 +308,28 @@ fun BacktestSummaryCard(results: List<BacktestEngine.BacktestResult>) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
         )
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 "Summary",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleLarge.copy(
+                    shadow = SubtleGlowShadow
+                ),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -276,7 +339,7 @@ fun BacktestSummaryCard(results: List<BacktestEngine.BacktestResult>) {
                 SummaryItem("Total Detections", "$totalDetections")
             }
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -295,7 +358,21 @@ fun BacktestSummaryCard(results: List<BacktestEngine.BacktestResult>) {
 
 @Composable
 fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    val accuracyColor = when {
+        result.accuracy >= 70 -> MaterialTheme.colorScheme.success
+        result.accuracy >= 50 -> MaterialTheme.colorScheme.amber
+        else -> MaterialTheme.colorScheme.error
+    }
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
+    ) {
         Column(Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -305,38 +382,41 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         result.patternName.replace("_", " ").uppercase(),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "${result.totalDetections} detections",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
                 
                 Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = when {
-                        result.accuracy >= 70 -> MaterialTheme.colorScheme.success
-                        result.accuracy >= 50 -> MaterialTheme.colorScheme.warning
-                        else -> MaterialTheme.colorScheme.error
-                    }
+                    shape = MaterialTheme.shapes.medium,
+                    color = accuracyColor.copy(alpha = 0.2f)
                 ) {
                     Text(
                         String.format("%.1f%%", result.accuracy),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            shadow = SubtleGlowShadow
+                        ),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = accuracyColor
                     )
                 }
             }
             
-            Spacer(Modifier.height(12.dp))
-            Divider()
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -350,7 +430,7 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
                 )
             }
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -364,16 +444,19 @@ fun BacktestResultCard(result: BacktestEngine.BacktestResult) {
 }
 
 @Composable
-private fun SummaryItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.onTertiaryContainer) {
+private fun SummaryItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.primary) {
     Column {
         Text(
             label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.textSecondary
         )
+        Spacer(Modifier.height(4.dp))
         Text(
             value,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                shadow = SubtleGlowShadow
+            ),
             fontWeight = FontWeight.Bold,
             color = color
         )
@@ -381,16 +464,17 @@ private fun SummaryItem(label: String, value: String, color: Color = MaterialThe
 }
 
 @Composable
-fun MetricItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.onSurface) {
+fun MetricItem(label: String, value: String, color: Color = MaterialTheme.colorScheme.primary) {
     Column {
         Text(
             label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.textSecondary
         )
+        Spacer(Modifier.height(4.dp))
         Text(
             value,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = color
         )

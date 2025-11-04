@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -394,18 +396,77 @@ fun BookReaderScreen(
                             .verticalScroll(scrollState)
                             .padding(horizontal = 20.dp, vertical = 16.dp)
                     ) {
-                    // Book cover at the top (memoized bitmap to prevent recomposition reloads)
-                    state.coverBitmap?.let { bitmap ->
-                        val imageBitmap = remember(bitmap) { bitmap.asImageBitmap() }
-                        Image(
-                            bitmap = imageBitmap,
-                            contentDescription = "The Friendly Trader book cover",
+                    // Premium book cover with QUANTRACORE aesthetic
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(240.dp)
+                            .padding(bottom = 32.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = DarkSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(3f / 4f)
-                                .padding(bottom = 24.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            ElectricCyan.copy(alpha = 0.15f),
+                                            DeepNavyBackground,
+                                            DarkSurface
+                                        )
+                                    )
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            ElectricCyan.copy(alpha = 0.5f),
+                                            ElectricCyan.copy(alpha = 0.1f)
+                                        )
+                                    )
+                                )
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "THE FRIENDLY TRADER",
+                                    style = MaterialTheme.typography.displayMedium.copy(
+                                        shadow = CyanGlowShadow,
+                                        letterSpacing = 2.sp
+                                    ),
+                                    textAlign = TextAlign.Center,
+                                    color = ElectricCyan,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                
+                                Spacer(modifier = Modifier.height(16.dp))
+                                
+                                Text(
+                                    text = "Your Beginner's Guide to\nConfidence in the Markets",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    textAlign = TextAlign.Center,
+                                    color = MetallicSilver,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                
+                                Spacer(modifier = Modifier.height(12.dp))
+                                
+                                Text(
+                                    text = "by Jesse J. Lamont",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center,
+                                    color = CrispWhite,
+                                    fontWeight = FontWeight.Light
+                                )
+                            }
+                        }
                     }
                     
                     // Book content text

@@ -38,17 +38,18 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
             ) {
                 Text(
                     "Choose Your Plan",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.displayMedium.copy(shadow = CyanGlowShadow),
+                    color = ElectricCyan,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     "One-time payment • Lifetime access • No subscriptions",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
+                    style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow),
+                    color = MetallicSilver
                 )
                 
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(32.dp))
                 
                 // FREE tier status
                 TierCard(
@@ -148,16 +149,16 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                 
                 // Show standalone book purchase for FREE and STARTER users only
                 if ((tier == "" || tier == "STARTER") && !bm.hasBook()) {
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(32.dp))
                     
                     // Separator
                     Text(
                         "Add-Ons",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.headlineSmall.copy(shadow = SubtleGlowShadow),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = ElectricCyan
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(16.dp))
                     
                     // Standalone book card
                     val bookProduct = bm.getProductDetails("qv_book_standalone")
@@ -188,13 +189,22 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                         }
                     },
                     enabled = !isRestoring,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MetallicSilver
+                    )
                 ) {
                     if (isRestoring) {
-                        CircularProgressIndicator(Modifier.size(16.dp))
+                        CircularProgressIndicator(
+                            Modifier.size(16.dp),
+                            color = ElectricCyan
+                        )
                         Spacer(Modifier.width(8.dp))
                     }
-                    Text("Restore Purchases")
+                    Text(
+                        "Restore Purchases",
+                        style = MaterialTheme.typography.titleSmall
+                    )
                 }
             }
         }
@@ -213,103 +223,140 @@ fun TierCard(
     badge: String? = null,
     originalPrice: String? = null
 ) {
+    val borderColor = when {
+        isCurrentTier -> ElectricCyan
+        badge != null -> AmberAccent
+        else -> Gunmetal
+    }
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isCurrentTier) 
-                MaterialTheme.colorScheme.primaryContainer 
+                DarkSurface 
             else 
-                MaterialTheme.colorScheme.surfaceVariant
+                Gunmetal
+        ),
+        border = androidx.compose.foundation.BorderStroke(
+            width = if (isCurrentTier || badge != null) 2.dp else 0.dp,
+            color = borderColor
         )
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(20.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        shadow = if (isCurrentTier) CyanGlowShadow else null
+                    ),
+                    color = if (isCurrentTier) ElectricCyan else CrispWhite,
                     fontWeight = FontWeight.Bold
                 )
                 badge?.let {
                     Spacer(Modifier.width(8.dp))
                     Text(
                         it,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelMedium.copy(shadow = SubtleGlowShadow),
+                        color = AmberAccent,
                         modifier = Modifier
                             .background(
-                                MaterialTheme.colorScheme.primaryContainer,
+                                AmberAccent.copy(alpha = 0.15f),
                                 RoundedCornerShape(4.dp)
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
                 if (isUpgrade) {
                     Spacer(Modifier.width(8.dp))
                     Text(
                         "🎁 UPGRADE",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSecondary,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = AmberAccent,
                         modifier = Modifier
                             .background(
-                                MaterialTheme.colorScheme.secondary,
+                                AmberAccent.copy(alpha = 0.2f),
                                 RoundedCornerShape(4.dp)
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
             
+            Spacer(Modifier.height(12.dp))
+            
             if (isUpgrade && originalPrice != null) {
                 Text(
                     originalPrice,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     textDecoration = TextDecoration.LineThrough,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = TextGray
                 )
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         price,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.displaySmall.copy(shadow = CyanGlowShadow),
+                        color = ElectricCyan,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(8.dp))
                     Text(
                         "upgrade price",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MetallicSilver
                     )
                 }
                 Text(
                     "You pay only the difference",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MetallicSilver
                 )
             } else {
                 Text(
                     price,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    style = MaterialTheme.typography.displaySmall.copy(shadow = CyanGlowShadow),
+                    color = ElectricCyan,
+                    fontWeight = FontWeight.Bold
                 )
             }
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
             features.forEach { feature ->
-                Row(Modifier.padding(vertical = 2.dp)) {
-                    Text("✓ ", color = MaterialTheme.colorScheme.primary)
-                    Text(feature, style = MaterialTheme.typography.bodyMedium)
+                Row(
+                    Modifier.padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "✓ ",
+                        color = ElectricCyan,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        feature,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CrispWhite
+                    )
                 }
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             Button(
                 onClick = onPurchase,
                 enabled = !isPurchased && !isCurrentTier,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = when {
+                        isCurrentTier && isPurchased -> NeonGreen
+                        badge != null && !isPurchased -> AmberAccent
+                        else -> ElectricCyan
+                    },
+                    disabledContainerColor = Gunmetal
+                )
             ) {
                 Text(
                     when {
@@ -317,7 +364,9 @@ fun TierCard(
                         isPurchased -> "PURCHASED ✓"
                         isUpgrade -> "UPGRADE NOW"
                         else -> "BUY NOW"
-                    }
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

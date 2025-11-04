@@ -31,12 +31,20 @@ fun AchievementsScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Achievements") },
+                title = { 
+                    Text(
+                        "Achievements",
+                        style = MaterialTheme.typography.headlineMedium.copy(shadow = SubtleGlowShadow)
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { padding ->
@@ -45,23 +53,25 @@ fun AchievementsScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Stats summary card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = DarkSurface
                     )
                 ) {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(Modifier.padding(24.dp)) {
                         Text(
                             "Your Progress",
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.headlineSmall.copy(shadow = SubtleGlowShadow),
+                            color = ElectricCyan,
                             fontWeight = FontWeight.Bold
                         )
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(24.dp))
                         
                         Row(
                             Modifier.fillMaxWidth(),
@@ -85,7 +95,7 @@ fun AchievementsScreen(onBack: () -> Unit) {
                 Text(
                     "Earn bonus highlights by unlocking achievements!",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.textSecondary,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
             }
@@ -96,9 +106,20 @@ fun AchievementsScreen(onBack: () -> Unit) {
 @Composable
 fun StatItem(label: String, value: String, icon: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(icon, fontSize = 32.sp)
-        Text(value, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(icon, fontSize = 40.sp)
+        Spacer(Modifier.height(8.dp))
+        Text(
+            value, 
+            style = MaterialTheme.typography.headlineMedium.copy(shadow = CyanGlowShadow),
+            color = ElectricCyan,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            label, 
+            style = MaterialTheme.typography.bodySmall,
+            color = MetallicSilver
+        )
     }
 }
 
@@ -106,24 +127,26 @@ fun StatItem(label: String, value: String, icon: String) {
 fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (achievement.unlocked) 
-                MaterialTheme.colorScheme.tertiaryContainer
+                MaterialTheme.colorScheme.primaryContainer
             else 
-                MaterialTheme.colorScheme.surfaceVariant
+                Gunmetal
         )
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon
             Text(
                 achievement.icon,
-                fontSize = 40.sp,
-                modifier = Modifier.padding(end = 16.dp)
+                fontSize = 56.sp,
+                modifier = Modifier.padding(end = 16.dp),
+                color = if (achievement.unlocked) ElectricCyan else MaterialTheme.colorScheme.textDim
             )
 
             // Info
@@ -132,40 +155,53 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
                     Text(
                         achievement.title,
                         style = MaterialTheme.typography.titleMedium,
+                        color = if (achievement.unlocked) ElectricCyan else MaterialTheme.colorScheme.textDim,
                         fontWeight = FontWeight.Bold
                     )
                     if (achievement.unlocked) {
                         Spacer(Modifier.width(8.dp))
-                        Text("✓", color = MaterialTheme.colorScheme.primary, fontSize = 20.sp)
+                        Text(
+                            "✓", 
+                            color = NeonGreen, 
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow)
+                        )
                     }
                 }
                 
+                Spacer(Modifier.height(4.dp))
                 Text(
                     achievement.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (achievement.unlocked) 
+                        MaterialTheme.colorScheme.textSecondary 
+                    else 
+                        MaterialTheme.colorScheme.textDim
                 )
 
                 if (achievement.reward > 0) {
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
                         "Reward: +${achievement.reward} highlight${if (achievement.reward > 1) "s" else ""}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodySmall.copy(shadow = SubtleGlowShadow),
+                        color = MaterialTheme.colorScheme.amber,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
-                // Progress bar for unlocked achievements
+                // Progress bar for locked achievements
                 if (!achievement.unlocked && progress > 0) {
                     Spacer(Modifier.height(8.dp))
                     LinearProgressIndicator(
                         progress = progress.toFloat(),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        color = ElectricCyan,
+                        trackColor = Gunmetal
                     )
                     Text(
                         "${(progress * 100).toInt()}% complete",
                         style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.textSecondary,
                         modifier = Modifier.padding(top = 4.dp)
                     )
                 }
@@ -176,7 +212,7 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
                     Text(
                         "Unlocked: ${achievement.unlockedDate}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
             }

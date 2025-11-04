@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.replay.SessionPlayback
 import kotlinx.coroutines.launch
@@ -74,14 +75,26 @@ private fun SessionSelectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Replay Sessions") },
+                title = { 
+                    Text(
+                        "Replay Sessions",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            shadow = CyanGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
+                )
             )
-        }
+        },
+        containerColor = DeepNavyBackground
     ) { padding ->
         if (sessions.isEmpty()) {
             Box(
@@ -95,18 +108,18 @@ private fun SessionSelectionScreen(
                         Icons.Default.VideoLibrary,
                         contentDescription = null,
                         modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = ElectricCyan
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         "No replay sessions found",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = CrispWhite
                     )
                     Text(
                         "Start recording to create sessions",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MetallicSilver
                     )
                 }
             }
@@ -115,8 +128,8 @@ private fun SessionSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(sessions) { session ->
                     SessionCard(
@@ -138,14 +151,19 @@ private fun SessionCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(24.dp)
         ) {
             Text(
                 text = session.name,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = CrispWhite,
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             
@@ -156,7 +174,7 @@ private fun SessionCard(
             Text(
                 text = "$frameCount frames",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MetallicSilver
             )
         }
     }
@@ -179,11 +197,17 @@ private fun PlaybackScreen(
             TopAppBar(
                 title = { 
                     Column {
-                        Text(metadata?.sessionId ?: "Replay")
+                        Text(
+                            metadata?.sessionId ?: "Replay",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                shadow = CyanGlowShadow
+                            )
+                        )
                         if (metadata != null) {
                             Text(
                                 "${metadata.detectionCount} detections • ${metadata.frameCount} frames",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MetallicSilver
                             )
                         }
                     }
@@ -192,9 +216,14 @@ private fun PlaybackScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
+                )
             )
-        }
+        },
+        containerColor = DeepNavyBackground
     ) { padding ->
         Column(
             modifier = Modifier
@@ -223,8 +252,8 @@ private fun PlaybackScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(16.dp)
+                    .background(DarkSurface)
+                    .padding(24.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -339,11 +368,13 @@ private fun MetadataItem(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MetallicSilver
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = CrispWhite,
+            fontWeight = FontWeight.Bold
         )
     }
 }

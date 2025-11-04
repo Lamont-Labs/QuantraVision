@@ -32,7 +32,14 @@ fun AdvancedLearningDashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Advanced Learning Analytics") },
+                title = { 
+                    Text(
+                        "Advanced Learning Analytics",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            shadow = CyanGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
@@ -46,21 +53,32 @@ fun AdvancedLearningDashboardScreen(
                     }) {
                         Icon(Icons.Default.Download, "Generate Report")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
+                )
             )
-        }
+        },
+        containerColor = DeepNavyBackground
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            ScrollableTabRow(selectedTabIndex = selectedTab) {
+            ScrollableTabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = DarkSurface,
+                contentColor = ElectricCyan
+            ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
-                        text = { Text(title) }
+                        text = { Text(title) },
+                        selectedContentColor = ElectricCyan,
+                        unselectedContentColor = MetallicSilver
                     )
                 }
             }
@@ -86,20 +104,31 @@ fun OverviewTab(viewModel: AdvancedLearningViewModel) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Portfolio Overview", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = DarkSurface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(modifier = Modifier.padding(24.dp)) {
+                    Text(
+                        "Portfolio Overview", 
+                        style = MaterialTheme.typography.titleLarge, 
+                        fontWeight = FontWeight.Bold,
+                        color = ElectricCyan
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     portfolioStats?.let { stats ->
                         MetricRow("Total Patterns", "${stats.totalPatterns}")
                         MetricRow("Average Win Rate", "${(stats.avgWinRate * 100).toInt()}%")
                         MetricRow("Sharpe Ratio", String.format("%.2f", stats.sharpeRatio))
                         MetricRow("Diversification", "${(stats.diversificationScore * 100).toInt()}%")
-                    } ?: Text("Loading...", style = MaterialTheme.typography.bodyMedium)
+                    } ?: Text("Loading...", style = MaterialTheme.typography.bodyMedium, color = MetallicSilver)
                 }
             }
         }
@@ -112,12 +141,21 @@ fun RiskTab(viewModel: AdvancedLearningViewModel) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Text("Risk-Adjusted Performance", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("Patterns ranked by Sharpe ratio", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Risk-Adjusted Performance", 
+                style = MaterialTheme.typography.titleLarge, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Text(
+                "Patterns ranked by Sharpe ratio", 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MetallicSilver
+            )
         }
         
         items(bestRiskAdjusted) { pattern ->
@@ -128,10 +166,21 @@ fun RiskTab(viewModel: AdvancedLearningViewModel) {
 
 @Composable
 fun RiskPatternCard(pattern: RankedPattern) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(pattern.patternType, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(modifier = Modifier.padding(24.dp)) {
+            Text(
+                pattern.patternType, 
+                style = MaterialTheme.typography.titleMedium, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             MetricRow("Win Rate", "${(pattern.winRate * 100).toInt()}%")
             MetricRow("Sharpe Ratio", String.format("%.2f", pattern.sharpeRatio))
             MetricRow("Expected Value", String.format("%.2f", pattern.expectedValue))
@@ -146,25 +195,53 @@ fun BehavioralTab(viewModel: AdvancedLearningViewModel) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Text("Behavioral Insights", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("Patterns in your trading behavior", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Behavioral Insights", 
+                style = MaterialTheme.typography.titleLarge, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Text(
+                "Patterns in your trading behavior", 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MetallicSilver
+            )
         }
         
         if (warnings.isEmpty()) {
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DarkSurface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(Icons.Default.CheckCircle, "No warnings", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("No concerning patterns detected", style = MaterialTheme.typography.bodyLarge)
-                        Text("Keep up the disciplined approach!", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(
+                            Icons.Default.CheckCircle, 
+                            "No warnings", 
+                            modifier = Modifier.size(48.dp), 
+                            tint = ElectricCyan
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            "No concerning patterns detected", 
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = CrispWhite
+                        )
+                        Text(
+                            "Keep up the disciplined approach!", 
+                            style = MaterialTheme.typography.bodyMedium, 
+                            color = MetallicSilver
+                        )
                     }
                 }
             }
@@ -182,13 +259,14 @@ fun BehavioralWarningCard(warning: BehavioralWarning) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = when (warning.severity) {
-                WarningSeverity.CRITICAL -> MaterialTheme.colorScheme.errorContainer
-                WarningSeverity.WARNING -> MaterialTheme.colorScheme.tertiaryContainer
-                WarningSeverity.INFO -> MaterialTheme.colorScheme.primaryContainer
+                WarningSeverity.CRITICAL -> DarkSurface
+                WarningSeverity.WARNING -> DarkSurface
+                WarningSeverity.INFO -> DarkSurface
             }
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     when (warning.severity) {
@@ -197,15 +275,33 @@ fun BehavioralWarningCard(warning: BehavioralWarning) {
                         WarningSeverity.INFO -> Icons.Default.Info
                     },
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = when (warning.severity) {
+                        WarningSeverity.CRITICAL -> NeonRed
+                        WarningSeverity.WARNING -> ElectricCyan
+                        WarningSeverity.INFO -> MetallicSilver
+                    }
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(warning.type.name.replace("_", " "), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    warning.type.name.replace("_", " "), 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold,
+                    color = CrispWhite
+                )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                warning.message, 
+                style = MaterialTheme.typography.bodyMedium,
+                color = CrispWhite
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(warning.message, style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Recommendation: ${warning.recommendation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Recommendation: ${warning.recommendation}", 
+                style = MaterialTheme.typography.bodySmall, 
+                color = MetallicSilver
+            )
         }
     }
 }
@@ -216,25 +312,50 @@ fun StrategyTab(viewModel: AdvancedLearningViewModel) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Text("Strategy Recommendations", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("Optimal pattern portfolio", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Strategy Recommendations", 
+                style = MaterialTheme.typography.titleLarge, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Text(
+                "Optimal pattern portfolio", 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MetallicSilver
+            )
         }
         
         portfolio?.let { pf ->
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Recommended Portfolio", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DarkSurface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            "Recommended Portfolio", 
+                            style = MaterialTheme.typography.titleMedium, 
+                            fontWeight = FontWeight.Bold,
+                            color = ElectricCyan
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                         MetricRow("Combined Win Rate", "${(pf.combinedWinRate * 100).toInt()}%")
                         MetricRow("Diversification", "${(pf.diversification * 100).toInt()}%")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            "Pattern Allocation:", 
+                            style = MaterialTheme.typography.bodyMedium, 
+                            fontWeight = FontWeight.Bold,
+                            color = CrispWhite
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Pattern Allocation:", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(4.dp))
                         pf.allocation.forEach { (pattern, allocation) ->
                             MetricRow(pattern, "${(allocation * 100).toInt()}%")
                         }
@@ -242,8 +363,18 @@ fun StrategyTab(viewModel: AdvancedLearningViewModel) {
                 }
             }
         } ?: item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Text("Insufficient data for portfolio recommendations", modifier = Modifier.padding(16.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = DarkSurface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Text(
+                    "Insufficient data for portfolio recommendations", 
+                    modifier = Modifier.padding(24.dp),
+                    color = MetallicSilver
+                )
             }
         }
     }
@@ -255,18 +386,37 @@ fun ForecastsTab(viewModel: AdvancedLearningViewModel) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Text("Trend Forecasts", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("Pattern performance trends", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Trend Forecasts", 
+                style = MaterialTheme.typography.titleLarge, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Text(
+                "Pattern performance trends", 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MetallicSilver
+            )
         }
         
         if (warnings.isEmpty()) {
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Text("No significant trends detected", modifier = Modifier.padding(16.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DarkSurface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Text(
+                        "No significant trends detected", 
+                        modifier = Modifier.padding(24.dp),
+                        color = MetallicSilver
+                    )
                 }
             }
         } else {
@@ -279,8 +429,14 @@ fun ForecastsTab(viewModel: AdvancedLearningViewModel) {
 
 @Composable
 fun TrendWarningCard(warning: TrendWarning) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     when (warning.currentTrend) {
@@ -290,16 +446,25 @@ fun TrendWarningCard(warning: TrendWarning) {
                     },
                     contentDescription = null,
                     tint = when (warning.currentTrend) {
-                        TrendDirection.IMPROVING -> MaterialTheme.colorScheme.primary
-                        TrendDirection.DECLINING -> MaterialTheme.colorScheme.error
-                        TrendDirection.STABLE -> MaterialTheme.colorScheme.onSurfaceVariant
+                        TrendDirection.IMPROVING -> ElectricCyan
+                        TrendDirection.DECLINING -> NeonRed
+                        TrendDirection.STABLE -> MetallicSilver
                     }
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(warning.patternType, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    warning.patternType, 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold,
+                    color = CrispWhite
+                )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(warning.message, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                warning.message, 
+                style = MaterialTheme.typography.bodyMedium,
+                color = CrispWhite
+            )
         }
     }
 }
@@ -310,18 +475,37 @@ fun AnomaliesTab(viewModel: AdvancedLearningViewModel) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Text("Anomalies & Alerts", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("Unusual patterns requiring attention", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Anomalies & Alerts", 
+                style = MaterialTheme.typography.titleLarge, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Text(
+                "Unusual patterns requiring attention", 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MetallicSilver
+            )
         }
         
         if (anomalies.isEmpty()) {
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Text("No anomalies detected", modifier = Modifier.padding(16.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DarkSurface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Text(
+                        "No anomalies detected", 
+                        modifier = Modifier.padding(24.dp),
+                        color = MetallicSilver
+                    )
                 }
             }
         } else {
@@ -334,8 +518,14 @@ fun AnomaliesTab(viewModel: AdvancedLearningViewModel) {
 
 @Composable
 fun AnomalyCard(anomaly: Anomaly) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     when (anomaly.type) {
@@ -345,14 +535,32 @@ fun AnomalyCard(anomaly: Anomaly) {
                         AnomalyType.PERFORMANCE_SHIFT -> Icons.Default.ChangeCircle
                         AnomalyType.OUTLIER_DETECTION -> Icons.Default.Warning
                     },
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = when (anomaly.type) {
+                        AnomalyType.SUDDEN_DROP -> NeonRed
+                        AnomalyType.SUDDEN_IMPROVEMENT -> ElectricCyan
+                        else -> MetallicSilver
+                    }
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(anomaly.patternType, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    anomaly.patternType, 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold,
+                    color = CrispWhite
+                )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(anomaly.description, style = MaterialTheme.typography.bodyMedium)
-            Text("Z-score: ${String.format("%.2f", anomaly.zScore)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                anomaly.description, 
+                style = MaterialTheme.typography.bodyMedium,
+                color = CrispWhite
+            )
+            Text(
+                "Z-score: ${String.format("%.2f", anomaly.zScore)}", 
+                style = MaterialTheme.typography.bodySmall, 
+                color = MetallicSilver
+            )
         }
     }
 }
@@ -363,8 +571,17 @@ fun MetricRow(label: String, value: String) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+        Text(
+            label, 
+            style = MaterialTheme.typography.bodyMedium, 
+            color = MetallicSilver
+        )
+        Text(
+            value, 
+            style = MaterialTheme.typography.bodyMedium, 
+            fontWeight = FontWeight.Bold,
+            color = ElectricCyan
+        )
     }
 }
 
@@ -394,26 +611,46 @@ fun ScanInsightsTab() {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
-            Text("Scan Learning Insights", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("Intelligence from every chart scan", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Scan Learning Insights", 
+                style = MaterialTheme.typography.titleLarge, 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
+            )
+            Text(
+                "Intelligence from every chart scan", 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MetallicSilver
+            )
         }
         
         if (isLoading) {
             item {
                 Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = ElectricCyan)
                 }
             }
         } else {
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Scan Statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DarkSurface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            "Scan Statistics", 
+                            style = MaterialTheme.typography.titleMedium, 
+                            fontWeight = FontWeight.Bold,
+                            color = ElectricCyan
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                         scanStats?.let { stats ->
                             MetricRow("Scans This Week", "${stats.totalScansWeek}")
                             MetricRow("Scans This Month", "${stats.totalScansMonth}")
@@ -425,23 +662,53 @@ fun ScanInsightsTab() {
             }
             
             item {
-                Text("Most Frequent Patterns", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text("Patterns detected most often in your scans", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    "Most Frequent Patterns", 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold,
+                    color = ElectricCyan
+                )
+                Text(
+                    "Patterns detected most often in your scans", 
+                    style = MaterialTheme.typography.bodySmall, 
+                    color = MetallicSilver
+                )
             }
             
             if (frequentPatterns.isEmpty()) {
                 item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Text("No scan data yet. Start scanning charts to see insights!", modifier = Modifier.padding(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = DarkSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Text(
+                            "No scan data yet. Start scanning charts to see insights!", 
+                            modifier = Modifier.padding(24.dp),
+                            color = MetallicSilver
+                        )
                     }
                 }
             } else {
                 items(frequentPatterns.size) { index ->
                     val pattern = frequentPatterns[index]
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(pattern.patternName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            Spacer(modifier = Modifier.height(8.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = DarkSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(24.dp)) {
+                            Text(
+                                pattern.patternName, 
+                                style = MaterialTheme.typography.titleMedium, 
+                                fontWeight = FontWeight.Bold,
+                                color = ElectricCyan
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
                             MetricRow("Total Detections", "${pattern.detectionCount}")
                             MetricRow("Detection Rate", "${(pattern.detectionRate * 100).toInt()}%")
                             MetricRow("Avg Confidence", "${(pattern.avgConfidence * 100).toInt()}%")
@@ -451,30 +718,70 @@ fun ScanInsightsTab() {
             }
             
             item {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Pattern Co-occurrence", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text("Patterns that frequently appear together", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    "Pattern Co-occurrence", 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold,
+                    color = ElectricCyan
+                )
+                Text(
+                    "Patterns that frequently appear together", 
+                    style = MaterialTheme.typography.bodySmall, 
+                    color = MetallicSilver
+                )
             }
             
             if (topCooccurrences.isEmpty()) {
                 item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Text("Not enough data for co-occurrence analysis", modifier = Modifier.padding(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = DarkSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Text(
+                            "Not enough data for co-occurrence analysis", 
+                            modifier = Modifier.padding(24.dp),
+                            color = MetallicSilver
+                        )
                     }
                 }
             } else {
                 items(topCooccurrences.size) { index ->
                     val cooccurrence = topCooccurrences[index]
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = DarkSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(24.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(cooccurrence.pattern1, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(Icons.Default.SwapHoriz, "with", modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(cooccurrence.pattern2, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                Text(
+                                    cooccurrence.pattern1, 
+                                    style = MaterialTheme.typography.bodyMedium, 
+                                    fontWeight = FontWeight.Bold,
+                                    color = CrispWhite
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Icon(
+                                    Icons.Default.SwapHoriz, 
+                                    "with", 
+                                    modifier = Modifier.size(16.dp),
+                                    tint = ElectricCyan
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    cooccurrence.pattern2, 
+                                    style = MaterialTheme.typography.bodyMedium, 
+                                    fontWeight = FontWeight.Bold,
+                                    color = CrispWhite
+                                )
                             }
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                             MetricRow("Co-occurrence Count", "${cooccurrence.cooccurrenceCount}")
                             MetricRow("Co-occurrence Rate", "${(cooccurrence.cooccurrenceRate * 100).toInt()}%")
                         }
@@ -490,19 +797,25 @@ private fun EducationalDisclaimer() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            .padding(24.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(Icons.Default.Info, "Info", modifier = Modifier.size(20.dp))
-            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                Icons.Default.Info, 
+                "Info", 
+                modifier = Modifier.size(20.dp),
+                tint = ElectricCyan
+            )
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 "⚠️ Educational tool only - Not financial advice. Past performance does not predict future results.",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = CrispWhite
             )
         }
     }

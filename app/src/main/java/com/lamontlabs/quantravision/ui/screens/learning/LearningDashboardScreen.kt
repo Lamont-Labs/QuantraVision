@@ -31,14 +31,26 @@ fun LearningDashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Learning Dashboard") },
+                title = { 
+                    Text(
+                        "Learning Dashboard",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            shadow = CyanGlowShadow
+                        )
+                    ) 
+                },
                 actions = {
                     IconButton(onClick = { viewModel.refreshStats() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
+                )
             )
-        }
+        },
+        containerColor = DeepNavyBackground
     ) { paddingValues ->
         if (isLoading) {
             Box(
@@ -54,8 +66,8 @@ fun LearningDashboardScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 item {
                     EducationalDisclaimer()
@@ -115,22 +127,23 @@ private fun EducationalDisclaimer() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
+            containerColor = DarkSurface
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 text = "⚠️ Educational Tool Only",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onErrorContainer
+                color = NeonRed
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "This dashboard shows personalized educational statistics only. Not financial advice. Past patterns don't predict future performance.",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onErrorContainer
+                color = CrispWhite
             )
         }
     }
@@ -140,16 +153,21 @@ private fun EducationalDisclaimer() {
 private fun OverviewCard(stats: LearningStats) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 text = "Learning Overview",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
             )
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -179,12 +197,12 @@ private fun StatItem(label: String, value: String) {
             text = value,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = ElectricCyan
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MetallicSilver
         )
     }
 }
@@ -196,20 +214,25 @@ private fun PatternListCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             patterns.forEach { pattern ->
                 PatternPerformanceItem(pattern)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -221,10 +244,10 @@ private fun PatternPerformanceItem(pattern: PatternPerformance) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                MaterialTheme.colorScheme.surfaceVariant,
+                DeepNavyBackground,
                 RoundedCornerShape(8.dp)
             )
-            .padding(12.dp),
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val difficultyEmoji = when (pattern.difficulty) {
@@ -239,18 +262,19 @@ private fun PatternPerformanceItem(pattern: PatternPerformance) {
             style = MaterialTheme.typography.titleMedium
         )
         
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = pattern.patternType,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = CrispWhite
             )
             Text(
                 text = "${pattern.totalOutcomes} outcomes",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MetallicSilver
             )
         }
         
@@ -259,9 +283,9 @@ private fun PatternPerformanceItem(pattern: PatternPerformance) {
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = if (pattern.winRate >= 0.6) 
-                MaterialTheme.colorScheme.primary 
+                ElectricCyan 
             else 
-                MaterialTheme.colorScheme.error
+                NeonRed
         )
     }
 }
@@ -270,16 +294,21 @@ private fun PatternPerformanceItem(pattern: PatternPerformance) {
 private fun DifficultyBreakdownCard(breakdown: Map<Difficulty, Int>) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 text = "Pattern Difficulty Breakdown",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             listOf(
                 Difficulty.EASY to "🟢 Easy",
@@ -292,14 +321,19 @@ private fun DifficultyBreakdownCard(breakdown: Map<Difficulty, Int>) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 6.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = label, 
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = CrispWhite
+                        )
                         Text(
                             text = count.toString(),
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            color = ElectricCyan
                         )
                     }
                 }
@@ -314,23 +348,24 @@ private fun TrendAnalysisCard(analysis: String) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        )
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 text = "Trend Analysis",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
+                color = ElectricCyan
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             
             Text(
                 text = analysis,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
+                color = CrispWhite
             )
         }
     }

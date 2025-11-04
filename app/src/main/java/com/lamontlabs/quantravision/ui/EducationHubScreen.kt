@@ -39,19 +39,26 @@ fun EducationHubScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Education Hub") },
+                    title = { 
+                        Text(
+                            "Education Hub",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                shadow = CyanGlowShadow
+                            )
+                        ) 
+                    },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(Icons.Default.ArrowBack, "Back")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.primary
+                        containerColor = DarkSurface,
+                        titleContentColor = ElectricCyan
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = DeepNavyBackground
         ) { padding ->
             LessonListContent(
                 modifier = Modifier.padding(padding),
@@ -71,21 +78,23 @@ private fun LessonListContent(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Text(
                 text = "Master Chart Pattern Recognition",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    shadow = CyanGlowShadow
+                ),
+                color = ElectricCyan,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Complete 25 interactive lessons to earn your certification",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MetallicSilver
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -96,7 +105,7 @@ private fun LessonListContent(
                 Text(
                     text = category,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = ElectricCyan,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -123,25 +132,26 @@ private fun LessonCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+            containerColor = DarkSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
+                    .background(ElectricCyan.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = ElectricCyan
                 )
             }
             
@@ -153,14 +163,14 @@ private fun LessonCard(
                 Text(
                     text = lesson.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = CrispWhite,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${lesson.duration} • ${lesson.quiz.questions.size} quiz questions",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MetallicSilver
                 )
             }
         }
@@ -185,19 +195,26 @@ private fun LessonDetailScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(lesson.title) },
+                    title = { 
+                        Text(
+                            lesson.title,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                shadow = CyanGlowShadow
+                            )
+                        ) 
+                    },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(Icons.Default.ArrowBack, "Back")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.primary
+                        containerColor = DarkSurface,
+                        titleContentColor = ElectricCyan
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = DeepNavyBackground
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -207,13 +224,13 @@ private fun LessonDetailScreen(
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(16.dp)
+                        .padding(24.dp)
                 ) {
                     item {
                         Text(
                             text = lesson.content,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = CrispWhite
                         )
                     }
                 }
@@ -222,12 +239,12 @@ private fun LessonDetailScreen(
                     onClick = { showQuiz = true },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = ElectricCyan
                     )
                 ) {
-                    Text("Take Quiz", color = MaterialTheme.colorScheme.onPrimary)
+                    Text("Take Quiz", color = DeepNavyBackground)
                 }
             }
         }
@@ -251,30 +268,37 @@ private fun QuizScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Quiz: $lessonTitle") },
+                title = { 
+                    Text(
+                        "Quiz: $lessonTitle",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            shadow = CyanGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.primary
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
                 )
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = DeepNavyBackground
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .padding(24.dp)
         ) {
             LinearProgressIndicator(
                 progress = (currentQuestionIndex + 1) / quiz.questions.size.toFloat(),
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary
+                color = ElectricCyan
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -282,7 +306,7 @@ private fun QuizScreen(
             Text(
                 text = "Question ${currentQuestionIndex + 1} of ${quiz.questions.size}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MetallicSilver
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -290,7 +314,7 @@ private fun QuizScreen(
             Text(
                 text = currentQuestion.question,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = CrispWhite,
                 fontWeight = FontWeight.Bold
             )
             
@@ -315,14 +339,15 @@ private fun QuizScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                        containerColor = DarkSurface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Text(
                         text = currentQuestion.explanation,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(16.dp)
+                        color = CrispWhite,
+                        modifier = Modifier.padding(24.dp)
                     )
                 }
             }
@@ -349,14 +374,14 @@ private fun QuizScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = selectedAnswer != null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = ElectricCyan
                 )
             ) {
                 Text(
                     if (!showExplanation) "Check Answer" 
                     else if (currentQuestionIndex < quiz.questions.size - 1) "Next Question"
                     else "Finish Quiz (Score: $score/${quiz.questions.size})",
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = DeepNavyBackground
                 )
             }
         }
@@ -372,16 +397,16 @@ private fun OptionCard(
     onClick: () -> Unit
 ) {
     val backgroundColor = when {
-        showResult && isCorrect -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-        showResult && isSelected && !isCorrect -> MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
-        isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-        else -> MaterialTheme.colorScheme.surfaceVariant
+        showResult && isCorrect -> ElectricCyan.copy(alpha = 0.2f)
+        showResult && isSelected && !isCorrect -> NeonRed.copy(alpha = 0.2f)
+        isSelected -> ElectricCyan.copy(alpha = 0.1f)
+        else -> DarkSurface
     }
     
     val borderColor = when {
-        showResult && isCorrect -> MaterialTheme.colorScheme.primary
-        showResult && isSelected && !isCorrect -> MaterialTheme.colorScheme.error
-        isSelected -> MaterialTheme.colorScheme.primary
+        showResult && isCorrect -> ElectricCyan
+        showResult && isSelected && !isCorrect -> NeonRed
+        isSelected -> ElectricCyan
         else -> Color.Transparent
     }
     
@@ -393,18 +418,19 @@ private fun OptionCard(
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
-        border = androidx.compose.foundation.BorderStroke(2.dp, borderColor)
+        border = androidx.compose.foundation.BorderStroke(2.dp, borderColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = option,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = CrispWhite,
                 modifier = Modifier.weight(1f)
             )
             
@@ -412,7 +438,7 @@ private fun OptionCard(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Correct",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = ElectricCyan
                 )
             }
         }

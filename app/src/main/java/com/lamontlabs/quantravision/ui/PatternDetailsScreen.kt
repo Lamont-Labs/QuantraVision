@@ -23,14 +23,26 @@ fun PatternDetailsScreen(match: PatternMatch, imageRes: Int, onBack: () -> Unit)
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(match.patternName) },
+                title = { 
+                    Text(
+                        match.patternName,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            shadow = CyanGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(painterResource(android.R.drawable.ic_menu_revert), contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkSurface,
+                    titleContentColor = ElectricCyan
+                )
             )
-        }
+        },
+        containerColor = DeepNavyBackground
     ) { padding ->
         Column(
             Modifier
@@ -40,17 +52,35 @@ fun PatternDetailsScreen(match: PatternMatch, imageRes: Int, onBack: () -> Unit)
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(painterResource(id = imageRes), contentDescription = match.patternName, modifier = Modifier.size(240.dp))
-            Spacer(Modifier.height(16.dp))
-            Text("Confidence: ${(match.confidence * 100).toInt()}%", fontWeight = FontWeight.Medium)
-            Text("Timeframe: ${match.timeframe}")
-            Text("Detected: ${match.timestamp}")
-            Spacer(Modifier.height(16.dp))
-            Divider()
-            Spacer(Modifier.height(8.dp))
-            Text("⚠ Illustrative Only — Not Financial Advice", color = MaterialTheme.colorScheme.error)
             Spacer(Modifier.height(24.dp))
-            Text("Explanation", fontWeight = FontWeight.Bold)
-            Text(match.explanation ?: "Pattern identified deterministically via template matching. No predictive modeling used.")
+            Text(
+                "Confidence: ${(match.confidence * 100).toInt()}%", 
+                fontWeight = FontWeight.Medium,
+                color = CrispWhite
+            )
+            Text("Timeframe: ${match.timeframe}", color = MetallicSilver)
+            Text("Detected: ${match.timestamp}", color = MetallicSilver)
+            Spacer(Modifier.height(24.dp))
+            Divider(color = ElectricCyan.copy(alpha = 0.3f))
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "⚠ Illustrative Only — Not Financial Advice", 
+                color = NeonRed,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(24.dp))
+            Text(
+                "Explanation", 
+                fontWeight = FontWeight.Bold,
+                color = ElectricCyan,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                match.explanation ?: "Pattern identified deterministically via template matching. No predictive modeling used.",
+                color = CrispWhite
+            )
         }
     }
 }

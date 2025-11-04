@@ -26,12 +26,26 @@ fun AnalyticsScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pattern Analytics") },
+                title = { 
+                    Text(
+                        "Pattern Analytics",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -40,15 +54,17 @@ fun AnalyticsScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Hot Patterns Section
             if (hotPatterns.isNotEmpty()) {
                 item {
                     Text(
                         "🔥 Hot Patterns This Week",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            shadow = CyanGlowShadow
+                        ),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -56,29 +72,44 @@ fun AnalyticsScreen(onBack: () -> Unit) {
                     HotPatternCard(hotPattern)
                 }
 
-                item { Divider(Modifier.padding(vertical = 8.dp)) }
+                item { 
+                    HorizontalDivider(
+                        Modifier.padding(vertical = 12.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                    )
+                }
             }
 
-            // All Patterns Section
             item {
                 Text(
                     "All Pattern Performance",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        shadow = CyanGlowShadow
+                    ),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
             if (allStats.isEmpty()) {
                 item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
+                        )
+                    ) {
                         Box(
                             modifier = Modifier.padding(32.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 "No pattern data yet.\nStart detecting patterns to see analytics!",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.textSecondary
                             )
                         }
                     }
@@ -94,10 +125,19 @@ fun AnalyticsScreen(onBack: () -> Unit) {
 
 @Composable
 fun HotPatternCard(hotPattern: PatternPerformanceTracker.HotPattern) {
+    val trendColor = when (hotPattern.trend) {
+        "rising" -> MaterialTheme.colorScheme.success
+        "falling" -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.metallic
+    }
+    
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.amber.copy(alpha = 0.10f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
         )
     ) {
         Row(
@@ -110,36 +150,32 @@ fun HotPatternCard(hotPattern: PatternPerformanceTracker.HotPattern) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     hotPattern.patternName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     "${hotPattern.detectionCount} detections • ${(hotPattern.avgConfidence * 100).toInt()}% avg confidence",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.textSecondary
                 )
             }
 
-            // Trend indicator
             val trendIcon = when (hotPattern.trend) {
                 "rising" -> "📈"
                 "falling" -> "📉"
                 else -> "➡️"
             }
-            val trendColor = when (hotPattern.trend) {
-                "rising" -> Color(0xFF4CAF50)
-                "falling" -> MaterialTheme.colorScheme.error
-                else -> MaterialTheme.colorScheme.onSurfaceVariant
-            }
 
             Surface(
                 color = trendColor.copy(alpha = 0.2f),
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     trendIcon,
-                    modifier = Modifier.padding(8.dp),
-                    style = MaterialTheme.typography.titleLarge
+                    modifier = Modifier.padding(12.dp),
+                    style = MaterialTheme.typography.displaySmall
                 )
             }
         }
@@ -148,9 +184,16 @@ fun HotPatternCard(hotPattern: PatternPerformanceTracker.HotPattern) {
 
 @Composable
 fun PatternStatsCard(stats: PatternPerformanceTracker.PatternStats) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
+    ) {
         Column(Modifier.padding(16.dp)) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -158,19 +201,32 @@ fun PatternStatsCard(stats: PatternPerformanceTracker.PatternStats) {
             ) {
                 Text(
                     stats.patternName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Text(
-                    "${stats.totalDetections} total",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Surface(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        "${stats.totalDetections} total",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            )
+            
+            Spacer(Modifier.height(16.dp))
 
-            // Stats grid
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -180,41 +236,49 @@ fun PatternStatsCard(stats: PatternPerformanceTracker.PatternStats) {
                 StatColumn("This Month", "${stats.detectionsThisMonth}")
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Confidence range
             Column {
                 Text(
                     "Confidence Range",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        shadow = SubtleGlowShadow
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 LinearProgressIndicator(
                     progress = stats.avgConfidence.toFloat(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surface
                 )
+                Spacer(Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         "Low: ${(stats.lowestConfidence * 100).toInt()}%",
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                     Text(
                         "High: ${(stats.highestConfidence * 100).toInt()}%",
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.textSecondary
                     )
                 }
             }
 
-            // Last detected
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             Text(
                 "Last detected: ${stats.lastDetected}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.textSecondary
             )
         }
     }
@@ -225,14 +289,17 @@ fun StatColumn(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             value,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                shadow = SubtleGlowShadow
+            ),
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
+        Spacer(Modifier.height(4.dp))
         Text(
             label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.textSecondary
         )
     }
 }

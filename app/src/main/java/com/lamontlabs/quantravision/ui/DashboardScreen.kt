@@ -104,7 +104,16 @@ fun DashboardScreen(
     }
     
     Scaffold(
-        topBar = { TopAppBar(title = { Text("QuantraVision Dashboard") }) },
+        topBar = { 
+            TopAppBar(
+                title = { 
+                    Text(
+                        "QuantraVision Dashboard",
+                        style = MaterialTheme.typography.headlineMedium.copy(shadow = SubtleGlowShadow)
+                    ) 
+                }
+            ) 
+        },
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
@@ -175,153 +184,227 @@ fun DashboardScreen(
             
             AlertSettingsCard(context)
             
-            // CORE FEATURE - Most Important
             Text(
                 "Detection",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall.copy(shadow = CyanGlowShadow),
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(
-                onClick = onStartScan,
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Icon(Icons.Default.Visibility, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Start Detection")
-            }
-            
-            Button(
-                onClick = onStopScan,
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
             ) {
-                Icon(Icons.Default.Stop, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Stop Detection")
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = onStartScan,
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(Icons.Default.Visibility, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Start Detection", style = MaterialTheme.typography.titleMedium)
+                    }
+                    
+                    Button(
+                        onClick = onStopScan,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Icon(Icons.Default.Stop, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Stop Detection")
+                    }
+                    
+                    OutlinedButton(
+                        onClick = onReview,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(Icons.Default.List, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("View Detections")
+                    }
+                }
             }
             
-            Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.List, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("View Detections")
-            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
             
-            Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
-            
-            // INTELLIGENCE STACK
             Text(
-                "Intelligence Stack (Pro)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = MaterialTheme.colorScheme.tertiary
+                "Intelligence Stack",
+                style = MaterialTheme.typography.headlineSmall.copy(shadow = CyanGlowShadow),
+                color = MaterialTheme.colorScheme.primary
             )
             
-            Button(
-                onClick = onIntelligence,
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                )
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
             ) {
-                Icon(Icons.Default.Psychology, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Intelligence Hub")
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = onIntelligence,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.amber
+                        )
+                    ) {
+                        Icon(Icons.Default.Psychology, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Intelligence Hub")
+                    }
+                }
             }
             
-            Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
             
-            // ANALYTICS & TOOLS
             Text(
                 "Analytics & Tools",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall.copy(shadow = CyanGlowShadow),
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(onClick = onAnalytics, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.TrendingUp, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Pattern Analytics")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(onClick = onAnalytics, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.TrendingUp, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Pattern Analytics")
+                    }
+                    
+                    OutlinedButton(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.TrendingUp, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Predictions")
+                    }
+                    
+                    OutlinedButton(onClick = onBacktesting, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Assessment, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Backtesting")
+                    }
+                    
+                    OutlinedButton(onClick = onSimilarity, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Similarity Search")
+                    }
+                    
+                    OutlinedButton(onClick = onMultiChart, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.CompareArrows, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Multi-Chart Comparison")
+                    }
+                    
+                    OutlinedButton(onClick = onTemplates, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Tune, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Template Manager")
+                    }
+                }
             }
             
-            Button(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.TrendingUp, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Predictions")
-            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
             
-            Button(onClick = onBacktesting, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Assessment, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Backtesting")
-            }
-            
-            Button(onClick = onSimilarity, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Search, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Similarity Search")
-            }
-            
-            Button(onClick = onMultiChart, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.CompareArrows, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Multi-Chart Comparison")
-            }
-            
-            Button(onClick = onTemplates, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Tune, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Template Manager")
-            }
-            
-            Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
-            
-            // EDUCATION
             Text(
                 "Learn & Progress",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall.copy(shadow = CyanGlowShadow),
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(onClick = onTutorials, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.School, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Tutorials")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(onClick = onTutorials, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.School, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Tutorials")
+                    }
+                    
+                    OutlinedButton(onClick = onBook, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Book, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Trading Book")
+                    }
+                    
+                    OutlinedButton(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Star, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Achievements")
+                    }
+                }
             }
             
-            Button(onClick = onBook, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Book, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Trading Book")
-            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
             
-            Button(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Star, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Achievements")
-            }
-            
-            Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
-            
-            // SETTINGS & UTILITIES
             Text(
                 "Settings",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall.copy(shadow = CyanGlowShadow),
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Settings, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Settings")
-            }
-            
-            OutlinedButton(onClick = onClearHighlights, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Clear, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Clear All Detections")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Settings, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Settings")
+                    }
+                    
+                    OutlinedButton(
+                        onClick = onClearHighlights,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Icon(Icons.Default.Clear, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Clear All Detections")
+                    }
+                }
             }
         }
     }
@@ -336,16 +419,17 @@ fun AlertSettingsCard(context: Context) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        tonalElevation = 8.dp
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 "Alert Settings",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge.copy(shadow = SubtleGlowShadow),
                 color = MaterialTheme.colorScheme.primary
             )
             
@@ -355,17 +439,28 @@ fun AlertSettingsCard(context: Context) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.RecordVoiceOver, contentDescription = null, 
-                        tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Voice Announcements")
+                    Icon(
+                        Icons.Default.RecordVoiceOver,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        "Voice Announcements",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
                 Switch(
                     checked = voiceEnabled,
                     onCheckedChange = { enabled ->
                         voiceEnabled = enabled
                         alertManager.setVoiceEnabled(enabled)
-                    }
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colorScheme.primary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
                 )
             }
             
@@ -375,17 +470,28 @@ fun AlertSettingsCard(context: Context) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Vibration, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Haptic Feedback")
+                    Icon(
+                        Icons.Default.Vibration,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        "Haptic Feedback",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
                 Switch(
                     checked = hapticEnabled,
                     onCheckedChange = { enabled ->
                         hapticEnabled = enabled
                         alertManager.setHapticEnabled(enabled)
-                    }
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colorScheme.primary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
                 )
             }
         }

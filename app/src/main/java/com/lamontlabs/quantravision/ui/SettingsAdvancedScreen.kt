@@ -2,6 +2,8 @@ package com.lamontlabs.quantravision.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -28,122 +30,377 @@ fun SettingsAdvancedScreen(context: Context, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Advanced Controls") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Back") }
+                title = { 
+                    Text(
+                        "Advanced Controls",
+                        style = MaterialTheme.typography.headlineMedium.copy(shadow = CyanGlowShadow)
+                    )
                 },
-                actions = { TextButton(onClick = { saveApply() }) { Text("Save") } }
+                navigationIcon = {
+                    IconButton(onClick = onBack) { 
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back") 
+                    }
+                }
             )
         }
     ) { padding ->
-        Column(Modifier.padding(padding).padding(16.dp).fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
-            Text("Overlay", style = MaterialTheme.typography.titleMedium)
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Opacity")
-                Slider(
-                    value = cfg.overlay.opacity,
-                    onValueChange = { cfg = cfg.copy(overlay = cfg.overlay.copy(opacity = it)) },
-                    valueRange = 0f..1f
-                )
-                Text(String.format("%.2f", cfg.overlay.opacity))
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Label Size")
-                Slider(
-                    value = cfg.overlay.labelTextSizeSp,
-                    onValueChange = { cfg = cfg.copy(overlay = cfg.overlay.copy(labelTextSizeSp = it)) },
-                    valueRange = 8f..28f
-                )
-                Text("${cfg.overlay.labelTextSizeSp.toInt()}sp")
-            }
-            Row {
-                Checkbox(checked = cfg.overlay.showHeatmap, onCheckedChange = { cfg = cfg.copy(overlay = cfg.overlay.copy(showHeatmap = it)) })
-                Text("Show Heatmap")
-            }
-
-            Divider()
-
-            Text("Performance", style = MaterialTheme.typography.titleMedium)
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Target FPS")
-                Slider(
-                    value = cfg.performance.targetFps.toFloat(),
-                    onValueChange = { cfg = cfg.copy(performance = cfg.performance.copy(targetFps = it.toInt())) },
-                    valueRange = 4f..30f
-                )
-                Text("${cfg.performance.targetFps}")
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("ROI Max Regions")
-                Slider(
-                    value = cfg.performance.roiMaxRegions.toFloat(),
-                    onValueChange = { cfg = cfg.copy(performance = cfg.performance.copy(roiMaxRegions = it.toInt())) },
-                    valueRange = 1f..64f
-                )
-                Text("${cfg.performance.roiMaxRegions}")
-            }
-
-            Divider()
-
-            Text("Detection", style = MaterialTheme.typography.titleMedium)
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Global Threshold")
-                Slider(
-                    value = cfg.detection.globalThreshold.toFloat(),
-                    onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(globalThreshold = it.toDouble())) },
-                    valueRange = 0.4f..0.95f
-                )
-                Text(String.format("%.2f", cfg.detection.globalThreshold))
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Scale Min")
-                Slider(
-                    value = cfg.detection.scaleMin.toFloat(),
-                    onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(scaleMin = it.toDouble())) },
-                    valueRange = 0.2f..1.0f
-                )
-                Text(String.format("%.2f", cfg.detection.scaleMin))
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Scale Max")
-                Slider(
-                    value = cfg.detection.scaleMax.toFloat(),
-                    onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(scaleMax = it.toDouble())) },
-                    valueRange = 1.0f..4.0f
-                )
-                Text(String.format("%.2f", cfg.detection.scaleMax))
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Scale Stride")
-                Slider(
-                    value = cfg.detection.scaleStride.toFloat(),
-                    onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(scaleStride = it.toDouble())) },
-                    valueRange = 0.02f..0.5f
-                )
-                Text(String.format("%.2f", cfg.detection.scaleStride))
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Temporal Half-Life (s)")
-                Slider(
-                    value = (cfg.detection.temporalHalfLifeMs / 1000f),
-                    onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(temporalHalfLifeMs = (it * 1000).toLong())) },
-                    valueRange = 1f..30f
-                )
-                Text("${(cfg.detection.temporalHalfLifeMs / 1000)}s")
-            }
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Consensus Sigma")
-                Slider(
-                    value = cfg.detection.consensusSigma.toFloat(),
-                    onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(consensusSigma = it.toDouble())) },
-                    valueRange = 0.05f..1.0f
-                )
-                Text(String.format("%.2f", cfg.detection.consensusSigma))
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(24.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                "Overlay",
+                style = MaterialTheme.typography.headlineMedium.copy(shadow = CyanGlowShadow),
+                color = MaterialTheme.colorScheme.primary
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            "Opacity",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.overlay.opacity,
+                                onValueChange = { cfg = cfg.copy(overlay = cfg.overlay.copy(opacity = it)) },
+                                valueRange = 0f..1f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                String.format("%.2f", cfg.overlay.opacity),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "Label Size",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.overlay.labelTextSizeSp,
+                                onValueChange = { cfg = cfg.copy(overlay = cfg.overlay.copy(labelTextSizeSp = it)) },
+                                valueRange = 8f..28f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                "${cfg.overlay.labelTextSizeSp.toInt()}sp",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                    
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = cfg.overlay.showHeatmap,
+                            onCheckedChange = { cfg = cfg.copy(overlay = cfg.overlay.copy(showHeatmap = it)) },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                        Text(
+                            "Show Heatmap",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
             }
 
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = { saveApply() }, modifier = Modifier.fillMaxWidth()) { Text("Save & Apply") }
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+
+            Text(
+                "Performance",
+                style = MaterialTheme.typography.headlineMedium.copy(shadow = CyanGlowShadow),
+                color = MaterialTheme.colorScheme.primary
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            "Target FPS",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.performance.targetFps.toFloat(),
+                                onValueChange = { cfg = cfg.copy(performance = cfg.performance.copy(targetFps = it.toInt())) },
+                                valueRange = 4f..30f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                "${cfg.performance.targetFps}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "ROI Max Regions",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.performance.roiMaxRegions.toFloat(),
+                                onValueChange = { cfg = cfg.copy(performance = cfg.performance.copy(roiMaxRegions = it.toInt())) },
+                                valueRange = 1f..64f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                "${cfg.performance.roiMaxRegions}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+
+            Text(
+                "Detection",
+                style = MaterialTheme.typography.headlineMedium.copy(shadow = CyanGlowShadow),
+                color = MaterialTheme.colorScheme.primary
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            "Global Threshold",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.detection.globalThreshold.toFloat(),
+                                onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(globalThreshold = it.toDouble())) },
+                                valueRange = 0.4f..0.95f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                String.format("%.2f", cfg.detection.globalThreshold),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "Scale Min",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.detection.scaleMin.toFloat(),
+                                onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(scaleMin = it.toDouble())) },
+                                valueRange = 0.2f..1.0f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                String.format("%.2f", cfg.detection.scaleMin),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "Scale Max",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.detection.scaleMax.toFloat(),
+                                onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(scaleMax = it.toDouble())) },
+                                valueRange = 1.0f..4.0f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                String.format("%.2f", cfg.detection.scaleMax),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "Scale Stride",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.detection.scaleStride.toFloat(),
+                                onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(scaleStride = it.toDouble())) },
+                                valueRange = 0.02f..0.5f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                String.format("%.2f", cfg.detection.scaleStride),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "Temporal Half-Life (s)",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = (cfg.detection.temporalHalfLifeMs / 1000f),
+                                onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(temporalHalfLifeMs = (it * 1000).toLong())) },
+                                valueRange = 1f..30f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                "${(cfg.detection.temporalHalfLifeMs / 1000)}s",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Column {
+                        Text(
+                            "Consensus Sigma",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Slider(
+                                value = cfg.detection.consensusSigma.toFloat(),
+                                onValueChange = { cfg = cfg.copy(detection = cfg.detection.copy(consensusSigma = it.toDouble())) },
+                                valueRange = 0.05f..1.0f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                String.format("%.2f", cfg.detection.consensusSigma),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+
+            Button(
+                onClick = { saveApply() },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(
+                    "Save & Apply",
+                    style = MaterialTheme.typography.titleMedium.copy(shadow = SubtleGlowShadow)
+                )
+            }
         }
     }
 }

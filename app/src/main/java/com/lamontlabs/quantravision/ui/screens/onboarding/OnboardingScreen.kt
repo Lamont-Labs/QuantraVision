@@ -53,7 +53,7 @@ fun OnboardingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DeepNavyBackground)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -81,9 +81,9 @@ fun OnboardingScreen(
                                 .size(if (index == pagerState.currentPage) 12.dp else 8.dp)
                                 .background(
                                     color = if (index == pagerState.currentPage)
-                                        MaterialTheme.colorScheme.primary
+                                        ElectricCyan
                                     else
-                                        MaterialTheme.colorScheme.surfaceVariant,
+                                        DarkSurface,
                                     shape = MaterialTheme.shapes.small
                                 )
                         )
@@ -104,7 +104,7 @@ fun OnboardingScreen(
                         TextButton(
                             onClick = { viewModel.skipOnboarding() }
                         ) {
-                            Text("Skip")
+                            Text("Skip", color = MetallicSilver)
                         }
                     }
                     
@@ -120,9 +120,15 @@ fun OnboardingScreen(
                                 viewModel.completeOnboarding()
                             }
                         },
-                        modifier = Modifier.widthIn(min = 120.dp)
+                        modifier = Modifier.widthIn(min = 120.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ElectricCyan
+                        )
                     ) {
-                        Text(if (pagerState.currentPage < 4) "Next" else "Get Started")
+                        Text(
+                            if (pagerState.currentPage < 4) "Next" else "Get Started",
+                            color = DeepNavyBackground
+                        )
                     }
                 }
             }
@@ -143,16 +149,19 @@ fun OnboardingPage(step: OnboardingStep) {
             imageVector = getStepIcon(step),
             contentDescription = null,
             modifier = Modifier.size(120.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = ElectricCyan
         )
         
         Spacer(modifier = Modifier.height(32.dp))
         
         Text(
             text = step.title,
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                shadow = CyanGlowShadow
+            ),
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = ElectricCyan
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -161,7 +170,7 @@ fun OnboardingPage(step: OnboardingStep) {
             text = step.description,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MetallicSilver
         )
         
         Spacer(modifier = Modifier.height(32.dp))
@@ -169,12 +178,13 @@ fun OnboardingPage(step: OnboardingStep) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+                containerColor = DarkSurface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 getStepFeatures(step).forEach { feature ->
                     Row(
@@ -183,13 +193,14 @@ fun OnboardingPage(step: OnboardingStep) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = ElectricCyan,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = feature,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = CrispWhite
                         )
                     }
                 }

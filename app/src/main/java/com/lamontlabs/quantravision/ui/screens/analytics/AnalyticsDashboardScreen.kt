@@ -33,7 +33,14 @@ fun AnalyticsDashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Analytics Dashboard") },
+                title = { 
+                    Text(
+                        "Analytics Dashboard",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
@@ -43,7 +50,10 @@ fun AnalyticsDashboardScreen(
                     IconButton(onClick = { viewModel.refreshStats() }) {
                         Icon(Icons.Default.Refresh, "Refresh")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { padding ->
@@ -58,7 +68,9 @@ fun AnalyticsDashboardScreen(
                             .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            color = com.lamontlabs.quantravision.ui.ElectricCyan
+                        )
                     }
                 }
                 is AnalyticsDashboardViewModel.UiState.Error -> {
@@ -74,20 +86,26 @@ fun AnalyticsDashboardScreen(
                             Icons.Filled.Warning,
                             contentDescription = "Error",
                             modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.error
+                            tint = com.lamontlabs.quantravision.ui.NeonRed
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             "Failed to load analytics",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            color = com.lamontlabs.quantravision.ui.CrispWhite
                         )
                         Text(
                             state.message,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = com.lamontlabs.quantravision.ui.MetallicSilver
                         )
                         Spacer(modifier = Modifier.height(24.dp))
-                        Button(onClick = { viewModel.refreshStats() }) {
+                        Button(
+                            onClick = { viewModel.refreshStats() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = com.lamontlabs.quantravision.ui.ElectricCyan
+                            )
+                        ) {
                             Text("Retry")
                         }
                     }
@@ -111,7 +129,7 @@ private fun AnalyticsContent(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item {
             EducationalDisclaimerCard()
@@ -123,8 +141,11 @@ private fun AnalyticsContent(
         
         item {
             Text(
-                "Best Performing Patterns",
-                style = MaterialTheme.typography.titleMedium,
+                "Hot Patterns",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+                ),
+                color = com.lamontlabs.quantravision.ui.ElectricCyan,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -140,10 +161,12 @@ private fun AnalyticsContent(
         }
         
         item {
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "Worst Performing Patterns",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+                ),
+                color = com.lamontlabs.quantravision.ui.ElectricCyan,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -154,10 +177,12 @@ private fun AnalyticsContent(
         
         if (stats.timeOfDayStats.isNotEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Time of Day Analysis",
-                    style = MaterialTheme.typography.titleMedium,
+                    "Time Analysis",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+                    ),
+                    color = com.lamontlabs.quantravision.ui.ElectricCyan,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -210,18 +235,21 @@ private fun OverallStatsCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = com.lamontlabs.quantravision.ui.DarkSurface
         )
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 "Overall Performance",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+                ),
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = com.lamontlabs.quantravision.ui.ElectricCyan
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -253,33 +281,39 @@ private fun StatItem(label: String, value: String, icon: androidx.compose.ui.gra
         Icon(
             icon,
             contentDescription = label,
-            modifier = Modifier.size(32.dp),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            modifier = Modifier.size(40.dp),
+            tint = com.lamontlabs.quantravision.ui.ElectricCyan
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            value,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                shadow = com.lamontlabs.quantravision.ui.CyanGlowShadow
+            ),
+            fontWeight = FontWeight.Bold,
+            color = com.lamontlabs.quantravision.ui.ElectricCyan
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            value,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-        Text(
             label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = com.lamontlabs.quantravision.ui.MetallicSilver
         )
     }
 }
 
 @Composable
 private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
+    val cardColor = if (isPositive) com.lamontlabs.quantravision.ui.NeonGreen else com.lamontlabs.quantravision.ui.NeonRed
+    
     Card(
         modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isPositive) 
-                MaterialTheme.colorScheme.success.copy(alpha = 0.1f)
+                com.lamontlabs.quantravision.ui.NeonGreen.copy(alpha = 0.15f)
             else 
-                MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+                com.lamontlabs.quantravision.ui.NeonRed.copy(alpha = 0.15f)
         )
     ) {
         Row(
@@ -293,26 +327,29 @@ private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
                 Text(
                     pattern.patternName,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = com.lamontlabs.quantravision.ui.CrispWhite
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     "${pattern.totalOutcomes} outcomes: ${pattern.wins}W / ${pattern.losses}L / ${pattern.neutral}N",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = com.lamontlabs.quantravision.ui.MetallicSilver
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "${(pattern.winRate * 100).toInt()}%",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+                    ),
                     fontWeight = FontWeight.Bold,
-                    color = if (isPositive) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error
+                    color = cardColor
                 )
                 Text(
                     "Win Rate",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = com.lamontlabs.quantravision.ui.MetallicSilver
                 )
             }
         }
@@ -321,14 +358,21 @@ private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
 
 @Composable
 private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = com.lamontlabs.quantravision.ui.DarkSurface
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 "Detection Activity by Hour",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = com.lamontlabs.quantravision.ui.ElectricCyan
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             stats.forEach { stat ->
                 Row(
@@ -340,6 +384,7 @@ private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
                     Text(
                         stat.timeLabel,
                         style = MaterialTheme.typography.bodyMedium,
+                        color = com.lamontlabs.quantravision.ui.MetallicSilver,
                         modifier = Modifier.width(60.dp)
                     )
                     
@@ -351,7 +396,7 @@ private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
                             .height(24.dp)
                             .fillMaxWidth(widthFraction)
                             .background(
-                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+                                com.lamontlabs.quantravision.ui.ElectricCyan.copy(alpha = 0.7f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )
@@ -360,7 +405,7 @@ private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
                     Text(
                         stat.detectionCount.toString(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = com.lamontlabs.quantravision.ui.MetallicSilver
                     )
                 }
             }
@@ -404,22 +449,30 @@ private fun ProUpgradePrompt(modifier: Modifier = Modifier) {
             Icons.Default.Lock,
             contentDescription = "Locked",
             modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = com.lamontlabs.quantravision.ui.ElectricCyan
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             "Analytics Dashboard",
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                shadow = com.lamontlabs.quantravision.ui.SubtleGlowShadow
+            ),
+            color = com.lamontlabs.quantravision.ui.ElectricCyan,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             "Unlock advanced performance tracking and analytics with Pro",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = com.lamontlabs.quantravision.ui.MetallicSilver
         )
         Spacer(modifier = Modifier.height(32.dp))
-        Button(onClick = {  }) {
+        Button(
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = com.lamontlabs.quantravision.ui.AmberAccent
+            )
+        ) {
             Text("Upgrade to Pro")
         }
     }

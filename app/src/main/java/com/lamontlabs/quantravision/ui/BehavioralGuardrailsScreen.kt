@@ -39,15 +39,30 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Behavioral Guardrails") },
+                title = { 
+                    Text(
+                        "Behavioral Guardrails",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            shadow = SubtleGlowShadow
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showResetDialog = true }) {
-                        Icon(Icons.Default.Refresh, "Reset Statistics")
+                        Icon(
+                            Icons.Default.Refresh,
+                            "Reset Statistics",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
@@ -58,7 +73,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // MANDATORY LEGAL DISCLAIMER
             item {
@@ -69,8 +84,11 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                 Column {
                     Text(
                         "🧠 Trading Psychology Coach",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            shadow = CyanGlowShadow
+                        ),
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -99,7 +117,8 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.errorContainer
-                                )
+                                ),
+                                elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -108,7 +127,8 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                                     Icon(
                                         Icons.Default.PauseCircle,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.error
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(32.dp)
                                     )
                                     Spacer(Modifier.width(12.dp))
                                     Column {
@@ -138,11 +158,12 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                                 containerColor = when (statistics.disciplineLevel) {
                                     BehavioralGuardrails.DisciplineLevel.EXCELLENT -> MaterialTheme.colorScheme.primaryContainer
                                     BehavioralGuardrails.DisciplineLevel.GOOD -> MaterialTheme.colorScheme.tertiaryContainer
-                                    BehavioralGuardrails.DisciplineLevel.FAIR -> MaterialTheme.colorScheme.surfaceVariant
+                                    BehavioralGuardrails.DisciplineLevel.FAIR -> MaterialTheme.colorScheme.surface
                                     BehavioralGuardrails.DisciplineLevel.POOR -> MaterialTheme.colorScheme.errorContainer
                                     BehavioralGuardrails.DisciplineLevel.CRITICAL -> MaterialTheme.colorScheme.errorContainer
                                 }
-                            )
+                            ),
+                            elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
@@ -218,13 +239,25 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                     
                     // Personalized Insights
                     item {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                        ) {
                             Column(Modifier.padding(16.dp)) {
-                                Text(
-                                    "📊 Personalized Insights",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Default.Analytics,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    Text(
+                                        "Personalized Insights",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                                 Spacer(Modifier.height(12.dp))
                                 
                                 Text(
@@ -273,14 +306,26 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
             
             // Educational info
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text(
-                            "ℹ️ How It Works",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "How It Works",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(Modifier.height(12.dp))
                         Text(
                             "Behavioral Guardrails monitors your app usage to detect patterns that often indicate emotional trading:\n\n" +
                             "• Rapid pattern viewing (overtrading warning)\n" +
@@ -301,7 +346,8 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
+                    ),
+                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -310,7 +356,8 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                         Icon(
                             Icons.Default.Warning,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(24.dp)
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
@@ -367,9 +414,10 @@ private fun StatCard(
             containerColor = if (isNegative) {
                 MaterialTheme.colorScheme.errorContainer
             } else {
-                MaterialTheme.colorScheme.surfaceVariant
+                MaterialTheme.colorScheme.surface
             }
-        )
+        ),
+        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -417,7 +465,7 @@ private fun InsightRow(
             } else {
                 MaterialTheme.colorScheme.primary
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(24.dp)
         )
         Spacer(Modifier.width(8.dp))
         Text(
