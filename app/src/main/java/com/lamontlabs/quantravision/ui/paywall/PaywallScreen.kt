@@ -56,8 +56,8 @@ fun PaywallScreen(
                 }
                 val entitlements = remember(tier, hasBook) {
                     when (tier) {
-                        Tier.PRO -> Entitlements(tier = Tier.PRO, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("all"), extraFeatures = setOf("export_csv","multi_watchlist","deep_backtest","intelligence_stack","ai_learning","behavioral_guardrails","proof_capsules"), hasBook = hasBook || true)
-                        Tier.STANDARD -> Entitlements(tier = Tier.STANDARD, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("standard_tier"), extraFeatures = setOf("achievements","lessons","book","exports","analytics"), hasBook = hasBook || true)
+                        Tier.PRO -> Entitlements(tier = Tier.PRO, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("all"), extraFeatures = setOf("export_csv","multi_watchlist","deep_backtest","intelligence_stack","ai_learning","behavioral_guardrails","proof_capsules"), hasBook = hasBook)
+                        Tier.STANDARD -> Entitlements(tier = Tier.STANDARD, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("standard_tier"), extraFeatures = setOf("achievements","lessons","book","exports","analytics"), hasBook = hasBook)
                         Tier.STARTER -> Entitlements(tier = Tier.STARTER, canHighlight = true, maxTrialHighlights = Int.MAX_VALUE, allowedPatternGroups = setOf("starter_tier"), extraFeatures = setOf("multi_timeframe","basic_analytics"), hasBook = hasBook)
                         else -> Entitlements(hasBook = hasBook)
                     }
