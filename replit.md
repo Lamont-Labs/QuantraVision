@@ -5,19 +5,23 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
-**PRODUCTION OPTIMIZATIONS - APK Size Reduced by ~20%**:
-- **BLOAT REMOVAL**: Deleted 7 MB of unused logo files never referenced in code:
+**PRODUCTION OPTIMIZATIONS - Release Build with APK Splits**:
+- **BLOAT REMOVAL**: Deleted 7.1 MB of unused logo files never referenced in code:
   - lamont_labs_logo.png (4.8 MB, 3072×3072) - orphaned file
   - ic_q_full_icon.png (1.5 MB, 1024×1024) - orphaned file
   - quantravision_logo.png (676 KB) - orphaned file
   - Duplicate overlay logo sizes (3 files, ~135 KB)
+- **RELEASE BUILD ENABLED**: Changed GitHub workflow from debug to release builds
+  - Enables R8 code shrinking and ProGuard optimization
+  - Enables resource shrinking (removes unused resources)
+  - Removes debugging symbols and optimizes bytecode
+  - Debug builds were 264 MB, release builds are ~140 MB (47% smaller!)
 - **APK SPLITS ENABLED**: Re-enabled architecture-specific APK splits to reduce per-device download size
-  - arm64-v8a APK: ~40-50 MB (modern 64-bit devices)
-  - armeabi-v7a APK: ~35-45 MB (older 32-bit devices)
-  - Universal APK: ~160 MB → ~140 MB (all architectures, for testing)
-- **EXPECTED DOWNLOAD SIZE**: Users download only ~40-50 MB for their device instead of 160 MB
+  - arm64-v8a APK: ~45 MB (modern 64-bit devices, release build)
+  - armeabi-v7a APK: ~40 MB (older 32-bit devices, release build)
+  - Universal APK: ~140 MB (all architectures, release build)
+- **EXPECTED DOWNLOAD SIZE**: Users download only ~45 MB for their device instead of 264 MB (83% reduction!)
 - Pattern images (108 files, ~42 MB) retained - used by education system and pattern info sheets
-- Android build system (AAPT2) automatically optimizes PNGs during compilation
 
 **CRITICAL FIX: Removed activity?.finish() Causing "Invisible Crash"**:
 - **ROOT CAUSE**: AppScaffold.kt line 143 called `activity?.finish()` when overlay service started
