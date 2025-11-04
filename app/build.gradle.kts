@@ -101,15 +101,14 @@ android {
         }
     }
     
-    // APK splits DISABLED - was causing OpenCV native library issues
-    splits {
-        abi {
-            isEnable = false
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
-        }
-    }
+    // APK splits DISABLED - Build ONE universal APK with all architectures
+    // This ensures OpenCV native libraries (.so files) are properly bundled
+    // Do NOT re-enable splits - they cause UnsatisfiedLinkError crashes
+    // splits {
+    //     abi {
+    //         isEnable = false
+    //     }
+    // }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
