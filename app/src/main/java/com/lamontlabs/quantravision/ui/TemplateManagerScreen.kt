@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,7 +28,8 @@ import com.lamontlabs.quantravision.templates.PatternCatalog
 @Composable
 fun TemplateManagerScreen(
     context: Context,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navController: androidx.navigation.NavHostController? = null
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     var refresh by remember { mutableStateOf(0) }
@@ -96,11 +98,15 @@ fun TemplateManagerScreen(
                     TemplateRow(
                         name = entry.name,
                         id = entry.id,
-                        enabled = entry.enabled
-                    ) {
-                        PatternCatalog.setEnabled(context, entry.id, it)
-                        refresh++
-                    }
+                        enabled = entry.enabled,
+                        onToggle = {
+                            PatternCatalog.setEnabled(context, entry.id, it)
+                            refresh++
+                        },
+                        onEdit = {
+                            navController?.navigate("template_editor/${entry.id}")
+                        }
+                    )
                 }
             }
         }
@@ -112,7 +118,8 @@ private fun TemplateRow(
     name: String,
     id: String,
     enabled: Boolean,
-    onToggle: (Boolean) -> Unit
+    onToggle: (Boolean) -> Unit,
+    onEdit: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -127,7 +134,7 @@ private fun TemplateRow(
                 .padding(24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     name, 
                     style = MaterialTheme.typography.titleMedium,
@@ -140,17 +147,29 @@ private fun TemplateRow(
                     color = MetallicSilver
                 )
             }
-            IconToggleButton(checked = enabled, onCheckedChange = onToggle) {
-                if (enabled) Icon(
-                    Icons.Default.Check, 
-                    contentDescription = "Enabled",
-                    tint = ElectricCyan
-                )
-                else Icon(
-                    Icons.Default.Close, 
-                    contentDescription = "Disabled",
-                    tint = MetallicSilver
-                )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit $name",
+                        tint = ElectricCyan
+                    )
+                }
+                IconToggleButton(checked = enabled, onCheckedChange = onToggle) {
+                    if (enabled) Icon(
+                        Icons.Default.Check, 
+                        contentDescription = "Enabled",
+                        tint = ElectricCyan
+                    )
+                    else Icon(
+                        Icons.Default.Close, 
+                        contentDescription = "Disabled",
+                        tint = MetallicSilver
+                    )
+                }
             }
         }
     }

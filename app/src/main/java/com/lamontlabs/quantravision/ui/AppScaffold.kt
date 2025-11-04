@@ -477,7 +477,8 @@ private fun AppNavigationHost(
         composable("templates") {
             TemplateManagerScreen(
                 context = context,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                navController = navController
             )
         }
 
