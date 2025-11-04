@@ -63,7 +63,7 @@ fun SettingsAdvancedScreen(context: Context, onBack: () -> Unit) {
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -152,7 +152,7 @@ fun SettingsAdvancedScreen(context: Context, onBack: () -> Unit) {
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -225,7 +225,7 @@ fun SettingsAdvancedScreen(context: Context, onBack: () -> Unit) {
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),

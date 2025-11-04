@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +38,7 @@ fun SettingsScreen() {
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    tonalElevation = 8.dp
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
@@ -107,7 +108,7 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -203,7 +204,7 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Theme: Follows system (Dark optimized)")
@@ -223,7 +224,7 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ListItem(
                     headlineContent = { 
@@ -264,7 +265,7 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ListItem(
                     headlineContent = { 
@@ -306,7 +307,7 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                tonalElevation = 8.dp
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column {
                     ListItem(
