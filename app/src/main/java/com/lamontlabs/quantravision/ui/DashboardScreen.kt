@@ -160,7 +160,11 @@ fun DashboardScreen(
         }
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).padding(24.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -168,10 +172,41 @@ fun DashboardScreen(
             
             AlertSettingsCard(context)
             
-            Button(onClick = onStartScan, modifier = Modifier.fillMaxWidth()) {
+            // CORE FEATURE - Most Important
+            Text(
+                "Detection",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            
+            Button(
+                onClick = onStartScan,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
                 Icon(Icons.Default.Visibility, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Start Detection")
             }
+            
+            Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.List, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("View Detections")
+            }
+            
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
+            
+            // INTELLIGENCE STACK
+            Text(
+                "Intelligence Stack (Pro)",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.tertiary
+            )
             
             Button(
                 onClick = onIntelligence,
@@ -181,18 +216,20 @@ fun DashboardScreen(
                 )
             ) {
                 Icon(Icons.Default.Psychology, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("🧠 Intelligence Stack (Pro)")
+                Spacer(Modifier.width(8.dp)); Text("Intelligence Hub")
             }
             
-            Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.List, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("View Detections")
-            }
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
             
-            Button(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Star, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Achievements")
-            }
+            // ANALYTICS & TOOLS
+            Text(
+                "Analytics & Tools",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
             
             Button(onClick = onAnalytics, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.TrendingUp, contentDescription = null)
@@ -201,12 +238,12 @@ fun DashboardScreen(
             
             Button(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.TrendingUp, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Pattern Predictions")
+                Spacer(Modifier.width(8.dp)); Text("Predictions")
             }
             
             Button(onClick = onBacktesting, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Assessment, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Pattern Backtesting")
+                Spacer(Modifier.width(8.dp)); Text("Backtesting")
             }
             
             Button(onClick = onSimilarity, modifier = Modifier.fillMaxWidth()) {
@@ -224,9 +261,21 @@ fun DashboardScreen(
                 Spacer(Modifier.width(8.dp)); Text("Template Manager")
             }
             
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
+            
+            // EDUCATION
+            Text(
+                "Learn & Progress",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            
             Button(onClick = onTutorials, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.School, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Tutorials & Quizzes")
+                Spacer(Modifier.width(8.dp)); Text("Tutorials")
             }
             
             Button(onClick = onBook, modifier = Modifier.fillMaxWidth()) {
@@ -234,9 +283,31 @@ fun DashboardScreen(
                 Spacer(Modifier.width(8.dp)); Text("Trading Book")
             }
             
+            Button(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Star, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Achievements")
+            }
+            
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
+            
+            // SETTINGS & UTILITIES
+            Text(
+                "Settings",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            
             Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Settings, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Settings")
+            }
+            
+            OutlinedButton(onClick = onClearHighlights, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Clear, contentDescription = null)
+                Spacer(Modifier.width(8.dp)); Text("Clear All Detections")
             }
         }
     }
