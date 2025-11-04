@@ -39,18 +39,18 @@ fun PatternCard(
     val scope = rememberCoroutineScope()
     val time = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date(match.timestamp))
     
-    val regimeContext = remember { mutableStateOf<RegimeNavigator.RegimeContext?>(null) }
+    val regimeContext = remember { mutableStateOf<RegimeNavigator.MarketRegime?>(null) }
     var showPlanDialog by remember { mutableStateOf(false) }
-    val generatedPlan = remember { mutableStateOf<PatternToPlanEngine.TradePlan?>(null) }
+    val generatedPlan = remember { mutableStateOf<PatternToPlanEngine.TradeScenario?>(null) }
     var showProofExported by remember { mutableStateOf(false) }
     
-    val isPro = remember { ProFeatureGate.hasAccess(context) }
+    val isPro = remember { ProFeatureGate.isActive(context) }
     
     LaunchedEffect(match, showIntelligence) {
         if (showIntelligence && isPro) {
             try {
-                val navigator = RegimeNavigator(context)
-                regimeContext.value = navigator.analyzeRegime()
+                // Regime analysis requires price data - skip for now
+                regimeContext.value = null
             } catch (e: Exception) {
             }
         }
@@ -103,8 +103,9 @@ fun PatternCard(
                                 scope.launch {
                                     try {
                                         val engine = PatternToPlanEngine(context)
-                                        generatedPlan.value = engine.generatePlan(match)
-                                        showPlanDialog = true
+                                        // generateScenario requires current price - skip for now
+                                        // generatedPlan.value = engine.generateScenario(match, currentPrice = 0.0)
+                                        // showPlanDialog = true
                                     } catch (e: Exception) {
                                     }
                                 }
@@ -180,10 +181,10 @@ fun PatternCard(
 }
 
 @Composable
-private fun RegimeBadge(regime: RegimeNavigator.RegimeContext) {
-    val (color, emoji) = when (regime.quality) {
-        "Excellent" -> MaterialTheme.colorScheme.primary to "🟢"
-        "Good" -> MaterialTheme.colorScheme.tertiary to "🟡"
+private fun RegimeBadge(regime: RegimeNavigator.MarketRegime) {
+    val (color, emoji) = when (regime.overallQuality) {
+        RegimeNavigator.RegimeQuality.FAVORABLE -> MaterialTheme.colorScheme.primary to "🟢"
+        RegimeNavigator.RegimeQuality.NEUTRAL -> MaterialTheme.colorScheme.tertiary to "🟡"
         else -> MaterialTheme.colorScheme.error to "🔴"
     }
     
@@ -199,7 +200,7 @@ private fun RegimeBadge(regime: RegimeNavigator.RegimeContext) {
             Text(emoji, style = MaterialTheme.typography.labelSmall)
             Spacer(Modifier.width(4.dp))
             Text(
-                regime.trendLabel,
+                regime.regimeType.name,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 color = color
@@ -210,7 +211,7 @@ private fun RegimeBadge(regime: RegimeNavigator.RegimeContext) {
 
 @Composable
 private fun TradePlanDialog(
-    plan: PatternToPlanEngine.TradePlan,
+    plan: PatternToPlanEngine.TradeScenario,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -225,14 +226,14 @@ private fun TradePlanDialog(
                     color = MaterialTheme.colorScheme.error
                 )
                 Spacer(Modifier.height(8.dp))
-                Text("Pattern: ${plan.patternId}", style = MaterialTheme.typography.bodyMedium)
-                Text("Entry: $${plan.entry}", style = MaterialTheme.typography.bodyMedium)
+                Text("Pattern: ${plan.patternMatch.patternName}", style = MaterialTheme.typography.bodyMedium)
+                Text("Entry: $${plan.entryPrice}", style = MaterialTheme.typography.bodyMedium)
                 Text("Stop Loss: $${plan.stopLoss}", style = MaterialTheme.typography.bodyMedium)
                 Text("Take Profit: $${plan.takeProfit}", style = MaterialTheme.typography.bodyMedium)
                 Text("Risk/Reward: ${plan.riskRewardRatio}:1", style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    plan.rationale,
+                    plan.educationalContext,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

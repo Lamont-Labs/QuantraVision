@@ -161,7 +161,7 @@ class WatchlistScanner(
         return bearishKeywords.any { patternName.contains(it, ignoreCase = true) }
     }
     
-    fun getTopOpportunities(limit: Int = 5): List<WatchlistAlert> {
+    suspend fun getTopOpportunities(limit: Int = 5): List<WatchlistAlert> {
         val watchlist = SmartWatchlist.getAll(context)
         val opportunities = mutableListOf<WatchlistAlert>()
         
