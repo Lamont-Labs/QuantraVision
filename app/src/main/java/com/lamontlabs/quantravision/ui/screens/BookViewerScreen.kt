@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
@@ -432,7 +433,8 @@ fun BookReaderScreen(
                                             ElectricCyan.copy(alpha = 0.5f),
                                             ElectricCyan.copy(alpha = 0.1f)
                                         )
-                                    )
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
