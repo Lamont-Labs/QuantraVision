@@ -5,6 +5,19 @@ QuantraVision is an offline-first Android application that provides AI-powered c
 
 ## Recent Changes
 
+### November 4, 2025 - Futuristic Theme Redesign COMPLETE!
+**STATUS: PRODUCTION READY** - Complete visual overhaul to match premium tech aesthetic with deep navy, electric cyan, and metallic tones.
+
+Completely redesigned app theme based on brand identity (QuantraVision/Lamont Labs/QuantraCore logos):
+- **Color Palette**: Deep navy background (#0A1628), dark surfaces (#14212C, #1A2A3A), electric cyan primary (#00E5FF), glowing cyan highlights (#4DD0E1), metallic silver accents (#CFD8DC, #B0BEC5)
+- **Neon Accents**: Bright neon green for success (#00FF88), neon orange for warnings (#FF9500), neon red for errors (#FF3B30), neon gold for premium features (#FFD700)
+- **Typography**: Modern sans-serif with proper font weights (Bold for displays/headlines, SemiBold for titles, Medium for labels, Normal for body text), optimized letter spacing for professional readability
+- **Professional Feel**: Trading terminal aesthetic - dark, high-contrast, futuristic, with glowing cyan elements and metallic surfaces
+
+**Visual Impact**: App now matches the premium, tech-focused brand identity from logos - looks like a professional trading tool instead of generic Material Design.
+
+**Files Modified**: Theme.kt (complete color scheme + typography overhaul)
+
 ### November 4, 2025 - Touch-Passthrough FIXED! 
 **STATUS: PRODUCTION READY** - Overlay now has full touch-passthrough, allowing users to interact with trading app underneath.
 
