@@ -34,6 +34,15 @@ jobs:
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
+    
+    - name: Force clean build (delete all caches)
+      run: |
+        echo "Deleting build artifacts and caches..."
+        rm -rf app/build/
+        rm -rf build/
+        rm -rf ~/.gradle/caches/
+        rm -rf .gradle/
+        echo "✓ All build artifacts deleted - forcing complete rebuild"
       
     - name: Clean build
       run: ./gradlew clean --no-daemon --warning-mode=all
