@@ -5,6 +5,24 @@ QuantraVision is an offline-first Android application that provides AI-powered c
 
 ## Recent Changes
 
+### November 4, 2025 - MediaProjection Screen Capture IMPLEMENTED
+**STATUS: FULLY FUNCTIONAL** - Overlay now captures and analyzes LIVE trading app screen in real-time.
+
+Completely overhauled overlay system after user testing revealed it was only scanning demo files:
+- **ScreenCaptureCoordinator**: New Compose-based coordinator handles MediaProjection permission flow using rememberLauncherForActivityResult, graceful error handling with clear user feedback
+- **Live Screen Capture**: OverlayService now uses MediaProjection API with ImageReader (RGBA_8888 hardware-accelerated), VirtualDisplay for real-time screen capture at 2.5 fps (400ms throttling for battery optimization)
+- **Resource Management**: Added MediaProjection.Callback to handle consent revocation (when user clicks "Stop sharing"), immediate cleanup of VirtualDisplay/ImageReader/MediaProjection resources in all error paths and onDestroy
+- **Stop Detection Button**: Added red "Stop Detection" button to dashboard (right after Start Detection) - properly stops OverlayService and cleans up all resources
+- **Efficient Bitmap Processing**: Image-to-Bitmap conversion with proper recycling to prevent memory leaks, feeds HybridDetectorBridge.detectPatternsOptimized() with live screen content
+- **Demo Mode Fallback**: Preserved demo file scanning behind useDemoMode flag for testing without MediaProjection
+
+**User Flow**: Tap "Start Detection" → Overlay permission check → MediaProjection permission dialog → Live screen capture begins → Patterns detected on real trading app → Floating Q button shows status → Tap "Stop Detection" or system "Stop sharing" to end
+
+**Files Created**: ScreenCaptureCoordinator.kt
+**Files Modified**: AppScaffold.kt, OverlayService.kt, DashboardScreen.kt
+
+**Architect Review**: Passed with enhancements - MediaProjection lifecycle management correct and leak-free, callback handles revocation cleanly, resource cleanup immediate and comprehensive.
+
 ### November 4, 2025 - Critical UX Improvements
 **STATUS: BUILD SUCCESSFUL** - User-reported UX issues resolved, all navigation entry points preserved.
 
