@@ -55,11 +55,11 @@ fun OverlayButton(
 ) {
     val onCol = MaterialTheme.colorScheme.primary // neon cyan
     val offCol = MaterialTheme.colorScheme.surfaceVariant
-    val tint by animateColorAsState(
+    val tint = animateColorAsState(
         if (isActive) onCol else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = spring(stiffness = Spring.StiffnessLow),
         label = "tint"
-    )
+    ).value
 
     Box(
         modifier = Modifier
@@ -135,9 +135,10 @@ private fun NeonCircle(
     glow: Boolean,
     content: @Composable BoxScope.() -> Unit
 ) {
+    val density = LocalDensity.current
     val grad = Brush.radialGradient(
         colors = listOf(glowColor.copy(alpha = 0.45f), Color.Transparent),
-        radius = size.toPx() * 1.2f
+        radius = with(density) { size.toPx() } * 1.2f
     )
     Box(
         modifier = Modifier

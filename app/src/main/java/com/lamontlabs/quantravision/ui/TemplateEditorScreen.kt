@@ -2,6 +2,8 @@ package com.lamontlabs.quantravision.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -64,7 +66,7 @@ fun TemplateEditorScreen(context: Context, onBack: () -> Unit) {
                         } else status = "No template selected"
                     }
                 ) { Text("Save Changes") }
-                if (status != null) Text(status)
+                status?.let { Text(it) }
             }
             Divider()
             Text("Tip: use Template Manager to enable/disable patterns globally.", style = MaterialTheme.typography.bodySmall)

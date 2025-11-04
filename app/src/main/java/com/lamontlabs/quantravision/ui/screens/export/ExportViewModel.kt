@@ -3,7 +3,6 @@ package com.lamontlabs.quantravision.ui.screens.export
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lamontlabs.quantravision.Database
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.export.CsvReportGenerator
 import com.lamontlabs.quantravision.export.PDFReportGenerator
@@ -155,7 +154,7 @@ class ExportViewModel(private val context: Context) : ViewModel() {
         
         // Load patterns within date range
         val patterns = if (dateRange != null) {
-            dao.getInRange(dateRange.startDate, dateRange.endDate)
+            dao.getAll().filter { it.timestamp >= dateRange.startDate && it.timestamp <= dateRange.endDate }
         } else {
             dao.getAll()
         }

@@ -50,7 +50,8 @@ fun SimilaritySearchScreen(onBack: () -> Unit) {
                     
                     if (bitmap != null) {
                         try {
-                            val allPatterns = PatternLibrary.getAllPatternNames()
+                            PatternLibrary.load(context)
+                            val allPatterns = PatternLibrary.patterns.map { it.name }
                             val similarPatterns = withContext(Dispatchers.IO) {
                                 PatternSimilaritySearch.searchByImage(context, bitmap, allPatterns)
                             }
