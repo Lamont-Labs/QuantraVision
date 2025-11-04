@@ -22,6 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.onboarding.OnboardingStep
+import com.lamontlabs.quantravision.ui.CrispWhite
+import com.lamontlabs.quantravision.ui.CyanGlowShadow
+import com.lamontlabs.quantravision.ui.DarkSurface
+import com.lamontlabs.quantravision.ui.DeepNavyBackground
+import com.lamontlabs.quantravision.ui.ElectricCyan
+import com.lamontlabs.quantravision.ui.MetallicSilver
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

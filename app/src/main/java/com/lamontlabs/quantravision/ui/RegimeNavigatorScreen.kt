@@ -92,7 +92,7 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     ),
-                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
@@ -159,7 +159,7 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer
                         ),
-                        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -193,7 +193,7 @@ fun RegimeNavigatorScreen(onBack: () -> Unit) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -243,7 +243,7 @@ private fun RegimeResultCard(regime: RegimeNavigator.MarketRegime) {
                 else -> MaterialTheme.colorScheme.surface
             }
         ),
-        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(
@@ -319,7 +319,7 @@ private fun DisclaimerCard() {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
         ),
-        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

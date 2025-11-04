@@ -18,6 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lamontlabs.quantravision.learning.RecommendationType
 import com.lamontlabs.quantravision.learning.model.Difficulty
+import com.lamontlabs.quantravision.ui.CrispWhite
+import com.lamontlabs.quantravision.ui.CyanGlowShadow
+import com.lamontlabs.quantravision.ui.DarkSurface
+import com.lamontlabs.quantravision.ui.DeepNavyBackground
+import com.lamontlabs.quantravision.ui.ElectricCyan
+import com.lamontlabs.quantravision.ui.MetallicSilver
+import com.lamontlabs.quantravision.ui.NeonRed
 import com.lamontlabs.quantravision.ui.components.PersonalizedRecommendationCard
 
 @OptIn(ExperimentalMaterial3Api::class)

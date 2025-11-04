@@ -118,7 +118,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.errorContainer
                                 ),
-                                elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -163,7 +163,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                                     BehavioralGuardrails.DisciplineLevel.CRITICAL -> MaterialTheme.colorScheme.errorContainer
                                 }
                             ),
-                            elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
@@ -241,7 +241,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                         ) {
                             Column(Modifier.padding(16.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -308,7 +308,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -347,7 +347,7 @@ fun BehavioralGuardrailsScreen(onBack: () -> Unit) {
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
                     ),
-                    elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -417,7 +417,7 @@ private fun StatCard(
                 MaterialTheme.colorScheme.surface
             }
         ),
-        elevation = CardDefaults.cardElevation(tonalElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
