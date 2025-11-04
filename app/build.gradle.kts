@@ -166,7 +166,7 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")  // Play Integrity API for app attestation
     
     // Coroutines - Kotlin 1.9.25 compatible version
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")  // 1.10.1 requires Kotlin 2.0+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")  // 1.10.1 requires Kotlin 2.0+
 
     // WorkManager - For background learning tasks
     implementation("androidx.work:work-runtime-ktx:2.9.1")
