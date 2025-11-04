@@ -118,16 +118,13 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         
-        // Kotlin compiler optimizations for maximum performance
+        // Kotlin compiler optimizations
         freeCompilerArgs += listOf(
             "-opt-in=kotlin.RequiresOptIn",
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             "-Xjvm-default=all",
-            "-Xbackend-threads=0",
-            "-Xno-param-assertions",
-            "-Xno-call-assertions",
-            "-Xno-receiver-assertions"
+            "-Xbackend-threads=0"
         )
     }
     
