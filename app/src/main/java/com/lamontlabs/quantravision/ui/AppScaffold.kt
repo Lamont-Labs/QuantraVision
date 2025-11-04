@@ -13,6 +13,7 @@ import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
+import com.lamontlabs.quantravision.ui.capture.rememberScreenCaptureCoordinator
 import kotlinx.coroutines.launch
 
 @Composable
@@ -61,15 +62,16 @@ private fun AppNavigationHost(
             )
         }
         composable("dashboard") {
+            val screenCaptureCoordinator = rememberScreenCaptureCoordinator()
+            
             DashboardScreen(
                 context = context,
                 onBook = { navController.navigate("book") },
                 onIntelligence = { navController.navigate("intelligence") },
                 onStartScan = {
-                    // Start the overlay service for real-time detection
+                    // Check overlay permission first
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         if (!android.provider.Settings.canDrawOverlays(context)) {
-                            // Request overlay permission
                             android.widget.Toast.makeText(
                                 context,
                                 "Please grant overlay permission to start detection",
@@ -81,30 +83,12 @@ private fun AppNavigationHost(
                             )
                             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(intent)
-                        } else {
-                            // Start overlay service
-                            val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                context.startForegroundService(serviceIntent)
-                            } else {
-                                context.startService(serviceIntent)
-                            }
-                            android.widget.Toast.makeText(
-                                context,
-                                "Overlay started! Open your trading app to see pattern detection",
-                                android.widget.Toast.LENGTH_LONG
-                            ).show()
+                            return@DashboardScreen
                         }
-                    } else {
-                        // For older Android versions
-                        val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
-                        context.startService(serviceIntent)
-                        android.widget.Toast.makeText(
-                            context,
-                            "Overlay started! Open your trading app to see pattern detection",
-                            android.widget.Toast.LENGTH_LONG
-                        ).show()
                     }
+                    
+                    // Request screen capture permission via MediaProjection
+                    screenCaptureCoordinator.requestScreenCapture()
                 },
                 onStopScan = {
                     // Stop the overlay service

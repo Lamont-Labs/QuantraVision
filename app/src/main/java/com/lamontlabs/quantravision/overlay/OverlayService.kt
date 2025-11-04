@@ -3,11 +3,18 @@ package com.lamontlabs.quantravision.overlay
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
+import android.media.Image
+import android.media.ImageReader
+import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -24,8 +31,15 @@ import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.PatternMatch
 import kotlinx.coroutines.*
+import java.nio.ByteBuffer
 
 class OverlayService : Service() {
+
+    companion object {
+        const val EXTRA_RESULT_CODE = "extra_result_code"
+        const val EXTRA_RESULT_DATA = "extra_result_data"
+        private const val VIRTUAL_DISPLAY_NAME = "QuantraVisionCapture"
+    }
 
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
@@ -38,6 +52,13 @@ class OverlayService : Service() {
     private var alertManager: AlertManager? = null
     private var glowingBorderView: GlowingBorderView? = null
     private val TAG = "OverlayService"
+    
+    private var mediaProjection: MediaProjection? = null
+    private var virtualDisplay: VirtualDisplay? = null
+    private var imageReader: ImageReader? = null
+    private var screenWidth: Int = 0
+    private var screenHeight: Int = 0
+    private var screenDensity: Int = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -149,8 +170,97 @@ class OverlayService : Service() {
         }
         
         startForegroundService()
-        startDetectionLoop()
         startPowerPolicyApplicator()
+        
+        // Get screen dimensions for ImageReader
+        val metrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(metrics)
+        screenWidth = metrics.widthPixels
+        screenHeight = metrics.heightPixels
+        screenDensity = metrics.densityDpi
+    }
+    
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val resultCode = intent?.getIntExtra(EXTRA_RESULT_CODE, -1) ?: -1
+        val data = intent?.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
+        
+        if (resultCode == -1 || data == null) {
+            Log.w(TAG, "MediaProjection extras not provided - falling back to demo mode")
+            startDetectionLoop(useDemoMode = true)
+        } else {
+            try {
+                initializeMediaProjection(resultCode, data)
+                startDetectionLoop(useDemoMode = false)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to initialize MediaProjection", e)
+                Toast.makeText(
+                    this,
+                    "Failed to start screen capture: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                stopSelf()
+            }
+        }
+        
+        return START_NOT_STICKY
+    }
+    
+    private fun initializeMediaProjection(resultCode: Int, data: Intent) {
+        val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as? MediaProjectionManager
+        
+        if (projectionManager == null) {
+            Log.e(TAG, "MediaProjectionManager not available")
+            throw IllegalStateException("MediaProjectionManager not available on this device")
+        }
+        
+        mediaProjection = projectionManager.getMediaProjection(resultCode, data)
+        
+        if (mediaProjection == null) {
+            Log.e(TAG, "Failed to create MediaProjection")
+            throw IllegalStateException("Failed to create MediaProjection")
+        }
+        
+        // Register callback to handle when user stops sharing via system notification
+        mediaProjection?.registerCallback(object : MediaProjection.Callback() {
+            override fun onStop() {
+                Log.i(TAG, "MediaProjection stopped by user - cleaning up service")
+                cleanupMediaProjection()
+                Toast.makeText(
+                    applicationContext,
+                    "Screen sharing stopped",
+                    Toast.LENGTH_SHORT
+                ).show()
+                stopSelf()
+            }
+        }, null)
+        
+        // Create ImageReader with RGBA_8888 format (hardware accelerated)
+        imageReader = ImageReader.newInstance(
+            screenWidth,
+            screenHeight,
+            PixelFormat.RGBA_8888,
+            2  // maxImages - double buffering
+        )
+        
+        // Create VirtualDisplay that renders to ImageReader surface
+        virtualDisplay = mediaProjection?.createVirtualDisplay(
+            VIRTUAL_DISPLAY_NAME,
+            screenWidth,
+            screenHeight,
+            screenDensity,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            imageReader?.surface,
+            null,
+            null
+        )
+        
+        if (virtualDisplay == null) {
+            Log.e(TAG, "Failed to create VirtualDisplay")
+            cleanupMediaProjection()
+            throw IllegalStateException("Failed to create VirtualDisplay")
+        }
+        
+        Log.i(TAG, "MediaProjection initialized successfully: ${screenWidth}x${screenHeight}@${screenDensity}dpi")
     }
 
     private fun startForegroundService() {
@@ -172,7 +282,7 @@ class OverlayService : Service() {
         }
     }
 
-    private fun startDetectionLoop() {
+    private fun startDetectionLoop(useDemoMode: Boolean = false) {
         scope.launch {
             val detectorBridge = HybridDetectorBridge(applicationContext)
             val legacyDetector = PatternDetector(applicationContext)
@@ -181,93 +291,170 @@ class OverlayService : Service() {
                 try {
                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
                     
-                    // ========================================
-                    // DEMO MODE: Currently scanning demo files from local storage
-                    // ========================================
-                    // TODO: Implement real screen capture using MediaProjection API
-                    // TODO: Request MEDIA_PROJECTION permission from user
-                    // TODO: Capture live screen content instead of reading from demo_charts directory
-                    // TODO: Process captured screen bitmap for real-time pattern detection
-                    // This is a demonstration mode that processes pre-saved chart images
-                    // to showcase the pattern detection capabilities without requiring
-                    // MediaProjection permission setup.
-                    val dir = java.io.File(applicationContext.filesDir, "demo_charts")
-                    if (dir.exists()) {
-                        val allDetectedPatterns = mutableListOf<PatternMatch>()
-                        
-                        dir.listFiles()?.forEach { imageFile ->
-                            try {
-                                val bitmap = android.graphics.BitmapFactory.decodeFile(imageFile.absolutePath)
-                                if (bitmap != null) {
-                                    try {
-                                        timber.log.Timber.i("HybridDetectorBridge: Processing ${imageFile.name} with optimizations")
-                                        val results = detectorBridge.detectPatternsOptimized(bitmap)
-                                        timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
-                                        
-                                        results.forEach { pattern ->
-                                            val patternMatch = pattern.toPatternMatch()
-                                            allDetectedPatterns.add(patternMatch)
-                                            
-                                            behavioralGuardrails?.let { guardrails ->
-                                                scope.launch {
-                                                    try {
-                                                        val warning = guardrails.recordView(patternMatch)
-                                                        warning?.let { w ->
-                                                            withContext(Dispatchers.Main) {
-                                                                Toast.makeText(
-                                                                    applicationContext,
-                                                                    w.message,
-                                                                    Toast.LENGTH_LONG
-                                                                ).show()
-                                                            }
-                                                            
-                                                            timber.log.Timber.w("BehavioralGuardrail triggered: ${w.type.name} - ${w.message}")
-                                                        }
-                                                    } catch (e: Exception) {
-                                                        timber.log.Timber.e(e, "Error recording behavioral view")
-                                                    }
-                                                }
+                    val allDetectedPatterns = mutableListOf<PatternMatch>()
+                    
+                    if (useDemoMode) {
+                        // ========================================
+                        // DEMO MODE: Fallback for testing without MediaProjection
+                        // ========================================
+                        val dir = java.io.File(applicationContext.filesDir, "demo_charts")
+                        if (dir.exists()) {
+                            dir.listFiles()?.forEach { imageFile ->
+                                try {
+                                    val bitmap = android.graphics.BitmapFactory.decodeFile(imageFile.absolutePath)
+                                    if (bitmap != null) {
+                                        try {
+                                            timber.log.Timber.i("DEMO: Processing ${imageFile.name}")
+                                            val results = detectorBridge.detectPatternsOptimized(bitmap)
+                                            results.forEach { pattern ->
+                                                allDetectedPatterns.add(pattern.toPatternMatch())
                                             }
+                                        } finally {
+                                            bitmap.recycle()
                                         }
-                                    } finally {
-                                        bitmap.recycle()
                                     }
+                                } catch (e: Exception) {
+                                    timber.log.Timber.e(e, "Error processing ${imageFile.name}")
                                 }
-                            } catch (e: Exception) {
-                                timber.log.Timber.e(e, "Error processing ${imageFile.name} with bridge")
                             }
                         }
+                    } else {
+                        // ========================================
+                        // REAL-TIME SCREEN CAPTURE MODE
+                        // ========================================
+                        val capturedBitmap = captureScreen()
                         
-                        withContext(Dispatchers.Main) {
-                            enhancedOverlayView?.updateMatches(allDetectedPatterns)
-                            floatingLogo?.updatePatternCount(allDetectedPatterns.size)
-                            
-                            if (allDetectedPatterns.isNotEmpty()) {
-                                val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
-                                if (highConfidencePattern) {
-                                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
-                                    glowingBorderView?.setPulsing(true)
-                                } else {
-                                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
-                                    glowingBorderView?.setPulsing(true)
+                        if (capturedBitmap != null) {
+                            try {
+                                timber.log.Timber.d("Captured screen: ${capturedBitmap.width}x${capturedBitmap.height}")
+                                val results = detectorBridge.detectPatternsOptimized(capturedBitmap)
+                                timber.log.Timber.d("Detected ${results.size} patterns on live screen")
+                                
+                                results.forEach { pattern ->
+                                    val patternMatch = pattern.toPatternMatch()
+                                    allDetectedPatterns.add(patternMatch)
+                                    
+                                    behavioralGuardrails?.let { guardrails ->
+                                        scope.launch {
+                                            try {
+                                                val warning = guardrails.recordView(patternMatch)
+                                                warning?.let { w ->
+                                                    withContext(Dispatchers.Main) {
+                                                        Toast.makeText(
+                                                            applicationContext,
+                                                            w.message,
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
+                                                    timber.log.Timber.w("BehavioralGuardrail: ${w.type.name}")
+                                                }
+                                            } catch (e: Exception) {
+                                                timber.log.Timber.e(e, "Error recording behavioral view")
+                                            }
+                                        }
+                                    }
                                 }
-                            } else {
-                                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-                                glowingBorderView?.setPulsing(false)
+                            } finally {
+                                capturedBitmap.recycle()
                             }
+                        } else {
+                            timber.log.Timber.w("Screen capture returned null bitmap")
+                        }
+                    }
+                    
+                    withContext(Dispatchers.Main) {
+                        enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                        floatingLogo?.updatePatternCount(allDetectedPatterns.size)
+                        
+                        if (allDetectedPatterns.isNotEmpty()) {
+                            val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
+                            if (highConfidencePattern) {
+                                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                                glowingBorderView?.setPulsing(true)
+                            } else {
+                                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                                glowingBorderView?.setPulsing(true)
+                            }
+                        } else {
+                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                            glowingBorderView?.setPulsing(false)
                         }
                     }
                 } catch (e: Exception) {
-                    timber.log.Timber.w(e, "HybridDetectorBridge failed, falling back to legacy PatternDetector")
-                    try {
-                        legacyDetector.scanStaticAssets()
-                    } catch (fallbackError: Exception) {
-                        timber.log.Timber.e(fallbackError, "Legacy detector also failed")
+                    timber.log.Timber.e(e, "Detection loop error")
+                    withContext(Dispatchers.Main) {
+                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                     }
                 }
-                delay(3000)
+                
+                // Throttle to 2-3 fps to avoid battery drain
+                delay(400)  // ~2.5 fps
             }
         }
+    }
+    
+    private fun captureScreen(): Bitmap? {
+        val reader = imageReader ?: return null
+        
+        try {
+            val image = reader.acquireLatestImage() ?: return null
+            
+            try {
+                return imageToBitmap(image)
+            } finally {
+                image.close()
+            }
+        } catch (e: Exception) {
+            timber.log.Timber.e(e, "Error capturing screen")
+            return null
+        }
+    }
+    
+    private fun imageToBitmap(image: Image): Bitmap {
+        val planes = image.planes
+        val buffer = planes[0].buffer
+        val pixelStride = planes[0].pixelStride
+        val rowStride = planes[0].rowStride
+        val rowPadding = rowStride - pixelStride * image.width
+        
+        val bitmap = Bitmap.createBitmap(
+            image.width + rowPadding / pixelStride,
+            image.height,
+            Bitmap.Config.ARGB_8888
+        )
+        
+        bitmap.copyPixelsFromBuffer(buffer)
+        
+        return if (rowPadding == 0) {
+            bitmap
+        } else {
+            Bitmap.createBitmap(bitmap, 0, 0, image.width, image.height)
+        }
+    }
+    
+    private fun cleanupMediaProjection() {
+        try {
+            virtualDisplay?.release()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error releasing VirtualDisplay", e)
+        }
+        virtualDisplay = null
+        
+        try {
+            imageReader?.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error closing ImageReader", e)
+        }
+        imageReader = null
+        
+        try {
+            mediaProjection?.stop()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error stopping MediaProjection", e)
+        }
+        mediaProjection = null
+        
+        Log.i(TAG, "MediaProjection resources cleaned up")
     }
     
     private fun openMainApp() {
@@ -283,6 +470,12 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
+        try {
+            cleanupMediaProjection()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cleaning up MediaProjection on destroy", e)
+        }
+        
         try {
             policyApplicator?.stop()
         } catch (e: Exception) {
