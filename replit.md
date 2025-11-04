@@ -4,6 +4,17 @@
 QuantraVision is an offline-first Android application designed for retail traders, offering AI-powered chart pattern recognition using advanced OpenCV template matching. It identifies 109 technical analysis patterns in real-time, prioritizing user privacy through on-device processing. The app features predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure for lifetime access. Key capabilities include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all functioning offline for educational purposes with legal disclaimers.
 
 ## Recent Changes (2025-11-04)
+
+**Critical Crash Fix - Android 12+ Cold Start**:
+- Fixed immediate crash on app launch for returning users (onboarding complete) on Android 12+ devices
+- Root cause: `startForegroundService()` threw `ForegroundServiceStartNotAllowedException` during cold starts, causing crash before any UI could render
+- Solution: Wrapped auto-launch overlay block (MainActivity lines 42-221) in try-catch with graceful fallback
+- Behavior on failure: App shows dashboard UI with toast: "Starting app in dashboard mode. Tap 'Start Detection' to launch overlay."
+- Resource cleanup: Properly unregisters broadcast receiver and cancels timeout job on error to prevent memory leaks
+- User recovery: Manual overlay launch via "Start Detection" button in dashboard works normally
+- Architect-reviewed and approved for production deployment
+
+
 **Professional Onboarding & Overlay-First UX Flow**:
 - Created 8-step professional onboarding experience (ProfessionalOnboarding.kt) with premium QUANTRACORE aesthetic: Welcome → Permissions → Detection Power → Intelligence Stack → Voice Alerts → AI Learning → Gamification → Legal Disclaimer
 - Implemented overlay-first app flow: after onboarding completion, app auto-launches overlay service and only floating Q button remains visible
