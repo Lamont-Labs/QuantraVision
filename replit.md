@@ -5,6 +5,15 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
+**CRITICAL: Instant Crash Fix & App Icon Corrections**:
+- Fixed instant crash on app launch: Changed OpenCV initialization from `OpenCVLoader.initDebug()` to `System.loadLibrary("opencv_java4")` for Maven Central compatibility
+- Root cause: initDebug() is incompatible with Maven Central OpenCV distribution (`org.opencv:opencv:4.10.0`) and fails catastrophically in release builds with ProGuard/R8
+- Added missing `android:roundIcon` attribute to AndroidManifest.xml (prevents crashes on some OEM launchers)
+- Fixed app display name from "QuantraVision Overlay" to "QuantraVision" in strings.xml
+- Enhanced ProGuard rules to protect Application class from being stripped
+- App now launches successfully in release builds, with graceful fallback to ML-only mode if OpenCV fails to load
+- Architect-reviewed and approved as production-ready
+
 **Lamont Labs Branding in Onboarding**:
 - Added "by Lamont Labs" branding to welcome screen in onboarding flow
 - Positioned below "QuantraVision" title in subtle, professional style (titleSmall typography, 60% opacity)
