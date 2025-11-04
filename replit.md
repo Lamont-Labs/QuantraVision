@@ -5,6 +5,15 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 ## Recent Changes (2025-11-04)
 
+**CRITICAL FIX: Disabled APK Splits to Fix Instant Crash**:
+- **ROOT CAUSE FOUND**: APK splits were creating multiple APKs without bundling OpenCV native libraries (.so files)
+- Disabled APK splits in build.gradle.kts - now builds ONE universal APK with all native libraries
+- Added `pickFirsts` packaging rule to ensure all .so files (including OpenCV) are included
+- Removed hardcoded `android:debuggable="false"` from AndroidManifest (now controlled by buildType)
+- Ultra-simplified App.kt initialization with triple-nested exception protection
+- All logs use Log.e() which ProGuard NEVER strips, ensuring catch blocks remain
+- Expected result: App launches successfully, shows UI, with graceful OpenCV fallback if library load fails
+
 **CRITICAL: Application Crash Fix & Professional Q Logo Launcher Icons**:
 - Fixed fatal crash: Removed Toast messages from Application.onCreate() which caused instant crash before any Activity could start
 - Root cause: Android doesn't allow showing Toast from Application class before the UI is ready - this was causing the "app has a bug" crash
