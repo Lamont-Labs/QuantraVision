@@ -63,8 +63,6 @@ class MainActivity : ComponentActivity() {
                   "Tap the cyan Q button to access QuantraVision",
                   android.widget.Toast.LENGTH_SHORT
                 ).show()
-                
-                finish()
               }
             }
           }

@@ -105,4 +105,4 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 - **SHA-256 Hashing**: Integrity verification.
 
 ## Build Status
-FINAL FIX - Round icons added, MainActivity early exit removed: 2025-11-04 19:20 UTC
+CRITICAL FIX - Removed finish() call in overlay service receiver: 2025-11-04 19:45 UTC
