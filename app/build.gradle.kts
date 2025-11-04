@@ -103,12 +103,11 @@ android {
     
     // APK splits DISABLED - Build ONE universal APK with all architectures
     // This ensures OpenCV native libraries (.so files) are properly bundled
-    // Do NOT re-enable splits - they cause UnsatisfiedLinkError crashes
-    // splits {
-    //     abi {
-    //         isEnable = false
-    //     }
-    // }
+    splits {
+        abi {
+            isEnable = false
+        }
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
