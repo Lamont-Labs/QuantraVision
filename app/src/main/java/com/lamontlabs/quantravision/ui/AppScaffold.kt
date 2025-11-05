@@ -35,16 +35,18 @@ import com.lamontlabs.quantravision.ui.screens.PerformanceDashboardScreen
 fun QuantraVisionApp(context: Context) {
     QuantraVisionTheme {
         val navController = rememberNavController()
-        var detectorBridge by remember { mutableStateOf<HybridDetectorBridge?>(null) }
-        var legacyDetector by remember { mutableStateOf<PatternDetector?>(null) }
         val scope = rememberCoroutineScope()
         val onboardingManager = remember { OnboardingManager.getInstance(context) }
         val activity = context as? Activity
         
-        // Create heavyweight objects safely in LaunchedEffect (side effect, not during composition)
-        LaunchedEffect(Unit) {
-            detectorBridge = HybridDetectorBridge(context)
-            legacyDetector = PatternDetector(context)
+        // Create heavyweight objects on background thread (Room forbids main thread)
+        val detectors by produceState<Pair<HybridDetectorBridge, PatternDetector>?>(initialValue = null) {
+            value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                val appContext = context.applicationContext
+                val bridge = HybridDetectorBridge(appContext)
+                val legacy = PatternDetector(appContext)
+                Pair(bridge, legacy)
+            }
         }
         
         val hasOverlayPermission = remember {
@@ -64,17 +66,17 @@ fun QuantraVisionApp(context: Context) {
         }
         
         // Only show navigation when objects are ready
-        if (detectorBridge != null && legacyDetector != null) {
+        if (detectors != null) {
             AppNavigationHost(
                 context = context,
                 navController = navController,
-                detectorBridge = detectorBridge!!,
-                legacyDetector = legacyDetector!!,
+                detectorBridge = detectors.first,
+                legacyDetector = detectors.second,
                 scope = scope,
                 startDestination = startDestination
             )
         } else {
-            // Loading state while objects initialize
+            // Loading state while objects initialize on background thread
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
