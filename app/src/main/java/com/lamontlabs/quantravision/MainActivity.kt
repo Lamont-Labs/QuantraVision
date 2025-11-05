@@ -382,7 +382,7 @@ class MainActivity : ComponentActivity() {
   }
   
   private fun startOverlayAndClose() {
-    // Request overlay permission if needed
+    // Request overlay permission if needed (rebuild trigger)
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
       if (!android.provider.Settings.canDrawOverlays(this)) {
         val intent = android.content.Intent(
