@@ -261,12 +261,74 @@ class MainActivity : ComponentActivity() {
   private fun loadFullApp() {
     Log.e("QV-MainActivity", "Loading full app after test screen...")
     
+    var crashPoint = "Unknown"
+    var crashMessage = ""
+    var crashType = ""
+    
     try {
+      crashPoint = "QuantraVisionTheme"
       setContent {
-        QuantraVisionApp(context = this)
+        QuantraVisionTheme {
+          crashPoint = "Basic UI setup"
+          Surface(modifier = Modifier.fillMaxSize()) {
+            Column(
+              modifier = Modifier.fillMaxSize().padding(24.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.Center
+            ) {
+              crashPoint = "Creating OnboardingManager"
+              val onboardingManager = remember { 
+                try {
+                  OnboardingManager.getInstance(this@MainActivity)
+                } catch (e: Exception) {
+                  throw Exception("OnboardingManager failed: ${e.message}", e)
+                }
+              }
+              
+              crashPoint = "Creating HybridDetectorBridge"
+              val detectorBridge = remember {
+                try {
+                  HybridDetectorBridge(this@MainActivity)
+                } catch (e: Exception) {
+                  throw Exception("HybridDetectorBridge failed: ${e.message}", e)
+                }
+              }
+              
+              crashPoint = "Creating PatternDetector"
+              val legacyDetector = remember {
+                try {
+                  PatternDetector(this@MainActivity)
+                } catch (e: Exception) {
+                  throw Exception("PatternDetector failed: ${e.message}", e)
+                }
+              }
+              
+              crashPoint = "Success!"
+              Text(
+                text = "✓ All components loaded successfully!",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
+              )
+              Spacer(modifier = Modifier.height(16.dp))
+              Text(
+                text = "OnboardingManager: OK\nHybridDetectorBridge: OK\nPatternDetector: OK",
+                textAlign = TextAlign.Center
+              )
+              Spacer(modifier = Modifier.height(24.dp))
+              Button(onClick = { loadRealApp() }) {
+                Text("Continue to App")
+              }
+            }
+          }
+        }
       }
     } catch (e: Exception) {
-      Log.e("QV-MainActivity", "Full app load failed: ${e.message}", e)
+      crashMessage = e.message ?: "Unknown error"
+      crashType = e.javaClass.simpleName
+      Log.e("QV-MainActivity", "CRASH AT: $crashPoint", e)
+      Log.e("QV-MainActivity", "Message: $crashMessage")
+      Log.e("QV-MainActivity", "Type: $crashType")
+      
       setContent {
         MaterialTheme {
           Surface(modifier = Modifier.fillMaxSize()) {
@@ -276,19 +338,52 @@ class MainActivity : ComponentActivity() {
               verticalArrangement = Arrangement.Center
             ) {
               Text(
-                text = "Error Loading App",
-                style = MaterialTheme.typography.headlineMedium,
+                text = "⚠️ Crash Detected",
+                style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.error
+              )
+              Spacer(modifier = Modifier.height(24.dp))
+              Text(
+                text = "CRASH POINT:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+              )
+              Text(
+                text = crashPoint,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
               )
               Spacer(modifier = Modifier.height(16.dp))
               Text(
-                text = "Error: ${e.message}\n\nType: ${e.javaClass.simpleName}",
+                text = "ERROR TYPE:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+              )
+              Text(
+                text = crashType,
+                style = MaterialTheme.typography.bodyMedium
+              )
+              Spacer(modifier = Modifier.height(16.dp))
+              Text(
+                text = "MESSAGE:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+              )
+              Text(
+                text = crashMessage,
+                style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center
               )
             }
           }
         }
       }
+    }
+  }
+  
+  private fun loadRealApp() {
+    setContent {
+      QuantraVisionApp(context = this)
     }
   }
 }
