@@ -33,7 +33,8 @@
     <service
         android:name=".overlay.OverlayService"
         android:exported="false"
-        android:foregroundServiceType="mediaProjection|camera"/>
+        android:foregroundServiceType="mediaProjection|camera"
+        android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"/>
     
     <receiver
         android:name=".widget.PatternWidgetProvider"

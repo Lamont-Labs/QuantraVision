@@ -354,6 +354,20 @@ class OverlayService : Service() {
             2  // maxImages - double buffering
         )
         
+        // CRITICAL MEMORY LEAK FIX: Must provide VirtualDisplay.Callback (not null!)
+        // Research shows virtualDisplay.release() does NOTHING if callback is null
+        val virtualDisplayCallback = object : VirtualDisplay.Callback() {
+            override fun onPaused() {
+                Log.d(TAG, "VirtualDisplay paused")
+            }
+            override fun onResumed() {
+                Log.d(TAG, "VirtualDisplay resumed")
+            }
+            override fun onStopped() {
+                Log.i(TAG, "VirtualDisplay stopped")
+            }
+        }
+        
         // Create VirtualDisplay that renders to ImageReader surface
         virtualDisplay = mediaProjection?.createVirtualDisplay(
             VIRTUAL_DISPLAY_NAME,
@@ -362,8 +376,8 @@ class OverlayService : Service() {
             screenDensity,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             imageReader?.surface,
-            null,
-            null
+            virtualDisplayCallback,  // CRITICAL: Not null!
+            android.os.Handler(android.os.Looper.getMainLooper())
         )
         
         if (virtualDisplay == null) {
@@ -579,8 +593,15 @@ class OverlayService : Service() {
     }
     
     private fun cleanupMediaProjection() {
+        // CRITICAL: Follow exact cleanup order to avoid RemoteException/DeadObjectException
+        // Research: VirtualDisplay → ImageReader → MediaProjection
+        
         try {
             virtualDisplay?.release()
+        } catch (e: android.os.DeadObjectException) {
+            Log.w(TAG, "VirtualDisplay already dead (process terminated)")
+        } catch (e: android.os.RemoteException) {
+            Log.w(TAG, "RemoteException releasing VirtualDisplay (service died)", e)
         } catch (e: Exception) {
             Log.e(TAG, "Error releasing VirtualDisplay", e)
         }
@@ -594,7 +615,17 @@ class OverlayService : Service() {
         imageReader = null
         
         try {
+            mediaProjection?.unregisterCallback(null)
+        } catch (e: Exception) {
+            // Callback might already be unregistered
+        }
+        
+        try {
             mediaProjection?.stop()
+        } catch (e: android.os.DeadObjectException) {
+            Log.w(TAG, "MediaProjection already dead (process terminated)")
+        } catch (e: android.os.RemoteException) {
+            Log.w(TAG, "RemoteException stopping MediaProjection (service died)", e)
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping MediaProjection", e)
         }
