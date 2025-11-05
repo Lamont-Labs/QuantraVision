@@ -186,7 +186,7 @@ jobs:
         name: quantravision-debug-apks
         path: |
           app/build/outputs/apk/debug/*.apk
-        retention-days: 30
+        retention-days: 3
         compression-level: 0
     
     - name: Upload Build Logs
@@ -199,4 +199,4 @@ jobs:
           build-summary.txt
           errors-only.txt
           CRASH_LOG_INSTRUCTIONS.txt
-        retention-days: 30
+        retention-days: 3
