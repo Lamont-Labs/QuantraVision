@@ -262,121 +262,93 @@ class MainActivity : ComponentActivity() {
   }
   
   private fun loadFullApp() {
-    Log.e("QV-MainActivity", "Loading full app after test screen...")
+    Log.e("QV-MainActivity", "Loading component test screen...")
     
-    var crashPoint = "Unknown"
-    var crashMessage = ""
-    var crashType = ""
-    
-    try {
-      crashPoint = "QuantraVisionTheme"
-      setContent {
-        QuantraVisionTheme {
-          crashPoint = "Basic UI setup"
-          Surface(modifier = Modifier.fillMaxSize()) {
-            Column(
-              modifier = Modifier.fillMaxSize().padding(24.dp),
-              horizontalAlignment = Alignment.CenterHorizontally,
-              verticalArrangement = Arrangement.Center
-            ) {
-              crashPoint = "Creating OnboardingManager"
-              val onboardingManager = remember { 
+    setContent {
+      var testResult by remember { mutableStateOf("Ready to test") }
+      var testColor by remember { mutableStateOf(MaterialTheme.colorScheme.onSurface) }
+      
+      MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+          ) {
+            Text(
+              text = "Component Tests",
+              style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+              text = testResult,
+              style = MaterialTheme.typography.bodyMedium,
+              color = testColor,
+              textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+              onClick = {
                 try {
                   OnboardingManager.getInstance(this@MainActivity)
+                  testResult = "✓ OnboardingManager OK"
+                  testColor = MaterialTheme.colorScheme.primary
                 } catch (e: Exception) {
-                  throw Exception("OnboardingManager failed: ${e.message}", e)
+                  testResult = "✗ OnboardingManager FAILED:\n${e.message}"
+                  testColor = MaterialTheme.colorScheme.error
                 }
-              }
-              
-              crashPoint = "Creating HybridDetectorBridge"
-              val detectorBridge = remember {
-                try {
-                  HybridDetectorBridge(this@MainActivity)
-                } catch (e: Exception) {
-                  throw Exception("HybridDetectorBridge failed: ${e.message}", e)
-                }
-              }
-              
-              crashPoint = "Creating PatternDetector"
-              val legacyDetector = remember {
+              },
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text("Test OnboardingManager")
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Button(
+              onClick = {
                 try {
                   PatternDetector(this@MainActivity)
+                  testResult = "✓ PatternDetector OK"
+                  testColor = MaterialTheme.colorScheme.primary
                 } catch (e: Exception) {
-                  throw Exception("PatternDetector failed: ${e.message}", e)
+                  testResult = "✗ PatternDetector FAILED:\n${e.message}"
+                  testColor = MaterialTheme.colorScheme.error
                 }
-              }
-              
-              crashPoint = "Success!"
-              Text(
-                text = "✓ All components loaded successfully!",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
-              )
-              Spacer(modifier = Modifier.height(16.dp))
-              Text(
-                text = "OnboardingManager: OK\nHybridDetectorBridge: OK\nPatternDetector: OK",
-                textAlign = TextAlign.Center
-              )
-              Spacer(modifier = Modifier.height(24.dp))
-              Button(onClick = { loadRealApp() }) {
-                Text("Continue to App")
-              }
-            }
-          }
-        }
-      }
-    } catch (e: Exception) {
-      crashMessage = e.message ?: "Unknown error"
-      crashType = e.javaClass.simpleName
-      Log.e("QV-MainActivity", "CRASH AT: $crashPoint", e)
-      Log.e("QV-MainActivity", "Message: $crashMessage")
-      Log.e("QV-MainActivity", "Type: $crashType")
-      
-      setContent {
-        MaterialTheme {
-          Surface(modifier = Modifier.fillMaxSize()) {
-            Column(
-              modifier = Modifier.fillMaxSize().padding(24.dp),
-              horizontalAlignment = Alignment.CenterHorizontally,
-              verticalArrangement = Arrangement.Center
+              },
+              modifier = Modifier.fillMaxWidth()
             ) {
-              Text(
-                text = "⚠️ Crash Detected",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.error
-              )
-              Spacer(modifier = Modifier.height(24.dp))
-              Text(
-                text = "CRASH POINT:",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-              )
-              Text(
-                text = crashPoint,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-              )
-              Spacer(modifier = Modifier.height(16.dp))
-              Text(
-                text = "ERROR TYPE:",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-              )
-              Text(
-                text = crashType,
-                style = MaterialTheme.typography.bodyMedium
-              )
-              Spacer(modifier = Modifier.height(16.dp))
-              Text(
-                text = "MESSAGE:",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-              )
-              Text(
-                text = crashMessage,
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center
-              )
+              Text("Test PatternDetector")
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Button(
+              onClick = {
+                try {
+                  HybridDetectorBridge(this@MainActivity)
+                  testResult = "✓ HybridDetectorBridge OK"
+                  testColor = MaterialTheme.colorScheme.primary
+                } catch (e: Exception) {
+                  testResult = "✗ HybridDetectorBridge FAILED:\n${e.message}"
+                  testColor = MaterialTheme.colorScheme.error
+                }
+              },
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text("Test HybridDetectorBridge")
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+              onClick = { loadRealApp() },
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text("Load Real App")
             }
           }
         }
