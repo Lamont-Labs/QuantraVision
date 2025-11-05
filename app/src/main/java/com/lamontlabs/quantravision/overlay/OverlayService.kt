@@ -33,6 +33,52 @@ import com.lamontlabs.quantravision.PatternMatch
 import kotlinx.coroutines.*
 import java.nio.ByteBuffer
 
+/**
+ * Safe Timber logging wrapper for Service context
+ * Falls back to Log.* if Timber isn't initialized (common in Services)
+ */
+private object SafeLog {
+    fun i(tag: String, message: String) {
+        try {
+            SafeLog.i(TAG, message)
+        } catch (e: Throwable) {
+            Log.i(tag, message)
+        }
+    }
+    
+    fun d(tag: String, message: String) {
+        try {
+            SafeLog.d(TAG, message)
+        } catch (e: Throwable) {
+            Log.d(tag, message)
+        }
+    }
+    
+    fun w(tag: String, message: String) {
+        try {
+            SafeLog.w(TAG, message)
+        } catch (e: Throwable) {
+            Log.w(tag, message)
+        }
+    }
+    
+    fun e(tag: String, message: String, throwable: Throwable? = null) {
+        try {
+            if (throwable != null) {
+                SafeLog.e(TAG, message, throwable)
+            } else {
+                timber.log.Timber.e(message)
+            }
+        } catch (e: Throwable) {
+            if (throwable != null) {
+                Log.e(tag, message, throwable)
+            } else {
+                Log.e(tag, message)
+            }
+        }
+    }
+}
+
 class OverlayService : Service() {
 
     companion object {
@@ -260,14 +306,24 @@ class OverlayService : Service() {
     }
     
     private fun initializeMediaProjection(resultCode: Int, data: Intent) {
+        Log.i(TAG, "Initializing MediaProjection - Android ${Build.VERSION.SDK_INT}, Manufacturer: ${Build.MANUFACTURER}")
+        
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as? MediaProjectionManager
         
         if (projectionManager == null) {
-            Log.e(TAG, "MediaProjectionManager not available")
+            Log.e(TAG, "CRITICAL: MediaProjectionManager not available on ${Build.MANUFACTURER} ${Build.MODEL}")
             throw IllegalStateException("MediaProjectionManager not available on this device")
         }
         
-        mediaProjection = projectionManager.getMediaProjection(resultCode, data)
+        try {
+            mediaProjection = projectionManager.getMediaProjection(resultCode, data)
+        } catch (e: SecurityException) {
+            Log.e(TAG, "CRITICAL: SecurityException creating MediaProjection - likely permission issue on Android 14+", e)
+            throw e
+        } catch (e: Exception) {
+            Log.e(TAG, "CRITICAL: Unexpected exception creating MediaProjection", e)
+            throw e
+        }
         
         if (mediaProjection == null) {
             Log.e(TAG, "Failed to create MediaProjection")
@@ -275,6 +331,8 @@ class OverlayService : Service() {
         }
         
         // Register callback to handle when user stops sharing via system notification
+        // ANDROID 14+ FIX: Must specify Handler(Looper.getMainLooper()) instead of null
+        // Research shows null handler causes crashes on Samsung devices
         mediaProjection?.registerCallback(object : MediaProjection.Callback() {
             override fun onStop() {
                 Log.i(TAG, "MediaProjection stopped by user - cleaning up service")
@@ -286,7 +344,7 @@ class OverlayService : Service() {
                 ).show()
                 stopSelf()
             }
-        }, null)
+        }, android.os.Handler(android.os.Looper.getMainLooper()))
         
         // Create ImageReader with RGBA_8888 format (hardware accelerated)
         imageReader = ImageReader.newInstance(
@@ -326,9 +384,23 @@ class OverlayService : Service() {
                 .setContentTitle("QuantraVision Overlay")
                 .setContentText("Running detection service with AI optimizations")
                 .setSmallIcon(R.drawable.ic_overlay_marker)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setOngoing(true)
                 .build()
-            startForeground(1, notification)
-            Log.i(TAG, "Foreground service started successfully")
+            
+            // ANDROID 14+ FIX: Must specify FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+            // Research shows this is mandatory for MediaProjection services on API 29+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                    1, 
+                    notification, 
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
+                Log.i(TAG, "Foreground service started with MEDIA_PROJECTION type (Android ${Build.VERSION.SDK_INT})")
+            } else {
+                startForeground(1, notification)
+                Log.i(TAG, "Foreground service started (Android ${Build.VERSION.SDK_INT})")
+            }
             return true
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to start foreground service", e)
@@ -338,8 +410,28 @@ class OverlayService : Service() {
 
     private fun startDetectionLoop(useDemoMode: Boolean = false) {
         scope.launch {
-            val detectorBridge = HybridDetectorBridge(applicationContext)
-            val legacyDetector = PatternDetector(applicationContext)
+            Log.i(TAG, "Starting detection loop - demoMode=$useDemoMode, OpenCV=${com.lamontlabs.quantravision.App.openCVInitialized}")
+            
+            val detectorBridge = try {
+                HybridDetectorBridge(applicationContext)
+            } catch (e: Exception) {
+                Log.e(TAG, "CRITICAL: Failed to initialize HybridDetectorBridge", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Pattern detector initialization failed: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                return@launch
+            }
+            
+            val legacyDetector = try {
+                PatternDetector(applicationContext)
+            } catch (e: Exception) {
+                Log.e(TAG, "WARNING: Failed to initialize legacy PatternDetector, continuing with hybrid only", e)
+                null
+            }
             
             while (isActive) {
                 try {
@@ -358,7 +450,7 @@ class OverlayService : Service() {
                                     val bitmap = android.graphics.BitmapFactory.decodeFile(imageFile.absolutePath)
                                     if (bitmap != null) {
                                         try {
-                                            timber.log.Timber.i("DEMO: Processing ${imageFile.name}")
+                                            SafeLog.i(TAG, "DEMO: Processing ${imageFile.name}")
                                             val results = detectorBridge.detectPatternsOptimized(bitmap)
                                             results.forEach { pattern ->
                                                 allDetectedPatterns.add(pattern.toPatternMatch())
@@ -368,7 +460,7 @@ class OverlayService : Service() {
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    timber.log.Timber.e(e, "Error processing ${imageFile.name}")
+                                    SafeLog.e(TAG, "Error processing ${imageFile.name}", e)
                                 }
                             }
                         }
@@ -380,9 +472,9 @@ class OverlayService : Service() {
                         
                         if (capturedBitmap != null) {
                             try {
-                                timber.log.Timber.d("Captured screen: ${capturedBitmap.width}x${capturedBitmap.height}")
+                                SafeLog.d(TAG, "Captured screen: ${capturedBitmap.width}x${capturedBitmap.height}")
                                 val results = detectorBridge.detectPatternsOptimized(capturedBitmap)
-                                timber.log.Timber.d("Detected ${results.size} patterns on live screen")
+                                SafeLog.d(TAG, "Detected ${results.size} patterns on live screen")
                                 
                                 results.forEach { pattern ->
                                     val patternMatch = pattern.toPatternMatch()
@@ -400,10 +492,10 @@ class OverlayService : Service() {
                                                             Toast.LENGTH_LONG
                                                         ).show()
                                                     }
-                                                    timber.log.Timber.w("BehavioralGuardrail: ${w.type.name}")
+                                                    SafeLog.w(TAG, "BehavioralGuardrail: ${w.type.name}")
                                                 }
                                             } catch (e: Exception) {
-                                                timber.log.Timber.e(e, "Error recording behavioral view")
+                                                SafeLog.e(TAG, "Error recording behavioral view", e)
                                             }
                                         }
                                     }
@@ -412,7 +504,7 @@ class OverlayService : Service() {
                                 capturedBitmap.recycle()
                             }
                         } else {
-                            timber.log.Timber.w("Screen capture returned null bitmap")
+                            SafeLog.w(TAG, "Screen capture returned null bitmap")
                         }
                     }
                     
@@ -435,7 +527,7 @@ class OverlayService : Service() {
                         }
                     }
                 } catch (e: Exception) {
-                    timber.log.Timber.e(e, "Detection loop error")
+                    SafeLog.e(TAG, "Detection loop error", e)
                     withContext(Dispatchers.Main) {
                         floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                     }
@@ -459,7 +551,7 @@ class OverlayService : Service() {
                 image.close()
             }
         } catch (e: Exception) {
-            timber.log.Timber.e(e, "Error capturing screen")
+            SafeLog.e(TAG, "Error capturing screen", e)
             return null
         }
     }

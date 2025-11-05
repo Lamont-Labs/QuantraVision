@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.ui.QuantraVisionTheme
 
@@ -35,6 +36,11 @@ class FloatingMenu(
 
     init {
         menuView = ComposeView(context).apply {
+            // COMPOSE MEMORY LEAK FIX: Must set ViewCompositionStrategy for Services
+            // Research shows this prevents OutOfMemoryError on repeated start/stop cycles
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool
+            )
             setContent {
                 QuantraVisionTheme {
                     QuickActionsMenu(
@@ -174,6 +180,12 @@ class FloatingMenu(
             } catch (e: Exception) {
                 android.util.Log.e("FloatingMenu", "Failed to remove menu view", e)
             }
+        }
+        // COMPOSE MEMORY LEAK FIX: Explicitly dispose composition
+        try {
+            menuView.disposeComposition()
+        } catch (e: Exception) {
+            android.util.Log.e("FloatingMenu", "Failed to dispose composition", e)
         }
     }
 }
