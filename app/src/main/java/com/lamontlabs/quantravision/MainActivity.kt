@@ -359,29 +359,65 @@ class MainActivity : ComponentActivity() {
   private fun loadRealApp() {
     Log.e("QV-MainActivity", "Loading simplified app")
     
-    setContent {
-      QuantraVisionTheme {
-        val context = LocalContext.current
-        val onboardingManager = remember { OnboardingManager.getInstance(context) }
-        var hasCompletedOnboarding by remember { 
-          mutableStateOf(onboardingManager.hasCompletedOnboarding()) 
-        }
-        
-        if (!hasCompletedOnboarding) {
-          // Show onboarding
+    val onboardingManager = OnboardingManager.getInstance(this)
+    
+    if (!onboardingManager.hasCompletedOnboarding()) {
+      // Show onboarding
+      setContent {
+        QuantraVisionTheme {
           ProfessionalOnboarding(
-            context = context,
+            context = this@MainActivity,
             onComplete = {
               onboardingManager.completeOnboarding()
-              hasCompletedOnboarding = true
+              // Start overlay service and close main UI
+              startOverlayAndClose()
             }
           )
-        } else {
-          // Already onboarded - show simple screen
-          SimpleDashboard()
         }
       }
+    } else {
+      // Already completed onboarding - start overlay and close
+      startOverlayAndClose()
     }
+  }
+  
+  private fun startOverlayAndClose() {
+    // Request overlay permission if needed
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+      if (!android.provider.Settings.canDrawOverlays(this)) {
+        val intent = android.content.Intent(
+          android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+          android.net.Uri.parse("package:$packageName")
+        )
+        startActivity(intent)
+        
+        android.widget.Toast.makeText(
+          this,
+          "Please grant overlay permission, then restart the app",
+          android.widget.Toast.LENGTH_LONG
+        ).show()
+        
+        finish()
+        return
+      }
+    }
+    
+    // Start overlay service
+    val serviceIntent = android.content.Intent(this, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      startForegroundService(serviceIntent)
+    } else {
+      startService(serviceIntent)
+    }
+    
+    android.widget.Toast.makeText(
+      this,
+      "QuantraVision overlay starting... Look for the cyan Q button!",
+      android.widget.Toast.LENGTH_LONG
+    ).show()
+    
+    // Close the main UI - only overlay button visible now
+    finish()
   }
   
   @Composable
