@@ -9,6 +9,7 @@ import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.jvm.Volatile
 
 class CrashLogger(private val context: Context) : Thread.UncaughtExceptionHandler {
   
@@ -17,6 +18,21 @@ class CrashLogger(private val context: Context) : Thread.UncaughtExceptionHandle
   companion object {
     private const val TAG = "CrashLogger"
     private const val CRASH_LOG_FILENAME = "quantravision_crash.log"
+    
+    @Volatile
+    private var instance: CrashLogger? = null
+    
+    fun initialize(context: Context) {
+      if (instance == null) {
+        synchronized(this) {
+          if (instance == null) {
+            instance = CrashLogger(context.applicationContext)
+            Thread.setDefaultUncaughtExceptionHandler(instance)
+            Log.d(TAG, "CrashLogger initialized")
+          }
+        }
+      }
+    }
     
     fun getCrashLogFile(context: Context): File {
       return File(context.filesDir, CRASH_LOG_FILENAME)
