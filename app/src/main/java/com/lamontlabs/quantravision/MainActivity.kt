@@ -39,6 +39,44 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     
+    // EMERGENCY BYPASS: Show simple screen to identify crash point
+    try {
+      setContent {
+        MaterialTheme {
+          Surface(modifier = Modifier.fillMaxSize()) {
+            Column(
+              modifier = Modifier.fillMaxSize().padding(24.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.Center
+            ) {
+              Text(
+                text = "QuantraVision",
+                style = MaterialTheme.typography.headlineMedium
+              )
+              Spacer(modifier = Modifier.height(16.dp))
+              Text(
+                text = "Test build - checking for crash",
+                style = MaterialTheme.typography.bodyMedium
+              )
+              Spacer(modifier = Modifier.height(24.dp))
+              Text(
+                text = "If you see this, the app is working!\n\nClick below to continue",
+                textAlign = TextAlign.Center
+              )
+              Spacer(modifier = Modifier.height(24.dp))
+              Button(onClick = { loadFullApp() }) {
+                Text("Load Full App")
+              }
+            }
+          }
+        }
+      }
+      return
+    } catch (e: Exception) {
+      Log.e("QV-MainActivity", "EMERGENCY SCREEN FAILED: ${e.message}", e)
+      // Fall through to normal initialization
+    }
+    
     // VERBOSE LOGGING: Track every step so user can capture logs
     Log.e("QV-MainActivity", "════════════════════════════════════════")
     Log.e("QV-MainActivity", "▶ MainActivity.onCreate() STARTED")
@@ -218,5 +256,39 @@ class MainActivity : ComponentActivity() {
     timeoutJob?.cancel()
     unregisterServiceReadyReceiver()
     super.onDestroy()
+  }
+  
+  private fun loadFullApp() {
+    Log.e("QV-MainActivity", "Loading full app after test screen...")
+    
+    try {
+      setContent {
+        QuantraVisionApp(context = this)
+      }
+    } catch (e: Exception) {
+      Log.e("QV-MainActivity", "Full app load failed: ${e.message}", e)
+      setContent {
+        MaterialTheme {
+          Surface(modifier = Modifier.fillMaxSize()) {
+            Column(
+              modifier = Modifier.fillMaxSize().padding(24.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.Center
+            ) {
+              Text(
+                text = "Error Loading App",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.error
+              )
+              Spacer(modifier = Modifier.height(16.dp))
+              Text(
+                text = "Error: ${e.message}\n\nType: ${e.javaClass.simpleName}",
+                textAlign = TextAlign.Center
+              )
+            }
+          }
+        }
+      }
+    }
   }
 }
