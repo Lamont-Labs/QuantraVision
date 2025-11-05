@@ -16,6 +16,9 @@ android {
         versionName = "2.1"
         vectorDrawables.useSupportLibrary = true
         
+        // MultiDex support for large ML libraries (OpenCV + TensorFlow)
+        multiDexEnabled = true
+        
         // App description metadata
         manifestPlaceholders["appDescription"] = "Offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
         
@@ -152,6 +155,9 @@ dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
+    
+    // MultiDex support for large ML libraries
+    implementation("androidx.multidex:multidex:2.0.1")
 
     // Room Database - Latest with KSP
     implementation("androidx.room:room-runtime:2.6.1")

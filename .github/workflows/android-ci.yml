@@ -50,7 +50,7 @@ jobs:
     - name: Build debug APK (will install on any device)
       run: ./gradlew assembleDebug --no-daemon --stacktrace --info --continue --warning-mode=all 2>&1 | tee build-log.txt
       env:
-        GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=512m"
+        GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx6144m -XX:MaxMetaspaceSize=1536m -XX:+HeapDumpOnOutOfMemoryError"
         ORG_GRADLE_PROJECT_kotlin.compiler.execution.strategy: "in-process"
     
     - name: Extract errors from build log
@@ -187,6 +187,7 @@ jobs:
         path: |
           app/build/outputs/apk/debug/*.apk
         retention-days: 30
+        compression-level: 0
     
     - name: Upload Build Logs
       uses: actions/upload-artifact@v5
