@@ -19,6 +19,10 @@ class App : Application() {
     
     override fun onCreate() {
         super.onCreate()
+        
+        Thread.setDefaultUncaughtExceptionHandler(CrashLogger(this))
+        Log.e("QuantraVision-App", "✓ Crash logger initialized")
+        
         openCVInitialized = false  // Explicit initialization before try block
         
         try {
