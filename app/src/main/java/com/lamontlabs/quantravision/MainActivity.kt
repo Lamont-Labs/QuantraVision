@@ -359,7 +359,6 @@ class MainActivity : ComponentActivity() {
   private fun loadRealApp() {
     Log.e("QV-MainActivity", "Loading QuantraVisionApp with bypass...")
     
-    // BYPASS: Load onboarding screen directly without navigation
     setContent {
       QuantraVisionTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -376,7 +375,6 @@ class MainActivity : ComponentActivity() {
             
             Button(
               onClick = {
-                // Test loading ProfessionalOnboarding directly
                 setContent {
                   QuantraVisionTheme {
                     ProfessionalOnboarding(
@@ -397,7 +395,22 @@ class MainActivity : ComponentActivity() {
             
             Button(
               onClick = {
-                // Test loading the full app with navigation
+                // Test creating objects on background thread
+                setContent {
+                  QuantraVisionTheme {
+                    TestBackgroundCreation()
+                  }
+                }
+              },
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text("Test Background Object Creation")
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Button(
+              onClick = {
                 setContent {
                   QuantraVisionApp(context = this@MainActivity)
                 }
@@ -408,6 +421,52 @@ class MainActivity : ComponentActivity() {
             }
           }
         }
+      }
+    }
+  }
+  
+  @Composable
+  private fun TestBackgroundCreation() {
+    val context = LocalContext.current
+    var result by remember { mutableStateOf("Creating objects on background thread...") }
+    var isSuccess by remember { mutableStateOf(true) }
+    
+    LaunchedEffect(Unit) {
+      try {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+          val appContext = context.applicationContext
+          val bridge = HybridDetectorBridge(appContext)
+          val detector = PatternDetector(appContext)
+          
+          kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+            result = "✓ Objects created successfully on background thread!\n\nBridge: ${bridge.javaClass.simpleName}\nDetector: ${detector.javaClass.simpleName}"
+            isSuccess = true
+          }
+        }
+      } catch (e: Exception) {
+        result = "✗ Failed to create objects:\n${e.message}\n\n${e.stackTraceToString().take(500)}"
+        isSuccess = false
+      }
+    }
+    
+    Surface(modifier = Modifier.fillMaxSize()) {
+      Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+      ) {
+        Text(
+          text = "Background Creation Test",
+          style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Text(
+          text = result,
+          style = MaterialTheme.typography.bodyMedium,
+          color = if (isSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+          textAlign = TextAlign.Center
+        )
       }
     }
   }
