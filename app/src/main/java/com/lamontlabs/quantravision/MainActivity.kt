@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity() {
     
     setContent {
       var testResult by remember { mutableStateOf("Ready to test") }
-      var testColor by remember { mutableStateOf(MaterialTheme.colorScheme.onSurface) }
+      var isSuccess by remember { mutableStateOf(true) }
       
       MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -284,7 +284,7 @@ class MainActivity : ComponentActivity() {
             Text(
               text = testResult,
               style = MaterialTheme.typography.bodyMedium,
-              color = testColor,
+              color = if (isSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
               textAlign = TextAlign.Center
             )
             
@@ -295,10 +295,10 @@ class MainActivity : ComponentActivity() {
                 try {
                   OnboardingManager.getInstance(this@MainActivity)
                   testResult = "✓ OnboardingManager OK"
-                  testColor = MaterialTheme.colorScheme.primary
+                  isSuccess = true
                 } catch (e: Exception) {
                   testResult = "✗ OnboardingManager FAILED:\n${e.message}"
-                  testColor = MaterialTheme.colorScheme.error
+                  isSuccess = false
                 }
               },
               modifier = Modifier.fillMaxWidth()
@@ -313,10 +313,10 @@ class MainActivity : ComponentActivity() {
                 try {
                   PatternDetector(this@MainActivity)
                   testResult = "✓ PatternDetector OK"
-                  testColor = MaterialTheme.colorScheme.primary
+                  isSuccess = true
                 } catch (e: Exception) {
                   testResult = "✗ PatternDetector FAILED:\n${e.message}"
-                  testColor = MaterialTheme.colorScheme.error
+                  isSuccess = false
                 }
               },
               modifier = Modifier.fillMaxWidth()
@@ -331,10 +331,10 @@ class MainActivity : ComponentActivity() {
                 try {
                   HybridDetectorBridge(this@MainActivity)
                   testResult = "✓ HybridDetectorBridge OK"
-                  testColor = MaterialTheme.colorScheme.primary
+                  isSuccess = true
                 } catch (e: Exception) {
                   testResult = "✗ HybridDetectorBridge FAILED:\n${e.message}"
-                  testColor = MaterialTheme.colorScheme.error
+                  isSuccess = false
                 }
               },
               modifier = Modifier.fillMaxWidth()
