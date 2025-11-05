@@ -35,11 +35,17 @@ import com.lamontlabs.quantravision.ui.screens.PerformanceDashboardScreen
 fun QuantraVisionApp(context: Context) {
     QuantraVisionTheme {
         val navController = rememberNavController()
-        val detectorBridge = remember { HybridDetectorBridge(context) }
-        val legacyDetector = remember { PatternDetector(context) }
+        var detectorBridge by remember { mutableStateOf<HybridDetectorBridge?>(null) }
+        var legacyDetector by remember { mutableStateOf<PatternDetector?>(null) }
         val scope = rememberCoroutineScope()
         val onboardingManager = remember { OnboardingManager.getInstance(context) }
         val activity = context as? Activity
+        
+        // Create heavyweight objects safely in LaunchedEffect (side effect, not during composition)
+        LaunchedEffect(Unit) {
+            detectorBridge = HybridDetectorBridge(context)
+            legacyDetector = PatternDetector(context)
+        }
         
         val hasOverlayPermission = remember {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -57,14 +63,25 @@ fun QuantraVisionApp(context: Context) {
             else -> "dashboard"
         }
         
-        AppNavigationHost(
-            context = context,
-            navController = navController,
-            detectorBridge = detectorBridge,
-            legacyDetector = legacyDetector,
-            scope = scope,
-            startDestination = startDestination
-        )
+        // Only show navigation when objects are ready
+        if (detectorBridge != null && legacyDetector != null) {
+            AppNavigationHost(
+                context = context,
+                navController = navController,
+                detectorBridge = detectorBridge!!,
+                legacyDetector = legacyDetector!!,
+                scope = scope,
+                startDestination = startDestination
+            )
+        } else {
+            // Loading state while objects initialize
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
     }
 }
 
