@@ -357,8 +357,58 @@ class MainActivity : ComponentActivity() {
   }
   
   private fun loadRealApp() {
+    Log.e("QV-MainActivity", "Loading QuantraVisionApp with bypass...")
+    
+    // BYPASS: Load onboarding screen directly without navigation
     setContent {
-      QuantraVisionApp(context = this)
+      QuantraVisionTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+          ) {
+            Text(
+              text = "Navigation Bypass Test",
+              style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Button(
+              onClick = {
+                // Test loading ProfessionalOnboarding directly
+                setContent {
+                  QuantraVisionTheme {
+                    ProfessionalOnboarding(
+                      context = this@MainActivity,
+                      onComplete = {
+                        Log.e("QV-MainActivity", "Onboarding completed")
+                      }
+                    )
+                  }
+                }
+              },
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text("Test Onboarding Screen")
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Button(
+              onClick = {
+                // Test loading the full app with navigation
+                setContent {
+                  QuantraVisionApp(context = this@MainActivity)
+                }
+              },
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text("Test Full App (with Navigation)")
+            }
+          }
+        }
+      }
     }
   }
 }
