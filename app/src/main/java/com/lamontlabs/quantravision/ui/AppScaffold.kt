@@ -66,16 +66,16 @@ fun QuantraVisionApp(context: Context) {
         }
         
         // Only show navigation when objects are ready
-        if (detectors != null) {
+        detectors?.let { (detectorBridge, legacyDetector) ->
             AppNavigationHost(
                 context = context,
                 navController = navController,
-                detectorBridge = detectors.first,
-                legacyDetector = detectors.second,
+                detectorBridge = detectorBridge,
+                legacyDetector = legacyDetector,
                 scope = scope,
                 startDestination = startDestination
             )
-        } else {
+        } ?: run {
             // Loading state while objects initialize on background thread
             Box(
                 modifier = Modifier.fillMaxSize(),
