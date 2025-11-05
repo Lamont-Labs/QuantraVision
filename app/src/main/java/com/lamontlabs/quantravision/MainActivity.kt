@@ -357,19 +357,23 @@ class MainActivity : ComponentActivity() {
   }
   
   private fun loadRealApp() {
-    Log.e("QV-MainActivity", "Bypassing complex navigation - loading onboarding directly")
-    
-    val onboardingManager = OnboardingManager.getInstance(this)
+    Log.e("QV-MainActivity", "Loading simplified app")
     
     setContent {
       QuantraVisionTheme {
-        if (!onboardingManager.hasCompletedOnboarding()) {
+        val context = LocalContext.current
+        val onboardingManager = remember { OnboardingManager.getInstance(context) }
+        var hasCompletedOnboarding by remember { 
+          mutableStateOf(onboardingManager.hasCompletedOnboarding()) 
+        }
+        
+        if (!hasCompletedOnboarding) {
           // Show onboarding
           ProfessionalOnboarding(
-            context = this,
+            context = context,
             onComplete = {
               onboardingManager.completeOnboarding()
-              requestOverlayAndStartService()
+              hasCompletedOnboarding = true
             }
           )
         } else {
