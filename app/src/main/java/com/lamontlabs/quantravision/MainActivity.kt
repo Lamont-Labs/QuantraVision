@@ -357,98 +357,31 @@ class MainActivity : ComponentActivity() {
   }
   
   private fun loadRealApp() {
-    Log.e("QV-MainActivity", "Loading QuantraVisionApp with bypass...")
+    Log.e("QV-MainActivity", "Bypassing complex navigation - loading onboarding directly")
+    
+    val onboardingManager = OnboardingManager.getInstance(this)
     
     setContent {
       QuantraVisionTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-          Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-          ) {
-            Text(
-              text = "Navigation Bypass Test",
-              style = MaterialTheme.typography.headlineMedium
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            Button(
-              onClick = {
-                setContent {
-                  QuantraVisionTheme {
-                    ProfessionalOnboarding(
-                      context = this@MainActivity,
-                      onComplete = {
-                        Log.e("QV-MainActivity", "Onboarding completed")
-                      }
-                    )
-                  }
-                }
-              },
-              modifier = Modifier.fillMaxWidth()
-            ) {
-              Text("Test Onboarding Screen")
+        if (!onboardingManager.hasCompletedOnboarding()) {
+          // Show onboarding
+          ProfessionalOnboarding(
+            context = this,
+            onComplete = {
+              onboardingManager.completeOnboarding()
+              requestOverlayAndStartService()
             }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Button(
-              onClick = {
-                // Test creating objects on background thread
-                setContent {
-                  QuantraVisionTheme {
-                    TestBackgroundCreation()
-                  }
-                }
-              },
-              modifier = Modifier.fillMaxWidth()
-            ) {
-              Text("Test Background Object Creation")
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Button(
-              onClick = {
-                setContent {
-                  QuantraVisionApp(context = this@MainActivity)
-                }
-              },
-              modifier = Modifier.fillMaxWidth()
-            ) {
-              Text("Test Full App (with Navigation)")
-            }
-          }
+          )
+        } else {
+          // Already onboarded - show simple screen
+          SimpleDashboard()
         }
       }
     }
   }
   
   @Composable
-  private fun TestBackgroundCreation() {
-    val context = LocalContext.current
-    var result by remember { mutableStateOf("Creating objects on background thread...") }
-    var isSuccess by remember { mutableStateOf(true) }
-    
-    LaunchedEffect(Unit) {
-      try {
-        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-          val appContext = context.applicationContext
-          val bridge = HybridDetectorBridge(appContext)
-          val detector = PatternDetector(appContext)
-          
-          kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-            result = "✓ Objects created successfully on background thread!\n\nBridge: ${bridge.javaClass.simpleName}\nDetector: ${detector.javaClass.simpleName}"
-            isSuccess = true
-          }
-        }
-      } catch (e: Exception) {
-        result = "✗ Failed to create objects:\n${e.message}\n\n${e.stackTraceToString().take(500)}"
-        isSuccess = false
-      }
-    }
-    
+  private fun SimpleDashboard() {
     Surface(modifier = Modifier.fillMaxSize()) {
       Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -456,18 +389,53 @@ class MainActivity : ComponentActivity() {
         verticalArrangement = Arrangement.Center
       ) {
         Text(
-          text = "Background Creation Test",
-          style = MaterialTheme.typography.headlineMedium
+          text = "QuantraVision",
+          style = MaterialTheme.typography.headlineLarge,
+          color = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         
         Text(
-          text = result,
-          style = MaterialTheme.typography.bodyMedium,
-          color = if (isSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-          textAlign = TextAlign.Center
+          text = "Pattern detection ready!",
+          style = MaterialTheme.typography.titleMedium
         )
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Button(
+          onClick = { requestOverlayAndStartService() },
+          modifier = Modifier.fillMaxWidth()
+        ) {
+          Text("Enable Overlay")
+        }
       }
     }
+  }
+  
+  private fun requestOverlayAndStartService() {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+      if (!android.provider.Settings.canDrawOverlays(this)) {
+        val intent = android.content.Intent(
+          android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+          android.net.Uri.parse("package:$packageName")
+        )
+        startActivity(intent)
+        return
+      }
+    }
+    
+    // Permission granted - start overlay service
+    val serviceIntent = android.content.Intent(this, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      startForegroundService(serviceIntent)
+    } else {
+      startService(serviceIntent)
+    }
+    
+    android.widget.Toast.makeText(
+      this,
+      "Overlay starting... Look for the cyan Q button",
+      android.widget.Toast.LENGTH_LONG
+    ).show()
   }
 }
