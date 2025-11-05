@@ -47,8 +47,8 @@ jobs:
     - name: Clean build
       run: ./gradlew clean --no-daemon --warning-mode=all
       
-    - name: Build release APK
-      run: ./gradlew assembleRelease --no-daemon --stacktrace --warning-mode=all 2>&1 | tee build-log.txt
+    - name: Build debug APK (will install on any device)
+      run: ./gradlew assembleDebug --no-daemon --stacktrace --warning-mode=all 2>&1 | tee build-log.txt
       env:
         GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=512m"
     
@@ -73,13 +73,13 @@ jobs:
         echo "════════════════════════════════════════" >> build-summary.txt
         cat build-summary.txt
       
-    - name: Upload Release APKs (all architectures)
+    - name: Upload Debug APKs (will install on Android 14)
       uses: actions/upload-artifact@v5
       if: success()
       with:
-        name: quantravision-release-apks
+        name: quantravision-debug-apks
         path: |
-          app/build/outputs/apk/release/*.apk
+          app/build/outputs/apk/debug/*.apk
         retention-days: 30
     
     - name: Upload Build Logs
