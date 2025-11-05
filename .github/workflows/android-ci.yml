@@ -65,12 +65,105 @@ jobs:
         echo "════════════════════════════════════════" >> errors-only.txt
         cat errors-only.txt
     
+    - name: Create crash log instructions
+      if: always()
+      run: |
+        cat > CRASH_LOG_INSTRUCTIONS.txt << 'EOF'
+        ════════════════════════════════════════════════════════════════
+        📱 HOW TO GET CRASH LOGS FROM YOUR PHONE
+        ════════════════════════════════════════════════════════════════
+        
+        This APK includes BUILT-IN CRASH LOGGING!
+        
+        ⚠️ IMPORTANT: Crash logs are generated ON YOUR PHONE when the app 
+        crashes, not during the build process. Follow these steps:
+        
+        ════════════════════════════════════════════════════════════════
+        STEP 1: INSTALL THE APK
+        ════════════════════════════════════════════════════════════════
+        
+        1. Download "quantravision-debug-apks" artifact from GitHub Actions
+        2. Extract the ZIP file
+        3. Install: app-arm64-v8a-debug.apk (115MB - best for S23 FE)
+           OR: app-universal-debug.apk (263MB - works on any device)
+        
+        ════════════════════════════════════════════════════════════════
+        STEP 2: TRIGGER THE CRASH
+        ════════════════════════════════════════════════════════════════
+        
+        1. Open QuantraVision app
+        2. Use the app normally until it crashes
+        3. The crash is automatically saved to internal storage
+        
+        ════════════════════════════════════════════════════════════════
+        STEP 3: EXPORT THE CRASH LOG
+        ════════════════════════════════════════════════════════════════
+        
+        1. RESTART the app (after it crashes)
+        2. You'll see a simple test screen
+        3. Click the RED button: "Share Crash Log"
+        4. Choose how to share (Gmail, Drive, Messages, etc.)
+        5. Send the crash log file to the developer
+        
+        ════════════════════════════════════════════════════════════════
+        WHAT THE CRASH LOG CONTAINS
+        ════════════════════════════════════════════════════════════════
+        
+        ✅ Exact error message and stack trace
+        ✅ Device info (model, Android version)
+        ✅ Memory usage at time of crash
+        ✅ Timestamp
+        ✅ Thread information
+        
+        ════════════════════════════════════════════════════════════════
+        TROUBLESHOOTING
+        ════════════════════════════════════════════════════════════════
+        
+        Q: App crashes but no "Share Crash Log" button appears
+        A: Make sure you RESTART the app after it crashes. The crash is 
+           saved during the crash, but you need to reopen the app to 
+           access the export feature.
+        
+        Q: "No crash logs found" message appears
+        A: The app hasn't crashed yet, or crashed before crash logging 
+           was implemented. Try using the app again.
+        
+        Q: Can't share the file
+        A: Make sure you have a file sharing app installed (Gmail, Drive, 
+           Messages, etc.)
+        
+        ════════════════════════════════════════════════════════════════
+        TECHNICAL DETAILS (FOR REFERENCE)
+        ════════════════════════════════════════════════════════════════
+        
+        Crash log location: /data/data/com.lamontlabs.quantravision/files/
+                           quantravision_crash.log
+        
+        Implementation: Custom UncaughtExceptionHandler that captures 
+                       crashes before the app terminates
+        
+        File sharing: Android FileProvider with internal file storage
+        
+        ════════════════════════════════════════════════════════════════
+        BUILD INFORMATION
+        ════════════════════════════════════════════════════════════════
+        
+        Build date: $(date)
+        Crash logging: ENABLED
+        Version: Minimal test build with crash diagnostics
+        
+        ════════════════════════════════════════════════════════════════
+        EOF
+        cat CRASH_LOG_INSTRUCTIONS.txt
+    
     - name: Capture build summary
       if: always()
       run: |
         echo "════════════════════════════════════════" >> build-summary.txt
         echo "Build Summary - $(date)" >> build-summary.txt
         echo "════════════════════════════════════════" >> build-summary.txt
+        echo "" >> build-summary.txt
+        echo "⚠️ CRASH LOGS: See CRASH_LOG_INSTRUCTIONS.txt for how to extract crash logs from your device!" >> build-summary.txt
         echo "" >> build-summary.txt
         echo "APK Files Generated:" >> build-summary.txt
         find app/build/outputs/apk -name "*.apk" -exec ls -lh {} \; >> build-summary.txt 2>&1 || echo "No APK files found" >> build-summary.txt
@@ -104,4 +197,5 @@ jobs:
           build-log.txt
           build-summary.txt
           errors-only.txt
+          CRASH_LOG_INSTRUCTIONS.txt
         retention-days: 30
