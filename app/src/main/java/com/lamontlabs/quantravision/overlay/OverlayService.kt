@@ -64,9 +64,26 @@ class OverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         
+        Log.i(TAG, "OverlayService onCreate() - Android ${Build.VERSION.SDK_INT}")
+        
+        // ANDROID 14+ FIX: Start foreground service FIRST before anything else
+        // Research shows this is the #1 crash cause for MediaProjection + Overlay apps
+        val foregroundSuccess = startForegroundService()
+        if (!foregroundSuccess) {
+            Log.e(TAG, "CRITICAL: Failed to start foreground service, stopping")
+            Toast.makeText(
+                this,
+                "Failed to start overlay service. Please try again.",
+                Toast.LENGTH_LONG
+            ).show()
+            stopSelf()
+            return
+        }
+        
+        // Verify overlay permission (secondary check after foreground service)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                Log.e(TAG, "CRITICAL: SYSTEM_ALERT_WINDOW permission not granted, stopping service")
+                Log.e(TAG, "CRITICAL: SYSTEM_ALERT_WINDOW permission not granted")
                 Toast.makeText(
                     this,
                     "Overlay permission required. Please enable it in settings.",
@@ -77,10 +94,10 @@ class OverlayService : Service() {
             }
         }
         
-        // CRITICAL: Use safe cast to prevent NPE on custom ROMs (0.5-1% of devices)
+        // Initialize WindowManager (verified after foreground service started)
         val wm = getSystemService(Context.WINDOW_SERVICE) as? WindowManager
         if (wm == null) {
-            Log.e(TAG, "CRITICAL: WindowManager is null (custom ROM incompatibility), stopping service")
+            Log.e(TAG, "CRITICAL: WindowManager is null (custom ROM incompatibility)")
             Toast.makeText(
                 this,
                 "Overlay service not supported on this device.",
@@ -90,121 +107,31 @@ class OverlayService : Service() {
             return
         }
         windowManager = wm
-
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = inflater.inflate(R.layout.overlay_layout, null)
-
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        )
-
-        try {
-            windowManager.addView(view, params)
-            overlayView = view
-            
-            enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
-            if (enhancedOverlayView == null) {
-                Log.e(TAG, "CRITICAL: EnhancedOverlayView not found in overlay_layout")
-            } else {
-                Log.i(TAG, "EnhancedOverlayView initialized successfully")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "CRITICAL: Failed to add overlay view (permission likely revoked mid-operation)", e)
-            Toast.makeText(
-                this,
-                "Failed to create overlay. Please check permissions.",
-                Toast.LENGTH_LONG
-            ).show()
-            stopSelf()
-            return
-        }
         
-        // Add glowing border overlay
-        val glowingBorder = GlowingBorderView(this)
-        val borderParams = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        )
-
-        try {
-            windowManager.addView(glowingBorder, borderParams)
-            glowingBorderView = glowingBorder
-            Log.i(TAG, "Glowing border overlay added successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add glowing border view", e)
-            // Non-critical - service continues without border
-        }
-        
-        if (ProFeatureGate.isActive(this)) {
-            behavioralGuardrails = BehavioralGuardrails(this)
-            alertManager = AlertManager.getInstance(this)
-        }
-        
-        floatingMenu = FloatingMenu(this, windowManager) {
-            stopSelf()
-        }
-        
-        floatingLogo = FloatingLogoButton(this, windowManager).apply {
-            onClickListener = {
-                val intent = Intent(this@OverlayService, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    putExtra("opened_from_overlay", true)
-                }
-                startActivity(intent)
-            }
-            onLongPressListener = {
-                floatingMenu?.show()
-            }
-            show()
-            setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-        }
-        
-        val foregroundSuccess = startForegroundService()
-        if (!foregroundSuccess) {
-            Log.e(TAG, "Failed to start foreground service, stopping service")
-            Toast.makeText(
-                this,
-                "Failed to start overlay service. Please try again.",
-                Toast.LENGTH_LONG
-            ).show()
-            stopSelf()
-            return
-        }
-        
-        startPowerPolicyApplicator()
-        
-        // Get screen dimensions for ImageReader
+        // Get screen dimensions early
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
         screenWidth = metrics.widthPixels
         screenHeight = metrics.heightPixels
         screenDensity = metrics.densityDpi
         
-        try {
-            val readyIntent = Intent(SERVICE_READY_ACTION)
-            sendBroadcast(readyIntent)
-            Log.i(TAG, "OverlayService ready broadcast sent successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to send ready broadcast", e)
-        }
+        Log.i(TAG, "OverlayService onCreate() completed - screen: ${screenWidth}x${screenHeight}@${screenDensity}dpi")
     }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(TAG, "onStartCommand() called - foreground service already running")
+        
+        // ANDROID 14+ FIX: Create overlay views AFTER foreground service is running
+        // This prevents BadTokenException and SecurityException crashes
+        if (overlayView == null) {
+            if (!createOverlayViews()) {
+                Log.e(TAG, "Failed to create overlay views, stopping service")
+                stopSelf()
+                return START_NOT_STICKY
+            }
+        }
+        
+        // Initialize MediaProjection AFTER overlay views are created
         val resultCode = intent?.getIntExtra(EXTRA_RESULT_CODE, -1) ?: -1
         val data = intent?.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
         
@@ -213,20 +140,123 @@ class OverlayService : Service() {
             startDetectionLoop(useDemoMode = true)
         } else {
             try {
+                Log.i(TAG, "Initializing MediaProjection with resultCode=$resultCode")
                 initializeMediaProjection(resultCode, data)
                 startDetectionLoop(useDemoMode = false)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to initialize MediaProjection", e)
+                Log.e(TAG, "CRITICAL: Failed to initialize MediaProjection", e)
                 Toast.makeText(
                     this,
                     "Failed to start screen capture: ${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
                 stopSelf()
+                return START_NOT_STICKY
             }
         }
         
+        // Send ready broadcast
+        try {
+            val readyIntent = Intent(SERVICE_READY_ACTION)
+            sendBroadcast(readyIntent)
+            Log.i(TAG, "OverlayService ready broadcast sent")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to send ready broadcast", e)
+        }
+        
         return START_NOT_STICKY
+    }
+    
+    private fun createOverlayViews(): Boolean {
+        try {
+            Log.i(TAG, "Creating overlay views...")
+            
+            // Create main overlay view
+            val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val view = inflater.inflate(R.layout.overlay_layout, null)
+
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            )
+
+            windowManager.addView(view, params)
+            overlayView = view
+            
+            enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
+            if (enhancedOverlayView == null) {
+                Log.e(TAG, "EnhancedOverlayView not found in overlay_layout")
+            } else {
+                Log.i(TAG, "EnhancedOverlayView initialized successfully")
+            }
+            
+            // Add glowing border overlay
+            val glowingBorder = GlowingBorderView(this)
+            val borderParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            )
+
+            windowManager.addView(glowingBorder, borderParams)
+            glowingBorderView = glowingBorder
+            Log.i(TAG, "Glowing border overlay added successfully")
+            
+            // Initialize Pro features if licensed
+            if (ProFeatureGate.isActive(this)) {
+                behavioralGuardrails = BehavioralGuardrails(this)
+                alertManager = AlertManager.getInstance(this)
+            }
+            
+            // Create floating menu
+            floatingMenu = FloatingMenu(this, windowManager) {
+                stopSelf()
+            }
+            
+            // Create floating logo button
+            floatingLogo = FloatingLogoButton(this, windowManager).apply {
+                onClickListener = {
+                    val intent = Intent(this@OverlayService, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        putExtra("opened_from_overlay", true)
+                    }
+                    startActivity(intent)
+                }
+                onLongPressListener = {
+                    floatingMenu?.show()
+                }
+                show()
+                setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+            }
+            
+            // Start power policy applicator
+            startPowerPolicyApplicator()
+            
+            Log.i(TAG, "All overlay views created successfully")
+            return true
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "CRITICAL: Failed to create overlay views", e)
+            Toast.makeText(
+                this,
+                "Failed to create overlay: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
+            return false
+        }
     }
     
     private fun initializeMediaProjection(resultCode: Int, data: Intent) {
