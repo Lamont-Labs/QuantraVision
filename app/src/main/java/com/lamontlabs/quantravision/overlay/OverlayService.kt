@@ -40,7 +40,7 @@ import java.nio.ByteBuffer
 private object SafeLog {
     fun i(tag: String, message: String) {
         try {
-            SafeLog.i(TAG, message)
+            timber.log.Timber.i(message)
         } catch (e: Throwable) {
             Log.i(tag, message)
         }
@@ -48,7 +48,7 @@ private object SafeLog {
     
     fun d(tag: String, message: String) {
         try {
-            SafeLog.d(TAG, message)
+            timber.log.Timber.d(message)
         } catch (e: Throwable) {
             Log.d(tag, message)
         }
@@ -56,7 +56,7 @@ private object SafeLog {
     
     fun w(tag: String, message: String) {
         try {
-            SafeLog.w(TAG, message)
+            timber.log.Timber.w(message)
         } catch (e: Throwable) {
             Log.w(tag, message)
         }
@@ -65,7 +65,7 @@ private object SafeLog {
     fun e(tag: String, message: String, throwable: Throwable? = null) {
         try {
             if (throwable != null) {
-                SafeLog.e(TAG, message, throwable)
+                timber.log.Timber.e(throwable, message)
             } else {
                 timber.log.Timber.e(message)
             }
@@ -613,12 +613,6 @@ class OverlayService : Service() {
             Log.e(TAG, "Error closing ImageReader", e)
         }
         imageReader = null
-        
-        try {
-            mediaProjection?.unregisterCallback(null)
-        } catch (e: Exception) {
-            // Callback might already be unregistered
-        }
         
         try {
             mediaProjection?.stop()
