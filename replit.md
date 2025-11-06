@@ -78,6 +78,14 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 
 ## Recent Changes
 
+### November 6, 2025 - Orbitron Font (Bundled)
+**Applied Orbitron font throughout entire app to match the QuantraCore logo:**
+- Downloaded and bundled Orbitron-Medium.ttf (292 KB) directly in app
+- No runtime downloads or Google Play Services dependencies
+- Works completely offline (consistent with app's offline-first design)
+- Applied to all text: headlines, titles, body, labels, buttons
+- Geometric, futuristic aesthetic matches the angular Q logo
+- Creates cohesive brand identity across UI and logo
 
 ### November 6, 2025 - Onboarding UX Improvements
 **Fixed text truncation and improved tier transparency:**
