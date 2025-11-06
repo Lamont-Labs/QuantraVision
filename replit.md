@@ -78,18 +78,18 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 
 ## Recent Changes
 
-### November 6, 2025 - Inter Font (Samsung-Safe Implementation)
-**Applied Inter font using production-tested, crash-resistant approach:**
-- Researched Samsung S23 FE + Android 14 custom font crash issues extensively
-- Root cause: Samsung One UI 6.0 enforces stricter font validation (duplicate weights, bold text accessibility setting conflicts)
-- Solution: XML font family with proper namespace declarations (android: + app: for API compatibility)
-- Downloaded and bundled Inter font (Regular 292KB, Medium 292KB, Bold 292KB)
-- Created inter_font_family.xml with unique weight values (400, 500, 700) to avoid Samsung conflicts
-- Added try-catch error handling with graceful fallback to system defaults
-- Used XML-based font loading (more stable than programmatic FontFamily() on Samsung devices)
-- Inter font: Modern geometric sans-serif, production-tested across millions of apps, excellent readability
-- Changed SemiBold references to Medium (matches Inter's actual weight=500)
-- **TESTED:** Default fonts work perfectly - confirmed crash was font-loading related
+### November 6, 2025 - Space Grotesk Font (SAMSUNG-SAFE DIRECT TTF LOADING)
+**Applied Space Grotesk using crash-resistant direct TTF file loading:**
+- **ROOT CAUSE OF CRASHES:** Samsung devices crash when using `FontFamily(Font(R.font.xml_font_family))`
+- **SOLUTION:** Reference TTF files directly: `Font(R.font.space_grotesk_regular, FontWeight.Normal)`
+- Downloaded Space Grotesk from official GitHub repo (Florian Karsten)
+- Bundled 3 weights: Regular 112KB, Medium 114KB, Bold 114KB (total 340KB)
+- Font files named with lowercase + underscores (Android best practice)
+- Direct TTF loading avoids Samsung One UI 6.0 font validation crashes
+- Try-catch error handling with graceful fallback to system default (Roboto)
+- Space Grotesk: Modern geometric sans-serif, futuristic aesthetic, perfect for tech/trading apps
+- SIL Open Font License (free for personal and commercial use)
+- **Inter FAILED:** Crashed due to XML font family loading approach (not the font itself)
 
 ### November 6, 2025 - Onboarding UX Improvements
 **Fixed text truncation and improved tier transparency:**
