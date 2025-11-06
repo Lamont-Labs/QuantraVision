@@ -91,116 +91,117 @@ object QuantraColors {
     val outlineInt = 0xFFAABBCC.toInt()      // LIGHTER outline
 }
 
-// Orbitron font family - bundled TTF file (matches QuantraCore logo)
-// Only Medium weight - Android will synthesize Bold/Normal as needed
-val OrbitronFontFamily = FontFamily(
-    Font(R.font.orbitron_medium, FontWeight.Medium),
-    Font(R.font.orbitron_medium, FontWeight.Normal)
+// Montserrat font family - modern, geometric, stable (all weights bundled)
+val MontserratFontFamily = FontFamily(
+    Font(R.font.montserrat_regular, FontWeight.Normal),
+    Font(R.font.montserrat_medium, FontWeight.Medium),
+    Font(R.font.montserrat_semibold, FontWeight.SemiBold),
+    Font(R.font.montserrat_bold, FontWeight.Bold)
 )
 
-// Custom typography using Orbitron throughout
+// HD Contrast Typography - Using Montserrat with enhanced sizing/weight
 val QVTypography = Typography(
     displayLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 57.sp,
         lineHeight = 64.sp,
         letterSpacing = (-0.25).sp
     ),
     displayMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 45.sp,
         lineHeight = 52.sp,
         letterSpacing = 0.sp
     ),
     displaySmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
         lineHeight = 44.sp,
         letterSpacing = 0.sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
         letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
     headlineSmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
         letterSpacing = 0.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
     bodySmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
     labelLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontFamily = MontserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
