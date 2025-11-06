@@ -92,9 +92,8 @@ object QuantraColors {
     val outlineInt = 0xFFAABBCC.toInt()      // LIGHTER outline
 }
 
-// Orbitron font family - Futuristic geometric sans-serif (Samsung-safe direct TTF loading)
+// Orbitron font family - Futuristic display font for headers/branding (Samsung-safe direct TTF loading)
 // CRITICAL: References TTF files directly (NOT XML) to avoid Samsung device crashes
-// Samsung devices crash when using FontFamily(Font(R.font.font_family_xml_file))
 val OrbitronFontFamily = try {
     FontFamily(
         Font(R.font.orbitron_regular, FontWeight.Normal),
@@ -106,7 +105,20 @@ val OrbitronFontFamily = try {
     FontFamily.Default  // Graceful fallback to Roboto
 }
 
-// HD Contrast Typography - Using Orbitron for futuristic, sci-fi aesthetic
+// Space Grotesk font family - Clean, readable font for body text (Samsung-safe direct TTF loading)
+val SpaceGroteskFontFamily = try {
+    FontFamily(
+        Font(R.font.space_grotesk_regular, FontWeight.Normal),
+        Font(R.font.space_grotesk_medium, FontWeight.Medium)
+    )
+} catch (e: Exception) {
+    Log.e("QuantraTheme", "Failed to load Space Grotesk font, using system default", e)
+    FontFamily.Default  // Graceful fallback to Roboto
+}
+
+// HD Contrast Typography - Dual-font system for optimal readability
+// Orbitron: Display/Headline/Title (futuristic branding, matches logo)
+// Space Grotesk: Body/Label (clean, readable for content)
 val QVTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = OrbitronFontFamily,
@@ -172,42 +184,42 @@ val QVTypography = Typography(
         letterSpacing = 0.1.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
+        fontFamily = SpaceGroteskFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
+        fontFamily = SpaceGroteskFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
     bodySmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
+        fontFamily = SpaceGroteskFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
     labelLarge = TextStyle(
-        fontFamily = OrbitronFontFamily,
+        fontFamily = SpaceGroteskFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = OrbitronFontFamily,
+        fontFamily = SpaceGroteskFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = OrbitronFontFamily,
+        fontFamily = SpaceGroteskFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
