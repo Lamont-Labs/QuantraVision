@@ -88,37 +88,48 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
 - Fixed adaptive icon cropping issue - border aligned with icon edge
 
-### November 6, 2025 - QuantraCore Theme Implementation
-**Complete theme overhaul matching QuantraCore reference branding:**
+### November 6, 2025 - HD Contrast Design System (MAJOR VISUAL UPDATE)
+**Complete visual overhaul for sharp, high-definition UI matching QuantraCore logo sharpness:**
 
-**Color Palette Updates:**
-- Background: #0A1420 (deep navy, QuantraCore exact match)
-- Primary cyan: #00E5FF (neon holographic glow)
-- Cyan bright: #00F0FF (mid-layer emphasis)
-- Cyan brightest: #00FFFF (sharp inner lines)
-- Orange accent: #FF9800 (warm highlight, replaces old yellow)
-- Gold metallic: #FFA726 (bronze/gold accents)
-- Surface: #1A2332 (metallic blue-tinted dark)
-- Info/Secondary: #4DD0E1 (lighter cyan for secondary text)
+**HD Contrast Color Palette:**
+- Background: #05070D (DEEPER near-black for max contrast, was #0A1420)
+- Primary cyan: #00F0FF (BRIGHTER neon, was #00E5FF)
+- Cyan bright: #00FFFF (BRIGHTEST for sharp edges)
+- Orange accent: #FF9F00 (BRIGHTER, was #FF9800)
+- Gold metallic: #FFB347 (BRIGHTER, was #FFA726)
+- Surface: #0D1219 (DARKER for stronger separation, was #1A2332)
+- Info/Secondary: #5FDDEB (BRIGHTER cyan, was #4DD0E1)
+- Outlines: 85% opacity (SOLID and CRISP, was 60%)
 
-**Architecture Improvements:**
-- Created `QuantraColors` object in Theme.kt for View-based components (bridges View/Compose layers)
-- All overlay View components (LogoBadge, GlowingBorderView, LatencyProfilerHUD, ViabilityExplainer) now use QuantraColors
-- Eliminated all hardcoded color literals for complete palette consistency
+**Sharper Border System:**
+- GlowingBorderView: REDUCED blur for sharpness
+  - Outer bloom: 10px blur (was 24px - 58% reduction)
+  - Mid layer: 6px blur + 78% solid opacity (was 12px blur at 55%)
+  - Inner edge: Pure WHITE 1px at 100% opacity (max definition)
+- Result: Dramatically crisper glowing border overlay
 
-**Glow Effects Enhancement:**
-- GlowingBorderView: Multi-layer holographic border (outer bloom 24px + mid glow 12px + inner sharp line)
-- EnhancedOverlayView: Enhanced pattern highlight glows (18px blur, 75% intensity, 12px stroke width)
-- Pulsing animation: High-intensity mode (63-86% opacity) vs normal ambient glow (39-70% opacity)
+**HD Screen Design (Dashboard, Onboarding, All Cards):**
+- Cards: 8dp elevation + crisp BorderStroke + sharp 4dp corners
+- Typography: ExtraBold headers, Bold body text (was normal weight)
+- Icons: 32dp size (was 24dp - 33% larger)
+- Buttons: Solid colors (no transparency), sharp 4dp corners, bold text
+- Spacing: Increased 25% across the board (16→20dp, 12→16dp)
+- Text sizes: +2sp increase for better definition
 
-**UI Refinements:**
-- OnboardingScreen: Scrollable layout with top alignment prevents text cutoff
-- Pure white text (#FFFFFF) for maximum contrast on deep navy background
-- Sharp cyan borders (60-70% opacity) with holographic bloom
-- All screens use MaterialTheme.colorScheme for automatic theme propagation
+**Visual Impact:**
+- Near-black backgrounds create MAXIMUM contrast with bright neon accents
+- Reduced blur radii create noticeably SHARPER, crisper edges
+- Bolder typography improves readability and premium feel
+- Solid borders and higher elevations enhance visual hierarchy
+- Brighter accent colors POP against deep backgrounds
+
+**Architecture:**
+- QuantraColors object updated with HD contrast integer values
+- All screens inherit sharp design from Theme.kt automatically
+- Consistent 3-tier border system across overlays and UI
+- Single source of truth for HD contrast aesthetic
 
 **Developer Experience:**
-- Single source of truth for all colors (Theme.kt)
-- QuantraColors object provides integer colors for Android Views
-- MaterialTheme provides Color objects for Jetpack Compose
-- Future theme changes update across entire app instantly
+- One theme change updates entire app instantly
+- No more soft/blurry UI elements
+- Professional, premium aesthetic matching QuantraCore logo
