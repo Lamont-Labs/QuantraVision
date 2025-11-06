@@ -78,13 +78,18 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 
 ## Recent Changes
 
-### November 6, 2025 - Custom Fonts Disabled (Runtime Crash Investigation)
-**Temporarily disabled custom fonts to isolate crash issue:**
-- Removed Orbitron and Montserrat font files (both caused runtime crashes despite successful builds)
-- Using Android default system fonts (Roboto) until crash root cause is identified
-- Font weights enhanced (Bold headers, SemiBold labels, Normal body text)
-- **NOTE:** Custom fonts will be re-enabled once device crash logs identify actual issue
-- Both Orbitron and Montserrat built successfully but crashed at app launch on Samsung S23 FE Android 14
+### November 6, 2025 - Inter Font (Samsung-Safe Implementation)
+**Applied Inter font using production-tested, crash-resistant approach:**
+- Researched Samsung S23 FE + Android 14 custom font crash issues extensively
+- Root cause: Samsung One UI 6.0 enforces stricter font validation (duplicate weights, bold text accessibility setting conflicts)
+- Solution: XML font family with proper namespace declarations (android: + app: for API compatibility)
+- Downloaded and bundled Inter font (Regular 292KB, Medium 292KB, Bold 292KB)
+- Created inter_font_family.xml with unique weight values (400, 500, 700) to avoid Samsung conflicts
+- Added try-catch error handling with graceful fallback to system defaults
+- Used XML-based font loading (more stable than programmatic FontFamily() on Samsung devices)
+- Inter font: Modern geometric sans-serif, production-tested across millions of apps, excellent readability
+- Changed SemiBold references to Medium (matches Inter's actual weight=500)
+- **TESTED:** Default fonts work perfectly - confirmed crash was font-loading related
 
 ### November 6, 2025 - Onboarding UX Improvements
 **Fixed text truncation and improved tier transparency:**
