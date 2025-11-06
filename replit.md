@@ -57,3 +57,13 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - **Pattern Templates**: 109 PNG reference images and YAML configurations for chart patterns.
 - **Legal Documents**: HTML/Markdown for terms and privacy policy.
 - **Educational Content**: Interactive lessons and the "Trading Book".
+
+## Recent Changes
+
+### November 6, 2025 - Pattern-to-Plan Overlay Integration
+**Changes:**
+- Integrated Pattern-to-Plan Engine into overlay for instant trade scenario display
+- Entry/stop/target prices now show directly on pattern detections (Pro tier only)
+- Simplified dashboard from 15 → 8 features (kept Achievements + Predictions)
+- Fixed Room database compilation error by moving tradeScenario out of PatternMatch constructor
+- All paywalls bypassed for testing (BYPASS_PAYWALLS = true)

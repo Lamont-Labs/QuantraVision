@@ -46,9 +46,11 @@ data class PatternMatch(
     val consensusScore: Double,   // Consensus across scales
     val windowMs: Long,           // Temporal stability window contribution
     val originPath: String = "",  // Source image path (e.g., "validation/test_1234567890.png")
-    val detectionBounds: String? = null,  // Bounding box as "x,y,w,h" or null if unavailable
-    @Ignore val tradeScenario: TradeScenarioInfo? = null  // Pattern-to-Plan trade info (Pro tier only, not persisted)
-)
+    val detectionBounds: String? = null  // Bounding box as "x,y,w,h" or null if unavailable
+) {
+    @Ignore
+    var tradeScenario: TradeScenarioInfo? = null  // Pattern-to-Plan trade info (Pro tier only, not persisted)
+}
 
 @Dao
 interface PatternDao {

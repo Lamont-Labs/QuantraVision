@@ -199,7 +199,7 @@ class OverlayService : Service() {
                                         timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
                                         
                                         for (pattern in results) {
-                                            var patternMatch = pattern.toPatternMatch()
+                                            val patternMatch = pattern.toPatternMatch()
                                             
                                             if (isProActive) {
                                                 try {
@@ -209,12 +209,10 @@ class OverlayService : Service() {
                                                         currentPrice = mockPrice
                                                     )
                                                     
-                                                    patternMatch = patternMatch.copy(
-                                                        tradeScenario = TradeScenarioInfo(
-                                                            entryPrice = scenario.entryPrice,
-                                                            stopLoss = scenario.stopLoss,
-                                                            takeProfit = scenario.takeProfit
-                                                        )
+                                                    patternMatch.tradeScenario = TradeScenarioInfo(
+                                                        entryPrice = scenario.entryPrice,
+                                                        stopLoss = scenario.stopLoss,
+                                                        takeProfit = scenario.takeProfit
                                                     )
                                                     
                                                     timber.log.Timber.d("Generated trade scenario for ${patternMatch.patternName}: Entry=${scenario.entryPrice}, Stop=${scenario.stopLoss}, Target=${scenario.takeProfit}")
