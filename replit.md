@@ -87,5 +87,38 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - All paywalls bypassed for testing (BYPASS_PAYWALLS = true in 5 files: BillingManager.kt, ProFeatureGate.kt, StandardFeatureGate.kt, StarterFeatureGate.kt, BookFeatureGate.kt)
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
 - Fixed adaptive icon cropping issue - border aligned with icon edge
-- Sharpened UI theme: balanced dark background (#0A1218), pure white text, sharper cyan borders (60% opacity), neon accent colors matching icon aesthetic
-- Fixed onboarding screen visibility: all text now pure white, improved padding to prevent cropping
+
+### November 6, 2025 - QuantraCore Theme Implementation
+**Complete theme overhaul matching QuantraCore reference branding:**
+
+**Color Palette Updates:**
+- Background: #0A1420 (deep navy, QuantraCore exact match)
+- Primary cyan: #00E5FF (neon holographic glow)
+- Cyan bright: #00F0FF (mid-layer emphasis)
+- Cyan brightest: #00FFFF (sharp inner lines)
+- Orange accent: #FF9800 (warm highlight, replaces old yellow)
+- Gold metallic: #FFA726 (bronze/gold accents)
+- Surface: #1A2332 (metallic blue-tinted dark)
+- Info/Secondary: #4DD0E1 (lighter cyan for secondary text)
+
+**Architecture Improvements:**
+- Created `QuantraColors` object in Theme.kt for View-based components (bridges View/Compose layers)
+- All overlay View components (LogoBadge, GlowingBorderView, LatencyProfilerHUD, ViabilityExplainer) now use QuantraColors
+- Eliminated all hardcoded color literals for complete palette consistency
+
+**Glow Effects Enhancement:**
+- GlowingBorderView: Multi-layer holographic border (outer bloom 24px + mid glow 12px + inner sharp line)
+- EnhancedOverlayView: Enhanced pattern highlight glows (18px blur, 75% intensity, 12px stroke width)
+- Pulsing animation: High-intensity mode (63-86% opacity) vs normal ambient glow (39-70% opacity)
+
+**UI Refinements:**
+- OnboardingScreen: Scrollable layout with top alignment prevents text cutoff
+- Pure white text (#FFFFFF) for maximum contrast on deep navy background
+- Sharp cyan borders (60-70% opacity) with holographic bloom
+- All screens use MaterialTheme.colorScheme for automatic theme propagation
+
+**Developer Experience:**
+- Single source of truth for all colors (Theme.kt)
+- QuantraColors object provides integer colors for Android Views
+- MaterialTheme provides Color objects for Jetpack Compose
+- Future theme changes update across entire app instantly

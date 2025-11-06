@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.lamontlabs.quantravision.analysis.TradeabilityResult
+import com.lamontlabs.quantravision.ui.QuantraColors
 
 /**
  * Viability Explainer
@@ -25,7 +26,7 @@ fun ViabilityExplainerDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.medium,
-            color = Color(0xFF0D151D)
+            color = Color(QuantraColors.darkBgInt)
         ) {
             Column(
                 modifier = Modifier
@@ -35,12 +36,12 @@ fun ViabilityExplainerDialog(
             ) {
                 Text(
                     text = "Tradeability Breakdown",
-                    color = Color(0xFF00E5FF),
+                    color = Color(QuantraColors.cyanInt),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(8.dp))
-                Divider(color = Color(0xFF1E2A33))
+                Divider(color = Color(QuantraColors.surfaceInt))
                 Spacer(Modifier.height(12.dp))
                 FactorRow("Confidence", result.confidenceFactor())
                 FactorRow("Confluence", result.confluenceFactor())
@@ -52,7 +53,7 @@ fun ViabilityExplainerDialog(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(16.dp))
-                Button(onClick = onDismiss, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E5FF))) {
+                Button(onClick = onDismiss, colors = ButtonDefaults.buttonColors(containerColor = Color(QuantraColors.cyanInt))) {
                     Text("Close", color = Color.Black)
                 }
             }
@@ -75,7 +76,7 @@ private fun FactorRow(label: String, value: Float) {
             modifier = Modifier
                 .width(140.dp)
                 .height(8.dp),
-            color = Color(0xFF00E5FF)
+            color = Color(QuantraColors.cyanInt)
         )
         Text("$pct%", color = Color.White, style = MaterialTheme.typography.bodySmall)
     }

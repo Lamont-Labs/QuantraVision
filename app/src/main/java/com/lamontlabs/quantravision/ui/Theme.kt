@@ -70,6 +70,21 @@ val ColorScheme.gold: Color
 val ColorScheme.orange: Color
     get() = QVOrange
 
+object QuantraColors {
+    val cyanInt = 0xFF00E5FF.toInt()
+    val cyanBrightInt = 0xFF00F0FF.toInt()
+    val cyanBrightestInt = 0xFF00FFFF.toInt()
+    val darkBgInt = 0xFF0A1420.toInt()
+    val surfaceInt = 0xFF1A2332.toInt()
+    val whiteInt = 0xFFFFFFFF.toInt()
+    val successInt = 0xFF00FF88.toInt()
+    val orangeInt = 0xFFFF9800.toInt()
+    val errorInt = 0xFFFF1744.toInt()
+    val goldInt = 0xFFFFA726.toInt()
+    val infoInt = 0xFF4DD0E1.toInt()
+    val outlineInt = 0xFF7A8A99.toInt()
+}
+
 @Composable
 fun QuantraVisionTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = QVColors, typography = Typography(), content = content)

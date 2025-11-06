@@ -9,6 +9,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.OvershootInterpolator
+import com.lamontlabs.quantravision.ui.QuantraColors
 
 class LogoBadge @JvmOverloads constructor(
     context: Context,
@@ -20,10 +21,10 @@ class LogoBadge @JvmOverloads constructor(
     private var detectionStatus = DetectionStatus.IDLE
     private var ringRotation = 0f
 
-    private val colorError = 0xFFFF1744.toInt()
-    private val colorSuccess = 0xFF00FF88.toInt()
-    private val colorOrange = 0xFFFF9800.toInt()
-    private val colorOutline = 0xFF9E9E9E.toInt()
+    private val colorError = QuantraColors.errorInt
+    private val colorSuccess = QuantraColors.successInt
+    private val colorOrange = QuantraColors.orangeInt
+    private val colorOutline = QuantraColors.outlineInt
 
     private val badgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = colorError

@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision.overlay
 import android.content.Context
 import android.graphics.*
 import android.view.View
+import com.lamontlabs.quantravision.ui.QuantraColors
 
 /**
  * QuantraCore holographic glowing border overlay.
@@ -15,7 +16,7 @@ import android.view.View
 class GlowingBorderView(context: Context) : View(context) {
     
     private val outerGlowPaint = Paint().apply {
-        color = Color.parseColor("#00E5FF")  // QuantraCore cyan
+        color = QuantraColors.cyanInt
         style = Paint.Style.STROKE
         strokeWidth = 12f  // Wide bloom effect
         alpha = 100  // 39% opacity for soft outer glow
@@ -25,7 +26,7 @@ class GlowingBorderView(context: Context) : View(context) {
     }
     
     private val borderPaint = Paint().apply {
-        color = Color.parseColor("#00F0FF")  // Brighter cyan for mid layer
+        color = QuantraColors.cyanBrightInt
         style = Paint.Style.STROKE
         strokeWidth = 6f  // Medium border
         alpha = 140  // 55% opacity - more visible
@@ -35,7 +36,7 @@ class GlowingBorderView(context: Context) : View(context) {
     }
     
     private val innerBorderPaint = Paint().apply {
-        color = Color.parseColor("#00FFFF")  // Brightest cyan for inner sharp line
+        color = QuantraColors.cyanBrightestInt
         style = Paint.Style.STROKE
         strokeWidth = 2f  // Thin sharp line
         alpha = 180  // 70% opacity for definition

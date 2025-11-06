@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lamontlabs.quantravision.ui.QuantraColors
 import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
@@ -38,9 +39,9 @@ fun LatencyProfilerHUD(
 
     val ratio = (ms / targetMs).coerceIn(0f, 2f) / 2f // 0..1 maps 0..2x
     val (label, color) = when {
-        ms <= targetMs     -> "Realtime" to Color(0xFF00E5FF)
-        ms <= targetMs*1.5 -> "Okay" to Color(0xFFFFC107)
-        else               -> "Slow" to Color(0xFFFF5252)
+        ms <= targetMs     -> "Realtime" to Color(QuantraColors.cyanInt)
+        ms <= targetMs*1.5 -> "Okay" to Color(QuantraColors.goldInt)
+        else               -> "Slow" to Color(QuantraColors.errorInt)
     }
 
     Box(
@@ -48,7 +49,7 @@ fun LatencyProfilerHUD(
             .fillMaxWidth()
             .wrapContentHeight()
             .alpha(0.9f)
-            .background(Color(0xB30B1117))
+            .background(Color(QuantraColors.darkBgInt).copy(alpha = 0.702f))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -77,7 +78,7 @@ fun LatencyProfilerHUD(
                     .fillMaxWidth()
                     .height(8.dp),
                 color = color,
-                trackColor = Color(0xFF1E2A33)
+                trackColor = Color(QuantraColors.surfaceInt)
             )
         }
     }
