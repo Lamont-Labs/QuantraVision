@@ -89,3 +89,43 @@ object QuantraColors {
 fun QuantraVisionTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = QVColors, typography = Typography(), content = content)
 }
+
+// ============================================================================
+// METALLIC DESIGN SYSTEM INTEGRATION
+// ============================================================================
+
+/**
+ * Returns the primary metallic cyan gradient brush
+ */
+@Composable
+fun rememberMetallicBrush(): androidx.compose.ui.graphics.Brush {
+    return metallicCyanBrush
+}
+
+/**
+ * Returns the chrome border gradient brush
+ */
+@Composable
+fun rememberChromeBorderBrush(): androidx.compose.ui.graphics.Brush {
+    return chromeBorderBrush
+}
+
+/**
+ * Returns the specular highlight brush for overlays
+ */
+@Composable
+fun rememberSpecularBrush(): androidx.compose.ui.graphics.Brush {
+    return specularHighlight
+}
+
+/**
+ * Extension property for metallic styling
+ */
+val ColorScheme.metallic: Color
+    get() = QVCyanBright
+
+/**
+ * Extension property for chrome accent
+ */
+val ColorScheme.chrome: Color
+    get() = Color(0xFFB2FFFF)

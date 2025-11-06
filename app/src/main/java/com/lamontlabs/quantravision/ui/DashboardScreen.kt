@@ -122,30 +122,26 @@ fun DashboardScreen(
             AlertSettingsCard(context)
             
             // CORE FEATURE - Most Important
-            Text(
+            MetallicText(
                 "Detection",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                glowIntensity = 0.8f
             )
             
-            Button(
+            MetallicButton(
                 onClick = onStartScan,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = true
             ) {
                 Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Start Detection", fontWeight = FontWeight.Bold)
             }
             
-            Button(
+            MetallicButton(
                 onClick = onReview,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = false
             ) {
                 Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
@@ -153,24 +149,20 @@ fun DashboardScreen(
             }
             
             Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
+            MetallicDivider()
             Spacer(Modifier.height(8.dp))
             
             // INTELLIGENCE STACK
-            Text(
+            MetallicText(
                 "Intelligence Stack (Pro)",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.tertiary
+                glowIntensity = 0.7f
             )
             
-            Button(
+            MetallicButton(
                 onClick = onIntelligence,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                ),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = true
             ) {
                 Icon(Icons.Default.Psychology, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
@@ -178,21 +170,20 @@ fun DashboardScreen(
             }
             
             Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
+            MetallicDivider()
             Spacer(Modifier.height(8.dp))
             
             // PREDICTIONS
-            Text(
+            MetallicText(
                 "Insights",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                glowIntensity = 0.6f
             )
             
-            Button(
+            MetallicButton(
                 onClick = onPredictions,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = false
             ) {
                 Icon(Icons.Default.TrendingUp, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
@@ -200,41 +191,40 @@ fun DashboardScreen(
             }
             
             Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
+            MetallicDivider()
             Spacer(Modifier.height(8.dp))
             
             // EDUCATION
-            Text(
+            MetallicText(
                 "Learn & Progress",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                glowIntensity = 0.6f
             )
             
-            Button(
+            MetallicButton(
                 onClick = onTutorials,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = false
             ) {
                 Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Tutorials", fontWeight = FontWeight.Bold)
             }
             
-            Button(
+            MetallicButton(
                 onClick = onBook,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = false
             ) {
                 Icon(Icons.Default.Book, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Trading Book", fontWeight = FontWeight.Bold)
             }
             
-            Button(
+            MetallicButton(
                 onClick = onAchievements,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = false
             ) {
                 Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
@@ -242,14 +232,14 @@ fun DashboardScreen(
             }
             
             Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
+            MetallicDivider()
             Spacer(Modifier.height(8.dp))
             
             // SETTINGS
-            Button(
+            MetallicButton(
                 onClick = onSettings,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp)
+                showTopStrip = false
             ) {
                 Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.width(8.dp))
@@ -265,26 +255,19 @@ fun AlertSettingsCard(context: Context) {
     var voiceEnabled by remember { mutableStateOf(alertManager.isVoiceEnabled()) }
     var hapticEnabled by remember { mutableStateOf(alertManager.isHapticEnabled()) }
     
-    Card(
+    MetallicCard(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        shape = RoundedCornerShape(4.dp)
+        enableShimmer = false,
+        elevation = 8.dp
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
+            MetallicText(
                 "Alert Settings",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                glowIntensity = 0.6f
             )
             
             Row(

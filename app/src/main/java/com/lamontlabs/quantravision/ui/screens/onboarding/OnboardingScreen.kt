@@ -26,6 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.onboarding.OnboardingStep
+import com.lamontlabs.quantravision.ui.MetallicButton
+import com.lamontlabs.quantravision.ui.MetallicCard
+import com.lamontlabs.quantravision.ui.MetallicText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -115,7 +118,7 @@ fun OnboardingScreen(
                     
                     Spacer(modifier = Modifier.weight(1f))
                     
-                    Button(
+                    MetallicButton(
                         onClick = {
                             if (pagerState.currentPage < 4) {
                                 scope.launch {
@@ -126,10 +129,7 @@ fun OnboardingScreen(
                             }
                         },
                         modifier = Modifier.widthIn(min = 120.dp),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        showTopStrip = pagerState.currentPage == 4
                     ) {
                         Text(
                             if (pagerState.currentPage < 4) "Next" else "Get Started",
@@ -161,12 +161,14 @@ fun OnboardingPage(step: OnboardingStep) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        Text(
+        MetallicText(
             text = step.title,
-            style = MaterialTheme.typography.headlineLarge.copy(fontSize = 26.sp),
-            fontWeight = FontWeight.ExtraBold,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = 26.sp,
+                textAlign = TextAlign.Center
+            ),
+            glowIntensity = 0.8f,
+            modifier = Modifier.fillMaxWidth()
         )
         
         Spacer(modifier = Modifier.height(8.dp))
@@ -182,16 +184,10 @@ fun OnboardingPage(step: OnboardingStep) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        Card(
+        MetallicCard(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.85f)),
-            shape = RoundedCornerShape(4.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp
-            )
+            enableShimmer = step == OnboardingStep.PRO_FEATURES,
+            elevation = 8.dp
         ) {
             Column(
                 modifier = Modifier.padding(12.dp),
