@@ -58,6 +58,24 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - **Legal Documents**: HTML/Markdown for terms and privacy policy.
 - **Educational Content**: Interactive lessons and the "Trading Book".
 
+## Touch Pass-Through Research (For Future Implementation)
+
+### Android 12+ Compatibility Issue
+**Problem:** Android 12+ blocks touches through overlays that are >80% opaque.
+**Solution:** Add `params.alpha = 0.8f` to overlay window params in:
+- `OverlayService.kt` lines 77-87 (main overlay)
+- `OverlayService.kt` lines 112-122 (glowing border)
+
+### Floating Menu Touch Blocking
+**Problem:** Menu blocks all touches when visible (MATCH_PARENT size without FLAG_NOT_TOUCH_MODAL).
+**Solution:** Add `FLAG_NOT_TOUCH_MODAL` to FloatingMenu.kt params (line 28-30).
+
+### Key Findings
+- Current implementation correctly uses `FLAG_NOT_TOUCHABLE` for pass-through overlays
+- FloatingLogoButton properly configured with `FLAG_NOT_TOUCH_MODAL` + `WRAP_CONTENT`
+- Main issue: Android 14 (Samsung S23 FE) enforces stricter opacity rules
+- **Deferred:** Wait to implement due to previous issues with touch handling
+
 ## Recent Changes
 
 ### November 6, 2025 - Pattern-to-Plan Overlay Integration & Branding
