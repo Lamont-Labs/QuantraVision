@@ -3,10 +3,75 @@
 ## Overview
 QuantraVision is an offline-first Android application that provides AI-powered chart pattern recognition for retail traders. It utilizes advanced OpenCV template matching to identify 109 technical analysis patterns in real-time. The app prioritizes user privacy through on-device processing and offers features such as predictive detection, multi-modal alerts, pattern invalidation warnings, and explainable AI with audit trails. It operates without subscriptions or cloud dependencies, offering a 4-tier one-time payment structure (Free, Starter, Standard, Pro) for lifetime access. Key features include an "Intelligence Stack" comprising the Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, and Proof Capsules, all designed for offline use with legal disclaimers for educational purposes.
 
+## Working With Agent - Critical Guidelines
+
+### Always Follow These Steps:
+1. **Search the ENTIRE codebase first** before making any changes
+2. **Verify ALL related files** - don't assume only one file needs changes
+3. **Check git log** before assuming changes aren't committed (Replit auto-commits)
+4. **Use GitHub Actions for builds** - Replit environment lacks Android SDK/tooling
+
+### Paywall System Architecture (CRITICAL):
+**Multiple files control paywall access - must modify ALL of them:**
+- `BillingManager.kt` - Core billing logic
+- `ProFeatureGate.kt` - Pro tier checks (used by UI)
+- `StandardFeatureGate.kt` - Standard tier checks (used by UI)
+- `StarterFeatureGate.kt` - Starter tier checks (used by UI)
+
+**Common mistake:** Only modifying BillingManager - paywalls will still show because UI uses FeatureGates directly.
+
+### Build Process:
+- **DO:** Use GitHub Actions (`.github/workflows/android-ci.yml`)
+- **DON'T:** Try to build on Replit (no Android SDK installed)
+- **Build time:** ~5-10 minutes
+- **APK location:** GitHub Actions artifacts → `quantravision-debug.zip`
+- **APK size:** ~281MB (700MB uncompressed due to pattern images)
+
+### Known Issues to Address Later:
+- Overlay button touch-through issues (deferred)
+- APK size optimization (pattern image compression needed)
+
+### Common Commands:
+```bash
+# Push changes to trigger GitHub Actions build
+git push origin main
+
+# Check recent commits (Replit auto-commits)
+git log --oneline -5
+
+# Check what's committed but not pushed
+git log origin/main..HEAD
+
+# Uninstall app via ADB
+adb uninstall com.lamontlabs.quantravision
+```
+
 ## Recent Changes
 
+### November 6, 2025 - Paywall Bypass for Testing
+**STATUS: IN PROGRESS** - Disabling all paywalls to enable full feature testing.
+
+**Changes Made:**
+- Added `BYPASS_PAYWALLS = true` to all 4 paywall control files:
+  - `BillingManager.kt` (line 26)
+  - `ProFeatureGate.kt` (line 19)
+  - `StandardFeatureGate.kt` (line 19)
+  - `StarterFeatureGate.kt` (line 19)
+- All `isActive()` and tier checking methods now return `true` when flag is set
+- Enables testing of Intelligence Stack, Trading Book, and all 109 patterns without purchases
+
+**Lesson Learned:**
+Initial attempt only modified BillingManager.kt - paywalls still appeared because UI screens use FeatureGate objects directly. Must modify ALL paywall control files, not just one.
+
+**Next Steps:**
+1. Push changes to GitHub (`git push origin main`)
+2. Wait for GitHub Actions build (~5-10 min)
+3. Download APK from artifacts
+4. Uninstall old app completely (signature mismatch prevents update)
+5. Install new APK with all paywalls disabled
+
 ### November 5-6, 2025 - Restoration to Working Version
-**STATUS: RESTORING TO WORKING COMMIT** - After 200+ builds and crashes, identified working version from Nov 3rd evening.
+**STATUS: COMPLETE** - After 200+ builds and crashes, identified working version from Nov 3rd evening.
 
 **Critical Discovery**:
 - App was **working perfectly** the evening of Nov 3rd (commit `9e46f69` - "Add scrollability to dashboard screen")
