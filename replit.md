@@ -68,3 +68,4 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Fixed Room database compilation error by moving tradeScenario out of PatternMatch constructor
 - All paywalls bypassed for testing (BYPASS_PAYWALLS = true)
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
+- Fixed adaptive icon cropping issue - full icon now visible including outer glow
