@@ -5,6 +5,34 @@ QuantraVision is an offline-first Android application that provides AI-powered c
 
 ## Recent Changes
 
+### November 5-6, 2025 - Restoration to Working Version
+**STATUS: RESTORING TO WORKING COMMIT** - After 200+ builds and crashes, identified working version from Nov 3rd evening.
+
+**Critical Discovery**:
+- App was **working perfectly** the evening of Nov 3rd (commit `9e46f69` - "Add scrollability to dashboard screen")
+- Everything **broke Nov 4-5** due to:
+  - 700MB of pattern template images causing OutOfMemory crashes on startup
+  - App loading all 109 patterns × 6MB each = instant crash on Samsung S23 FE (Android 14)
+  - Multiple failed attempts to fix with minimal builds, pattern compression, etc.
+
+**Working Version Identified**:
+- **Commit:** `9e46f69` (Nov 3rd evening / early Nov 4th 01:XX)
+- **Features:** Full scrollable dashboard UI, overlay detection works, achievements work, all navigation functional
+- **UI State:** Professional cyan theme, organized sections, smooth scrolling
+- **Status:** App launches, buttons work, shows paywalls/empty states as expected for free tier
+
+**Build History Context**:
+- Build #207 and earlier: Various crash attempts
+- Build #208-212: Failed attempts with SDK updates, duplicate class fixes, AAR errors
+- Build #213: Successfully restored to commit `b9ce702` (basic working UI but no scrolling)
+- Build #214 (planned): Restoring to commit `9e46f69` (scrollable UI from Nov 3rd evening)
+
+**Next Steps**:
+1. Restore to `9e46f69` (working scrollable dashboard)
+2. Build #214 and verify on device
+3. Document exactly what works
+4. Add improvements ONE AT A TIME with testing between each
+
 ### November 4, 2025 - Critical UX Improvements
 **STATUS: BUILD SUCCESSFUL** - User-reported UX issues resolved, all navigation entry points preserved.
 
