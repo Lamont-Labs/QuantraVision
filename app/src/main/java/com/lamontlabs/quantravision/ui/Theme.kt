@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.Color
 // QuantraVision Brand Colors - Sharpened for high contrast
 val QVCyan = Color(0xFF00E5FF)           // Primary neon cyan (matches icon)
 val QVCyanBright = Color(0xFF00FFFF)     // Brighter cyan for emphasis
-val QVDarkBg = Color(0xFF000408)         // Deeper black-blue background (higher contrast)
-val QVSurface = Color(0xFF0D1821)        // Card/surface (sharper contrast from bg)
+val QVDarkBg = Color(0xFF0A1218)         // Dark blue-black background (balanced contrast)
+val QVSurface = Color(0xFF14212C)        // Card/surface (sharper contrast from bg)
 val QVLightText = Color(0xFFFFFFFF)      // Pure white text (maximum contrast)
 val QVSuccess = Color(0xFF00FF88)        // Neon green (matches cyan aesthetic)
 val QVWarning = Color(0xFFFFAA00)        // Neon orange
