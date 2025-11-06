@@ -22,6 +22,9 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     private lateinit var client: BillingClient
     private var productMap: Map<String, ProductDetails> = emptyMap()
     
+    // DEBUG: Bypass all paywalls for testing (set to false for production)
+    private val BYPASS_PAYWALLS = true
+    
     /**
      * SECURITY: Encrypted SharedPreferences with FAIL-CLOSED pattern
      * NO fallback to unencrypted storage - throws exception if encryption fails
@@ -421,15 +424,18 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
     
-    fun isStarter(): Boolean = getUnlockedTier() == "STARTER" || isStandard() || isPro()
-    fun isStandard(): Boolean = getUnlockedTier() == "STANDARD" || isPro()
-    fun isPro(): Boolean = getUnlockedTier() == "PRO"
+    fun isStarter(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "STARTER" || isStandard() || isPro()
+    fun isStandard(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "STANDARD" || isPro()
+    fun isPro(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "PRO"
     
     /**
      * Check if user has access to the book
      * Book is included with STANDARD/PRO or can be purchased standalone
      */
     fun hasBook(): Boolean {
+        // DEBUG: Bypass paywalls
+        if (BYPASS_PAYWALLS) return true
+        
         // STANDARD and PRO tiers include the book
         if (isStandard() || isPro()) return true
         
