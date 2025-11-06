@@ -48,8 +48,41 @@ adb uninstall com.lamontlabs.quantravision
 
 ## Recent Changes
 
+### November 6, 2025 - UI Simplification
+**STATUS: IN PROGRESS** - Removed bloated features, focused on core value proposition.
+
+**Dashboard Reduced from 15 → 8 Features:**
+
+**KEPT:**
+1. Start Detection (core feature)
+2. View Detections (results)
+3. Intelligence Hub (unique differentiator: Regime Navigator, Pattern-to-Plan, Behavioral Guardrails, Proof Capsules)
+4. Predictions (pattern forecasting)
+5. Tutorials (interactive education)
+6. Trading Book ("The Friendly Trader" by Jesse J. Lamont)
+7. Achievements (gamification)
+8. Settings (configuration)
+
+**REMOVED:**
+- Pattern Analytics (overcomplicated)
+- Backtesting (not core value)
+- Similarity Search (edge case feature)
+- Multi-Chart Comparison (overcomplicated)
+- Template Manager (developer tool)
+- Voice Commands FAB (buggy, non-essential)
+- Clear All Detections (moved to Settings later)
+
+**UI Sections:**
+1. Detection (2 buttons)
+2. Intelligence Stack (1 button → opens 4 features)
+3. Insights (1 button - Predictions)
+4. Learn & Progress (3 buttons - Tutorials, Book, Achievements)
+5. Settings (1 button)
+
+**Rationale:** User wanted focused product, not feature bloat. Keep education (all tutorials + book), keep gamification (achievements), keep unique value (Intelligence Stack), remove everything else.
+
 ### November 6, 2025 - Paywall Bypass for Testing
-**STATUS: IN PROGRESS** - Disabling all paywalls to enable full feature testing.
+**STATUS: COMPLETE** - Disabled all paywalls to enable full feature testing.
 
 **Changes Made:**
 - Added `BYPASS_PAYWALLS = true` to all 4 paywall control files:

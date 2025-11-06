@@ -103,63 +103,7 @@ fun DashboardScreen(
     }
     
     Scaffold(
-        topBar = { TopAppBar(title = { Text("QuantraVision Dashboard") }) },
-        floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AnimatedVisibility(
-                    visible = showStatusMessage && voiceCommandStatus != null,
-                    enter = fadeIn() + slideInHorizontally { it },
-                    exit = fadeOut() + slideOutHorizontally { it }
-                ) {
-                    Surface(
-                        tonalElevation = 4.dp,
-                        shape = MaterialTheme.shapes.medium,
-                        color = when (voiceCommandStatus?.state) {
-                            VoiceCommandState.LISTENING -> MaterialTheme.colorScheme.primaryContainer
-                            VoiceCommandState.SUCCESS -> MaterialTheme.colorScheme.tertiaryContainer
-                            VoiceCommandState.ERROR -> MaterialTheme.colorScheme.errorContainer
-                            else -> MaterialTheme.colorScheme.surfaceVariant
-                        }
-                    ) {
-                        Text(
-                            text = voiceCommandStatus?.message ?: "",
-                            modifier = Modifier.padding(12.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-                
-                FloatingActionButton(
-                    onClick = {
-                        if (hasAudioPermission) {
-                            when (voiceCommandStatus?.state) {
-                                VoiceCommandState.LISTENING -> voiceHandler.stopListening()
-                                else -> voiceHandler.startListening()
-                            }
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                        }
-                    },
-                    containerColor = when (voiceCommandStatus?.state) {
-                        VoiceCommandState.LISTENING -> MaterialTheme.colorScheme.error
-                        VoiceCommandState.PROCESSING -> MaterialTheme.colorScheme.secondary
-                        else -> MaterialTheme.colorScheme.primary
-                    }
-                ) {
-                    Icon(
-                        imageVector = when (voiceCommandStatus?.state) {
-                            VoiceCommandState.LISTENING -> Icons.Default.MicOff
-                            VoiceCommandState.PROCESSING -> Icons.Default.HourglassEmpty
-                            else -> Icons.Default.Mic
-                        },
-                        contentDescription = "Voice Commands"
-                    )
-                }
-            }
-        }
+        topBar = { TopAppBar(title = { Text("QuantraVision Dashboard") }) }
     ) { padding ->
         Column(
             Modifier
@@ -225,42 +169,17 @@ fun DashboardScreen(
             HorizontalDivider()
             Spacer(Modifier.height(8.dp))
             
-            // ANALYTICS & TOOLS
+            // PREDICTIONS
             Text(
-                "Analytics & Tools",
+                "Insights",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(onClick = onAnalytics, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.TrendingUp, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Pattern Analytics")
-            }
-            
             Button(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.TrendingUp, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Predictions")
-            }
-            
-            Button(onClick = onBacktesting, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Assessment, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Backtesting")
-            }
-            
-            Button(onClick = onSimilarity, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Search, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Similarity Search")
-            }
-            
-            Button(onClick = onMultiChart, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.CompareArrows, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Multi-Chart Comparison")
-            }
-            
-            Button(onClick = onTemplates, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Tune, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Template Manager")
             }
             
             Spacer(Modifier.height(8.dp))
@@ -294,22 +213,10 @@ fun DashboardScreen(
             HorizontalDivider()
             Spacer(Modifier.height(8.dp))
             
-            // SETTINGS & UTILITIES
-            Text(
-                "Settings",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            
+            // SETTINGS
             Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Settings, contentDescription = null)
                 Spacer(Modifier.width(8.dp)); Text("Settings")
-            }
-            
-            OutlinedButton(onClick = onClearHighlights, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Clear, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Clear All Detections")
             }
         }
     }
