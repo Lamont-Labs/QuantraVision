@@ -4,17 +4,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// QuantraVision Brand Colors - Sharpened for high contrast
-val QVCyan = Color(0xFF00E5FF)           // Primary neon cyan (matches icon)
-val QVCyanBright = Color(0xFF00FFFF)     // Brighter cyan for emphasis
-val QVDarkBg = Color(0xFF0A1218)         // Dark blue-black background (balanced contrast)
-val QVSurface = Color(0xFF14212C)        // Card/surface (sharper contrast from bg)
+// QuantraCore Brand Colors - Matching reference image aesthetic
+val QVCyan = Color(0xFF00E5FF)           // Primary neon cyan (holographic glow)
+val QVCyanBright = Color(0xFF00F0FF)     // Brighter cyan for emphasis & glows
+val QVDarkBg = Color(0xFF0A1420)         // Deep navy background (QuantraCore exact match)
+val QVSurface = Color(0xFF1A2332)        // Metallic surface (blue-tinted dark)
 val QVLightText = Color(0xFFFFFFFF)      // Pure white text (maximum contrast)
 val QVSuccess = Color(0xFF00FF88)        // Neon green (matches cyan aesthetic)
-val QVWarning = Color(0xFFFFAA00)        // Neon orange
+val QVOrange = Color(0xFFFF9800)         // Warm orange accent (QuantraCore highlight)
 val QVError = Color(0xFFFF1744)          // Neon red (accessibility-safe)
-val QVGold = Color(0xFFFFD700)           // Achievement/premium (gold)
-val QVInfo = Color(0xFF0099FF)           // Neon blue
+val QVGold = Color(0xFFFFA726)           // Gold/bronze metallic (matches reference)
+val QVInfo = Color(0xFF4DD0E1)           // Lighter cyan for secondary text
 
 private val QVColors = darkColorScheme(
     // Primary colors (Neon Cyan - matches icon)
@@ -35,13 +35,13 @@ private val QVColors = darkColorScheme(
     tertiaryContainer = QVGold.copy(alpha = 0.15f),
     onTertiaryContainer = QVGold,
     
-    // Background/Surface - Deeper blacks, sharper contrast
+    // Background/Surface - Deep navy with blue tint (QuantraCore aesthetic)
     background = QVDarkBg,
     onBackground = QVLightText,
     surface = QVSurface,
     onSurface = QVLightText,
-    surfaceVariant = Color(0xFF0F1D28),
-    onSurfaceVariant = Color(0xFFE0E0E0),
+    surfaceVariant = Color(0xFF141F2E),   // Subtle blue tint for depth
+    onSurfaceVariant = QVInfo,             // Lighter cyan for secondary text
     
     // Error (Neon red)
     error = QVError,
@@ -54,18 +54,21 @@ private val QVColors = darkColorScheme(
     outlineVariant = QVCyan.copy(alpha = 0.25f)  // Subtle glow for inactive borders
 )
 
-// Extension colors for semantic use
+// Extension colors for semantic use (QuantraCore palette)
 val ColorScheme.success: Color
     get() = QVSuccess
 
 val ColorScheme.warning: Color
-    get() = QVWarning
+    get() = QVOrange
 
 val ColorScheme.info: Color
     get() = QVInfo
 
 val ColorScheme.gold: Color
     get() = QVGold
+
+val ColorScheme.orange: Color
+    get() = QVOrange
 
 @Composable
 fun QuantraVisionTheme(content: @Composable () -> Unit) {
