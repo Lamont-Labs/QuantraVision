@@ -5,30 +5,40 @@ import android.graphics.*
 import android.view.View
 
 /**
- * A minimal, beautiful glowing border overlay that draws around screen edges.
+ * QuantraCore holographic glowing border overlay.
  * Features:
- * - Faint cyan (#00E5FF) glow with very low opacity (23-39%)
- * - Two-layer effect: outer blur + inner sharp line for depth
+ * - Vibrant cyan (#00E5FF) glow with enhanced bloom effect
+ * - Multi-layer effect: outer bloom + mid glow + inner sharp line
  * - Touch-passthrough (FLAG_NOT_TOUCHABLE)
- * - Optional pulsing animation when patterns detected
+ * - Pulsing animation when patterns detected
  */
 class GlowingBorderView(context: Context) : View(context) {
     
-    private val borderPaint = Paint().apply {
-        color = Color.parseColor("#00E5FF")  // Brand cyan color
+    private val outerGlowPaint = Paint().apply {
+        color = Color.parseColor("#00E5FF")  // QuantraCore cyan
         style = Paint.Style.STROKE
-        strokeWidth = 8f  // Thin border
-        alpha = 60  // Very subtle - 23% opacity
+        strokeWidth = 12f  // Wide bloom effect
+        alpha = 100  // 39% opacity for soft outer glow
         isAntiAlias = true
-        // Blur effect for soft glow
-        maskFilter = BlurMaskFilter(16f, BlurMaskFilter.Blur.OUTER)
+        // Enhanced blur for holographic bloom
+        maskFilter = BlurMaskFilter(24f, BlurMaskFilter.Blur.OUTER)
+    }
+    
+    private val borderPaint = Paint().apply {
+        color = Color.parseColor("#00F0FF")  // Brighter cyan for mid layer
+        style = Paint.Style.STROKE
+        strokeWidth = 6f  // Medium border
+        alpha = 140  // 55% opacity - more visible
+        isAntiAlias = true
+        // Mid-range glow
+        maskFilter = BlurMaskFilter(12f, BlurMaskFilter.Blur.OUTER)
     }
     
     private val innerBorderPaint = Paint().apply {
-        color = Color.parseColor("#00E5FF")
+        color = Color.parseColor("#00FFFF")  // Brightest cyan for inner sharp line
         style = Paint.Style.STROKE
-        strokeWidth = 2f  // Even thinner inner line
-        alpha = 100  // Slightly more visible - 39% opacity
+        strokeWidth = 2f  // Thin sharp line
+        alpha = 180  // 70% opacity for definition
         isAntiAlias = true
     }
     
@@ -44,38 +54,49 @@ class GlowingBorderView(context: Context) : View(context) {
         val height = height.toFloat()
         val margin = 4f  // Small margin from screen edge
         
-        // Draw outer glowing border
+        // Layer 1: Outer bloom (holographic effect)
         canvas.drawRect(
             margin, 
             margin, 
             width - margin, 
             height - margin, 
+            outerGlowPaint
+        )
+        
+        // Layer 2: Mid glow border
+        canvas.drawRect(
+            margin + 4f, 
+            margin + 4f, 
+            width - margin - 4f, 
+            height - margin - 4f, 
             borderPaint
         )
         
-        // Draw inner sharp border for definition
+        // Layer 3: Inner sharp border (definition)
         canvas.drawRect(
-            margin + 6f, 
-            margin + 6f, 
-            width - margin - 6f, 
-            height - margin - 6f, 
+            margin + 8f, 
+            margin + 8f, 
+            width - margin - 8f, 
+            height - margin - 8f, 
             innerBorderPaint
         )
     }
     
     /**
-     * Optional: Add pulsing animation when patterns detected
-     * @param isPulsing true to show high-intensity glow, false for normal subtle glow
+     * Pulse animation for pattern detection - QuantraCore intensity boost
+     * @param isPulsing true for high-intensity holographic glow, false for normal state
      */
     fun setPulsing(isPulsing: Boolean) {
         if (isPulsing) {
-            // Animate alpha to be more visible when patterns detected
-            borderPaint.alpha = 120
-            innerBorderPaint.alpha = 150
+            // High-intensity QuantraCore glow when patterns detected
+            outerGlowPaint.alpha = 160  // 63% - brighter bloom
+            borderPaint.alpha = 200     // 78% - strong mid layer
+            innerBorderPaint.alpha = 220 // 86% - very visible sharp line
         } else {
-            // Return to subtle default state
-            borderPaint.alpha = 60
-            innerBorderPaint.alpha = 100
+            // Normal QuantraCore ambient glow
+            outerGlowPaint.alpha = 100  // 39% - soft bloom
+            borderPaint.alpha = 140     // 55% - balanced mid layer
+            innerBorderPaint.alpha = 180 // 70% - clear definition
         }
         invalidate()
     }

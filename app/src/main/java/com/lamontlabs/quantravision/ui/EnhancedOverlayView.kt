@@ -62,8 +62,8 @@ class EnhancedOverlayView @JvmOverloads constructor(
     private val watermarkPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val overlayPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     
-    private val shadowBlur = BlurMaskFilter(16f, BlurMaskFilter.Blur.NORMAL)
-    private val glowBlur = BlurMaskFilter(12f, BlurMaskFilter.Blur.OUTER)
+    private val shadowBlur = BlurMaskFilter(20f, BlurMaskFilter.Blur.NORMAL)
+    private val glowBlur = BlurMaskFilter(18f, BlurMaskFilter.Blur.OUTER)  // Enhanced QuantraCore glow
     
     private var cachedBorderGradient: LinearGradient? = null
     private var lastGradientRect: RectF? = null
@@ -265,10 +265,10 @@ class EnhancedOverlayView @JvmOverloads constructor(
 
     private fun drawGlowLayer(canvas: Canvas, rect: RectF, style: PatternStyle, alpha: Int, pulseIntensity: Float) {
         val glowIntensity = (style.glowIntensity * pulseIntensity).coerceIn(0f, 1f)
-        val glowAlpha = (alpha * 0.6f * glowIntensity).toInt()
+        val glowAlpha = (alpha * 0.75f * glowIntensity).toInt()  // Increased from 0.6f for stronger QuantraCore glow
         
         glowPaint.style = Paint.Style.STROKE
-        glowPaint.strokeWidth = 8f
+        glowPaint.strokeWidth = 12f  // Wider for more prominent bloom effect
         glowPaint.color = Color.argb(glowAlpha, style.r, style.g, style.b)
         glowPaint.maskFilter = glowBlur
         
@@ -277,7 +277,7 @@ class EnhancedOverlayView @JvmOverloads constructor(
 
     private fun drawBorderLayer(canvas: Canvas, rect: RectF, style: PatternStyle, alpha: Int) {
         borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = 3f
+        borderPaint.strokeWidth = 4f  // Slightly thicker for better visibility
         borderPaint.isAntiAlias = true
         borderPaint.isDither = true
         
