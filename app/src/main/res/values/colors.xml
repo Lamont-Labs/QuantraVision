@@ -1,10 +1,11 @@
 <resources>
+    <!-- Sharpened theme - matches icon aesthetic -->
     <color name="qv_accent">#00E5FF</color>
-    <color name="qv_bg">#0A1218</color>
-    <color name="q_background">#0A1218</color>
-    <color name="qv_fg">#E6F7FF</color>
-    <color name="qv_card">#14212C</color>
-    <color name="qv_warn">#FFB300</color>
-    <color name="qv_ok">#2EE6AA</color>
-    <color name="qv_err">#FF5252</color>
+    <color name="qv_bg">#000408</color>
+    <color name="q_background">#000408</color>
+    <color name="qv_fg">#FFFFFF</color>
+    <color name="qv_card">#0D1821</color>
+    <color name="qv_warn">#FFAA00</color>
+    <color name="qv_ok">#00FF88</color>
+    <color name="qv_err">#FF1744</color>
 </resources>

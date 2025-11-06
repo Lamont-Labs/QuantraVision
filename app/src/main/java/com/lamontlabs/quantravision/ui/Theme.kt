@@ -4,53 +4,54 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// QuantraVision Brand Colors
-val QVCyan = Color(0xFF00E5FF)           // Primary brand color (neon cyan)
-val QVDarkBg = Color(0xFF0A1218)         // Dark background
-val QVSurface = Color(0xFF14212C)        // Card/surface color
-val QVLightText = Color(0xFFE6F7FF)      // Light text on dark
-val QVSuccess = Color(0xFF4CAF50)        // Success/positive (green)
-val QVWarning = Color(0xFFFF9800)        // Warning/neutral (orange)
-val QVError = Color(0xFFF44336)          // Error/negative (red)
+// QuantraVision Brand Colors - Sharpened for high contrast
+val QVCyan = Color(0xFF00E5FF)           // Primary neon cyan (matches icon)
+val QVCyanBright = Color(0xFF00FFFF)     // Brighter cyan for emphasis
+val QVDarkBg = Color(0xFF000408)         // Deeper black-blue background (higher contrast)
+val QVSurface = Color(0xFF0D1821)        // Card/surface (sharper contrast from bg)
+val QVLightText = Color(0xFFFFFFFF)      // Pure white text (maximum contrast)
+val QVSuccess = Color(0xFF00FF88)        // Neon green (matches cyan aesthetic)
+val QVWarning = Color(0xFFFFAA00)        // Neon orange
+val QVError = Color(0xFFFF1744)          // Neon red (accessibility-safe)
 val QVGold = Color(0xFFFFD700)           // Achievement/premium (gold)
-val QVInfo = Color(0xFF2196F3)           // Info/secondary (blue)
+val QVInfo = Color(0xFF0099FF)           // Neon blue
 
 private val QVColors = darkColorScheme(
-    // Primary colors (Cyan brand)
+    // Primary colors (Neon Cyan - matches icon)
     primary = QVCyan,
-    onPrimary = Color(0xFF001318),
-    primaryContainer = QVCyan.copy(alpha = 0.2f),
-    onPrimaryContainer = QVCyan,
+    onPrimary = Color(0xFF000000),
+    primaryContainer = QVCyan.copy(alpha = 0.15f),
+    onPrimaryContainer = QVCyanBright,
     
-    // Secondary colors (Blue)
+    // Secondary colors (Neon Blue)
     secondary = QVInfo,
-    onSecondary = Color(0xFF001318),
-    secondaryContainer = QVInfo.copy(alpha = 0.2f),
+    onSecondary = Color(0xFF000000),
+    secondaryContainer = QVInfo.copy(alpha = 0.15f),
     onSecondaryContainer = QVInfo,
     
     // Tertiary colors (Gold for achievements)
     tertiary = QVGold,
-    onTertiary = Color(0xFF001318),
-    tertiaryContainer = QVGold.copy(alpha = 0.2f),
+    onTertiary = Color(0xFF000000),
+    tertiaryContainer = QVGold.copy(alpha = 0.15f),
     onTertiaryContainer = QVGold,
     
-    // Background/Surface
+    // Background/Surface - Deeper blacks, sharper contrast
     background = QVDarkBg,
     onBackground = QVLightText,
     surface = QVSurface,
     onSurface = QVLightText,
-    surfaceVariant = Color(0xFF1A2A3A),
-    onSurfaceVariant = Color(0xFFB0BEC5),
+    surfaceVariant = Color(0xFF0F1D28),
+    onSurfaceVariant = Color(0xFFE0E0E0),
     
-    // Error
+    // Error (Neon red)
     error = QVError,
     onError = Color(0xFFFFFFFF),
-    errorContainer = QVError.copy(alpha = 0.2f),
+    errorContainer = QVError.copy(alpha = 0.15f),
     onErrorContainer = QVError,
     
-    // Outline/Border
-    outline = QVCyan.copy(alpha = 0.3f),
-    outlineVariant = Color(0xFF2A3A4A)
+    // Outline/Border - Sharper, more visible with glow effect
+    outline = QVCyan.copy(alpha = 0.6f),        // Increased from 0.3f for sharper borders
+    outlineVariant = QVCyan.copy(alpha = 0.25f)  // Subtle glow for inactive borders
 )
 
 // Extension colors for semantic use

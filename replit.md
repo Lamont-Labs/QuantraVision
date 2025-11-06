@@ -68,4 +68,5 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Fixed Room database compilation error by moving tradeScenario out of PatternMatch constructor
 - All paywalls bypassed for testing (BYPASS_PAYWALLS = true in 5 files: BillingManager.kt, ProFeatureGate.kt, StandardFeatureGate.kt, StarterFeatureGate.kt, BookFeatureGate.kt)
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
-- Fixed adaptive icon cropping issue - full icon now visible including outer glow
+- Fixed adaptive icon cropping issue - border aligned with icon edge
+- Sharpened UI theme: deeper blacks (#000408), pure white text, sharper cyan borders (60% opacity), neon accent colors matching icon aesthetic
