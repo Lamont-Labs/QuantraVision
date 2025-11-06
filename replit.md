@@ -78,6 +78,15 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 
 ## Recent Changes
 
+### November 6, 2025 - Onboarding UX Improvements
+**Fixed text truncation and improved tier transparency:**
+- Shortened all onboarding descriptions to prevent cutoff on mobile screens
+- Updated final onboarding page to show all 4 tiers (FREE, STARTER, STANDARD, PRO)
+- Changed "Unlock Your Potential" to "Choose Your Plan" for clarity
+- Removed hard-coded prices to avoid divergence from Google Play pricing
+- Added emoji icons for visual hierarchy: 🆓 FREE, ⭐ STARTER, 🔥 STANDARD, 💎 PRO
+- Highlighted "One-time payment • Lifetime access • No subscriptions" messaging
+
 ### November 6, 2025 - Pattern-to-Plan Overlay Integration & Branding
 **Changes:**
 - Integrated Pattern-to-Plan Engine into overlay for instant trade scenario display
