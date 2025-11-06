@@ -115,6 +115,7 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Buttons: Solid colors (no transparency), sharp 4dp corners, bold text
 - Spacing: Increased 25% across the board (16→20dp, 12→16dp)
 - Text sizes: +2sp increase for better definition
+- **Onboarding**: No scrolling - compact centered layout fits on one screen
 
 **Visual Impact:**
 - Near-black backgrounds create MAXIMUM contrast with bright neon accents

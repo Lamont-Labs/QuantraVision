@@ -148,41 +148,39 @@ fun OnboardingPage(step: OnboardingStep) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 32.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        
         Icon(
             imageVector = getStepIcon(step),
             contentDescription = null,
-            modifier = Modifier.size(100.dp),
+            modifier = Modifier.size(72.dp),
             tint = MaterialTheme.colorScheme.primary
-        )
-        
-        Spacer(modifier = Modifier.height(28.dp))
-        
-        Text(
-            text = step.title,
-            style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
-            fontWeight = FontWeight.ExtraBold,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground
         )
         
         Spacer(modifier = Modifier.height(16.dp))
         
         Text(
-            text = step.description,
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-            fontWeight = FontWeight.Bold,
+            text = step.title,
+            style = MaterialTheme.typography.headlineLarge.copy(fontSize = 26.sp),
+            fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground
         )
         
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = step.description,
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 2
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
         
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -196,8 +194,8 @@ fun OnboardingPage(step: OnboardingStep) {
             )
         ) {
             Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 getStepFeatures(step).forEach { feature ->
                     Row(
@@ -207,12 +205,12 @@ fun OnboardingPage(step: OnboardingStep) {
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = feature,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
@@ -220,8 +218,6 @@ fun OnboardingPage(step: OnboardingStep) {
                 }
             }
         }
-        
-        Spacer(modifier = Modifier.height(80.dp))
     }
 }
 
