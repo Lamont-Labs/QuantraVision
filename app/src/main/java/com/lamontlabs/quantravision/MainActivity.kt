@@ -12,9 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lamontlabs.quantravision.onboarding.OnboardingManager
 import com.lamontlabs.quantravision.ui.*
 import kotlinx.coroutines.launch
 
@@ -22,6 +26,16 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    
+    // Hide system navigation bar during onboarding for immersive experience
+    val onboardingManager = OnboardingManager.getInstance(this)
+    if (!onboardingManager.hasCompletedOnboarding()) {
+      WindowCompat.setDecorFitsSystemWindows(window, false)
+      WindowInsetsControllerCompat(window, window.decorView).apply {
+        hide(WindowInsetsCompat.Type.navigationBars())
+        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      }
+    }
     
     try {
       setContent {

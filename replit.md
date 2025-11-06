@@ -88,6 +88,13 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
 - Fixed adaptive icon cropping issue - border aligned with icon edge
 
+### November 6, 2025 - Immersive Onboarding Experience
+**Hide Android navigation bar during onboarding for cleaner, more immersive experience:**
+- Navigation bar hidden when onboarding starts (MainActivity and OnboardingActivity)
+- Navigation bar restored automatically when onboarding completes
+- Uses `WindowInsetsControllerCompat` with `BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE`
+- User can still swipe up to temporarily show navigation if needed
+
 ### November 6, 2025 - Chrome/Steel Metal Design System (REALISTIC METAL FINISH)
 **Transformed UI to look like ACTUAL polished chrome/steel instead of colored gradients:**
 

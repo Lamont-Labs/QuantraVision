@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision.ui.screens.onboarding
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,6 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.lamontlabs.quantravision.onboarding.OnboardingStep
 import com.lamontlabs.quantravision.ui.MetallicButton
 import com.lamontlabs.quantravision.ui.MetallicCard
@@ -37,6 +41,7 @@ fun OnboardingScreen(
     onComplete: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val viewModel = remember { OnboardingViewModel(context) }
     val state by viewModel.state.collectAsState()
     val currentStepIndex by viewModel.currentStepIndex.collectAsState()
@@ -53,6 +58,13 @@ fun OnboardingScreen(
     
     LaunchedEffect(state.isCompleted) {
         if (state.isCompleted) {
+            // Restore navigation bar when onboarding completes
+            activity?.window?.let { window ->
+                WindowCompat.setDecorFitsSystemWindows(window, true)
+                WindowInsetsControllerCompat(window, window.decorView).show(
+                    WindowInsetsCompat.Type.navigationBars()
+                )
+            }
             onComplete()
         }
     }
