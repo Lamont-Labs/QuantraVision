@@ -1,8 +1,10 @@
 package com.lamontlabs.quantravision.ui
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -54,8 +56,8 @@ fun IntelligenceScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Header
             item {
@@ -63,9 +65,9 @@ fun IntelligenceScreen(
                     Text(
                         "🧠 Intelligence Features",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         if (hasProAccess) {
                             "Advanced AI-powered features to enhance your trading education"
@@ -73,6 +75,7 @@ fun IntelligenceScreen(
                             "Unlock these premium features with Pro tier ($49.99)"
                         },
                         style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -94,37 +97,43 @@ fun IntelligenceScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(4.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
                     ) {
-                        Column(Modifier.padding(16.dp)) {
+                        Column(Modifier.padding(20.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     Icons.Default.Lock,
                                     contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
-                                Spacer(Modifier.width(12.dp))
+                                Spacer(Modifier.width(16.dp))
                                 Text(
                                     "Pro Features Locked",
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.ExtraBold
                                 )
                             }
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(12.dp))
                             Text(
                                 "Upgrade to Pro ($49.99 one-time) to unlock all 4 intelligence features plus full 109-pattern library, voice alerts, and more.",
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
                             )
-                            Spacer(Modifier.height(12.dp))
+                            Spacer(Modifier.height(16.dp))
                             Button(
                                 onClick = onUpgrade,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(4.dp)
                             ) {
-                                Icon(Icons.Default.Upgrade, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Upgrade to Pro")
+                                Icon(Icons.Default.Upgrade, contentDescription = null, modifier = Modifier.size(32.dp))
+                                Spacer(Modifier.width(12.dp))
+                                Text("Upgrade to Pro", fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -176,29 +185,34 @@ fun IntelligenceScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
                     )
                 ) {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(Modifier.padding(20.dp)) {
                         Row(verticalAlignment = Alignment.Top) {
                             Icon(
                                 Icons.Default.Warning,
                                 contentDescription = null,
+                                modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.error
                             )
-                            Spacer(Modifier.width(12.dp))
+                            Spacer(Modifier.width(16.dp))
                             Column {
                                 Text(
                                     "⚠️ Educational Tools Only",
                                     style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.ExtraBold,
                                     color = MaterialTheme.colorScheme.error
                                 )
-                                Spacer(Modifier.height(4.dp))
+                                Spacer(Modifier.height(12.dp))
                                 Text(
                                     "These intelligence features are EDUCATIONAL TOOLS designed to help you learn technical analysis concepts. They are NOT financial advice, trading recommendations, or investment strategies. All scenarios and analyses are hypothetical. YOU are responsible for all trading decisions. Consult a licensed financial advisor before trading.",
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
                             }
@@ -221,9 +235,12 @@ private fun IntelligenceFeatureCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (locked) {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.surfaceVariant
             } else {
                 MaterialTheme.colorScheme.surface
             }
@@ -232,7 +249,7 @@ private fun IntelligenceFeatureCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -241,17 +258,18 @@ private fun IntelligenceFeatureCard(
                     Icon(
                         icon,
                         contentDescription = null,
+                        modifier = Modifier.size(32.dp),
                         tint = if (locked) {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         } else {
                             MaterialTheme.colorScheme.primary
                         }
                     )
-                    Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(16.dp))
                     Text(
                         title,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.ExtraBold,
                         color = if (locked) {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         } else {
@@ -259,24 +277,29 @@ private fun IntelligenceFeatureCard(
                         }
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
                 Text(
                     description,
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            
+            Spacer(Modifier.width(16.dp))
             
             if (locked) {
                 Icon(
                     Icons.Default.Lock,
                     contentDescription = "Locked",
+                    modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 Icon(
                     Icons.Default.ChevronRight,
                     contentDescription = "Open",
+                    modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

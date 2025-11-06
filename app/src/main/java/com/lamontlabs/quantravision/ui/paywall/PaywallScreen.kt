@@ -1,6 +1,7 @@
 package com.lamontlabs.quantravision.ui.paywall
 
 import android.app.Activity
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -98,21 +99,22 @@ fun Paywall(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             "Unlock QuantraVision",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.ExtraBold
         )
         Text(
             "Choose the perfect plan for your trading journey",
             style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         PaywallTierCard(
             title = "STARTER",
@@ -171,16 +173,16 @@ fun Paywall(
 
         // Show standalone book purchase for FREE and STARTER users only
         if ((currentTier == Tier.FREE || currentTier == Tier.STARTER) && !hasBook && onBook != null) {
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(20.dp))
             
             // Separator
             Text(
                 "Add-Ons",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             
             // Standalone book card
             PaywallTierCard(
@@ -200,11 +202,12 @@ fun Paywall(
             )
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         Text(
             "One-time payment • Lifetime access • No subscriptions",
             style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
@@ -224,6 +227,9 @@ fun PaywallTierCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isCurrentTier) 
                 MaterialTheme.colorScheme.primaryContainer 
@@ -231,7 +237,7 @@ fun PaywallTierCard(
                 MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(20.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -239,42 +245,47 @@ fun PaywallTierCard(
                 Text(
                     title,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold
                 )
                 badge?.let {
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(12.dp))
                     Text(
                         it,
                         style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .background(
                                 MaterialTheme.colorScheme.primaryContainer,
                                 RoundedCornerShape(4.dp)
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
                 if (isUpgrade) {
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(12.dp))
                     Text(
                         "🎁 UPGRADE",
                         style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier
                             .background(
                                 MaterialTheme.colorScheme.secondary,
                                 RoundedCornerShape(4.dp)
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
+            
+            Spacer(Modifier.height(12.dp))
             
             if (isUpgrade && originalPrice != null) {
                 Text(
                     originalPrice,
                     style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.LineThrough,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -283,40 +294,44 @@ fun PaywallTierCard(
                         price,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(8.dp))
                     Text(
                         "upgrade price",
                         style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.secondary
                     )
                 }
                 Text(
                     "You pay only the difference",
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary
                 )
             } else {
                 Text(
                     "$price one-time",
                     style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
             
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
             features.forEach { feature ->
-                Row(Modifier.padding(vertical = 2.dp)) {
-                    Text("✓ ", color = MaterialTheme.colorScheme.primary)
-                    Text(feature, style = MaterialTheme.typography.bodyMedium)
+                Row(Modifier.padding(vertical = 4.dp)) {
+                    Text("✓ ", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(feature, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                 }
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             Button(
                 onClick = onClick,
                 enabled = !isCurrentTier && !isLowerTier,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
             ) {
                 Text(
                     when {
@@ -324,7 +339,8 @@ fun PaywallTierCard(
                         isLowerTier -> "CANNOT DOWNGRADE"
                         isUpgrade -> "UPGRADE TO $title"
                         else -> "UPGRADE TO $title"
-                    }
+                    },
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

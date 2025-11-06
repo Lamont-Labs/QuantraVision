@@ -6,9 +6,11 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -16,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.lamontlabs.quantravision.alerts.AlertManager
@@ -121,8 +124,8 @@ fun DashboardScreen(
             // CORE FEATURE - Most Important
             Text(
                 "Detection",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
             
@@ -131,15 +134,22 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                shape = RoundedCornerShape(4.dp)
             ) {
-                Icon(Icons.Default.Visibility, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Start Detection")
+                Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Start Detection", fontWeight = FontWeight.Bold)
             }
             
-            Button(onClick = onReview, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.List, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("View Detections")
+            Button(
+                onClick = onReview,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("View Detections", fontWeight = FontWeight.Bold)
             }
             
             Spacer(Modifier.height(8.dp))
@@ -149,8 +159,8 @@ fun DashboardScreen(
             // INTELLIGENCE STACK
             Text(
                 "Intelligence Stack (Pro)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.tertiary
             )
             
@@ -159,10 +169,12 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary
-                )
+                ),
+                shape = RoundedCornerShape(4.dp)
             ) {
-                Icon(Icons.Default.Psychology, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Intelligence Hub")
+                Icon(Icons.Default.Psychology, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Intelligence Hub", fontWeight = FontWeight.Bold)
             }
             
             Spacer(Modifier.height(8.dp))
@@ -172,14 +184,19 @@ fun DashboardScreen(
             // PREDICTIONS
             Text(
                 "Insights",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(onClick = onPredictions, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.TrendingUp, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Predictions")
+            Button(
+                onClick = onPredictions,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Icon(Icons.Default.TrendingUp, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Predictions", fontWeight = FontWeight.Bold)
             }
             
             Spacer(Modifier.height(8.dp))
@@ -189,24 +206,39 @@ fun DashboardScreen(
             // EDUCATION
             Text(
                 "Learn & Progress",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
             
-            Button(onClick = onTutorials, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.School, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Tutorials")
+            Button(
+                onClick = onTutorials,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Tutorials", fontWeight = FontWeight.Bold)
             }
             
-            Button(onClick = onBook, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Book, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Trading Book")
+            Button(
+                onClick = onBook,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Icon(Icons.Default.Book, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Trading Book", fontWeight = FontWeight.Bold)
             }
             
-            Button(onClick = onAchievements, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Star, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Achievements")
+            Button(
+                onClick = onAchievements,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Achievements", fontWeight = FontWeight.Bold)
             }
             
             Spacer(Modifier.height(8.dp))
@@ -214,9 +246,14 @@ fun DashboardScreen(
             Spacer(Modifier.height(8.dp))
             
             // SETTINGS
-            Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Settings, contentDescription = null)
-                Spacer(Modifier.width(8.dp)); Text("Settings")
+            Button(
+                onClick = onSettings,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(32.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Settings", fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -232,7 +269,12 @@ fun AlertSettingsCard(context: Context) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        shape = RoundedCornerShape(4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -240,7 +282,8 @@ fun AlertSettingsCard(context: Context) {
         ) {
             Text(
                 "Alert Settings",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
             
@@ -250,10 +293,14 @@ fun AlertSettingsCard(context: Context) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.RecordVoiceOver, contentDescription = null, 
-                        tint = MaterialTheme.colorScheme.primary)
+                    Icon(
+                        Icons.Default.RecordVoiceOver,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
                     Spacer(Modifier.width(8.dp))
-                    Text("Voice Announcements")
+                    Text("Voice Announcements", fontWeight = FontWeight.Bold)
                 }
                 Switch(
                     checked = voiceEnabled,
@@ -270,10 +317,14 @@ fun AlertSettingsCard(context: Context) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Vibration, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary)
+                    Icon(
+                        Icons.Default.Vibration,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
                     Spacer(Modifier.width(8.dp))
-                    Text("Haptic Feedback")
+                    Text("Haptic Feedback", fontWeight = FontWeight.Bold)
                 }
                 Switch(
                     checked = hapticEnabled,

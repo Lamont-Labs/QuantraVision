@@ -3,12 +3,14 @@ package com.lamontlabs.quantravision.ui.screens.onboarding
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -86,7 +88,7 @@ fun OnboardingScreen(
                                         MaterialTheme.colorScheme.primary
                                     else
                                         MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = MaterialTheme.shapes.small
+                                    shape = RoundedCornerShape(4.dp)
                                 )
                         )
                     }
@@ -104,9 +106,10 @@ fun OnboardingScreen(
                         exit = fadeOut()
                     ) {
                         TextButton(
-                            onClick = { viewModel.skipOnboarding() }
+                            onClick = { viewModel.skipOnboarding() },
+                            shape = RoundedCornerShape(4.dp)
                         ) {
-                            Text("Skip")
+                            Text("Skip", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         }
                     }
                     
@@ -122,9 +125,17 @@ fun OnboardingScreen(
                                 viewModel.completeOnboarding()
                             }
                         },
-                        modifier = Modifier.widthIn(min = 120.dp)
+                        modifier = Modifier.widthIn(min = 120.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
-                        Text(if (pagerState.currentPage < 4) "Next" else "Get Started")
+                        Text(
+                            if (pagerState.currentPage < 4) "Next" else "Get Started",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
@@ -142,7 +153,7 @@ fun OnboardingPage(step: OnboardingStep) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         
         Icon(
             imageVector = getStepIcon(step),
@@ -151,36 +162,42 @@ fun OnboardingPage(step: OnboardingStep) {
             tint = MaterialTheme.colorScheme.primary
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
         
         Text(
             text = step.title,
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = step.description,
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground
         )
         
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        Text(
-            text = step.description,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
         
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.85f)),
+            shape = RoundedCornerShape(4.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 8.dp
             )
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 getStepFeatures(step).forEach { feature ->
                     Row(
@@ -190,12 +207,13 @@ fun OnboardingPage(step: OnboardingStep) {
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(24.dp)
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = feature,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }

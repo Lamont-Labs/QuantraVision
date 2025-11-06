@@ -6,40 +6,40 @@ import android.view.View
 import com.lamontlabs.quantravision.ui.QuantraColors
 
 /**
- * QuantraCore holographic glowing border overlay.
+ * QuantraCore HD SHARP glowing border overlay.
  * Features:
- * - Vibrant cyan (#00E5FF) glow with enhanced bloom effect
- * - Multi-layer effect: outer bloom + mid glow + inner sharp line
+ * - CRISP cyan (#00F0FF) glow with REDUCED blur for sharpness
+ * - 3-tier effect: soft outer bloom (≤10px) + SOLID mid layer + SHARP 1px white edge
  * - Touch-passthrough (FLAG_NOT_TOUCHABLE)
- * - Pulsing animation when patterns detected
+ * - High-contrast pulsing animation
  */
 class GlowingBorderView(context: Context) : View(context) {
     
     private val outerGlowPaint = Paint().apply {
         color = QuantraColors.cyanInt
         style = Paint.Style.STROKE
-        strokeWidth = 12f  // Wide bloom effect
-        alpha = 100  // 39% opacity for soft outer glow
+        strokeWidth = 10f  // REDUCED for sharpness
+        alpha = 120  // 47% opacity - more visible
         isAntiAlias = true
-        // Enhanced blur for holographic bloom
-        maskFilter = BlurMaskFilter(24f, BlurMaskFilter.Blur.OUTER)
+        // REDUCED blur for HD sharpness
+        maskFilter = BlurMaskFilter(10f, BlurMaskFilter.Blur.OUTER)
     }
     
     private val borderPaint = Paint().apply {
         color = QuantraColors.cyanBrightInt
         style = Paint.Style.STROKE
-        strokeWidth = 6f  // Medium border
-        alpha = 140  // 55% opacity - more visible
+        strokeWidth = 4f  // Solid border
+        alpha = 200  // 78% opacity - SOLID and VISIBLE
         isAntiAlias = true
-        // Mid-range glow
-        maskFilter = BlurMaskFilter(12f, BlurMaskFilter.Blur.OUTER)
+        // REDUCED blur for crisp mid-layer
+        maskFilter = BlurMaskFilter(6f, BlurMaskFilter.Blur.OUTER)
     }
     
     private val innerBorderPaint = Paint().apply {
-        color = QuantraColors.cyanBrightestInt
+        color = QuantraColors.whiteInt  // Pure WHITE for max sharpness
         style = Paint.Style.STROKE
-        strokeWidth = 2f  // Thin sharp line
-        alpha = 180  // 70% opacity for definition
+        strokeWidth = 1f  // SHARP 1px inner edge
+        alpha = 255  // 100% opacity - CRISP definition
         isAntiAlias = true
     }
     
@@ -84,20 +84,20 @@ class GlowingBorderView(context: Context) : View(context) {
     }
     
     /**
-     * Pulse animation for pattern detection - QuantraCore intensity boost
-     * @param isPulsing true for high-intensity holographic glow, false for normal state
+     * Pulse animation for pattern detection - HD SHARP contrast boost
+     * @param isPulsing true for HIGH-INTENSITY crisp glow, false for normal sharp state
      */
     fun setPulsing(isPulsing: Boolean) {
         if (isPulsing) {
-            // High-intensity QuantraCore glow when patterns detected
-            outerGlowPaint.alpha = 160  // 63% - brighter bloom
-            borderPaint.alpha = 200     // 78% - strong mid layer
-            innerBorderPaint.alpha = 220 // 86% - very visible sharp line
+            // HIGH-INTENSITY HD glow when patterns detected
+            outerGlowPaint.alpha = 180  // 71% - strong bloom
+            borderPaint.alpha = 240     // 94% - NEARLY SOLID mid layer
+            innerBorderPaint.alpha = 255 // 100% - SHARP white edge
         } else {
-            // Normal QuantraCore ambient glow
-            outerGlowPaint.alpha = 100  // 39% - soft bloom
-            borderPaint.alpha = 140     // 55% - balanced mid layer
-            innerBorderPaint.alpha = 180 // 70% - clear definition
+            // Normal HD SHARP ambient state
+            outerGlowPaint.alpha = 120  // 47% - visible bloom
+            borderPaint.alpha = 200     // 78% - SOLID mid layer
+            innerBorderPaint.alpha = 255 // 100% - ALWAYS CRISP white edge
         }
         invalidate()
     }

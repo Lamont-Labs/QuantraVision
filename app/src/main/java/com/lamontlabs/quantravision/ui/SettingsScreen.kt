@@ -1,7 +1,9 @@
 package com.lamontlabs.quantravision.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Replay
@@ -20,16 +22,16 @@ import com.lamontlabs.quantravision.onboarding.OnboardingManager
 fun SettingsScreen() {
     QuantraVisionTheme {
         Surface(Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                Text("Settings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Column(Modifier.fillMaxWidth().padding(20.dp)) {
+                Text("Settings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                Spacer(Modifier.height(20.dp))
+                Text("Theme: Follows system (Dark optimized)", fontWeight = FontWeight.Bold)
+                Text("Overlay opacity: Adjustable in Quick Controls", fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(28.dp))
+                HorizontalDivider()
                 Spacer(Modifier.height(16.dp))
-                Text("Theme: Follows system (Dark optimized)")
-                Text("Overlay opacity: Adjustable in Quick Controls")
-                Spacer(Modifier.height(24.dp))
-                Divider()
-                Spacer(Modifier.height(12.dp))
-                Text("Lamont Labs", color = MaterialTheme.colorScheme.primary)
-                Text("QuantraVision Overlay • v2.x")
+                Text("Lamont Labs", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text("QuantraVision Overlay • v2.x", fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -53,168 +55,215 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
             )
         }
     ) { padding ->
-        Column(Modifier.fillMaxWidth().padding(padding).padding(16.dp)) {
-            Text(
-                text = "Floating Logo",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            
-            Text(
-                text = "Logo Size",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-            )
-            Row(
+        Column(Modifier.fillMaxWidth().padding(padding).padding(20.dp)) {
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                listOf(
-                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.SMALL to "Small",
-                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.MEDIUM to "Medium",
-                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.LARGE to "Large"
-                ).forEach { (size, label) ->
-                    Button(
-                        onClick = { logoPrefs.saveLogoSize(size) },
-                        modifier = Modifier.weight(1f)
+                Column(Modifier.padding(20.dp)) {
+                    Text(
+                        text = "Floating Logo",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    
+                    Text(
+                        text = "Logo Size",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text(label)
+                        listOf(
+                            com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.SMALL to "Small",
+                            com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.MEDIUM to "Medium",
+                            com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.LARGE to "Large"
+                        ).forEach { (size, label) ->
+                            Button(
+                                onClick = { logoPrefs.saveLogoSize(size) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(label, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                    
+                    Spacer(Modifier.height(20.dp))
+                    
+                    Text(
+                        text = "Logo Opacity",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        listOf(0.5f to "50%", 0.75f to "75%", 0.85f to "85%", 1.0f to "100%").forEach { (opacity, label) ->
+                            Button(
+                                onClick = { logoPrefs.saveLogoOpacity(opacity) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(label, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                    
+                    Spacer(Modifier.height(20.dp))
+            
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Text("Show pattern count badge", fontWeight = FontWeight.Bold)
+                        Switch(
+                            checked = logoPrefs.isBadgeVisible(),
+                            onCheckedChange = { logoPrefs.saveBadgeVisibility(it) }
+                        )
                     }
                 }
             }
             
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(28.dp))
             
-            Text(
-                text = "Logo Opacity",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-            )
-            Row(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                listOf(0.5f to "50%", 0.75f to "75%", 0.85f to "85%", 1.0f to "100%").forEach { (opacity, label) ->
-                    Button(
-                        onClick = { logoPrefs.saveLogoOpacity(opacity) },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(label)
-                    }
+                Column(Modifier.padding(20.dp)) {
+                    Text(
+                        text = "General",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Text("Theme: Follows system (Dark optimized)", fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(12.dp))
+                    Text("Overlay opacity: Adjustable in Quick Controls", fontWeight = FontWeight.Bold)
                 }
             }
             
-            Spacer(Modifier.height(12.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-            ) {
-                Text("Show pattern count badge")
-                Switch(
-                    checked = logoPrefs.isBadgeVisible(),
-                    onCheckedChange = { logoPrefs.saveBadgeVisibility(it) }
-                )
-            }
-            
-            Spacer(Modifier.height(24.dp))
-            
-            Text(
-                text = "General",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Text("Theme: Follows system (Dark optimized)")
-            Text("Overlay opacity: Adjustable in Quick Controls")
-            
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(28.dp))
             
             Text(
                 text = "Help & Learning",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
             
-            ListItem(
-                headlineContent = { Text("Replay Onboarding Tour") },
-                supportingContent = { Text("Review the app tutorial again") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Replay,
-                        contentDescription = null
-                    )
-                },
-                modifier = Modifier.clickable {
-                    val onboardingManager = OnboardingManager.getInstance(context)
-                    onboardingManager.resetOnboarding()
-                    android.widget.Toast.makeText(
-                        context,
-                        "Onboarding reset. Restart the app to view the tour.",
-                        android.widget.Toast.LENGTH_LONG
-                    ).show()
-                }
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                ListItem(
+                    headlineContent = { Text("Replay Onboarding Tour", fontWeight = FontWeight.Bold) },
+                    supportingContent = { Text("Review the app tutorial again", fontWeight = FontWeight.Bold) },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.Replay,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    },
+                    modifier = Modifier.clickable {
+                        val onboardingManager = OnboardingManager.getInstance(context)
+                        onboardingManager.resetOnboarding()
+                        android.widget.Toast.makeText(
+                            context,
+                            "Onboarding reset. Restart the app to view the tour.",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
+                )
+            }
             
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(28.dp))
             
             Text(
                 text = "Legal & Privacy",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
             
-            ListItem(
-                headlineContent = { Text("Privacy Policy") },
-                supportingContent = { Text("How we handle your data") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column {
+                    ListItem(
+                        headlineContent = { Text("Privacy Policy", fontWeight = FontWeight.Bold) },
+                        supportingContent = { Text("How we handle your data", fontWeight = FontWeight.Bold) },
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            navController.navigate("legal/privacy")
+                        }
                     )
-                },
-                modifier = Modifier.clickable {
-                    navController.navigate("legal/privacy")
-                }
-            )
-            
-            ListItem(
-                headlineContent = { Text("Terms of Use") },
-                supportingContent = { Text("Conditions for using the app") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Description,
-                        contentDescription = null
+                    
+                    HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                    
+                    ListItem(
+                        headlineContent = { Text("Terms of Use", fontWeight = FontWeight.Bold) },
+                        supportingContent = { Text("Conditions for using the app", fontWeight = FontWeight.Bold) },
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Default.Description,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            navController.navigate("legal/terms")
+                        }
                     )
-                },
-                modifier = Modifier.clickable {
-                    navController.navigate("legal/terms")
-                }
-            )
-            
-            ListItem(
-                headlineContent = { Text("Disclaimer") },
-                supportingContent = { Text("Educational purposes only") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = null
+                    
+                    HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                    
+                    ListItem(
+                        headlineContent = { Text("Disclaimer", fontWeight = FontWeight.Bold) },
+                        supportingContent = { Text("Educational purposes only", fontWeight = FontWeight.Bold) },
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            navController.navigate("legal/disclaimer")
+                        }
                     )
-                },
-                modifier = Modifier.clickable {
-                    navController.navigate("legal/disclaimer")
                 }
-            )
+            }
             
-            Spacer(Modifier.height(24.dp))
-            Divider()
-            Spacer(Modifier.height(12.dp))
-            Text("Lamont Labs", color = MaterialTheme.colorScheme.primary)
-            Text("QuantraVision Overlay • v2.x")
+            Spacer(Modifier.height(28.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+            Text("Lamont Labs", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+            Text("QuantraVision Overlay • v2.x", fontWeight = FontWeight.Bold)
         }
     }
 }

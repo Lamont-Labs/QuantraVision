@@ -1,6 +1,7 @@
 package com.lamontlabs.quantravision.ui.screens.analytics
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -110,8 +111,8 @@ private fun AnalyticsContent(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         item {
             EducationalDisclaimerCard()
@@ -124,8 +125,8 @@ private fun AnalyticsContent(
         item {
             Text(
                 "Best Performing Patterns",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold
             )
         }
         
@@ -140,11 +141,11 @@ private fun AnalyticsContent(
         }
         
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 "Worst Performing Patterns",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold
             )
         }
         
@@ -154,11 +155,11 @@ private fun AnalyticsContent(
         
         if (stats.timeOfDayStats.isNotEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     "Time of Day Analysis",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
                 )
             }
             
@@ -172,31 +173,37 @@ private fun AnalyticsContent(
 @Composable
 private fun EducationalDisclaimerCard() {
     Card(
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
         ),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 Icons.Default.Warning,
                 contentDescription = "Warning",
+                modifier = Modifier.size(32.dp),
                 tint = MaterialTheme.colorScheme.onErrorContainer
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
                     "Educational Statistics Only",
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
+                Spacer(Modifier.height(8.dp))
                 Text(
                     "These statistics are for learning purposes only and do not constitute financial advice. Past performance does not predict future results.",
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
@@ -210,18 +217,21 @@ private fun OverallStatsCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 "Overall Performance",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -253,19 +263,21 @@ private fun StatItem(label: String, value: String, icon: androidx.compose.ui.gra
         Icon(
             icon,
             contentDescription = label,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(36.dp),
             tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             value,
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             label,
             style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
@@ -275,17 +287,20 @@ private fun StatItem(label: String, value: String, icon: androidx.compose.ui.gra
 private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isPositive) 
-                MaterialTheme.colorScheme.success.copy(alpha = 0.1f)
+                MaterialTheme.colorScheme.tertiaryContainer
             else 
-                MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+                MaterialTheme.colorScheme.errorContainer
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -293,25 +308,28 @@ private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
                 Text(
                     pattern.patternName,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "${pattern.totalOutcomes} outcomes: ${pattern.wins}W / ${pattern.losses}L / ${pattern.neutral}N",
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            Spacer(Modifier.width(16.dp))
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "${(pattern.winRate * 100).toInt()}%",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isPositive) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error
+                    fontWeight = FontWeight.ExtraBold,
+                    color = if (isPositive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                 )
                 Text(
                     "Win Rate",
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -321,26 +339,32 @@ private fun PatternPerformanceCard(pattern: WinRateStats, isPositive: Boolean) {
 
 @Composable
 private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 "Detection Activity by Hour",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             stats.forEach { stat ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                        .padding(vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         stat.timeLabel,
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.width(60.dp)
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.width(80.dp)
                     )
                     
                     val maxCount = stats.maxOfOrNull { it.detectionCount } ?: 1
@@ -348,18 +372,19 @@ private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
                     
                     Box(
                         modifier = Modifier
-                            .height(24.dp)
+                            .height(28.dp)
                             .fillMaxWidth(widthFraction)
                             .background(
-                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+                                MaterialTheme.colorScheme.secondary,
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )
                     
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         stat.detectionCount.toString(),
                         style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -370,21 +395,27 @@ private fun TimeOfDayHeatmap(stats: List<TimeOfDayStats>) {
 
 @Composable
 private fun EmptyStateCard(message: String) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
         Column(
-            modifier = Modifier.padding(32.dp),
+            modifier = Modifier.padding(36.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
                 Icons.Default.BarChart,
                 contentDescription = "Empty",
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier.size(72.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 message,
                 style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -396,31 +427,35 @@ private fun ProUpgradePrompt(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             Icons.Default.Lock,
             contentDescription = "Locked",
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(96.dp),
             tint = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
         Text(
             "Analytics Dashboard",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.ExtraBold
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             "Unlock advanced performance tracking and analytics with Pro",
             style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(32.dp))
-        Button(onClick = {  }) {
-            Text("Upgrade to Pro")
+        Spacer(modifier = Modifier.height(36.dp))
+        Button(
+            onClick = {  },
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Text("Upgrade to Pro", fontWeight = FontWeight.Bold)
         }
     }
 }

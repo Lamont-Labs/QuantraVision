@@ -1,9 +1,11 @@
 package com.lamontlabs.quantravision.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -44,24 +46,27 @@ fun AchievementsScreen(onBack: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Stats summary card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(Modifier.padding(20.dp)) {
                         Text(
                             "Your Progress",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.ExtraBold
                         )
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(20.dp))
                         
                         Row(
                             Modifier.fillMaxWidth(),
@@ -85,8 +90,9 @@ fun AchievementsScreen(onBack: () -> Unit) {
                 Text(
                     "Earn bonus highlights by unlocking achievements!",
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    modifier = Modifier.padding(vertical = 20.dp)
                 )
             }
         }
@@ -96,9 +102,10 @@ fun AchievementsScreen(onBack: () -> Unit) {
 @Composable
 fun StatItem(label: String, value: String, icon: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(icon, fontSize = 32.sp)
-        Text(value, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(icon, fontSize = 36.sp)
+        Spacer(Modifier.height(8.dp))
+        Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 24.sp)
+        Text(label, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -106,6 +113,9 @@ fun StatItem(label: String, value: String, icon: String) {
 fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (achievement.unlocked) 
                 MaterialTheme.colorScheme.tertiaryContainer
@@ -116,14 +126,14 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon
             Text(
                 achievement.icon,
-                fontSize = 40.sp,
-                modifier = Modifier.padding(end = 16.dp)
+                fontSize = 48.sp,
+                modifier = Modifier.padding(end = 20.dp)
             )
 
             // Info
@@ -132,33 +142,35 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
                     Text(
                         achievement.title,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
                     if (achievement.unlocked) {
-                        Spacer(Modifier.width(8.dp))
-                        Text("✓", color = MaterialTheme.colorScheme.primary, fontSize = 20.sp)
+                        Spacer(Modifier.width(12.dp))
+                        Text("✓", color = MaterialTheme.colorScheme.primary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
                 }
                 
+                Spacer(Modifier.height(8.dp))
                 Text(
                     achievement.description,
                     style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (achievement.reward > 0) {
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "Reward: +${achievement.reward} highlight${if (achievement.reward > 1) "s" else ""}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
                 }
 
                 // Progress bar for unlocked achievements
                 if (!achievement.unlocked && progress > 0) {
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(12.dp))
                     LinearProgressIndicator(
                         progress = progress.toFloat(),
                         modifier = Modifier.fillMaxWidth()
@@ -166,16 +178,18 @@ fun AchievementCard(achievement: AchievementSystem.Achievement, progress: Double
                     Text(
                         "${(progress * 100).toInt()}% complete",
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(top = 4.dp)
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
 
                 // Unlock date
                 if (achievement.unlocked && achievement.unlockedDate != null) {
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "Unlocked: ${achievement.unlockedDate}",
                         style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
