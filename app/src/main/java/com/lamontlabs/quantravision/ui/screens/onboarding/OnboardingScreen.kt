@@ -259,10 +259,10 @@ fun getStepFeatures(step: OnboardingStep): List<String> {
             "Risk management and psychology"
         )
         OnboardingStep.PRO_FEATURES -> listOf(
-            "Unlock all 100+ patterns",
-            "Unlimited pattern detections",
-            "Advanced intelligence features",
-            "Priority support and updates"
+            "🆓 FREE: 10 patterns + basic overlay",
+            "⭐ STARTER: 25 patterns + analytics",
+            "🔥 STANDARD: 50 patterns + lessons + book",
+            "💎 PRO: All 109 patterns + Intelligence Stack"
         )
     }
 }

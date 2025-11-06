@@ -7,31 +7,31 @@ sealed class OnboardingStep(val ordinal: Int, val title: String, val description
     object WELCOME : OnboardingStep(
         ordinal = 0,
         title = "Welcome to QuantraVision",
-        description = "Your intelligent pattern detection companion for technical analysis"
+        description = "AI-powered pattern detection for smarter trading"
     )
     
     object DETECTION : OnboardingStep(
         ordinal = 1,
         title = "Pattern Detection",
-        description = "Detect 100+ chart patterns automatically with AI-powered recognition"
+        description = "Detect 100+ chart patterns instantly with AI"
     )
     
     object INTELLIGENCE : OnboardingStep(
         ordinal = 2,
         title = "Intelligence Features",
-        description = "Access 4 advanced features: Regime Navigator, Pattern Planner, Behavioral Guardrails, and Proof Capsules"
+        description = "4 advanced features for better trading decisions"
     )
     
     object EDUCATION : OnboardingStep(
         ordinal = 3,
         title = "Learn & Grow",
-        description = "Master technical analysis with 25 interactive lessons and a comprehensive trading book"
+        description = "25 interactive lessons + comprehensive trading book"
     )
     
     object PRO_FEATURES : OnboardingStep(
         ordinal = 4,
-        title = "Unlock Your Potential",
-        description = "Upgrade to Pro for unlimited patterns, advanced intelligence, and professional features"
+        title = "Choose Your Plan",
+        description = "One-time payment • Lifetime access • No subscriptions"
     )
     
     companion object {
