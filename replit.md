@@ -78,18 +78,19 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 
 ## Recent Changes
 
-### November 6, 2025 - Space Grotesk Font (SAMSUNG-SAFE DIRECT TTF LOADING)
-**Applied Space Grotesk using crash-resistant direct TTF file loading:**
+### November 6, 2025 - Orbitron Font (LOGO-MATCHED FUTURISTIC DESIGN)
+**Applied Orbitron using crash-resistant direct TTF file loading:**
 - **ROOT CAUSE OF CRASHES:** Samsung devices crash when using `FontFamily(Font(R.font.xml_font_family))`
-- **SOLUTION:** Reference TTF files directly: `Font(R.font.space_grotesk_regular, FontWeight.Normal)`
-- Downloaded Space Grotesk from official GitHub repo (Florian Karsten)
-- Bundled 3 weights: Regular 112KB, Medium 114KB, Bold 114KB (total 340KB)
+- **SOLUTION:** Reference TTF files directly: `Font(R.font.orbitron_regular, FontWeight.Normal)`
+- Downloaded Orbitron from official Google Fonts GitHub repo
+- Bundled 3 weights: Regular 36KB, Medium 38KB, Bold 37KB (total 111KB)
 - Font files named with lowercase + underscores (Android best practice)
 - Direct TTF loading avoids Samsung One UI 6.0 font validation crashes
 - Try-catch error handling with graceful fallback to system default (Roboto)
-- Space Grotesk: Modern geometric sans-serif, futuristic aesthetic, perfect for tech/trading apps
+- Orbitron: Futuristic geometric sans-serif, sci-fi aesthetic, **PERFECT match for QuantraCore logo**
 - SIL Open Font License (free for personal and commercial use)
-- **Inter FAILED:** Crashed due to XML font family loading approach (not the font itself)
+- **TESTED:** Space Grotesk worked, confirming direct TTF method is Samsung-safe
+- **BRAND COHESION:** Logo and UI text now use matching futuristic font family
 
 ### November 6, 2025 - Onboarding UX Improvements
 **Fixed text truncation and improved tier transparency:**
