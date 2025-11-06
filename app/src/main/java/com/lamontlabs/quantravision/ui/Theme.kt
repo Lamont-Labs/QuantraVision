@@ -92,9 +92,9 @@ object QuantraColors {
 }
 
 // Orbitron font family - bundled TTF file (matches QuantraCore logo)
+// Only Medium weight - Android will synthesize Bold/Normal as needed
 val OrbitronFontFamily = FontFamily(
     Font(R.font.orbitron_medium, FontWeight.Medium),
-    Font(R.font.orbitron_medium, FontWeight.Bold),
     Font(R.font.orbitron_medium, FontWeight.Normal)
 )
 
