@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -135,18 +137,21 @@ fun OnboardingPage(step: OnboardingStep) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 48.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        
         Icon(
             imageVector = getStepIcon(step),
             contentDescription = null,
-            modifier = Modifier.size(120.dp),
+            modifier = Modifier.size(100.dp),
             tint = MaterialTheme.colorScheme.primary
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         Text(
             text = step.title,
@@ -156,7 +161,7 @@ fun OnboardingPage(step: OnboardingStep) {
             color = MaterialTheme.colorScheme.onBackground
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         
         Text(
             text = step.description,
@@ -165,7 +170,7 @@ fun OnboardingPage(step: OnboardingStep) {
             color = MaterialTheme.colorScheme.onBackground
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -197,6 +202,8 @@ fun OnboardingPage(step: OnboardingStep) {
                 }
             }
         }
+        
+        Spacer(modifier = Modifier.height(80.dp))
     }
 }
 
