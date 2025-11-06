@@ -58,13 +58,6 @@ fun OnboardingScreen(
     
     LaunchedEffect(state.isCompleted) {
         if (state.isCompleted) {
-            // Restore navigation bar when onboarding completes
-            activity?.window?.let { window ->
-                WindowCompat.setDecorFitsSystemWindows(window, true)
-                WindowInsetsControllerCompat(window, window.decorView).show(
-                    WindowInsetsCompat.Type.navigationBars()
-                )
-            }
             onComplete()
         }
     }

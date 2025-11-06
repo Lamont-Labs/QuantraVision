@@ -27,14 +27,12 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     
-    // Hide system navigation bar during onboarding for immersive experience
-    val onboardingManager = OnboardingManager.getInstance(this)
-    if (!onboardingManager.hasCompletedOnboarding()) {
-      WindowCompat.setDecorFitsSystemWindows(window, false)
-      WindowInsetsControllerCompat(window, window.decorView).apply {
-        hide(WindowInsetsCompat.Type.navigationBars())
-        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-      }
+    // Enable immersive mode - hide navigation bar throughout entire app
+    // Navigation bar only appears when user swipes up from bottom
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+    WindowInsetsControllerCompat(window, window.decorView).apply {
+      hide(WindowInsetsCompat.Type.navigationBars())
+      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
     
     try {
