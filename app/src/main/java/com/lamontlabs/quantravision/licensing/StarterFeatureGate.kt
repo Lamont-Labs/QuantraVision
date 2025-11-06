@@ -12,6 +12,9 @@ import androidx.security.crypto.MasterKey
  */
 object StarterFeatureGate {
     
+    // DEBUG: Bypass all paywalls for testing (set to false for production)
+    private const val BYPASS_PAYWALLS = true
+    
     private val lock = Any()
     
     /**
@@ -42,6 +45,9 @@ object StarterFeatureGate {
      * SYNCHRONIZED: Prevents concurrent access race conditions
      */
     fun isActive(context: Context): Boolean = synchronized(lock) {
+        // DEBUG: Bypass paywalls for testing
+        if (BYPASS_PAYWALLS) return true
+        
         val prefs = getSecurePrefs(context) ?: return false
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
         val normalizedTier = tier.uppercase()

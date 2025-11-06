@@ -12,6 +12,9 @@ import androidx.security.crypto.MasterKey
  */
 object ProFeatureGate {
     
+    // DEBUG: Bypass all paywalls for testing (set to false for production)
+    private const val BYPASS_PAYWALLS = true
+    
     // Lock object for synchronized access to prevent race conditions (~0.01% of calls)
     private val lock = Any()
     
@@ -43,6 +46,9 @@ object ProFeatureGate {
      * SYNCHRONIZED: Prevents concurrent access race conditions
      */
     fun isActive(context: Context): Boolean = synchronized(lock) {
+        // DEBUG: Bypass paywalls for testing
+        if (BYPASS_PAYWALLS) return true
+        
         val prefs = getSecurePrefs(context) ?: return false
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
         return tier.uppercase() == "PRO"  // Normalize for backward compatibility
