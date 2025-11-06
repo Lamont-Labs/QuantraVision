@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.analytics.PatternPerformanceTracker
+import com.lamontlabs.quantravision.ui.success
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,7 +128,7 @@ fun HotPatternCard(hotPattern: PatternPerformanceTracker.HotPattern) {
                 else -> "➡️"
             }
             val trendColor = when (hotPattern.trend) {
-                "rising" -> Color(0xFF4CAF50)
+                "rising" -> MaterialTheme.colorScheme.success
                 "falling" -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             }

@@ -20,8 +20,13 @@ class LogoBadge @JvmOverloads constructor(
     private var detectionStatus = DetectionStatus.IDLE
     private var ringRotation = 0f
 
+    private val colorError = 0xFFFF1744.toInt()
+    private val colorSuccess = 0xFF00FF88.toInt()
+    private val colorOrange = 0xFFFF9800.toInt()
+    private val colorOutline = 0xFF9E9E9E.toInt()
+
     private val badgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FF5252")
+        color = colorError
         style = Paint.Style.FILL
     }
 
@@ -39,7 +44,7 @@ class LogoBadge @JvmOverloads constructor(
     }
 
     private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#4CAF50")
+        color = colorSuccess
         style = Paint.Style.STROKE
         strokeWidth = 6f
     }
@@ -99,7 +104,7 @@ class LogoBadge @JvmOverloads constructor(
     private fun drawDetectionRing(canvas: Canvas, cx: Float, cy: Float, radius: Float) {
         when (detectionStatus) {
             DetectionStatus.SCANNING -> {
-                ringPaint.color = Color.parseColor("#FFC107")
+                ringPaint.color = colorOrange
                 canvas.save()
                 canvas.rotate(ringRotation, cx, cy)
                 val rect = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
@@ -107,11 +112,11 @@ class LogoBadge @JvmOverloads constructor(
                 canvas.restore()
             }
             DetectionStatus.PATTERNS_FOUND -> {
-                ringPaint.color = Color.parseColor("#4CAF50")
+                ringPaint.color = colorSuccess
                 canvas.drawCircle(cx, cy, radius, ringPaint)
             }
             DetectionStatus.IDLE -> {
-                ringPaint.color = Color.parseColor("#9E9E9E")
+                ringPaint.color = colorOutline
                 canvas.drawCircle(cx, cy, radius, ringPaint)
             }
             DetectionStatus.HIGH_CONFIDENCE -> {
