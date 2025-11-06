@@ -66,6 +66,6 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Entry/stop/target prices now show directly on pattern detections (Pro tier only)
 - Simplified dashboard from 15 → 8 features (kept Achievements + Predictions)
 - Fixed Room database compilation error by moving tradeScenario out of PatternMatch constructor
-- All paywalls bypassed for testing (BYPASS_PAYWALLS = true)
+- All paywalls bypassed for testing (BYPASS_PAYWALLS = true in 5 files: BillingManager.kt, ProFeatureGate.kt, StandardFeatureGate.kt, StarterFeatureGate.kt, BookFeatureGate.kt)
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
 - Fixed adaptive icon cropping issue - full icon now visible including outer glow

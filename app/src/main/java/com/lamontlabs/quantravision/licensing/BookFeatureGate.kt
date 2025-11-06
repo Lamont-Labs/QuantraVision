@@ -18,6 +18,9 @@ import androidx.security.crypto.MasterKey
  */
 object BookFeatureGate {
     
+    // 🧪 TESTING BYPASS - Set to false for production
+    private const val BYPASS_PAYWALLS = true
+    
     /**
      * Get SharedPreferences with fallback to regular prefs if encrypted fails
      * CRITICAL: Prevents users from losing book access on encryption failure
@@ -50,6 +53,9 @@ object BookFeatureGate {
      * 3. User has Pro tier ($49.99+)
      */
     fun hasAccess(context: Context): Boolean {
+        // 🧪 TESTING: Bypass paywall
+        if (BYPASS_PAYWALLS) return true
+        
         val prefs = getSecurePrefs(context) ?: return false
         
         // Check if book purchased standalone
