@@ -522,11 +522,13 @@ fun MetallicText(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.headlineLarge,
-    glowIntensity: Float = 0.5f
+    glowIntensity: Float = 0.5f,
+    color: Color = Color.White  // Bright white text for HD contrast
 ) {
     Text(
         text = text,
         modifier = modifier,
+        color = color,  // CRITICAL: Explicit color for visibility on dark backgrounds
         style = style.copy(
             shadow = Shadow(
                 color = Color(0xFFFFFFFF).copy(alpha = glowIntensity),
