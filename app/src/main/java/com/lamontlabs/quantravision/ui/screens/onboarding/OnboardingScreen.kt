@@ -135,7 +135,7 @@ fun OnboardingPage(step: OnboardingStep) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(horizontal = 24.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -152,7 +152,8 @@ fun OnboardingPage(step: OnboardingStep) {
             text = step.title,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -161,7 +162,7 @@ fun OnboardingPage(step: OnboardingStep) {
             text = step.description,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onBackground
         )
         
         Spacer(modifier = Modifier.height(32.dp))
@@ -189,7 +190,8 @@ fun OnboardingPage(step: OnboardingStep) {
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = feature,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }

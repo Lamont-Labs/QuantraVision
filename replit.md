@@ -70,3 +70,4 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
 - Fixed adaptive icon cropping issue - border aligned with icon edge
 - Sharpened UI theme: balanced dark background (#0A1218), pure white text, sharper cyan borders (60% opacity), neon accent colors matching icon aesthetic
+- Fixed onboarding screen visibility: all text now pure white, improved padding to prevent cropping
