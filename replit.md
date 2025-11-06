@@ -88,8 +88,34 @@ The application utilizes Jetpack Compose with the Material 3 Design System, opti
 - Updated app icon to neon "Q" logo with cyan glow (matches brand identity)
 - Fixed adaptive icon cropping issue - border aligned with icon edge
 
-### November 6, 2025 - HD Contrast Design System (MAJOR VISUAL UPDATE)
-**Complete visual overhaul for sharp, high-definition UI matching QuantraCore logo sharpness:**
+### November 6, 2025 - Metallic Design System (PREMIUM VISUAL OVERHAUL)
+**Complete metallic UI transformation with shiny, reflective surfaces matching QuantraCore logo:**
+
+**Metallic Components (MetallicDesignTokens.kt):**
+- **MetallicButton**: Layered gradient background + chrome border + optional top light strip
+- **MetallicCard**: Angular gradients + beveled edges + selective shimmer animation
+- **MetallicText**: Headers with cyan glow shadow effect
+- **MetallicDivider**: Horizontal gradient separators
+
+**Gradient System:**
+- Metallic cyan brush: 4-color gradient (dark edge → bright highlight → brightest edge → dark end)
+- Chrome border brush: Two-tone bright aqua shimmer
+- Specular highlight: Radial glow overlay for premium shine
+- Angular brush: Beveled metal surface simulation
+
+**Visual Effects:**
+- Shimmer animations on hero CTAs (final onboarding page, key dashboard actions)
+- Dual-stroke borders (outer gradient + inner white highlight)
+- Press-state darkening for interactive feedback
+- Glow shadows on typography (HeroTextShadow 12f blur, SubtleTextShadow 6f blur)
+
+**Applied Throughout:**
+- Dashboard: 9 MetallicButtons, MetallicCard for alerts, MetallicText headers, 4 MetallicDividers
+- Onboarding: All 5 pages use MetallicCard, navigation with MetallicButton, glowing titles
+- Strategic top light strip on primary CTAs (Start Detection, Get Started)
+
+### November 6, 2025 - HD Contrast Design System
+**Foundation for sharp, high-definition UI:**
 
 **HD Contrast Color Palette:**
 - Background: #05070D (DEEPER near-black for max contrast, was #0A1420)
