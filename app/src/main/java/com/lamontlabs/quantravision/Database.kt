@@ -25,6 +25,16 @@ import com.lamontlabs.quantravision.learning.data.ScanHistoryEntity
 import com.lamontlabs.quantravision.learning.data.PatternFrequencyEntity
 import com.lamontlabs.quantravision.learning.data.PatternCooccurrenceEntity
 
+/**
+ * Trade scenario information for Pattern-to-Plan integration
+ * Not persisted in database - transient overlay data only
+ */
+data class TradeScenarioInfo(
+    val entryPrice: Double,
+    val stopLoss: Double,
+    val takeProfit: Double
+)
+
 @Entity
 data class PatternMatch(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -36,7 +46,8 @@ data class PatternMatch(
     val consensusScore: Double,   // Consensus across scales
     val windowMs: Long,           // Temporal stability window contribution
     val originPath: String = "",  // Source image path (e.g., "validation/test_1234567890.png")
-    val detectionBounds: String? = null  // Bounding box as "x,y,w,h" or null if unavailable
+    val detectionBounds: String? = null,  // Bounding box as "x,y,w,h" or null if unavailable
+    @Ignore val tradeScenario: TradeScenarioInfo? = null  // Pattern-to-Plan trade info (Pro tier only, not persisted)
 )
 
 @Dao

@@ -23,6 +23,8 @@ import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.TradeScenarioInfo
+import com.lamontlabs.quantravision.planner.PatternToPlanEngine
 import kotlinx.coroutines.*
 
 class OverlayService : Service() {
@@ -176,6 +178,8 @@ class OverlayService : Service() {
         scope.launch {
             val detectorBridge = HybridDetectorBridge(applicationContext)
             val legacyDetector = PatternDetector(applicationContext)
+            val patternToPlanEngine = PatternToPlanEngine(applicationContext)
+            val isProActive = ProFeatureGate.isActive(applicationContext)
             
             while (isActive) {
                 try {
@@ -194,8 +198,31 @@ class OverlayService : Service() {
                                         val results = detectorBridge.detectPatternsOptimized(bitmap)
                                         timber.log.Timber.d("HybridDetectorBridge: Detected ${results.size} patterns in ${imageFile.name}")
                                         
-                                        results.forEach { pattern ->
-                                            val patternMatch = pattern.toPatternMatch()
+                                        for (pattern in results) {
+                                            var patternMatch = pattern.toPatternMatch()
+                                            
+                                            if (isProActive) {
+                                                try {
+                                                    val mockPrice = 100.0
+                                                    val scenario = patternToPlanEngine.generateScenario(
+                                                        patternMatch = patternMatch,
+                                                        currentPrice = mockPrice
+                                                    )
+                                                    
+                                                    patternMatch = patternMatch.copy(
+                                                        tradeScenario = TradeScenarioInfo(
+                                                            entryPrice = scenario.entryPrice,
+                                                            stopLoss = scenario.stopLoss,
+                                                            takeProfit = scenario.takeProfit
+                                                        )
+                                                    )
+                                                    
+                                                    timber.log.Timber.d("Generated trade scenario for ${patternMatch.patternName}: Entry=${scenario.entryPrice}, Stop=${scenario.stopLoss}, Target=${scenario.takeProfit}")
+                                                } catch (e: Exception) {
+                                                    timber.log.Timber.w(e, "Failed to generate trade scenario for ${patternMatch.patternName}, continuing without trade info")
+                                                }
+                                            }
+                                            
                                             allDetectedPatterns.add(patternMatch)
                                             
                                             behavioralGuardrails?.let { guardrails ->

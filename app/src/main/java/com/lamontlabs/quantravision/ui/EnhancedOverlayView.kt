@@ -335,23 +335,54 @@ class EnhancedOverlayView @JvmOverloads constructor(
         textPaint.color = Color.argb(alpha, 255, 255, 255)
         textPaint.setShadowLayer(2f, 0f, 1f, Color.argb(150, 0, 0, 0))
         
-        val labelText = match.patternName
-        val textWidth = textPaint.measureText(labelText)
         val labelPadding = 12f
-        val labelHeight = 32f
+        val lineHeight = 20f
+        val tradeScenario = match.tradeScenario
         
-        labelRect.set(
-            rect.left, rect.top - labelHeight - 8f,
-            rect.left + textWidth + labelPadding * 2, rect.top - 8f
-        )
-        
-        canvas.drawRoundRect(labelRect, 6f, 6f, labelBgPaint)
-        
-        accentBar.color = Color.argb(alpha, style.r, style.g, style.b)
-        accentBarRect.set(labelRect.left, labelRect.top, labelRect.left + 4f, labelRect.bottom)
-        canvas.drawRoundRect(accentBarRect, 2f, 2f, accentBar)
-        
-        canvas.drawText(labelText, labelRect.left + labelPadding + 4f, labelRect.centerY() + 6f, textPaint)
+        if (tradeScenario != null) {
+            val lines = listOf(
+                "${match.patternName} (${(match.confidence * 100).toInt()}%)",
+                "Entry: $${String.format("%.2f", tradeScenario.entryPrice)}",
+                "Stop: $${String.format("%.2f", tradeScenario.stopLoss)}",
+                "Target: $${String.format("%.2f", tradeScenario.takeProfit)}"
+            )
+            
+            val maxWidth = lines.maxOf { textPaint.measureText(it) }
+            val labelHeight = (lines.size * lineHeight) + (labelPadding * 2)
+            
+            labelRect.set(
+                rect.left, rect.top - labelHeight - 8f,
+                rect.left + maxWidth + labelPadding * 2, rect.top - 8f
+            )
+            
+            canvas.drawRoundRect(labelRect, 6f, 6f, labelBgPaint)
+            
+            accentBar.color = Color.argb(alpha, style.r, style.g, style.b)
+            accentBarRect.set(labelRect.left, labelRect.top, labelRect.left + 4f, labelRect.bottom)
+            canvas.drawRoundRect(accentBarRect, 2f, 2f, accentBar)
+            
+            lines.forEachIndexed { index, line ->
+                val y = labelRect.top + labelPadding + ((index + 1) * lineHeight) - 4f
+                canvas.drawText(line, labelRect.left + labelPadding + 4f, y, textPaint)
+            }
+        } else {
+            val labelText = match.patternName
+            val textWidth = textPaint.measureText(labelText)
+            val labelHeight = 32f
+            
+            labelRect.set(
+                rect.left, rect.top - labelHeight - 8f,
+                rect.left + textWidth + labelPadding * 2, rect.top - 8f
+            )
+            
+            canvas.drawRoundRect(labelRect, 6f, 6f, labelBgPaint)
+            
+            accentBar.color = Color.argb(alpha, style.r, style.g, style.b)
+            accentBarRect.set(labelRect.left, labelRect.top, labelRect.left + 4f, labelRect.bottom)
+            canvas.drawRoundRect(accentBarRect, 2f, 2f, accentBar)
+            
+            canvas.drawText(labelText, labelRect.left + labelPadding + 4f, labelRect.centerY() + 6f, textPaint)
+        }
     }
 
     private fun drawConfidenceBadge(canvas: Canvas, rect: RectF, confidence: Float, style: PatternStyle, alpha: Int) {
