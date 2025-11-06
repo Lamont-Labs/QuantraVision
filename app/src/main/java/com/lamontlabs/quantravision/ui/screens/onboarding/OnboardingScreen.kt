@@ -91,7 +91,7 @@ fun OnboardingScreen(
                                         MaterialTheme.colorScheme.primary
                                     else
                                         MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(4.dp)
+                                    shape = RoundedCornerShape(8.dp)
                                 )
                         )
                     }
@@ -110,7 +110,7 @@ fun OnboardingScreen(
                     ) {
                         TextButton(
                             onClick = { viewModel.skipOnboarding() },
-                            shape = RoundedCornerShape(4.dp)
+                            shape = RoundedCornerShape(20.dp)
                         ) {
                             Text("Skip", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         }

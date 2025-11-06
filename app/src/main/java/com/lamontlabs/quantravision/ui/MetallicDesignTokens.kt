@@ -31,66 +31,103 @@ import kotlin.math.sin
  */
 
 // ============================================================================
-// METALLIC GRADIENT BRUSHES
+// METALLIC GRADIENT BRUSHES - CHROME/STEEL
 // ============================================================================
 
 /**
- * Metallic cyan gradient: dark edge → bright highlight → brightest edge
- * Simulates reflective metal surface with light hitting from top
+ * Chrome metal gradient: polished steel with bright white reflections
+ * Simulates reflective chrome surface like a car bumper
  */
-val metallicCyanBrush = Brush.linearGradient(
+val metallicCyanBrush = Brush.verticalGradient(
     colors = listOf(
-        Color(0xFF022836),  // Dark edge
-        Color(0xFF06D7FF),  // Mid highlight
-        Color(0xFF7CFCFF),  // Bright edge
-        Color(0xFF001018)   // Dark end
+        Color(0xFF0A0C10),  // Deep shadow
+        Color(0xFF2C3038),  // Mid metal
+        Color(0xFFE8E8E8),  // Bright reflection
+        Color(0xFFD0F0F5),  // Subtle cyan tint
+        Color(0xFFE8E8E8),  // Bright reflection
+        Color(0xFF2C3038),  // Mid metal
+        Color(0xFF0A0C10)   // Deep shadow
     )
 )
 
 /**
- * Chrome border gradient - two-tone bright aqua shimmer
+ * Steel metal gradient - darker polished metal areas
+ */
+val steelMetalBrush = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF0A0C10),  // Deep black
+        Color(0xFF1A1D23),  // Dark gray
+        Color(0xFF2C3038),  // Mid gray
+        Color(0xFF1A1D23),  // Dark gray
+        Color(0xFF0A0C10)   // Deep black
+    )
+)
+
+/**
+ * Horizontal reflection sweep - simulates light sweeping across metal
+ */
+val horizontalReflectionBrush = Brush.horizontalGradient(
+    colors = listOf(
+        Color(0xFF1A1D23),  // Dark metal
+        Color(0xFFFFFFFF).copy(alpha = 0.3f),  // White reflection
+        Color(0xFF1A1D23)   // Dark metal
+    )
+)
+
+/**
+ * Chrome border gradient - silver/white shimmer
  */
 val chromeBorderBrush = Brush.linearGradient(
     colors = listOf(
-        Color(0xFF00FFFF),  // Bright aqua
-        Color(0xFFB2FFFF)   // Light aqua
+        Color(0xFFE8E8E8),  // Light silver
+        Color(0xFFFFFFFF),  // Bright white
+        Color(0xFFD0F0F5)   // Subtle cyan accent
     )
 )
 
 /**
- * Specular highlight overlay - radial glow for premium shine effect
+ * Specular highlight overlay - radial white glow for premium shine effect
  */
 val specularHighlight = Brush.radialGradient(
     colors = listOf(
-        Color(0x4400FFFF),  // Center glow
-        Color(0x0000FFFF)   // Fade out
+        Color(0x44FFFFFF),  // Center white glow
+        Color(0x00FFFFFF)   // Fade out
     )
 )
 
 /**
- * Darker metallic gradient for pressed state
+ * Darker metallic gradient for pressed state - dimmed chrome
  */
-val metallicCyanBrushDark = Brush.linearGradient(
+val metallicCyanBrushDark = Brush.verticalGradient(
     colors = listOf(
-        Color(0xFF011418),  // Darker edge
-        Color(0xFF0490A5),  // Dimmed highlight
-        Color(0xFF4AC5D5),  // Dimmed bright edge
-        Color(0xFF000810)   // Darker end
+        Color(0xFF000000),  // Pure black
+        Color(0xFF1A1D23),  // Dark gray
+        Color(0xFF888888),  // Dimmed reflection
+        Color(0xFF1A1D23),  // Dark gray
+        Color(0xFF000000)   // Pure black
     )
 )
 
 /**
- * Angular gradient for card backgrounds - creates beveled metal look
+ * Angular gradient for card backgrounds - creates beveled polished metal look
  */
 val metallicAngularBrush = Brush.linearGradient(
     colors = listOf(
-        Color(0xFF0D1219),  // Surface dark
-        Color(0xFF1A2633),  // Mid tone
-        Color(0xFF0D1219)   // Back to dark
+        Color(0xFF1A1D23),  // Dark metal
+        Color(0xFF2C3038),  // Mid tone
+        Color(0xFFE8E8E8).copy(alpha = 0.2f),  // Subtle reflection
+        Color(0xFF2C3038),  // Mid tone
+        Color(0xFF1A1D23)   // Dark metal
     ),
     start = Offset.Zero,
     end = Offset.Infinite
 )
+
+/**
+ * Corner radius constants for rounded metal design
+ */
+private val METAL_BUTTON_CORNER_RADIUS = 20.dp
+private val METAL_CARD_CORNER_RADIUS = 16.dp
 
 // ============================================================================
 // METALLIC BUTTON COMPOSABLE
@@ -123,11 +160,11 @@ fun MetallicButton(
             .metallicBorder(
                 width = 2.dp,
                 brush = chromeBorderBrush,
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
             )
             .background(
                 brush = if (isPressed) metallicCyanBrushDark else metallicCyanBrush,
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
             )
             .clickable(
                 interactionSource = interactionSource,
@@ -135,22 +172,25 @@ fun MetallicButton(
                 enabled = enabled,
                 onClick = onClick
             )
+            .drawBehind {
+                drawRect(brush = horizontalReflectionBrush, alpha = 0.2f)
+            }
     ) {
-        // Top edge light strip
+        // Top edge light strip with rounded ends
         if (showTopStrip) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(2.dp)
+                    .height(3.dp)
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
                                 Color.Transparent,
-                                Color(0xAAFFFFFF),
+                                Color(0xFFFFFFFF),
                                 Color.Transparent
                             )
                         ),
-                        shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
+                        shape = RoundedCornerShape(topStart = METAL_BUTTON_CORNER_RADIUS, topEnd = METAL_BUTTON_CORNER_RADIUS)
                     )
                     .align(Alignment.TopCenter)
             )
@@ -212,7 +252,7 @@ fun MetallicCard(
                             brush = Brush.linearGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    Color(0x4400FFFF),
+                                    Color(0x66FFFFFF),
                                     Color.Transparent
                                 ),
                                 start = Offset(shimmerState * size.width, 0f),
@@ -228,51 +268,47 @@ fun MetallicCard(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(METAL_CARD_CORNER_RADIUS),
         border = BorderStroke(
             width = 1.dp,
             brush = Brush.linearGradient(
                 colors = listOf(
-                    Color(0xFF00FFFF).copy(alpha = 0.6f),
-                    Color(0xFFB2FFFF).copy(alpha = 0.4f),
-                    Color(0xFF00FFFF).copy(alpha = 0.6f)
+                    Color(0xFFE8E8E8).copy(alpha = 0.6f),
+                    Color(0xFFFFFFFF).copy(alpha = 0.8f),
+                    Color(0xFFD0F0F5).copy(alpha = 0.5f),
+                    Color(0xFFE8E8E8).copy(alpha = 0.6f)
                 )
             )
         )
     ) {
-        // Angular gradient background overlay
+        // Polished metal gradient background overlay
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF0D1219).copy(alpha = 0.3f),
-                            Color(0xFF1A2633).copy(alpha = 0.2f),
-                            Color(0xFF0D1219).copy(alpha = 0.3f)
-                        )
-                    )
-                )
+                .background(brush = metallicAngularBrush)
+                .drawBehind {
+                    drawRect(brush = horizontalReflectionBrush, alpha = 0.15f)
+                }
         ) {
-            // Inner stroke for beveled metal look
+            // Inner stroke for beveled chrome look
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(1.dp)
                     .background(
                         color = Color.Transparent,
-                        shape = RoundedCornerShape(3.dp)
+                        shape = RoundedCornerShape(METAL_CARD_CORNER_RADIUS - 1.dp)
                     )
                     .drawBehind {
                         drawRoundRect(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    Color(0x40FFFFFF),
-                                    Color(0x20FFFFFF)
+                                    Color(0x60FFFFFF),
+                                    Color(0x30FFFFFF)
                                 )
                             ),
                             style = Stroke(width = 1.dp.toPx()),
-                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx())
+                            cornerRadius = androidx.compose.ui.geometry.CornerRadius((METAL_CARD_CORNER_RADIUS - 1.dp).toPx())
                         )
                     }
             ) {
@@ -288,7 +324,7 @@ fun MetallicCard(
 
 /**
  * Extension modifier to add metallic gradient border
- * Creates dual-stroke borders (outer aqua + inner white) for premium chrome effect
+ * Creates dual-stroke borders (outer silver + inner white) for premium chrome effect
  * 
  * @param width Border width
  * @param brush Gradient brush for border
@@ -297,7 +333,7 @@ fun MetallicCard(
 fun Modifier.metallicBorder(
     width: Dp = 2.dp,
     brush: Brush = chromeBorderBrush,
-    shape: Shape = RoundedCornerShape(4.dp)
+    shape: Shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
 ): Modifier = this
     .drawBehind {
         val strokeWidth = width.toPx()
@@ -313,7 +349,7 @@ fun Modifier.metallicBorder(
         // Inner white highlight
         drawOutline(
             outline = outline,
-            color = Color(0x40FFFFFF),
+            color = Color(0x60FFFFFF),
             style = Stroke(width = strokeWidth * 0.5f)
         )
     }
@@ -324,13 +360,13 @@ fun Modifier.metallicBorder(
 fun Modifier.metallicDualBorder(
     outerWidth: Dp = 2.dp,
     innerWidth: Dp = 1.dp,
-    outerColor: Color = Color(0xFF00FFFF),
-    innerColor: Color = Color(0x80FFFFFF),
-    shape: Shape = RoundedCornerShape(4.dp)
+    outerColor: Color = Color(0xFFE8E8E8),
+    innerColor: Color = Color(0xFFFFFFFF),
+    shape: Shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
 ): Modifier = this.drawBehind {
     val outline = shape.createOutline(size, layoutDirection, this)
     
-    // Outer aqua border
+    // Outer silver border
     drawOutline(
         outline = outline,
         color = outerColor,
@@ -350,13 +386,13 @@ fun Modifier.metallicDualBorder(
 // ============================================================================
 
 /**
- * Text style with metallic glow shadow effect
+ * Text style with metallic glow shadow effect - white/silver glow
  * Use for headers and important text
  */
 @Composable
 fun rememberMetallicTextStyle(
     baseStyle: TextStyle = MaterialTheme.typography.headlineLarge,
-    glowColor: Color = Color(0x8800FFFF),
+    glowColor: Color = Color(0x88FFFFFF),
     glowRadius: Float = 12f
 ): TextStyle {
     return baseStyle.copy(
@@ -369,19 +405,19 @@ fun rememberMetallicTextStyle(
 }
 
 /**
- * Intense glow for hero text
+ * Intense white glow for hero text - chrome reflection effect
  */
 val HeroTextShadow = Shadow(
-    color = Color(0x8800FFFF),
+    color = Color(0xAAFFFFFF),
     blurRadius = 12f,
     offset = Offset(0f, 0f)
 )
 
 /**
- * Subtle glow for secondary text
+ * Subtle white glow for secondary text
  */
 val SubtleTextShadow = Shadow(
-    color = Color(0x4400FFFF),
+    color = Color(0x66FFFFFF),
     blurRadius = 6f,
     offset = Offset(0f, 0f)
 )
@@ -452,7 +488,7 @@ fun rememberMetallicPulse(
 // ============================================================================
 
 /**
- * Metallic divider with gradient
+ * Metallic divider with chrome gradient
  */
 @Composable
 fun MetallicDivider(
@@ -467,7 +503,10 @@ fun MetallicDivider(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        Color(0xFF00FFFF).copy(alpha = 0.6f),
+                        Color(0xFFE8E8E8).copy(alpha = 0.7f),
+                        Color(0xFFFFFFFF).copy(alpha = 0.9f),
+                        Color(0xFFD0F0F5).copy(alpha = 0.5f),
+                        Color(0xFFE8E8E8).copy(alpha = 0.7f),
                         Color.Transparent
                     )
                 )
@@ -476,7 +515,7 @@ fun MetallicDivider(
 }
 
 /**
- * Metallic text with glow effect
+ * Metallic text with white chrome glow effect
  */
 @Composable
 fun MetallicText(
@@ -490,7 +529,7 @@ fun MetallicText(
         modifier = modifier,
         style = style.copy(
             shadow = Shadow(
-                color = Color(0x8800FFFF).copy(alpha = glowIntensity),
+                color = Color(0xFFFFFFFF).copy(alpha = glowIntensity),
                 blurRadius = 12f * glowIntensity
             ),
             fontWeight = FontWeight.ExtraBold
