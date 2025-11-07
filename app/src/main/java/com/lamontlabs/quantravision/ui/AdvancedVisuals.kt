@@ -59,13 +59,13 @@ fun QuantumGridBackground(
         val gridSpacing = AnimationSpecs.GRID_SPACING_DP.dp.toPx()
         val offset = if (shouldAnimate) gridOffset else 0f
         
-        // Dark quantum gradient background
+        // Dark quantum gradient background - matches branded logo image
         drawRect(
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    Color(0xFF000510),
-                    Color(0xFF0A0E1A),
-                    Color(0xFF000510)
+                    Color(0xFF010409), // Deep space blue-black (top)
+                    Color(0xFF0D1825), // Mid blue (center)
+                    Color(0xFF010409)  // Deep space blue-black (bottom)
                 )
             )
         )
