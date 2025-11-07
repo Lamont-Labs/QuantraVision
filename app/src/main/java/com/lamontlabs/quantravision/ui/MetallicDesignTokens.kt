@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision.ui
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -8,6 +9,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -554,7 +557,6 @@ fun MetallicText(
  * @param icon Optional leading icon
  * @param content Content to show when expanded
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MetallicAccordion(
     title: String,
@@ -641,7 +643,7 @@ fun MetallicAccordion(
                     }
                     
                     Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
+                        imageVector = Icons.Default.KeyboardArrowDown,
                         contentDescription = if (expanded) "Collapse" else "Expand",
                         tint = Color.White,
                         modifier = Modifier
@@ -654,7 +656,7 @@ fun MetallicAccordion(
             }
         }
         
-        androidx.compose.animation.AnimatedVisibility(
+        AnimatedVisibility(
             visible = expanded,
             enter = fadeIn(animationSpec = tween(300)) + expandVertically(
                 animationSpec = tween(300, easing = FastOutSlowInEasing)
