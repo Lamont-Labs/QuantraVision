@@ -10,12 +10,15 @@ import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
 
 @Composable
@@ -32,6 +35,95 @@ fun SettingsScreen() {
                 Spacer(Modifier.height(16.dp))
                 Text("Lamont Labs", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 Text("QuantraVision Overlay • v2.x", fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+fun AlertSettingsCard() {
+    val context = LocalContext.current
+    val alertManager = remember { AlertManager.getInstance(context) }
+    var voiceEnabled by remember { mutableStateOf(alertManager.isVoiceEnabled()) }
+    var hapticEnabled by remember { mutableStateOf(alertManager.isHapticEnabled()) }
+    
+    MetallicCard(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Text(
+                text = "Alert Settings",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.VolumeUp,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text("Voice Announcements", fontWeight = FontWeight.Bold)
+                        Text(
+                            "Announce detected patterns",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Switch(
+                    checked = voiceEnabled,
+                    onCheckedChange = { enabled ->
+                        voiceEnabled = enabled
+                        alertManager.setVoiceEnabled(enabled)
+                    }
+                )
+            }
+            
+            Spacer(Modifier.height(20.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Vibration,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text("Haptic Feedback", fontWeight = FontWeight.Bold)
+                        Text(
+                            "Vibrate on pattern detection",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Switch(
+                    checked = hapticEnabled,
+                    onCheckedChange = { enabled ->
+                        hapticEnabled = enabled
+                        alertManager.setHapticEnabled(enabled)
+                    }
+                )
             }
         }
     }
@@ -56,6 +148,10 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
         }
     ) { padding ->
         Column(Modifier.fillMaxWidth().padding(padding).padding(20.dp)) {
+            AlertSettingsCard()
+            
+            Spacer(Modifier.height(20.dp))
+            
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(4.dp),

@@ -538,3 +538,139 @@ fun MetallicText(
         )
     )
 }
+
+// ============================================================================
+// METALLIC ACCORDION COMPOSABLE
+// ============================================================================
+
+/**
+ * Premium metallic accordion with expandable/collapsible chrome sections
+ * 
+ * @param title Accordion header text
+ * @param modifier Modifier for customization
+ * @param expanded Whether the accordion is expanded
+ * @param onToggle Callback when accordion is clicked
+ * @param badge Optional badge count to display (e.g., notifications, achievements)
+ * @param icon Optional leading icon
+ * @param content Content to show when expanded
+ */
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun MetallicAccordion(
+    title: String,
+    modifier: Modifier = Modifier,
+    expanded: Boolean = false,
+    onToggle: () -> Unit,
+    badge: Int? = null,
+    icon: @Composable (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val rotationAngle by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        label = "chevronRotation"
+    )
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .metallicBorder(
+                width = 2.dp,
+                brush = chromeBorderBrush,
+                shape = RoundedCornerShape(METAL_CARD_CORNER_RADIUS)
+            )
+            .background(
+                brush = metallicAngularBrush,
+                shape = RoundedCornerShape(METAL_CARD_CORNER_RADIUS)
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onToggle)
+                .background(
+                    brush = if (expanded) metallicCyanBrush else steelMetalBrush,
+                    shape = RoundedCornerShape(
+                        topStart = METAL_CARD_CORNER_RADIUS,
+                        topEnd = METAL_CARD_CORNER_RADIUS,
+                        bottomStart = if (expanded) 0.dp else METAL_CARD_CORNER_RADIUS,
+                        bottomEnd = if (expanded) 0.dp else METAL_CARD_CORNER_RADIUS
+                    )
+                )
+                .drawBehind {
+                    drawRect(brush = horizontalReflectionBrush, alpha = 0.2f)
+                }
+                .padding(horizontal = 20.dp, vertical = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (icon != null) {
+                        icon()
+                        Spacer(Modifier.width(12.dp))
+                    }
+                    
+                    MetallicText(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        glowIntensity = if (expanded) 0.8f else 0.5f
+                    )
+                }
+                
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (badge != null && badge > 0) {
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White
+                        ) {
+                            Text(
+                                text = badge.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (expanded) "Collapse" else "Expand",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .graphicsLayer {
+                                rotationZ = rotationAngle
+                            }
+                    )
+                }
+            }
+        }
+        
+        androidx.compose.animation.AnimatedVisibility(
+            visible = expanded,
+            enter = fadeIn(animationSpec = tween(300)) + expandVertically(
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            ),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF0D1219).copy(alpha = 0.6f))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                content = content
+            )
+        }
+    }
+}
