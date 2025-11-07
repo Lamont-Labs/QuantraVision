@@ -218,9 +218,9 @@ fun HomeScreen(
                         contentPadding = PaddingValues(20.dp),
                         showTopStrip = true
                     ) {
-                        // Clean transparent Q logo - no border
+                        // Clean cyan Q logo - no border
                         Image(
-                            painter = painterResource(id = R.drawable.scan_q_transparent),
+                            painter = painterResource(id = R.drawable.scan_q_clean),
                             contentDescription = "Start Scan",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
