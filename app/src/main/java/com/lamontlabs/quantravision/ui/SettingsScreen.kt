@@ -241,11 +241,12 @@ fun SettingsScreenWithNav(
                                 shape = RoundedCornerShape(4.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if (isSelected) MaterialTheme.colorScheme.primary 
-                                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                                    else MaterialTheme.colorScheme.surface,
                                     contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary 
-                                                  else MaterialTheme.colorScheme.onSurfaceVariant
+                                                  else MaterialTheme.colorScheme.onSurface
                                 ),
-                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp)
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
+                                border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null
                             ) {
                                 Text(
                                     text = label,

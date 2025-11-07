@@ -59,13 +59,6 @@ fun HomeScreen(
                     )
                 }
             )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onStartScan,
-                icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-                text = { Text("Start Detection") }
-            )
         }
     ) { paddingValues ->
         LazyColumn(
@@ -179,6 +172,12 @@ fun HomeScreen(
                             "Quick Actions",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
+                        )
+                        
+                        QuickActionButton(
+                            icon = Icons.Default.PlayArrow,
+                            text = "Start Detection",
+                            onClick = onStartScan
                         )
                         
                         QuickActionButton(
