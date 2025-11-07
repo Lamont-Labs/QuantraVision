@@ -143,34 +143,51 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 - High contrast dark backgrounds (0.85f alpha) for optimal readability
 - Production-ready for Samsung S23 FE (Android 14)
 
-### November 7, 2025 - Non-Scrollable Layout Optimization
-**Transformed dashboard to fit entirely on screen without scrolling:**
+### November 7, 2025 - Professional UI Redesign (App Store Quality)
+**Complete UI simplification to eliminate amateur appearance and achieve professional app store quality:**
 
-**Layout Restructuring:**
-- **Removed Scrolling**: Eliminated verticalScroll for static, non-scrollable layout
-- **SpaceBetween Arrangement**: Content evenly distributed across screen height
-- **Compact Sizing**: Reduced all component sizes to fit within 412×915dp viewport
-- **Centered Title**: TopAppBar title now centered for balanced appearance
+**Problem Addressed:**
+- Visible "boxes around text" from multi-layer glow effects
+- Content getting cut off
+- Over-designed, busy appearance with excessive blur layers
+- Amateur look instead of professional app store quality
 
-**Size Optimizations:**
-- Hero title: headlineMedium → headlineSmall
-- CircularHUDProgress: 180.dp → 140.dp, strokeWidth 6.dp → 4.dp
-- Hero button: 56.dp → 48.dp height, 0.9f → 0.85f width
-- Accordion buttons: 44.dp height with explicit 8.dp vertical padding (28.dp usable space)
-- All icons: 24-28.dp → 20.dp (except hero 24.dp)
-- Card padding: 20.dp → 12.dp
-- Card spacing: 12.dp → 8.dp
-- Layout padding: 24.dp → 16.dp horizontal, 8.dp vertical
+**GlassMorphicCard Simplification:**
+- REMOVED multi-layer glowing borders (3 layers creating visible boxes)
+- Single clean border with subtle 40% alpha
+- Border width: 2.dp → 1.dp (cleaner)
+- Corner radius: 12.dp → 16.dp (softer)
+- Padding: 12.dp → 16.dp (more breathing room)
+- Spacing: 8.dp → 12.dp
+- Background opacity: 0.85f → 0.90f (more solid, better readability)
 
-**Accordion Management:**
-- All accordions start collapsed by default
-- Prevents content overflow when expanded
-- One accordion at a time usage pattern
-- Maintains accessibility with 44.dp+ touch targets
+**NeonText Simplification:**
+- REMOVED 4-layer blur system (outer 18.dp, mid 12.dp, inner 6.dp blurs + sharp text)
+- Single Text with subtle Shadow (8f blur radius, 30% alpha)
+- No more visible halos or boxes around text
+- Clean, crisp, professional appearance
 
-**Technical Result:**
-- Total layout height ≈720.dp (fits within 915.dp screen)
-- No clipping or content cut-off
-- Meets Android touch target guidelines (44-48.dp)
-- Fully visible controls without scrolling
-- Optimized for Samsung S23 FE (412×915.dp viewport)
+**GlowingIcon Simplification:**
+- REMOVED 4-layer blur system (12.dp, 8.dp, 4.dp blurs + sharp icon)
+- Single clean Icon with no blur layers
+- Professional appearance without excessive effects
+
+**Dashboard Layout Improvements:**
+- REMOVED ParticleStarfield background (too busy)
+- REMOVED RadialGlowBackground (too busy)
+- ADDED proper vertical scrolling to prevent cut-off
+- Padding: 16.dp → 20.dp horizontal, 8.dp → 16.dp vertical (generous breathing room)
+- Spacing: SpaceBetween → spacedBy(20.dp) for consistent gaps
+- Hero title: headlineSmall → headlineMedium (more prominent)
+- Hero button: 48.dp → 64.dp height, 0.85f → 0.9f width (more prominent)
+- Icon size: 24.dp → 28.dp
+- REMOVED CircularHUDProgress decoration (cleaner, simpler)
+
+**Visual Result:**
+- Professional app store quality appearance
+- No visible "boxes around text" - single subtle borders only
+- No content cut-off - proper scrolling implemented
+- Clean, not over-designed aesthetic
+- Excellent spacing and breathing room
+- Crisp, readable text without excessive blur
+- Accessible and production-ready for Samsung S23 FE (Android 14)
