@@ -173,8 +173,8 @@ fun DashboardScreen(
                     Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
                     Text("View Detections", fontWeight = FontWeight.Bold)
-                    }
                 }
+            }
             }
             
             // Accordion 2: Intelligence & Analytics (with 💎 badge)
@@ -219,8 +219,8 @@ fun DashboardScreen(
                     Icon(Icons.Default.TrendingUp, contentDescription = null, modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
                     Text("Predictions", fontWeight = FontWeight.Bold)
-                    }
                 }
+            }
             }
             
             // Accordion 3: Learn & Progress (with achievement count badge)
@@ -271,9 +271,9 @@ fun DashboardScreen(
                 ) {
                     Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
-                        Text("Achievements", fontWeight = FontWeight.Bold)
-                    }
+                    Text("Achievements", fontWeight = FontWeight.Bold)
                 }
+            }
             }
         }
     }
