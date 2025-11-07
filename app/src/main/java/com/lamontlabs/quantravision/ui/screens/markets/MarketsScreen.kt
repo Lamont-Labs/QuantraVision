@@ -50,28 +50,9 @@ fun MarketsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)
         ) {
-            // Header
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    NeonText(
-                        text = "109 Pattern Templates",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Apache 2.0 Licensed • Fully Offline",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            
             // Pattern Templates Section
             item {
                 Text(
@@ -93,7 +74,7 @@ fun MarketsScreen(
             
             // Intelligence Section
             item {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     "Intelligence Stack",
                     style = MaterialTheme.typography.titleLarge,

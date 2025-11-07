@@ -137,6 +137,8 @@ fun SettingsScreenWithNav(
 ) {
     val context = LocalContext.current
     val logoPrefs = com.lamontlabs.quantravision.overlay.FloatingLogoPreferences(context)
+    var selectedSize by remember { mutableStateOf(logoPrefs.getLogoSize()) }
+    var selectedOpacity by remember { mutableStateOf(logoPrefs.getLogoOpacity()) }
     
     Scaffold(
         topBar = {
@@ -190,10 +192,20 @@ fun SettingsScreenWithNav(
                             com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.MEDIUM to "Medium",
                             com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.LARGE to "Large"
                         ).forEach { (size, label) ->
+                            val isSelected = selectedSize == size
                             Button(
-                                onClick = { logoPrefs.saveLogoSize(size) },
+                                onClick = { 
+                                    selectedSize = size
+                                    logoPrefs.saveLogoSize(size)
+                                },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(4.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary 
+                                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary 
+                                                  else MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
                             ) {
                                 Text(
@@ -216,20 +228,31 @@ fun SettingsScreenWithNav(
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         listOf(0.5f to "50%", 0.75f to "75%", 0.85f to "85%", 1.0f to "100%").forEach { (opacity, label) ->
+                            val isSelected = (selectedOpacity - opacity).let { kotlin.math.abs(it) < 0.01f }
                             Button(
-                                onClick = { logoPrefs.saveLogoOpacity(opacity) },
+                                onClick = { 
+                                    selectedOpacity = opacity
+                                    logoPrefs.saveLogoOpacity(opacity)
+                                },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(4.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary 
+                                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary 
+                                                  else MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp)
                             ) {
                                 Text(
                                     text = label,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 1,
-                                    softWrap = false
+                                    softWrap = false,
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                             }
                         }
