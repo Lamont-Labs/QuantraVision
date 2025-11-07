@@ -2,8 +2,6 @@ package com.lamontlabs.quantravision.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -45,6 +43,7 @@ fun DashboardScreen(
     onIntelligence: () -> Unit = {}
 ) {
     // State for accordion expansion (persistent across configuration changes)
+    // Start with all accordions collapsed to fit without scrolling
     var detectionExpanded by rememberSaveable { mutableStateOf(false) }
     var intelligenceExpanded by rememberSaveable { mutableStateOf(false) }
     var learnExpanded by rememberSaveable { mutableStateOf(false) }
@@ -55,7 +54,17 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("QuantraVision Dashboard") },
+                title = { 
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "QuantraVision Dashboard",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onSettings) {
                         Icon(
@@ -88,55 +97,52 @@ fun DashboardScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Hero title with neon glow
+                // Hero title with neon glow - smaller and centered
                 NeonText(
                     text = "QUANTRAVISION",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineSmall,
                     glowColor = NeonCyan,
                     glowIntensity = 1f,
                     enablePulse = true
                 )
                 
-                Spacer(Modifier.height(8.dp))
-                
-                // Hero CTA with circular HUD progress
+                // Hero CTA with circular HUD progress - more compact
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Circular HUD decoration behind button
+                    // Circular HUD decoration behind button - smaller
                     CircularHUDProgress(
                         progress = 0.75f,
-                        size = 180.dp,
-                        strokeWidth = 6.dp,
+                        size = 140.dp,
+                        strokeWidth = 4.dp,
                         showTicks = true,
                         modifier = Modifier.alpha(0.4f)
                     )
                     
-                    // Hero button
+                    // Hero button - more compact
                     MetallicButton(
                         onClick = onStartScan,
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(56.dp),
+                            .fillMaxWidth(0.85f)
+                            .height(48.dp),
                         showTopStrip = true
                     ) {
                         GlowingIcon(
                             imageVector = Icons.Default.Visibility,
                             contentDescription = null,
-                            size = 28.dp,
+                            size = 24.dp,
                             glowColor = NeonCyan,
                             glowIntensity = 0.9f
                         )
-                        Spacer(Modifier.width(12.dp))
+                        Spacer(Modifier.width(10.dp))
                         NeonText(
                             text = "START DETECTION",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleSmall,
                             glowColor = NeonCyan,
                             glowIntensity = 0.7f,
                             enablePulse = false
@@ -144,9 +150,7 @@ fun DashboardScreen(
                     }
                 }
             
-            Spacer(Modifier.height(8.dp))
-            
-            // Accordion 1: Detection & Review
+            // Accordion 1: Detection & Review - compact
             GlassMorphicCard(
                 modifier = Modifier.fillMaxWidth(),
                 borderColor = NeonCyan,
@@ -160,7 +164,7 @@ fun DashboardScreen(
                         GlowingIcon(
                             imageVector = Icons.Default.List,
                             contentDescription = null,
-                            size = 24.dp,
+                            size = 20.dp,
                             glowColor = NeonCyan,
                             glowIntensity = 0.7f
                         )
@@ -168,17 +172,18 @@ fun DashboardScreen(
                 ) {
                 MetallicButton(
                     onClick = onReview,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     showTopStrip = false
                 ) {
-                    Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("View Detections", fontWeight = FontWeight.Bold)
+                    Text("View Detections", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             }
             
-            // Accordion 2: Intelligence & Analytics (with 💎 badge)
+            // Accordion 2: Intelligence & Analytics (with 💎 badge) - compact
             GlassMorphicCard(
                 modifier = Modifier.fillMaxWidth(),
                 borderColor = NeonGold,
@@ -193,38 +198,40 @@ fun DashboardScreen(
                             GlowingIcon(
                                 imageVector = Icons.Default.Psychology,
                                 contentDescription = null,
-                                size = 24.dp,
+                                size = 20.dp,
                                 glowColor = NeonGold,
                                 glowIntensity = 0.8f
                             )
                             Spacer(Modifier.width(4.dp))
-                            Text("💎", style = MaterialTheme.typography.titleMedium)
+                            Text("💎", style = MaterialTheme.typography.titleSmall)
                         }
                     }
                 ) {
                 MetallicButton(
                     onClick = onIntelligence,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     showTopStrip = false
                 ) {
-                    Icon(Icons.Default.Psychology, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.Psychology, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Intelligence Hub", fontWeight = FontWeight.Bold)
+                    Text("Intelligence Hub", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
                 
                 MetallicButton(
                     onClick = onPredictions,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     showTopStrip = false
                 ) {
-                    Icon(Icons.Default.TrendingUp, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.TrendingUp, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Predictions", fontWeight = FontWeight.Bold)
+                    Text("Predictions", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             }
             
-            // Accordion 3: Learn & Progress (with achievement count badge)
+            // Accordion 3: Learn & Progress (with achievement count badge) - compact
             GlassMorphicCard(
                 modifier = Modifier.fillMaxWidth(),
                 borderColor = NeonCyan,
@@ -239,7 +246,7 @@ fun DashboardScreen(
                         GlowingIcon(
                             imageVector = Icons.Default.School,
                             contentDescription = null,
-                            size = 24.dp,
+                            size = 20.dp,
                             glowColor = NeonCyan,
                             glowIntensity = 0.7f
                         )
@@ -247,32 +254,35 @@ fun DashboardScreen(
                 ) {
                 MetallicButton(
                     onClick = onTutorials,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     showTopStrip = false
                 ) {
-                    Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Tutorials", fontWeight = FontWeight.Bold)
+                    Text("Tutorials", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
                 
                 MetallicButton(
                     onClick = onBook,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     showTopStrip = false
                 ) {
-                    Icon(Icons.Default.Book, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.Book, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Trading Book", fontWeight = FontWeight.Bold)
+                    Text("Trading Book", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
                 
                 MetallicButton(
                     onClick = onAchievements,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     showTopStrip = false
                 ) {
-                    Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Achievements", fontWeight = FontWeight.Bold)
+                    Text("Achievements", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             }

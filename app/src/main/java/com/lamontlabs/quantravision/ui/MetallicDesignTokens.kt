@@ -1315,11 +1315,11 @@ fun GlassMorphicCard(
                 style = Stroke(width = strokeWidth)
             )
         }
-        .padding(20.dp)
+        .padding(12.dp)
     
     Column(
         modifier = cardModifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         content = content
     )
 }
