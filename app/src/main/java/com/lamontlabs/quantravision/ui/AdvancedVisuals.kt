@@ -2,11 +2,14 @@ package com.lamontlabs.quantravision.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -47,6 +50,46 @@ fun StaticBrandBackground(
                 )
             )
     )
+}
+
+/**
+ * Container for logo images with matching gradient background
+ * Creates seamless blend so logos appear to float
+ */
+@Composable
+fun FloatingLogoContainer(
+    painter: androidx.compose.ui.graphics.painter.Painter,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        // Matching gradient background
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFF0D1825), // Center matches UI mid-tone
+                            Color(0xFF010409)  // Edges fade to dark
+                        ),
+                        radius = 800f
+                    )
+                )
+        )
+        
+        // Logo image on top
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = imageModifier,
+            contentScale = ContentScale.Fit
+        )
+    }
 }
 
 // ============================================================================

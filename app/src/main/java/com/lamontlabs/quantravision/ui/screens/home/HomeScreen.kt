@@ -91,7 +91,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Q Logo with Text
+            // HERO SECTION - Q Logo with Text (floating blend)
             item {
                 Box(
                     modifier = Modifier
@@ -99,13 +99,12 @@ fun HomeScreen(
                         .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Q logo with QuantraVision text
-                    Image(
+                    // Floating logo with gradient blend
+                    FloatingLogoContainer(
                         painter = painterResource(id = R.drawable.hero_logo_final),
                         contentDescription = "QuantraVision - AI Trading Overlay",
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f),
-                        contentScale = ContentScale.Fit
+                        modifier = Modifier.fillMaxWidth(0.85f),
+                        imageModifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -211,15 +210,15 @@ fun HomeScreen(
                         label = "buttonScale"
                     )
                     
-                    // Just the Q logo - no button frame
-                    Image(
+                    // Just the Q logo - floating blend
+                    FloatingLogoContainer(
                         painter = painterResource(id = R.drawable.q_logo_transparent),
                         contentDescription = "Start Scan",
                         modifier = Modifier
                             .size(180.dp)
                             .scale(scale)
                             .clickable(onClick = onStartScan),
-                        contentScale = ContentScale.Fit
+                        imageModifier = Modifier.fillMaxSize()
                     )
                     
                     Spacer(modifier = Modifier.height(12.dp))
