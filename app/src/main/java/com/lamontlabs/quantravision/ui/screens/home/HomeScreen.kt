@@ -91,7 +91,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Clean Transparent Logo with Text
+            // HERO SECTION - Q Logo with Text
             item {
                 Box(
                     modifier = Modifier
@@ -99,9 +99,9 @@ fun HomeScreen(
                         .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Fully transparent Q logo with text - no background
+                    // Q logo with QuantraVision text
                     Image(
-                        painter = painterResource(id = R.drawable.hero_logo_transparent),
+                        painter = painterResource(id = R.drawable.hero_logo_final),
                         contentDescription = "QuantraVision - AI Trading Overlay",
                         modifier = Modifier
                             .fillMaxWidth(0.85f),
