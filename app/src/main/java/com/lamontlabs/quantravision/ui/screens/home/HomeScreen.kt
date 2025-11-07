@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -198,7 +199,7 @@ fun HomeScreen(
                         .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Pulsing animation for the button
+                    // Pulsing animation
                     val infiniteTransition = rememberInfiniteTransition(label = "scanPulse")
                     val scale by infiniteTransition.animateFloat(
                         initialValue = 1f,
@@ -210,22 +211,16 @@ fun HomeScreen(
                         label = "buttonScale"
                     )
                     
-                    MetallicButton(
-                        onClick = onStartScan,
+                    // Just the Q logo - no button frame
+                    Image(
+                        painter = painterResource(id = R.drawable.q_logo_transparent),
+                        contentDescription = "Start Scan",
                         modifier = Modifier
-                            .size(160.dp)
-                            .scale(scale),
-                        contentPadding = PaddingValues(20.dp),
-                        showTopStrip = true
-                    ) {
-                        // Clean cyan Q logo - no border
-                        Image(
-                            painter = painterResource(id = R.drawable.scan_q_clean),
-                            contentDescription = "Start Scan",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                            .size(180.dp)
+                            .scale(scale)
+                            .clickable(onClick = onStartScan),
+                        contentScale = ContentScale.Fit
+                    )
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
