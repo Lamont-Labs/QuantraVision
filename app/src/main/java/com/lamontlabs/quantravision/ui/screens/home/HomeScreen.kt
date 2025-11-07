@@ -110,99 +110,22 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Branded Logo Presentation
+            // HERO SECTION - Full Branded Logo Image
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(380.dp),
+                        .padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        // Large MetallicHeroBadge with Logo - Match splash screen aesthetic
-                        MetallicHeroBadge(
-                            modifier = Modifier.size(220.dp),
-                            pulseSync = true
-                        ) {
-                            // QV Logo with grid overlay effect
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                // Logo image
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_qv_logo_foreground),
-                                    contentDescription = "QuantraVision Logo",
-                                    modifier = Modifier.fillMaxSize(0.75f)
-                                )
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(32.dp))
-                        
-                        // QUANTRAVISION Title - Large and Prominent
-                        NeonText(
-                            text = "QUANTRAVISION",
-                            style = MaterialTheme.typography.displaySmall.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 6.sp
-                            ),
-                            glowColor = NeonCyan,
-                            textColor = NeonCyan,
-                            glowIntensity = 1.0f,
-                            enablePulse = false
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        // AI TRADING OVERLAY Subtitle
-                        NeonText(
-                            text = "AI TRADING OVERLAY",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 4.sp
-                            ),
-                            glowColor = NeonCyanBright,
-                            textColor = NeonCyanBright.copy(alpha = 0.9f),
-                            glowIntensity = 0.6f,
-                            enablePulse = false
-                        )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Live Status Indicator
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Pulsing status dot
-                            val pulseAlpha by rememberInfiniteTransition(label = "statusPulse").animateFloat(
-                                initialValue = 0.4f,
-                                targetValue = 1f,
-                                animationSpec = infiniteRepeatable(
-                                    animation = tween(1000),
-                                    repeatMode = RepeatMode.Reverse
-                                ),
-                                label = "statusDot"
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(Color(0xFF00FF88).copy(alpha = pulseAlpha), CircleShape)
-                            )
-                            Text(
-                                text = "SYSTEM READY • $totalDetections PATTERNS",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp
-                                ),
-                                color = Color.White.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
+                    // Display the complete branded logo image with transparent background
+                    Image(
+                        painter = painterResource(id = R.drawable.qv_hero_logo),
+                        contentDescription = "QuantraVision - AI Trading Overlay",
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .aspectRatio(1f)
+                    )
                 }
             }
             
