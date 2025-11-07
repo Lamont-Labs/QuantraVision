@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
@@ -1257,9 +1258,11 @@ data class RingData(
 fun GlassMorphicCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    blurRadius: Float = 8f,
-    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.65f),
-    borderColor: Color = NeonCyan.copy(alpha = 0.5f),
+    blurRadius: Float = 0f,
+    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.85f),
+    borderColor: Color = NeonCyan,
+    borderWidth: Dp = 2.dp,
+    glowIntensity: Float = 0.6f,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardModifier = modifier
@@ -1271,34 +1274,47 @@ fun GlassMorphicCard(
                 Modifier
             }
         )
-        .then(
-            // Apply backdrop blur on Android 12+ (API 31+)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                Modifier.graphicsLayer {
-                    renderEffect = android.graphics.RenderEffect
-                        .createBlurEffect(blurRadius, blurRadius, android.graphics.Shader.TileMode.DECAL)
-                        .asComposeRenderEffect()
-                }
-            } else {
-                // Fallback: higher opacity background
-                Modifier
-            }
-        )
+        // Sharp background - NO blur for crisp text
         .background(
             color = backgroundColor,
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(12.dp)
         )
-        .metallicBorder(
-            width = 1.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    borderColor,
-                    borderColor.copy(alpha = 0.1f),
-                    borderColor
-                )
-            ),
-            shape = RoundedCornerShape(16.dp)
-        )
+        // Glowing cyan border using multi-layer approach
+        .drawBehind {
+            val strokeWidth = borderWidth.toPx()
+            val cornerRadius = 12.dp.toPx()
+            
+            // Outer glow layer
+            drawRoundRect(
+                color = borderColor.copy(alpha = glowIntensity * 0.3f),
+                topLeft = Offset(-strokeWidth * 2f, -strokeWidth * 2f),
+                size = androidx.compose.ui.geometry.Size(
+                    size.width + strokeWidth * 4f,
+                    size.height + strokeWidth * 4f
+                ),
+                cornerRadius = CornerRadius(cornerRadius + strokeWidth * 2f),
+                style = Stroke(width = strokeWidth * 2f)
+            )
+            
+            // Mid glow layer
+            drawRoundRect(
+                color = borderColor.copy(alpha = glowIntensity * 0.5f),
+                topLeft = Offset(-strokeWidth, -strokeWidth),
+                size = androidx.compose.ui.geometry.Size(
+                    size.width + strokeWidth * 2f,
+                    size.height + strokeWidth * 2f
+                ),
+                cornerRadius = CornerRadius(cornerRadius + strokeWidth),
+                style = Stroke(width = strokeWidth * 1.5f)
+            )
+            
+            // Sharp inner border
+            drawRoundRect(
+                color = borderColor,
+                cornerRadius = CornerRadius(cornerRadius),
+                style = Stroke(width = strokeWidth)
+            )
+        }
         .padding(20.dp)
     
     Column(

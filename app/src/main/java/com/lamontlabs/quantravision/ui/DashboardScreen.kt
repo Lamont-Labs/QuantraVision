@@ -149,9 +149,8 @@ fun DashboardScreen(
             // Accordion 1: Detection & Review
             GlassMorphicCard(
                 modifier = Modifier.fillMaxWidth(),
-                blurRadius = 8f,
-                backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f),
-                borderColor = NeonCyan.copy(alpha = 0.6f)
+                borderColor = NeonCyan,
+                glowIntensity = 0.7f
             ) {
                 MetallicAccordion(
                     title = "Detection & Review",
@@ -182,9 +181,8 @@ fun DashboardScreen(
             // Accordion 2: Intelligence & Analytics (with 💎 badge)
             GlassMorphicCard(
                 modifier = Modifier.fillMaxWidth(),
-                blurRadius = 8f,
-                backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f),
-                borderColor = NeonGold.copy(alpha = 0.6f)
+                borderColor = NeonGold,
+                glowIntensity = 0.8f
             ) {
                 MetallicAccordion(
                     title = "Intelligence & Analytics",
@@ -229,9 +227,8 @@ fun DashboardScreen(
             // Accordion 3: Learn & Progress (with achievement count badge)
             GlassMorphicCard(
                 modifier = Modifier.fillMaxWidth(),
-                blurRadius = 8f,
-                backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f),
-                borderColor = NeonCyan.copy(alpha = 0.6f)
+                borderColor = NeonCyan,
+                glowIntensity = 0.7f
             ) {
                 MetallicAccordion(
                     title = "Learn & Progress",
