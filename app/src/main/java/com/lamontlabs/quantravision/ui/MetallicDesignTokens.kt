@@ -183,7 +183,7 @@ fun NeonText(
     val animatedIntensity = if (enablePulse) {
         val infiniteTransition = rememberInfiniteTransition(label = "neonPulse")
         infiniteTransition.animateFloat(
-            initialValue = glowIntensity * 0.6f,
+            initialValue = glowIntensity * 0.7f,
             targetValue = glowIntensity,
             animationSpec = infiniteRepeatable(
                 animation = tween(1500, easing = FastOutSlowInEasing),
@@ -195,44 +195,19 @@ fun NeonText(
         glowIntensity
     }
     
-    Box(
-        modifier = modifier.clearAndSetSemantics {
-            // Replace all child semantics with single text node for accessibility
-            this.text = AnnotatedString(text)
-        },
-        contentAlignment = Alignment.Center
-    ) {
-        // Outer glow layer (largest blur) - creates the bloom effect
-        Text(
-            text = text,
-            style = style,
-            color = glowColor.copy(alpha = animatedIntensity * 0.4f),
-            modifier = Modifier.blur(18.dp)
-        )
-        
-        // Mid glow layer - adds depth
-        Text(
-            text = text,
-            style = style,
-            color = glowColor.copy(alpha = animatedIntensity * 0.6f),
-            modifier = Modifier.blur(12.dp)
-        )
-        
-        // Inner glow layer - sharp glow closest to text
-        Text(
-            text = text,
-            style = style,
-            color = glowColor.copy(alpha = animatedIntensity * 0.8f),
-            modifier = Modifier.blur(6.dp)
-        )
-        
-        // Foreground text - sharp and clear
-        Text(
-            text = text,
-            style = style,
-            color = textColor
-        )
-    }
+    // Clean professional text with subtle shadow - no excessive blur layers
+    Text(
+        text = text,
+        modifier = modifier,
+        style = style.copy(
+            shadow = Shadow(
+                color = glowColor.copy(alpha = animatedIntensity * 0.3f),
+                blurRadius = 8f,
+                offset = Offset(0f, 0f)
+            )
+        ),
+        color = textColor
+    )
 }
 
 /**
@@ -256,47 +231,13 @@ fun GlowingIcon(
     size: Dp = 24.dp,
     glowIntensity: Float = 0.8f
 ) {
-    Box(
-        modifier = modifier.clearAndSetSemantics {
-            // Replace all child semantics with single icon description for accessibility
-            if (contentDescription != null) {
-                this.contentDescription = contentDescription
-            }
-        },
-        contentAlignment = Alignment.Center
-    ) {
-        // Outer glow (decorative - no content description)
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            tint = glowColor.copy(alpha = glowIntensity * 0.4f),
-            modifier = Modifier.size(size).blur(12.dp)
-        )
-        
-        // Mid glow (decorative - no content description)
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            tint = glowColor.copy(alpha = glowIntensity * 0.6f),
-            modifier = Modifier.size(size).blur(8.dp)
-        )
-        
-        // Inner glow (decorative - no content description)
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            tint = glowColor.copy(alpha = glowIntensity * 0.8f),
-            modifier = Modifier.size(size).blur(4.dp)
-        )
-        
-        // Foreground icon (carries the content description)
-        Icon(
-            imageVector = imageVector,
-            contentDescription = contentDescription,
-            tint = iconColor,
-            modifier = Modifier.size(size)
-        )
-    }
+    // Clean professional icon - no excessive blur layers
+    Icon(
+        imageVector = imageVector,
+        contentDescription = contentDescription,
+        tint = iconColor,
+        modifier = modifier.size(size)
+    )
 }
 
 // ============================================================================
@@ -1259,9 +1200,9 @@ fun GlassMorphicCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     blurRadius: Float = 0f,
-    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.85f),
+    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.90f),
     borderColor: Color = NeonCyan,
-    borderWidth: Dp = 2.dp,
+    borderWidth: Dp = 1.dp,
     glowIntensity: Float = 0.6f,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -1274,52 +1215,28 @@ fun GlassMorphicCard(
                 Modifier
             }
         )
-        // Sharp background - NO blur for crisp text
+        // Clean professional background
         .background(
             color = backgroundColor,
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(16.dp)
         )
-        // Glowing cyan border using multi-layer approach
+        // Single clean border - no multi-layer glow for professional look
         .drawBehind {
             val strokeWidth = borderWidth.toPx()
-            val cornerRadius = 12.dp.toPx()
+            val cornerRadius = 16.dp.toPx()
             
-            // Outer glow layer
+            // Single subtle border with slight glow
             drawRoundRect(
-                color = borderColor.copy(alpha = glowIntensity * 0.3f),
-                topLeft = Offset(-strokeWidth * 2f, -strokeWidth * 2f),
-                size = androidx.compose.ui.geometry.Size(
-                    size.width + strokeWidth * 4f,
-                    size.height + strokeWidth * 4f
-                ),
-                cornerRadius = CornerRadius(cornerRadius + strokeWidth * 2f),
-                style = Stroke(width = strokeWidth * 2f)
-            )
-            
-            // Mid glow layer
-            drawRoundRect(
-                color = borderColor.copy(alpha = glowIntensity * 0.5f),
-                topLeft = Offset(-strokeWidth, -strokeWidth),
-                size = androidx.compose.ui.geometry.Size(
-                    size.width + strokeWidth * 2f,
-                    size.height + strokeWidth * 2f
-                ),
-                cornerRadius = CornerRadius(cornerRadius + strokeWidth),
-                style = Stroke(width = strokeWidth * 1.5f)
-            )
-            
-            // Sharp inner border
-            drawRoundRect(
-                color = borderColor,
+                color = borderColor.copy(alpha = 0.4f),
                 cornerRadius = CornerRadius(cornerRadius),
                 style = Stroke(width = strokeWidth)
             )
         }
-        .padding(12.dp)
+        .padding(16.dp)
     
     Column(
         modifier = cardModifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         content = content
     )
 }

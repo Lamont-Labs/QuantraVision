@@ -2,6 +2,8 @@ package com.lamontlabs.quantravision.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -77,77 +79,47 @@ fun DashboardScreen(
             )
         }
     ) { padding ->
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Radial glow background for depth
-            RadialGlowBackground(
-                glowColor = NeonCyan,
-                centerAlpha = 0.15f,
-                edgeAlpha = 0f
-            )
-            
-            // Particle starfield
-            ParticleStarfield(
-                particleCount = 40,
-                particleColor = NeonCyan.copy(alpha = 0.6f)
-            )
-            
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Hero title with neon glow - smaller and centered
+                // Hero title - clean and professional
                 NeonText(
                     text = "QUANTRAVISION",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     glowColor = NeonCyan,
                     glowIntensity = 1f,
                     enablePulse = true
                 )
                 
-                // Hero CTA with circular HUD progress - more compact
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                Spacer(Modifier.height(8.dp))
+                
+                // Hero CTA - larger and more prominent
+                MetallicButton(
+                    onClick = onStartScan,
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(64.dp),
+                    showTopStrip = true
                 ) {
-                    // Circular HUD decoration behind button - smaller
-                    CircularHUDProgress(
-                        progress = 0.75f,
-                        size = 140.dp,
-                        strokeWidth = 4.dp,
-                        showTicks = true,
-                        modifier = Modifier.alpha(0.4f)
+                    GlowingIcon(
+                        imageVector = Icons.Default.Visibility,
+                        contentDescription = null,
+                        size = 28.dp,
+                        glowColor = NeonCyan,
+                        glowIntensity = 0.9f
                     )
-                    
-                    // Hero button - more compact
-                    MetallicButton(
-                        onClick = onStartScan,
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f)
-                            .height(48.dp),
-                        showTopStrip = true
-                    ) {
-                        GlowingIcon(
-                            imageVector = Icons.Default.Visibility,
-                            contentDescription = null,
-                            size = 24.dp,
-                            glowColor = NeonCyan,
-                            glowIntensity = 0.9f
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        NeonText(
-                            text = "START DETECTION",
-                            style = MaterialTheme.typography.titleSmall,
-                            glowColor = NeonCyan,
-                            glowIntensity = 0.7f,
-                            enablePulse = false
-                        )
-                    }
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = "START DETECTION",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             
             // Accordion 1: Detection & Review - compact
@@ -288,5 +260,4 @@ fun DashboardScreen(
             }
         }
     }
-}
 }
