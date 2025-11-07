@@ -75,7 +75,12 @@ fun BottomNavScaffold(
                 items.forEach { item ->
                     NavigationBarItem(
                         icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { Text(item.title) },
+                        label = { 
+                            Text(
+                                item.title,
+                                maxLines = 1
+                            ) 
+                        },
                         selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                         onClick = {
                             navController.navigate(item.route) {
