@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -89,7 +90,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Branded Logo Image
+            // HERO SECTION - Transparent Logo (no background border)
             item {
                 Box(
                     modifier = Modifier
@@ -97,13 +98,14 @@ fun HomeScreen(
                         .padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Logo image - blends seamlessly with static background
+                    // Transparent logo foreground - no background border
                     Image(
-                        painter = painterResource(id = R.drawable.qv_hero_logo),
+                        painter = painterResource(id = R.drawable.ic_qv_logo_foreground),
                         contentDescription = "QuantraVision - AI Trading Overlay",
                         modifier = Modifier
-                            .fillMaxWidth(0.85f)
-                            .aspectRatio(1f)
+                            .fillMaxWidth(0.75f)
+                            .aspectRatio(1f),
+                        contentScale = ContentScale.Fit
                     )
                 }
             }
@@ -222,14 +224,14 @@ fun HomeScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Radar,
+                                painter = painterResource(id = R.drawable.ic_q_logo),
                                 contentDescription = "Start Scan",
-                                modifier = Modifier.size(48.dp),
+                                modifier = Modifier.size(54.dp),
                                 tint = NeonCyan
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "START\nSCAN",
+                                text = "SCAN",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.ExtraBold,
                                 textAlign = TextAlign.Center,
