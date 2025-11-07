@@ -60,6 +60,47 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 
 ## Recent Changes
 
+### November 7, 2025 - Professional Bottom Navigation Redesign
+**Complete navigation architecture transformation from accordion layout to Material Design 3 bottom navigation:**
+
+**New Bottom Navigation Structure:**
+- **5-Tab Navigation Bar**: Material 3 NavigationBar with Home, Markets, Scan, Learn, Settings
+- **Home Tab**: Quick stats cards, recent detections list, extended FAB for "Start Detection"
+- **Markets Tab**: Pattern templates (109), Intelligence Hub, Predictions, Backtesting, Similarity Search, Multi-Chart View
+- **Scan Tab**: Detection controls, how-it-works guide, feature highlights
+- **Learn Tab**: Interactive tutorials, Trading Book, Achievements & progress tracking
+- **Settings Tab**: Alert settings, floating logo preferences, developer options (clear database)
+
+**Key Components:**
+- `BottomNavScaffold.kt`: Main container with Material 3 NavigationBar orchestrating 5 primary destinations
+- `HomeScreen.kt`: Modern dashboard with quick stats + recent detections + FAB
+- `MarketsScreen.kt`: Intelligence & pattern library with all PRO features accessible
+- `ScanScreen.kt`: Detection controls with professional onboarding flow
+- `LearnScreen.kt`: Educational content hub with progress tracking
+- `SettingsScreenWithNav`: Flexible settings supporting both bottom nav and standalone modes
+
+**Navigation Improvements:**
+- ✅ Professional app store quality layout matching TradingView, Robinhood patterns
+- ✅ Material Design 3 compliance throughout
+- ✅ Card-based information architecture (no accordions)
+- ✅ All features from previous accordion layout preserved and accessible
+- ✅ Extended FAB for primary action (Start Detection)
+- ✅ Bottom navigation state restoration on reselection
+- ✅ Single-top launch mode preventing duplicate screens
+
+**Technical Architecture:**
+- Replaced accordion-based DashboardScreen with professional bottom navigation pattern
+- Archived old DashboardScreen.kt → DashboardScreen.old.kt for reference
+- Bottom nav integrates seamlessly with existing NavHost for deep navigation
+- Settings screen conditionally renders based on context (bottom nav vs standalone)
+- All navigation callbacks properly wired through BottomNavScaffold → AppScaffold
+
+**Visual Result:**
+- Professional, modern Android app matching industry standards
+- Clean information hierarchy with discoverable navigation
+- Intuitive user experience following Material Design 3 guidelines
+- Production-ready for Samsung S23 FE (Android 14)
+
 ### November 7, 2025 - Futuristic HUD UI Transformation
 **Complete UI overhaul to match QuantraCore 3D logo aesthetic:**
 

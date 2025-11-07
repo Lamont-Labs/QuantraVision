@@ -131,7 +131,10 @@ fun AlertSettingsCard() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) {
+fun SettingsScreenWithNav(
+    navController: androidx.navigation.NavHostController? = null,
+    onClearDatabase: (() -> Unit)? = null
+) {
     val context = LocalContext.current
     val logoPrefs = com.lamontlabs.quantravision.overlay.FloatingLogoPreferences(context)
     
@@ -139,11 +142,13 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
         topBar = {
             TopAppBar(
                 title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                navigationIcon = if (navController != null) {
+                    {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, "Back")
+                        }
                     }
-                }
+                } else null
             )
         }
     ) { padding ->
@@ -290,69 +295,109 @@ fun SettingsScreenWithNav(navController: androidx.navigation.NavHostController) 
             
             Spacer(Modifier.height(28.dp))
             
-            Text(
-                text = "Legal & Privacy",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                Column {
+            // Developer section (only show if onClearDatabase is provided)
+            if (onClearDatabase != null) {
+                Text(
+                    text = "Developer",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
                     ListItem(
-                        headlineContent = { Text("Privacy Policy", fontWeight = FontWeight.Bold) },
-                        supportingContent = { Text("How we handle your data", fontWeight = FontWeight.Bold) },
-                        leadingContent = {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp)
-                            )
-                        },
-                        modifier = Modifier.clickable {
-                            navController.navigate("legal/privacy")
-                        }
-                    )
-                    
-                    HorizontalDivider(Modifier.padding(horizontal = 20.dp))
-                    
-                    ListItem(
-                        headlineContent = { Text("Terms of Use", fontWeight = FontWeight.Bold) },
-                        supportingContent = { Text("Conditions for using the app", fontWeight = FontWeight.Bold) },
-                        leadingContent = {
-                            Icon(
-                                imageVector = Icons.Default.Description,
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp)
-                            )
-                        },
-                        modifier = Modifier.clickable {
-                            navController.navigate("legal/terms")
-                        }
-                    )
-                    
-                    HorizontalDivider(Modifier.padding(horizontal = 20.dp))
-                    
-                    ListItem(
-                        headlineContent = { Text("Disclaimer", fontWeight = FontWeight.Bold) },
-                        supportingContent = { Text("Educational purposes only", fontWeight = FontWeight.Bold) },
+                        headlineContent = { Text("Clear Database", fontWeight = FontWeight.Bold) },
+                        supportingContent = { Text("Delete all pattern detections", fontWeight = FontWeight.Bold) },
                         leadingContent = {
                             Icon(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.error
                             )
                         },
                         modifier = Modifier.clickable {
-                            navController.navigate("legal/disclaimer")
+                            onClearDatabase()
                         }
                     )
                 }
+                
+                Spacer(Modifier.height(28.dp))
+            }
+            
+            // Legal & Privacy section (only show if navController is provided)
+            if (navController != null) {
+                Text(
+                    text = "Legal & Privacy",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column {
+                        ListItem(
+                            headlineContent = { Text("Privacy Policy", fontWeight = FontWeight.Bold) },
+                            supportingContent = { Text("How we handle your data", fontWeight = FontWeight.Bold) },
+                            leadingContent = {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            },
+                            modifier = Modifier.clickable {
+                                navController.navigate("legal/privacy")
+                            }
+                        )
+                        
+                        HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                        
+                        ListItem(
+                            headlineContent = { Text("Terms of Use", fontWeight = FontWeight.Bold) },
+                            supportingContent = { Text("Conditions for using the app", fontWeight = FontWeight.Bold) },
+                            leadingContent = {
+                                Icon(
+                                    imageVector = Icons.Default.Description,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            },
+                            modifier = Modifier.clickable {
+                                navController.navigate("legal/terms")
+                            }
+                        )
+                        
+                        HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                        
+                        ListItem(
+                            headlineContent = { Text("Disclaimer", fontWeight = FontWeight.Bold) },
+                            supportingContent = { Text("Educational purposes only", fontWeight = FontWeight.Bold) },
+                            leadingContent = {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            },
+                            modifier = Modifier.clickable {
+                                navController.navigate("legal/disclaimer")
+                            }
+                        )
+                    }
+                }
+                
+                Spacer(Modifier.height(28.dp))
             }
             
             Spacer(Modifier.height(28.dp))

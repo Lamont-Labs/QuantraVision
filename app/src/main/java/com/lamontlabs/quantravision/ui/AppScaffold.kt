@@ -61,10 +61,8 @@ private fun AppNavigationHost(
             )
         }
         composable("dashboard") {
-            DashboardScreen(
+            com.lamontlabs.quantravision.ui.navigation.BottomNavScaffold(
                 context = context,
-                onBook = { navController.navigate("book") },
-                onIntelligence = { navController.navigate("intelligence") },
                 onStartScan = {
                     // Start the overlay service for real-time detection
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -106,16 +104,17 @@ private fun AppNavigationHost(
                         ).show()
                     }
                 },
-                onReview = { navController.navigate("detections_list") },
-                onTutorials = { navController.navigate("tutorials") },
-                onSettings = { navController.navigate("settings") },
-                onTemplates = { navController.navigate("templates") },
-                onAchievements = { navController.navigate("achievements") },
-                onAnalytics = { navController.navigate("analytics") },
-                onPredictions = { navController.navigate("predictions") },
-                onBacktesting = { navController.navigate("backtesting") },
-                onSimilarity = { navController.navigate("similarity") },
-                onMultiChart = { navController.navigate("multi_chart") },
+                onNavigateToDetections = { navController.navigate("detections_list") },
+                onNavigateToTemplates = { navController.navigate("templates") },
+                onNavigateToIntelligence = { navController.navigate("intelligence") },
+                onNavigateToTutorials = { navController.navigate("tutorials") },
+                onNavigateToBook = { navController.navigate("book") },
+                onNavigateToAchievements = { navController.navigate("achievements") },
+                onNavigateToAnalytics = { navController.navigate("analytics") },
+                onNavigateToPredictions = { navController.navigate("predictions") },
+                onNavigateToBacktesting = { navController.navigate("backtesting") },
+                onNavigateToSimilarity = { navController.navigate("similarity") },
+                onNavigateToMultiChart = { navController.navigate("multi_chart") },
                 onClearHighlights = {
                     scope.launch {
                         try {
