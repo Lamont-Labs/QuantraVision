@@ -15,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -110,7 +112,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Full Branded Logo Image
+            // HERO SECTION - Full Branded Logo Image with Seamless Background Blend
             item {
                 Box(
                     modifier = Modifier
@@ -118,14 +120,31 @@ fun HomeScreen(
                         .padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Display the complete branded logo image with transparent background
-                    Image(
-                        painter = painterResource(id = R.drawable.qv_hero_logo),
-                        contentDescription = "QuantraVision - AI Trading Overlay",
+                    // Radial gradient blend layer matching the logo image background
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
                             .aspectRatio(1f)
-                    )
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(
+                                        Color(0xFF030C14), // Center - matches image dark blue
+                                        Color(0xFF020A11), // Mid
+                                        Color(0xFF010409)  // Edge - matches image darkest
+                                    ),
+                                    center = Offset.Unspecified,
+                                    radius = 800f
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Display the complete branded logo image
+                        Image(
+                            painter = painterResource(id = R.drawable.qv_hero_logo),
+                            contentDescription = "QuantraVision - AI Trading Overlay",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
             
