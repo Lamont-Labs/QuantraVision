@@ -147,19 +147,37 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 **Complete UI simplification to eliminate amateur appearance and achieve professional app store quality:**
 
 **Problem Addressed:**
-- Visible "boxes around text" from multi-layer glow effects
+- Visible "boxes around text" from multi-layer glow effects and borders
 - Content getting cut off
 - Over-designed, busy appearance with excessive blur layers
 - Amateur look instead of professional app store quality
 
+**Complete Border & Box Removal:**
+- REMOVED all chrome borders (.metallicBorder calls)
+- REMOVED all drawBehind rectangular overlays
+- REMOVED all background boxes from expanded sections
+- Result: ZERO visible borders or boxes anywhere in UI
+
 **GlassMorphicCard Simplification:**
 - REMOVED multi-layer glowing borders (3 layers creating visible boxes)
-- Single clean border with subtle 40% alpha
-- Border width: 2.dp → 1.dp (cleaner)
+- REMOVED drawBehind border drawing completely
 - Corner radius: 12.dp → 16.dp (softer)
 - Padding: 12.dp → 16.dp (more breathing room)
 - Spacing: 8.dp → 12.dp
 - Background opacity: 0.85f → 0.90f (more solid, better readability)
+- Clean borderless appearance
+
+**MetallicButton Complete Cleanup:**
+- REMOVED chrome border (.metallicBorder)
+- REMOVED Box-level drawBehind rectangle (reflection overlay)
+- REMOVED Row-level drawBehind rectangles (text background boxes)
+- Only gradient background remains - no overlays or borders
+
+**MetallicAccordion Complete Cleanup:**
+- REMOVED chrome border (.metallicBorder)
+- REMOVED Box-level drawBehind rectangle (reflection overlay)
+- REMOVED background color from expanded section (square boxes)
+- Clean gradient backgrounds only
 
 **NeonText Simplification:**
 - REMOVED 4-layer blur system (outer 18.dp, mid 12.dp, inner 6.dp blurs + sharp text)
@@ -185,9 +203,10 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 
 **Visual Result:**
 - Professional app store quality appearance
-- No visible "boxes around text" - single subtle borders only
+- ZERO visible boxes or borders - completely borderless design
 - No content cut-off - proper scrolling implemented
-- Clean, not over-designed aesthetic
+- Clean, modern, minimalist aesthetic
 - Excellent spacing and breathing room
 - Crisp, readable text without excessive blur
+- Only gradient backgrounds for visual depth
 - Accessible and production-ready for Samsung S23 FE (Android 14)
