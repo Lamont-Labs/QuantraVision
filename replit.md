@@ -116,3 +116,23 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 - Chrome aesthetic maintained with improved readability
 - Clean, professional look without complexity
 - Production-ready for Samsung S23 FE (Android 14)
+
+### November 7, 2025 - Glass Morphic Card Readability Enhancement
+**Improved accordion readability while maintaining futuristic aesthetic:**
+
+**Readability Improvements:**
+- **Reduced Blur**: Decreased GlassMorphicCard blur radius from 20f to 8f for subtle frosted glass effect
+- **Increased Opacity**: Raised background alpha from 0.3f/0.4f to 0.65f/0.7f for better text contrast
+- **Enhanced Borders**: Increased border opacity from 0.3f/0.4f to 0.5f/0.6f for clearer card definition
+- **Consistent Styling**: All 3 dashboard accordions now use uniform blur/opacity settings
+
+**Technical Changes:**
+- Updated GlassMorphicCard default parameters for better out-of-box readability
+- Applied explicit blur/opacity overrides to all accordion instances in DashboardScreen
+- Maintained Android 12+ RenderEffect blur with fallback for older devices
+
+**Visual Result:**
+- Accordion text now clearly readable on Samsung S23 FE (Android 14)
+- Preserved premium frosted glass aesthetic with subtle backdrop blur
+- Maintained futuristic HUD theme with cyan/gold neon accents
+- Balanced transparency and readability for optimal user experience
