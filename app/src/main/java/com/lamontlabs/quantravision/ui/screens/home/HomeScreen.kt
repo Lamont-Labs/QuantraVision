@@ -91,7 +91,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Q Logo with Text (floating blend)
+            // HERO SECTION - Q Logo with Text
             item {
                 Box(
                     modifier = Modifier
@@ -99,12 +99,12 @@ fun HomeScreen(
                         .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Floating logo with gradient blend
-                    FloatingLogoContainer(
+                    // Hero logo blends with solid black background
+                    Image(
                         painter = painterResource(id = R.drawable.hero_logo_final),
                         contentDescription = "QuantraVision - AI Trading Overlay",
                         modifier = Modifier.fillMaxWidth(0.85f),
-                        imageModifier = Modifier.fillMaxWidth()
+                        contentScale = ContentScale.Fit
                     )
                 }
             }
@@ -210,15 +210,15 @@ fun HomeScreen(
                         label = "buttonScale"
                     )
                     
-                    // Just the Q logo - floating blend
-                    FloatingLogoContainer(
+                    // Scan Q logo - blends with solid black background
+                    Image(
                         painter = painterResource(id = R.drawable.q_logo_transparent),
                         contentDescription = "Start Scan",
                         modifier = Modifier
                             .size(180.dp)
                             .scale(scale)
                             .clickable(onClick = onStartScan),
-                        imageModifier = Modifier.fillMaxSize()
+                        contentScale = ContentScale.Fit
                     )
                     
                     Spacer(modifier = Modifier.height(12.dp))
