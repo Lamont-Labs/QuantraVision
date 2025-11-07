@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision.ui.screens.home
 import android.content.Context
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -109,60 +110,99 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Signal Ticker - Live AI Metrics
-            item {
-                SignalTicker(
-                    signals = listOf("AI ACTIVE", "PATTERNS: $totalDetections", "READY"),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // Hero Badge - QV Logo with Pulsing Glow
+            // HERO SECTION - Branded Logo Presentation
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
+                        .height(380.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    MetallicHeroBadge(
-                        modifier = Modifier.size(120.dp),
-                        pulseSync = true
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        // QV Logo
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_qv_logo_foreground),
-                            contentDescription = "QuantraVision Logo",
-                            modifier = Modifier
-                                .fillMaxSize(0.7f)
-                                .align(Alignment.Center)
+                        // Large MetallicHeroBadge with Logo - Match splash screen aesthetic
+                        MetallicHeroBadge(
+                            modifier = Modifier.size(220.dp),
+                            pulseSync = true
+                        ) {
+                            // QV Logo with grid overlay effect
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                // Logo image
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_qv_logo_foreground),
+                                    contentDescription = "QuantraVision Logo",
+                                    modifier = Modifier.fillMaxSize(0.75f)
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(32.dp))
+                        
+                        // QUANTRAVISION Title - Large and Prominent
+                        NeonText(
+                            text = "QUANTRAVISION",
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 6.sp
+                            ),
+                            glowColor = NeonCyan,
+                            textColor = NeonCyan,
+                            glowIntensity = 1.0f,
+                            enablePulse = false
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // AI TRADING OVERLAY Subtitle
+                        NeonText(
+                            text = "AI TRADING OVERLAY",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 4.sp
+                            ),
+                            glowColor = NeonCyanBright,
+                            textColor = NeonCyanBright.copy(alpha = 0.9f),
+                            glowIntensity = 0.6f,
+                            enablePulse = false
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        // Live Status Indicator
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Pulsing status dot
+                            val pulseAlpha by rememberInfiniteTransition(label = "statusPulse").animateFloat(
+                                initialValue = 0.4f,
+                                targetValue = 1f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(1000),
+                                    repeatMode = RepeatMode.Reverse
+                                ),
+                                label = "statusDot"
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(Color(0xFF00FF88).copy(alpha = pulseAlpha), CircleShape)
+                            )
+                            Text(
+                                text = "SYSTEM READY • $totalDetections PATTERNS",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.sp
+                                ),
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
                     }
-                }
-            }
-            
-            // Hero Title
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    NeonText(
-                        text = "QUANTRAVISION",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        glowColor = NeonCyan,
-                        enablePulse = false
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "AI TRADING TERMINAL",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.6f),
-                        letterSpacing = 3.sp,
-                        fontWeight = FontWeight.Bold
-                    )
                 }
             }
             
