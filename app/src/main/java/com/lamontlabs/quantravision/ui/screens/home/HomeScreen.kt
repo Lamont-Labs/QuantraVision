@@ -90,20 +90,20 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - 3D Metallic Logo with Text (transparent, no border)
+            // HERO SECTION - Clean Transparent Logo with Text
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 24.dp),
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Transparent 3D Q logo with text - no background
+                    // Fully transparent Q logo with text - no background
                     Image(
-                        painter = painterResource(id = R.drawable.qv_logo_transparent),
+                        painter = painterResource(id = R.drawable.hero_logo_transparent),
                         contentDescription = "QuantraVision - AI Trading Overlay",
                         modifier = Modifier
-                            .fillMaxWidth(0.8f),
+                            .fillMaxWidth(0.85f),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -190,13 +190,13 @@ fun HomeScreen(
                 }
             }
             
-            // Radial Scan Trigger Button - Center Hero CTA
+            // Scan Button - Just the Q with "TAP TO SCAN"
             item {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Pulsing animation for the button
                     val infiniteTransition = rememberInfiniteTransition(label = "scanPulse")
@@ -213,19 +213,30 @@ fun HomeScreen(
                     MetallicButton(
                         onClick = onStartScan,
                         modifier = Modifier
-                            .size(180.dp)
+                            .size(160.dp)
                             .scale(scale),
-                        contentPadding = PaddingValues(24.dp),
+                        contentPadding = PaddingValues(20.dp),
                         showTopStrip = true
                     ) {
-                        // 3D Q logo - no tint to preserve metallic cyan styling
+                        // Clean transparent Q logo - no border
                         Image(
-                            painter = painterResource(id = R.drawable.scan_button_q_logo),
+                            painter = painterResource(id = R.drawable.scan_q_transparent),
                             contentDescription = "Start Scan",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
                         )
                     }
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // "TAP TO SCAN" text
+                    Text(
+                        text = "TAP TO SCAN",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = NeonCyan,
+                        letterSpacing = 2.sp
+                    )
                 }
             }
             
