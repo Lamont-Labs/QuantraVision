@@ -193,9 +193,15 @@ fun SettingsScreenWithNav(
                             Button(
                                 onClick = { logoPrefs.saveLogoSize(size) },
                                 modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(4.dp)
+                                shape = RoundedCornerShape(4.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
                             ) {
-                                Text(label, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = label,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
                             }
                         }
                     }
@@ -216,9 +222,15 @@ fun SettingsScreenWithNav(
                             Button(
                                 onClick = { logoPrefs.saveLogoOpacity(opacity) },
                                 modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(4.dp)
+                                shape = RoundedCornerShape(4.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
                             ) {
-                                Text(label, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = label,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
                             }
                         }
                     }
