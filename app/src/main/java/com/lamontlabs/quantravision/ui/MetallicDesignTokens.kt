@@ -44,6 +44,132 @@ import kotlin.math.sin
  */
 
 // ============================================================================
+// PERFORMANCE PROFILE SYSTEM
+// ============================================================================
+
+/**
+ * Performance profile for throttling animations on low-end devices
+ * 
+ * @param enableSecondaryAnimations Enable decorative animations (particles, shimmer, etc.)
+ * @param enableParticleStarfield Enable particle starfield background
+ * @param particleCount Number of particles to render (low-end uses fewer)
+ * @param enableGridAnimation Enable grid scrolling animation
+ * @param enablePulseAnimations Enable pulsing glow effects
+ * @param animationFrameRateMultiplier Multiplier for animation duration (>1.0 = slower on battery saver)
+ */
+data class PerformanceProfile(
+    val enableSecondaryAnimations: Boolean = true,
+    val enableParticleStarfield: Boolean = true,
+    val particleCount: Int = 50,
+    val enableGridAnimation: Boolean = true,
+    val enablePulseAnimations: Boolean = true,
+    val animationFrameRateMultiplier: Float = 1.0f
+) {
+    companion object {
+        /**
+         * High performance profile - all animations enabled, maximum visual fidelity
+         */
+        val High = PerformanceProfile(
+            enableSecondaryAnimations = true,
+            enableParticleStarfield = true,
+            particleCount = 50,
+            enableGridAnimation = true,
+            enablePulseAnimations = true,
+            animationFrameRateMultiplier = 1.0f
+        )
+        
+        /**
+         * Medium performance profile - reduced particle count, all other animations enabled
+         */
+        val Medium = PerformanceProfile(
+            enableSecondaryAnimations = true,
+            enableParticleStarfield = true,
+            particleCount = 30,
+            enableGridAnimation = true,
+            enablePulseAnimations = true,
+            animationFrameRateMultiplier = 1.0f
+        )
+        
+        /**
+         * Low performance profile - minimal animations for low-end devices
+         */
+        val Low = PerformanceProfile(
+            enableSecondaryAnimations = false,
+            enableParticleStarfield = false,
+            particleCount = 20,
+            enableGridAnimation = false,
+            enablePulseAnimations = false,
+            animationFrameRateMultiplier = 1.0f
+        )
+        
+        /**
+         * Battery saver profile - reduced frame rates and minimal decorative animations
+         */
+        val BatterySaver = PerformanceProfile(
+            enableSecondaryAnimations = false,
+            enableParticleStarfield = false,
+            particleCount = 20,
+            enableGridAnimation = false,
+            enablePulseAnimations = false,
+            animationFrameRateMultiplier = 1.5f // Slower animations
+        )
+    }
+}
+
+/**
+ * CompositionLocal for accessing the current performance profile
+ */
+val LocalPerformanceProfile = compositionLocalOf { PerformanceProfile.High }
+
+// ============================================================================
+// ANIMATION CONSTANTS - CENTRALIZED CONFIGURATION
+// ============================================================================
+
+/**
+ * Centralized animation specifications for consistency and easy tuning
+ */
+object AnimationSpecs {
+    // Particle System
+    const val PARTICLE_COUNT_HIGH = 50
+    const val PARTICLE_COUNT_MEDIUM = 30
+    const val PARTICLE_COUNT_LOW = 20
+    
+    // Grid Animation
+    const val GRID_ANIMATION_DURATION = 3000
+    const val GRID_SPACING_DP = 50f
+    
+    // Pulse Animations
+    const val PULSE_DURATION = 2000
+    const val PULSE_DURATION_FAST = 1500
+    const val PULSE_DURATION_SLOW = 3000
+    
+    // Shimmer Effects
+    const val SHIMMER_DURATION = 2000
+    
+    // Scanline Effects
+    const val SCANLINE_DURATION = 2000
+    
+    // Badge Pulse
+    const val BADGE_PULSE_DURATION = 2000
+    
+    // Candlestick Parallax
+    const val CANDLESTICK_SCROLL_DURATION = 8000
+    
+    // Neon Bounding Box
+    const val BOUNDING_BOX_CORNER_ANIMATION_DURATION = 1000
+    
+    // Ticker Scroll
+    const val TICKER_SCROLL_DURATION = 10000
+    
+    // Heatmap Pulse
+    const val HEATMAP_PULSE_DURATION = 1500
+    
+    // Circular Progress
+    const val CIRCULAR_PROGRESS_BASE_DURATION = 1000
+    const val CIRCULAR_PROGRESS_DELAY_PER_RING = 200
+}
+
+// ============================================================================
 // METALLIC GRADIENT BRUSHES - CHROME/STEEL
 // ============================================================================
 
@@ -649,16 +775,22 @@ val SubtleTextShadow = Shadow(
 /**
  * Remembers metallic shimmer animation state
  * Creates sweeping light effect across surface
+ * Respects PerformanceProfile for low-end device optimization
  * 
  * @param enabled Whether shimmer is enabled
- * @param durationMillis Animation duration
+ * @param durationMillis Animation duration (overridden by performance profile)
  * @return Animated float value from 0f to 1f
  */
 @Composable
 fun rememberMetallicShimmer(
     enabled: Boolean = true,
-    durationMillis: Int = 2000
+    durationMillis: Int = AnimationSpecs.SHIMMER_DURATION
 ): Float {
+    val performanceProfile = LocalPerformanceProfile.current
+    
+    // Disable shimmer on low performance mode
+    val isEnabled = enabled && performanceProfile.enableSecondaryAnimations
+    
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     
     val shimmerValue by infiniteTransition.animateFloat(
@@ -666,7 +798,7 @@ fun rememberMetallicShimmer(
         targetValue = 2f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = durationMillis,
+                durationMillis = (durationMillis * performanceProfile.animationFrameRateMultiplier).toInt(),
                 easing = LinearEasing
             ),
             repeatMode = RepeatMode.Restart
@@ -674,17 +806,23 @@ fun rememberMetallicShimmer(
         label = "shimmerAnimation"
     )
     
-    return if (enabled) shimmerValue else 0f
+    return if (isEnabled) shimmerValue else 0f
 }
 
 /**
  * Pulsing glow animation for important elements
+ * Respects PerformanceProfile for low-end device optimization
  */
 @Composable
 fun rememberMetallicPulse(
     enabled: Boolean = true,
-    durationMillis: Int = 1500
+    durationMillis: Int = AnimationSpecs.PULSE_DURATION_FAST
 ): Float {
+    val performanceProfile = LocalPerformanceProfile.current
+    
+    // Disable pulse on low performance mode
+    val isEnabled = enabled && performanceProfile.enablePulseAnimations
+    
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     
     val pulseValue by infiniteTransition.animateFloat(
@@ -692,7 +830,7 @@ fun rememberMetallicPulse(
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = durationMillis,
+                durationMillis = (durationMillis * performanceProfile.animationFrameRateMultiplier).toInt(),
                 easing = FastOutSlowInEasing
             ),
             repeatMode = RepeatMode.Reverse
@@ -700,7 +838,7 @@ fun rememberMetallicPulse(
         label = "pulseAnimation"
     )
     
-    return if (enabled) pulseValue else 1f
+    return if (isEnabled) pulseValue else 1f
 }
 
 // ============================================================================
@@ -1171,7 +1309,7 @@ fun GlassMorphicCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     blurRadius: Float = 0f,
-    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.90f),
+    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.95f),
     borderColor: Color = NeonCyan,
     borderWidth: Dp = 1.dp,
     glowIntensity: Float = 0.6f,
@@ -1204,20 +1342,31 @@ fun GlassMorphicCard(
  * Particle starfield background - animated glowing dots for depth
  * 
  * Creates floating particle effect with random positions and subtle glow
+ * Respects PerformanceProfile for low-end device optimization
  * 
  * @param modifier Modifier for customization
- * @param particleCount Number of particles
+ * @param particleCount Number of particles (overridden by performance profile)
  * @param particleColor Base particle color
  */
 @Composable
 fun ParticleStarfield(
     modifier: Modifier = Modifier,
-    particleCount: Int = 50,
+    particleCount: Int = AnimationSpecs.PARTICLE_COUNT_HIGH,
     particleColor: Color = NeonCyan
 ) {
+    val performanceProfile = LocalPerformanceProfile.current
+    
+    // Don't render on low performance mode
+    if (!performanceProfile.enableParticleStarfield) {
+        return
+    }
+    
+    // Use performance profile particle count
+    val actualParticleCount = performanceProfile.particleCount
+    
     // Remember random particle positions (stable across recompositions)
-    val particles = remember {
-        List(particleCount) {
+    val particles = remember(actualParticleCount) {
+        List(actualParticleCount) {
             Triple(
                 Math.random().toFloat(), // x (0-1)
                 Math.random().toFloat(), // y (0-1)
@@ -1226,13 +1375,16 @@ fun ParticleStarfield(
         }
     }
     
-    // Optional pulsing animation
+    // Optional pulsing animation (disabled on low performance)
     val infiniteTransition = rememberInfiniteTransition(label = "particles")
     val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
         targetValue = 0.8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = FastOutSlowInEasing),
+            animation = tween(
+                (AnimationSpecs.PULSE_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
+                easing = FastOutSlowInEasing
+            ),
             repeatMode = RepeatMode.Reverse
         ),
         label = "particlePulse"
@@ -1291,4 +1443,250 @@ fun RadialGlowBackground(
                 )
             )
     )
+}
+
+// ============================================================================
+// GLASSMORPHIC CARD - FROSTED GLASS EFFECT
+// ============================================================================
+
+/**
+ * Glassmorphic card with frosted glass effect
+ * 
+ * Creates translucent card with blur effect and subtle border glow
+ * Perfect for non-critical settings and standard UI elements
+ * 
+ * @param modifier Modifier for customization
+ * @param onClick Optional click handler
+ * @param backgroundColor Semi-transparent background color
+ * @param borderColor Glowing border color
+ * @param isDark Whether to use dark variant (for developer sections)
+ * @param elevation Card elevation
+ * @param content Card content
+ */
+@Composable
+fun GlassMorphicCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+    borderColor: Color = NeonCyan,
+    isDark: Boolean = false,
+    elevation: Dp = 4.dp,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val cardModifier = if (onClick != null) {
+        modifier.clickable(onClick = onClick)
+    } else {
+        modifier
+    }
+    
+    val bgColor = if (isDark) {
+        Color(0xFF0A0E1A).copy(alpha = 0.8f)
+    } else {
+        backgroundColor
+    }
+    
+    Card(
+        modifier = cardModifier,
+        colors = CardDefaults.cardColors(
+            containerColor = bgColor
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = borderColor.copy(alpha = 0.3f)
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBehind {
+                    // Subtle inner glow
+                    drawRoundRect(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                borderColor.copy(alpha = 0.1f),
+                                Color.Transparent,
+                                borderColor.copy(alpha = 0.05f)
+                            )
+                        ),
+                        cornerRadius = CornerRadius(16.dp.toPx())
+                    )
+                }
+        ) {
+            Column(content = content)
+        }
+    }
+}
+
+// ============================================================================
+// NEON SWITCH - ENHANCED TOGGLE WITH GLOW
+// ============================================================================
+
+/**
+ * Enhanced switch with neon glow effect
+ * 
+ * Material Design 3 switch with cyan/gold accent and subtle glow when enabled
+ * 
+ * @param checked Whether switch is checked
+ * @param onCheckedChange Callback when toggled
+ * @param modifier Modifier for customization
+ * @param glowColor Glow color when enabled (default: cyan)
+ * @param isPremium Whether this is a premium/PRO feature (uses gold accent)
+ */
+@Composable
+fun NeonSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    glowColor: Color = NeonCyan,
+    isPremium: Boolean = false
+) {
+    val accentColor = if (isPremium) NeonGold else glowColor
+    
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = modifier.drawBehind {
+            if (checked) {
+                // Subtle glow effect when enabled
+                drawCircle(
+                    color = accentColor.copy(alpha = 0.2f),
+                    radius = size.maxDimension * 0.7f,
+                    center = center
+                )
+            }
+        },
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = Color.White,
+            checkedTrackColor = accentColor,
+            checkedBorderColor = accentColor,
+            uncheckedThumbColor = Color(0xFF666666),
+            uncheckedTrackColor = Color(0xFF333333),
+            uncheckedBorderColor = Color(0xFF555555)
+        )
+    )
+}
+
+// ============================================================================
+// NEON BORDER BUTTON - BUTTON WITH GLOWING BORDER
+// ============================================================================
+
+/**
+ * Button with neon border glow effect when selected
+ * 
+ * @param onClick Click handler
+ * @param isSelected Whether button is selected
+ * @param modifier Modifier for customization
+ * @param glowColor Border glow color
+ * @param contentPadding Button padding
+ * @param content Button content
+ */
+@Composable
+fun NeonBorderButton(
+    onClick: () -> Unit,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    glowColor: Color = NeonCyan,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
+    content: @Composable RowScope.() -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .drawBehind {
+                if (isSelected) {
+                    // Outer glow
+                    drawRoundRect(
+                        color = glowColor.copy(alpha = 0.4f),
+                        cornerRadius = CornerRadius(8.dp.toPx()),
+                        size = Size(size.width + 4.dp.toPx(), size.height + 4.dp.toPx()),
+                        topLeft = Offset(-2.dp.toPx(), -2.dp.toPx())
+                    )
+                    // Inner bright border
+                    drawRoundRect(
+                        color = glowColor.copy(alpha = 0.6f),
+                        cornerRadius = CornerRadius(8.dp.toPx()),
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                }
+            },
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) glowColor.copy(alpha = 0.2f)
+                            else MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = if (isSelected) Color.White
+                          else MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        contentPadding = contentPadding
+    ) {
+        content()
+    }
+}
+
+// ============================================================================
+// SHIMMER BUTTON - BUTTON WITH HOVER SHIMMER EFFECT
+// ============================================================================
+
+/**
+ * Button with shimmer effect on hover/press
+ * 
+ * @param onClick Click handler
+ * @param isSelected Whether button is selected
+ * @param modifier Modifier for customization
+ * @param enableShimmer Whether to enable shimmer animation
+ * @param contentPadding Button padding
+ * @param content Button content
+ */
+@Composable
+fun ShimmerButton(
+    onClick: () -> Unit,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    enableShimmer: Boolean = true,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 12.dp),
+    content: @Composable RowScope.() -> Unit
+) {
+    val shimmerState = rememberMetallicShimmer(enabled = enableShimmer && !isSelected)
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .then(
+                if (enableShimmer && (isPressed || !isSelected)) {
+                    Modifier.drawWithContent {
+                        drawContent()
+                        if (isPressed) {
+                            drawRect(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        Color(0x44FFFFFF),
+                                        Color.Transparent
+                                    ),
+                                    start = Offset(shimmerState * size.width, 0f),
+                                    end = Offset(shimmerState * size.width + size.width * 0.3f, size.height)
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    Modifier
+                }
+            ),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.surface,
+            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                          else MaterialTheme.colorScheme.onSurface
+        ),
+        border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource
+    ) {
+        content()
+    }
 }

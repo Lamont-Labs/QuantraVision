@@ -1,33 +1,47 @@
 package com.lamontlabs.quantravision.ui.screens.home
 
 import android.content.Context
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternMatch
-import com.lamontlabs.quantravision.ui.MetallicCard
-import com.lamontlabs.quantravision.ui.NeonText
+import com.lamontlabs.quantravision.R
+import com.lamontlabs.quantravision.ui.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Home Screen - Modern Dashboard
- * Material Design 3 card-based layout with:
- * - Quick stats overview
- * - Recent detections list
- * - FAB for primary action (Start Detection)
+ * Home Screen - Cinematic Hero Dashboard
+ * Premium AI Trading Terminal with maximum visual impact
+ * 
+ * Design Features:
+ * - QuantumGridBackground with animated technical grid
+ * - CandlestickParallax for depth and trading context
+ * - MetallicHeroBadge with pulsing QV logo
+ * - CircularHUDProgress rings for KPI visualization
+ * - Radial scan trigger button with metallic styling
+ * - SignalTicker for live AI metrics
+ * - GlassMorphicCard for recent detections
+ * - MetallicButton for quick actions
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     context: Context,
@@ -39,252 +53,450 @@ fun HomeScreen(
     val db = remember { PatternDatabase.getInstance(context) }
     var recentDetections by remember { mutableStateOf<List<PatternMatch>>(emptyList()) }
     var totalDetections by remember { mutableStateOf(0) }
+    var weekDetections by remember { mutableStateOf(0) }
     
     LaunchedEffect(Unit) {
         scope.launch {
             val all = db.patternDao().getAll()
             totalDetections = all.size
+            
+            // Calculate this week's detections
+            val weekAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
+            weekDetections = all.count { it.timestamp >= weekAgo }
+            
             recentDetections = all.sortedByDescending { it.timestamp }.take(5)
         }
     }
     
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        "QuantraVision",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            )
-        }
-    ) { paddingValues ->
+    // Calculate success rate (simplified - using confidence as proxy)
+    val successRate = if (totalDetections > 0) {
+        recentDetections.take(10).map { it.confidence }.average().toFloat()
+    } else {
+        0f
+    }
+    
+    // Layered Box structure for cinematic depth
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Layer 1: Quantum Grid Background (base)
+        QuantumGridBackground(
+            modifier = Modifier.fillMaxSize(),
+            animateGrid = true
+        )
+        
+        // Layer 2: Candlestick Parallax (depth)
+        CandlestickParallax(
+            modifier = Modifier.fillMaxSize(),
+            animate = true
+        )
+        
+        // Layer 3: Particle Starfield (extra depth)
+        ParticleStarfield(
+            modifier = Modifier.fillMaxSize(),
+            particleCount = 30,
+            particleColor = NeonCyan
+        )
+        
+        // Layer 4: Radial glow from center
+        RadialGlowBackground(
+            modifier = Modifier.fillMaxSize(),
+            glowColor = NeonCyan,
+            centerAlpha = 0.15f
+        )
+        
+        // Layer 5: Main Content
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Welcome header
+            // Signal Ticker - Live AI Metrics
+            item {
+                SignalTicker(
+                    signals = listOf("AI ACTIVE", "PATTERNS: $totalDetections", "READY"),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            
+            // Hero Badge - QV Logo with Pulsing Glow
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    MetallicHeroBadge(
+                        modifier = Modifier.size(120.dp),
+                        pulseSync = true
+                    ) {
+                        // QV Logo
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_qv_logo_foreground),
+                            contentDescription = "QuantraVision Logo",
+                            modifier = Modifier
+                                .fillMaxSize(0.7f)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+            }
+            
+            // Hero Title
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     NeonText(
-                        text = "Real-Time Pattern Detection",
-                        style = MaterialTheme.typography.headlineMedium
+                        text = "QUANTRAVISION",
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        glowColor = NeonCyan,
+                        enablePulse = false
                     )
-                }
-            }
-            
-            // Quick stats cards
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    QuickStatCard(
-                        modifier = Modifier.weight(1f),
-                        title = "Total",
-                        value = totalDetections.toString(),
-                        icon = Icons.Default.TrendingUp
-                    )
-                    QuickStatCard(
-                        modifier = Modifier.weight(1f),
-                        title = "This Week",
-                        value = "0",
-                        icon = Icons.Default.CalendarToday
-                    )
-                }
-            }
-            
-            // Recent detections section
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        "Recent Detections",
-                        style = MaterialTheme.typography.titleLarge,
+                        text = "AI TRADING TERMINAL",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.6f),
+                        letterSpacing = 3.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    TextButton(onClick = onViewDetections) {
-                        Text("View All")
+                }
+            }
+            
+            // KPI Rings - Circular HUD Progress
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Total Detections Ring
+                    CircularHUDProgress(
+                        progress = (totalDetections.toFloat() / 100f).coerceAtMost(1f),
+                        size = 100.dp,
+                        strokeWidth = 8.dp,
+                        showTicks = true
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = totalDetections.toString(),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = NeonCyan
+                            )
+                            Text(
+                                text = "Total",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                    
+                    // This Week Ring
+                    CircularHUDProgress(
+                        progress = (weekDetections.toFloat() / 50f).coerceAtMost(1f),
+                        size = 100.dp,
+                        strokeWidth = 8.dp,
+                        showTicks = true
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = weekDetections.toString(),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = NeonCyanBright
+                            )
+                            Text(
+                                text = "Week",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                    
+                    // Success Rate Ring
+                    CircularHUDProgress(
+                        progress = successRate,
+                        size = 100.dp,
+                        strokeWidth = 8.dp,
+                        showTicks = true
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "${(successRate * 100).toInt()}%",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = NeonGold
+                            )
+                            Text(
+                                text = "Success",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                        }
                     }
                 }
             }
             
+            // Radial Scan Trigger Button - Center Hero CTA
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Pulsing animation for the button
+                    val infiniteTransition = rememberInfiniteTransition(label = "scanPulse")
+                    val scale by infiniteTransition.animateFloat(
+                        initialValue = 1f,
+                        targetValue = 1.05f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1500, easing = FastOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        ),
+                        label = "buttonScale"
+                    )
+                    
+                    MetallicButton(
+                        onClick = onStartScan,
+                        modifier = Modifier
+                            .size(180.dp)
+                            .scale(scale),
+                        contentPadding = PaddingValues(32.dp),
+                        showTopStrip = true
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Radar,
+                                contentDescription = "Start Scan",
+                                modifier = Modifier.size(48.dp),
+                                tint = NeonCyan
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "START\nSCAN",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                textAlign = TextAlign.Center,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+            
+            // Recent Detections Section
+            item {
+                NeonText(
+                    text = "RECENT DETECTIONS",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    glowColor = NeonCyan,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            
             if (recentDetections.isEmpty()) {
                 item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
+                    GlassMorphicCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(32.dp),
+                                .padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
                                 Icons.Default.Search,
                                 contentDescription = null,
-                                modifier = Modifier.size(64.dp),
-                                tint = MaterialTheme.colorScheme.surfaceVariant
+                                modifier = Modifier.size(48.dp),
+                                tint = NeonCyan.copy(alpha = 0.5f)
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                "No detections yet",
+                                "NO DETECTIONS YET",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                "Tap 'Start Detection' to scan charts",
+                                "Start scanning to detect chart patterns",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = Color.White.copy(alpha = 0.6f),
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
                 }
             } else {
                 items(recentDetections) { detection ->
-                    DetectionCard(detection)
+                    DetectionGlassCard(detection)
                 }
             }
             
-            // Quick actions card
+            // Quick Actions Section
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth()
+                NeonText(
+                    text = "QUICK ACTIONS",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    glowColor = NeonCyan,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                )
+            }
+            
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    MetallicButton(
+                        onClick = onViewDetections,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
+                        Icon(
+                            Icons.Default.List,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            "Quick Actions",
-                            style = MaterialTheme.typography.titleMedium,
+                            "VIEW ALL DETECTIONS",
                             fontWeight = FontWeight.Bold
                         )
-                        
-                        QuickActionButton(
-                            icon = Icons.Default.PlayArrow,
-                            text = "Start Detection",
-                            onClick = onStartScan
+                    }
+                    
+                    MetallicButton(
+                        onClick = onNavigateToAnalytics,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            Icons.Default.Analytics,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
-                        
-                        QuickActionButton(
-                            icon = Icons.Default.Analytics,
-                            text = "View Analytics",
-                            onClick = onNavigateToAnalytics
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            "PERFORMANCE ANALYTICS",
+                            fontWeight = FontWeight.Bold
                         )
-                        
-                        QuickActionButton(
-                            icon = Icons.Default.List,
-                            text = "All Detections",
-                            onClick = onViewDetections
+                    }
+                    
+                    MetallicButton(
+                        onClick = { /* Navigate to settings */ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            "SYSTEM CONFIGURATION",
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
+            
+            // Bottom spacing
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
 }
 
+/**
+ * Detection Glass Card - Glassmorphic card for displaying recent detections
+ */
 @Composable
-private fun QuickStatCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    value: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    Card(
-        modifier = modifier
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                icon,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                value,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                title,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun DetectionCard(detection: PatternMatch) {
+private fun DetectionGlassCard(detection: PatternMatch) {
     val time = remember(detection.timestamp) {
         SimpleDateFormat("MMM dd, HH:mm", Locale.US).format(Date(detection.timestamp))
     }
     
-    Card(
-        modifier = Modifier.fillMaxWidth()
+    GlassMorphicCard(
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = Color(0xFF0D1219).copy(alpha = 0.85f)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    detection.patternName,
+                    text = detection.patternName.uppercase(),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    time,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Schedule,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = NeonCyan.copy(alpha = 0.6f)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = time,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                }
             }
             
-            Text(
-                "${(detection.confidence * 100).toInt()}%",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            // Confidence Badge
+            Surface(
+                shape = CircleShape,
+                color = when {
+                    detection.confidence >= 0.8f -> Color(0xFF00FF88)
+                    detection.confidence >= 0.6f -> NeonCyan
+                    else -> NeonGold
+                }.copy(alpha = 0.2f),
+                modifier = Modifier.size(64.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${(detection.confidence * 100).toInt()}%",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = when {
+                            detection.confidence >= 0.8f -> Color(0xFF00FF88)
+                            detection.confidence >= 0.6f -> NeonCyan
+                            else -> NeonGold
+                        }
+                    )
+                }
+            }
         }
-    }
-}
-
-@Composable
-private fun QuickActionButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    text: String,
-    onClick: () -> Unit
-) {
-    FilledTonalButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(icon, contentDescription = null)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text)
     }
 }
