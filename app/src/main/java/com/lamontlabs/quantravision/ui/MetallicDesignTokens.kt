@@ -268,11 +268,6 @@ fun MetallicButton(
     
     Box(
         modifier = modifier
-            .metallicBorder(
-                width = 2.dp,
-                brush = chromeBorderBrush,
-                shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
-            )
             .background(
                 brush = if (isPressed) metallicCyanBrushDark else metallicCyanBrush,
                 shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
@@ -283,9 +278,6 @@ fun MetallicButton(
                 enabled = enabled,
                 onClick = onClick
             )
-            .drawBehind {
-                drawRect(brush = horizontalReflectionBrush, alpha = 0.2f)
-            }
     ) {
         // Top edge light strip with rounded ends
         if (showTopStrip) {
@@ -307,22 +299,10 @@ fun MetallicButton(
             )
         }
         
-        // Content with dark background for text contrast + specular highlight
+        // Content - clean professional appearance, no background boxes
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             Row(
-                modifier = Modifier
-                    .padding(contentPadding)
-                    .drawBehind {
-                        // Dark semi-transparent overlay for text contrast
-                        drawRect(
-                            color = Color.Black.copy(alpha = 0.35f)
-                        )
-                        // Specular highlight on top
-                        drawRect(
-                            brush = specularHighlight,
-                            alpha = if (isPressed) 0.2f else 0.3f
-                        )
-                    },
+                modifier = Modifier.padding(contentPadding),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 content = content
@@ -813,11 +793,6 @@ fun MetallicAccordion(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .metallicBorder(
-                width = 2.dp,
-                brush = chromeBorderBrush,
-                shape = RoundedCornerShape(METAL_CARD_CORNER_RADIUS)
-            )
             .background(
                 brush = metallicAngularBrush,
                 shape = RoundedCornerShape(METAL_CARD_CORNER_RADIUS)
@@ -836,9 +811,6 @@ fun MetallicAccordion(
                         bottomEnd = if (expanded) 0.dp else METAL_CARD_CORNER_RADIUS
                     )
                 )
-                .drawBehind {
-                    drawRect(brush = horizontalReflectionBrush, alpha = 0.2f)
-                }
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Row(
@@ -905,7 +877,6 @@ fun MetallicAccordion(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF0D1219).copy(alpha = 0.6f))
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 content = content
@@ -1215,23 +1186,11 @@ fun GlassMorphicCard(
                 Modifier
             }
         )
-        // Clean professional background
+        // Clean professional background - NO visible borders
         .background(
             color = backgroundColor,
             shape = RoundedCornerShape(16.dp)
         )
-        // Single clean border - no multi-layer glow for professional look
-        .drawBehind {
-            val strokeWidth = borderWidth.toPx()
-            val cornerRadius = 16.dp.toPx()
-            
-            // Single subtle border with slight glow
-            drawRoundRect(
-                color = borderColor.copy(alpha = 0.4f),
-                cornerRadius = CornerRadius(cornerRadius),
-                style = Stroke(width = strokeWidth)
-            )
-        }
         .padding(16.dp)
     
     Column(
