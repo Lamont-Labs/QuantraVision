@@ -90,7 +90,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Transparent Logo (no background border)
+            // HERO SECTION - 3D Metallic Logo with Text (transparent, no border)
             item {
                 Box(
                     modifier = Modifier
@@ -98,13 +98,12 @@ fun HomeScreen(
                         .padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Transparent logo foreground - no background border
+                    // Transparent 3D Q logo with text - no background
                     Image(
-                        painter = painterResource(id = R.drawable.ic_qv_logo_foreground),
+                        painter = painterResource(id = R.drawable.qv_logo_transparent),
                         contentDescription = "QuantraVision - AI Trading Overlay",
                         modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .aspectRatio(1f),
+                            .fillMaxWidth(0.8f),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -216,28 +215,16 @@ fun HomeScreen(
                         modifier = Modifier
                             .size(180.dp)
                             .scale(scale),
-                        contentPadding = PaddingValues(32.dp),
+                        contentPadding = PaddingValues(24.dp),
                         showTopStrip = true
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_q_logo),
-                                contentDescription = "Start Scan",
-                                modifier = Modifier.size(54.dp),
-                                tint = NeonCyan
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "SCAN",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.ExtraBold,
-                                textAlign = TextAlign.Center,
-                                color = Color.White
-                            )
-                        }
+                        // 3D Q logo - no tint to preserve metallic cyan styling
+                        Image(
+                            painter = painterResource(id = R.drawable.scan_button_q_logo),
+                            contentDescription = "Start Scan",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
                     }
                 }
             }
