@@ -67,42 +67,104 @@ fun DashboardScreen(
             )
         }
     ) { padding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Hero CTA - Always visible at top
-            MetallicButton(
-                onClick = onStartScan,
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                showTopStrip = true
+            // Radial glow background for depth
+            RadialGlowBackground(
+                glowColor = NeonCyan,
+                centerAlpha = 0.15f,
+                edgeAlpha = 0f
+            )
+            
+            // Particle starfield
+            ParticleStarfield(
+                particleCount = 40,
+                particleColor = NeonCyan.copy(alpha = 0.6f)
+            )
+            
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(32.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Start Detection", fontWeight = FontWeight.Bold)
-            }
+                // Hero title with neon glow
+                NeonText(
+                    text = "QUANTRAVISION",
+                    style = MaterialTheme.typography.headlineMedium,
+                    glowColor = NeonCyan,
+                    glowIntensity = 1f,
+                    enablePulse = true
+                )
+                
+                Spacer(Modifier.height(8.dp))
+                
+                // Hero CTA with circular HUD progress
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Circular HUD decoration behind button
+                    CircularHUDProgress(
+                        progress = 0.75f,
+                        size = 180.dp,
+                        strokeWidth = 6.dp,
+                        showTicks = true,
+                        modifier = Modifier.alpha(0.4f)
+                    )
+                    
+                    // Hero button
+                    MetallicButton(
+                        onClick = onStartScan,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(56.dp),
+                        showTopStrip = true
+                    ) {
+                        GlowingIcon(
+                            imageVector = Icons.Default.Visibility,
+                            contentDescription = null,
+                            size = 28.dp,
+                            glowColor = NeonCyan,
+                            glowIntensity = 0.9f
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        NeonText(
+                            text = "START DETECTION",
+                            style = MaterialTheme.typography.titleMedium,
+                            glowColor = NeonCyan,
+                            glowIntensity = 0.7f,
+                            enablePulse = false
+                        )
+                    }
+                }
             
             Spacer(Modifier.height(8.dp))
             
             // Accordion 1: Detection & Review
-            MetallicAccordion(
-                title = "Detection & Review",
-                expanded = detectionExpanded,
-                onToggle = { detectionExpanded = !detectionExpanded },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.List,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
+            GlassMorphicCard(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color(0xFF0D1219).copy(alpha = 0.4f),
+                borderColor = NeonCyan.copy(alpha = 0.4f)
             ) {
+                MetallicAccordion(
+                    title = "Detection & Review",
+                    expanded = detectionExpanded,
+                    onToggle = { detectionExpanded = !detectionExpanded },
+                    icon = {
+                        GlowingIcon(
+                            imageVector = Icons.Default.List,
+                            contentDescription = null,
+                            size = 24.dp,
+                            glowColor = NeonCyan,
+                            glowIntensity = 0.7f
+                        )
+                    }
+                ) {
                 MetallicButton(
                     onClick = onReview,
                     modifier = Modifier.fillMaxWidth(),
@@ -111,27 +173,34 @@ fun DashboardScreen(
                     Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
                     Text("View Detections", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
             
             // Accordion 2: Intelligence & Analytics (with 💎 badge)
-            MetallicAccordion(
-                title = "Intelligence & Analytics",
-                expanded = intelligenceExpanded,
-                onToggle = { intelligenceExpanded = !intelligenceExpanded },
-                icon = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Psychology,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text("💎", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
+            GlassMorphicCard(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color(0xFF0D1219).copy(alpha = 0.4f),
+                borderColor = NeonGold.copy(alpha = 0.4f)
             ) {
+                MetallicAccordion(
+                    title = "Intelligence & Analytics",
+                    expanded = intelligenceExpanded,
+                    onToggle = { intelligenceExpanded = !intelligenceExpanded },
+                    icon = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            GlowingIcon(
+                                imageVector = Icons.Default.Psychology,
+                                contentDescription = null,
+                                size = 24.dp,
+                                glowColor = NeonGold,
+                                glowIntensity = 0.8f
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("💎", style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                ) {
                 MetallicButton(
                     onClick = onIntelligence,
                     modifier = Modifier.fillMaxWidth(),
@@ -150,24 +219,31 @@ fun DashboardScreen(
                     Icon(Icons.Default.TrendingUp, contentDescription = null, modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
                     Text("Predictions", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
             
             // Accordion 3: Learn & Progress (with achievement count badge)
-            MetallicAccordion(
-                title = "Learn & Progress",
-                expanded = learnExpanded,
-                onToggle = { learnExpanded = !learnExpanded },
-                badge = if (achievementCount > 0) achievementCount else null,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.School,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
+            GlassMorphicCard(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color(0xFF0D1219).copy(alpha = 0.4f),
+                borderColor = NeonCyan.copy(alpha = 0.3f)
             ) {
+                MetallicAccordion(
+                    title = "Learn & Progress",
+                    expanded = learnExpanded,
+                    onToggle = { learnExpanded = !learnExpanded },
+                    badge = if (achievementCount > 0) achievementCount else null,
+                    icon = {
+                        GlowingIcon(
+                            imageVector = Icons.Default.School,
+                            contentDescription = null,
+                            size = 24.dp,
+                            glowColor = NeonCyan,
+                            glowIntensity = 0.7f
+                        )
+                    }
+                ) {
                 MetallicButton(
                     onClick = onTutorials,
                     modifier = Modifier.fillMaxWidth(),
@@ -195,7 +271,8 @@ fun DashboardScreen(
                 ) {
                     Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Achievements", fontWeight = FontWeight.Bold)
+                        Text("Achievements", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
