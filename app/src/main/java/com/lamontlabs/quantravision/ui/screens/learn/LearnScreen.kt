@@ -2,6 +2,7 @@ package com.lamontlabs.quantravision.ui.screens.learn
 
 import android.content.Context
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -464,7 +465,6 @@ private fun StatCard(
         ) {
             CircularHUDProgress(
                 progress = progress,
-                color = color,
                 size = 80.dp,
                 strokeWidth = 8.dp,
                 showTicks = false,
@@ -531,7 +531,6 @@ private fun LearningModuleCard(
             // Progress ring
             CircularHUDProgress(
                 progress = module.progress,
-                color = module.color,
                 size = 100.dp,
                 strokeWidth = 8.dp,
                 showTicks = true,

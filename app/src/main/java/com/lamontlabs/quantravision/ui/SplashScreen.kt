@@ -2,7 +2,9 @@ package com.lamontlabs.quantravision.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -169,14 +171,8 @@ fun SplashScreen(
                             modifier = Modifier
                                 .size(8.dp)
                                 .alpha(dotAlpha)
-                        ) {
-                            NeonCircle(
-                                size = 8.dp,
-                                glowColor = NeonCyan,
-                                background = NeonCyan.copy(alpha = 0.5f),
-                                glow = true
-                            ) {}
-                        }
+                                .background(NeonCyan, RoundedCornerShape(4.dp))
+                        )
                     }
                 }
             }
