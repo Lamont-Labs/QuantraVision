@@ -140,16 +140,20 @@ fun SettingsScreenWithNav(
     
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = if (navController != null) {
-                    {
+            if (navController != null) {
+                TopAppBar(
+                    title = { Text("Settings") },
+                    navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.ArrowBack, "Back")
                         }
                     }
-                } else null
-            )
+                )
+            } else {
+                TopAppBar(
+                    title = { Text("Settings") }
+                )
+            }
         }
     ) { padding ->
         Column(Modifier.fillMaxWidth().padding(padding).padding(20.dp)) {

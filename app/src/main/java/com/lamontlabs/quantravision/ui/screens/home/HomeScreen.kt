@@ -12,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lamontlabs.quantravision.data.PatternDatabase
-import com.lamontlabs.quantravision.data.PatternMatch
+import com.lamontlabs.quantravision.PatternDatabase
+import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.NeonText
 import kotlinx.coroutines.launch
