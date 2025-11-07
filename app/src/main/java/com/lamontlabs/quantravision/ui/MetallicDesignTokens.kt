@@ -39,17 +39,17 @@ import kotlin.math.sin
 
 /**
  * Chrome metal gradient: polished steel with bright white reflections
- * Simulates reflective chrome surface like a car bumper
+ * Simulates reflective chrome surface - IMPROVED for better text contrast
  */
 val metallicCyanBrush = Brush.verticalGradient(
     colors = listOf(
-        Color(0xFF0A0C10),  // Deep shadow
-        Color(0xFF2C3038),  // Mid metal
-        Color(0xFFE8E8E8),  // Bright reflection
-        Color(0xFFD0F0F5),  // Subtle cyan tint
-        Color(0xFFE8E8E8),  // Bright reflection
-        Color(0xFF2C3038),  // Mid metal
-        Color(0xFF0A0C10)   // Deep shadow
+        Color(0xFF05080C),  // Deeper shadow
+        Color(0xFF1A1E24),  // Dark metal
+        Color(0xFF3A4550),  // Mid metal (DARKER than before)
+        Color(0xFF5FDDEB),  // Cyan reflection (was white, now cyan)
+        Color(0xFF3A4550),  // Mid metal
+        Color(0xFF1A1E24),  // Dark metal
+        Color(0xFF05080C)   // Deep shadow
     )
 )
 
@@ -99,14 +99,16 @@ val specularHighlight = Brush.radialGradient(
 )
 
 /**
- * Darker metallic gradient for pressed state - dimmed chrome
+ * Darker metallic gradient for pressed state - dimmed chrome with cyan hint
  */
 val metallicCyanBrushDark = Brush.verticalGradient(
     colors = listOf(
         Color(0xFF000000),  // Pure black
-        Color(0xFF1A1D23),  // Dark gray
-        Color(0xFF888888),  // Dimmed reflection
-        Color(0xFF1A1D23),  // Dark gray
+        Color(0xFF0D1219),  // Very dark
+        Color(0xFF2A3540),  // Dim metal
+        Color(0xFF00A8B8),  // Dimmed cyan reflection
+        Color(0xFF2A3540),  // Dim metal
+        Color(0xFF0D1219),  // Very dark
         Color(0xFF000000)   // Pure black
     )
 )
@@ -199,20 +201,27 @@ fun MetallicButton(
             )
         }
         
-        // Content with specular highlight overlay
-        Row(
-            modifier = Modifier
-                .padding(contentPadding)
-                .drawBehind {
-                    drawRect(
-                        brush = specularHighlight,
-                        alpha = if (isPressed) 0.3f else 0.5f
-                    )
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            content = content
-        )
+        // Content with dark background for text contrast + specular highlight
+        CompositionLocalProvider(LocalContentColor provides Color.White) {
+            Row(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .drawBehind {
+                        // Dark semi-transparent overlay for text contrast
+                        drawRect(
+                            color = Color.Black.copy(alpha = 0.35f)
+                        )
+                        // Specular highlight on top
+                        drawRect(
+                            brush = specularHighlight,
+                            alpha = if (isPressed) 0.2f else 0.3f
+                        )
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                content = content
+            )
+        }
     }
 }
 

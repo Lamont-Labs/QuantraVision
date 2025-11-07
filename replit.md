@@ -57,3 +57,26 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 - **Pattern Templates**: 109 PNG reference images and YAML configurations for chart patterns.
 - **Legal Documents**: HTML/Markdown for terms and privacy policy.
 - **Educational Content**: Interactive lessons and the "Trading Book".
+
+## Recent Changes
+
+### November 7, 2025 - UI Simplification & Improved Text Contrast
+**Removed voice command complexity and improved button readability:**
+
+**Design Improvements:**
+- **Improved Metallic Gradients**: Replaced bright white reflections with cyan (#5FDDEB) for better text contrast
+- **Darker Base Colors**: Metallic buttons now use darker base colors to ensure white text pops
+- **Text Contrast Enhancement**: Added dark semi-transparent overlay (35% black) behind all button text
+- **Explicit Text Color**: All button content now uses pure white (Color.White) via CompositionLocalProvider
+- **Pressed State Improvement**: Dimmed metallic gradient now includes cyan hint instead of gray
+
+**Code Simplification:**
+- **Removed Voice Commands**: Eliminated ~150 lines of voice command code for simpler, cleaner codebase
+- **No Microphone Permission**: Removed microphone icon, permission handling, and voice status messages
+- **Cleaner Dashboard**: Simplified to just hero CTA + 3 chrome accordions + settings icon
+
+**Visual Result:**
+- Button text now has high contrast against metallic backgrounds
+- Chrome aesthetic maintained with improved readability
+- Clean, professional look without complexity
+- Production-ready for Samsung S23 FE (Android 14)
