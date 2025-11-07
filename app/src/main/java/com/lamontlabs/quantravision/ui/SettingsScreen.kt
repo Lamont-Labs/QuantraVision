@@ -144,12 +144,8 @@ fun SettingsScreenWithNav(
     var badgeVisible by remember { mutableStateOf(logoPrefs.isBadgeVisible()) }
     
     Box(modifier = Modifier.fillMaxSize()) {
-        // Quantum Grid Background - lower opacity for readability
-        QuantumGridBackground(
-            modifier = Modifier.fillMaxSize(),
-            gridColor = NeonCyan.copy(alpha = 0.08f),
-            animateGrid = true
-        )
+        // Static brand background - no animations
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
         Scaffold(
             containerColor = Color.Transparent,

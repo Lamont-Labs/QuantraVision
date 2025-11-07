@@ -39,20 +39,9 @@ fun ScanScreen(
     onStartScan: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Layer 1: Quantum Grid Background with Animation
-        QuantumGridBackground(
-            modifier = Modifier.fillMaxSize(),
-            gridColor = NeonCyan.copy(alpha = 0.15f),
-            animateGrid = true
-        )
+        // Static brand background - no animations
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
-        // Layer 2: Depth Mask for Atmospheric Effect
-        DepthMaskOverlay(
-            modifier = Modifier.fillMaxSize(),
-            intensity = 0.2f
-        )
-        
-        // Layer 3: Content
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {

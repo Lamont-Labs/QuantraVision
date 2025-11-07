@@ -41,18 +41,8 @@ fun MarketsScreen(
     onNavigateToMultiChart: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Background Layer 1: QuantumGridBackground
-        QuantumGridBackground(
-            modifier = Modifier.fillMaxSize(),
-            animateGrid = true
-        )
-        
-        // Background Layer 2: ParticleStarfield overlay
-        ParticleStarfield(
-            modifier = Modifier.fillMaxSize(),
-            particleCount = 30,
-            particleColor = NeonCyan
-        )
+        // Static brand background - no animations
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
         Scaffold(
             topBar = {

@@ -110,21 +110,9 @@ fun LearnScreen(
     }
     
     Box(modifier = Modifier.fillMaxSize()) {
-        // Layer 1: Quantum Grid Background
-        QuantumGridBackground(
-            modifier = Modifier.fillMaxSize(),
-            gridColor = NeonCyan.copy(alpha = 0.15f),
-            animateGrid = true
-        )
+        // Static brand background - no animations
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
-        // Layer 2: Particle Starfield for depth
-        ParticleStarfield(
-            modifier = Modifier.fillMaxSize(),
-            particleCount = 30,
-            particleColor = NeonCyan.copy(alpha = 0.6f)
-        )
-        
-        // Layer 3: Content
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),

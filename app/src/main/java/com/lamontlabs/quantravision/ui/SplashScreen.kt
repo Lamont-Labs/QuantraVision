@@ -77,18 +77,8 @@ fun SplashScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // Quantum Grid Background
-        QuantumGridBackground(
-            gridColor = NeonCyan.copy(alpha = 0.2f),
-            animateGrid = true
-        )
-        
-        // Radial glow from center
-        RadialGlowBackground(
-            glowColor = NeonCyan,
-            centerAlpha = if (startAnimation) glowAlpha * 0.3f else 0f,
-            edgeAlpha = 0f
-        )
+        // Static brand background - no animations
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
         // Content column
         Column(

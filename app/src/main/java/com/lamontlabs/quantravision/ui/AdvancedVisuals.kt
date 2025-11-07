@@ -23,6 +23,33 @@ import kotlin.random.Random
  */
 
 // ============================================================================
+// STATIC BRAND BACKGROUND - Simple gradient matching logo image
+// ============================================================================
+
+/**
+ * Static brand background with gradient matching the branded logo image
+ * No animations, clean and minimal
+ */
+@Composable
+fun StaticBrandBackground(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF010409), // Deep space blue-black (top)
+                        Color(0xFF0D1825), // Mid blue (center)
+                        Color(0xFF010409)  // Deep space blue-black (bottom)
+                    )
+                )
+            )
+    )
+}
+
+// ============================================================================
 // QUANTUM GRID BACKGROUND - Dark Technical Grid with Neon Accents
 // ============================================================================
 

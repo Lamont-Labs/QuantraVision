@@ -78,41 +78,18 @@ fun HomeScreen(
         0f
     }
     
-    // Layered Box structure for cinematic depth
+    // Simple static background matching the branded logo
     Box(modifier = Modifier.fillMaxSize()) {
-        // Layer 1: Quantum Grid Background (base)
-        QuantumGridBackground(
-            modifier = Modifier.fillMaxSize(),
-            animateGrid = true
-        )
+        // Static brand background - no animations
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
-        // Layer 2: Candlestick Parallax (depth)
-        CandlestickParallax(
-            modifier = Modifier.fillMaxSize(),
-            animate = true
-        )
-        
-        // Layer 3: Particle Starfield (extra depth)
-        ParticleStarfield(
-            modifier = Modifier.fillMaxSize(),
-            particleCount = 30,
-            particleColor = NeonCyan
-        )
-        
-        // Layer 4: Radial glow from center
-        RadialGlowBackground(
-            modifier = Modifier.fillMaxSize(),
-            glowColor = NeonCyan,
-            centerAlpha = 0.15f
-        )
-        
-        // Layer 5: Main Content
+        // Main Content
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // HERO SECTION - Full Branded Logo Image with Seamless Background Blend
+            // HERO SECTION - Branded Logo Image
             item {
                 Box(
                     modifier = Modifier
@@ -120,31 +97,14 @@ fun HomeScreen(
                         .padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Radial gradient blend layer matching the logo image background
-                    Box(
+                    // Logo image - blends seamlessly with static background
+                    Image(
+                        painter = painterResource(id = R.drawable.qv_hero_logo),
+                        contentDescription = "QuantraVision - AI Trading Overlay",
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
                             .aspectRatio(1f)
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(
-                                        Color(0xFF030C14), // Center - matches image dark blue
-                                        Color(0xFF020A11), // Mid
-                                        Color(0xFF010409)  // Edge - matches image darkest
-                                    ),
-                                    center = Offset.Unspecified,
-                                    radius = 800f
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Display the complete branded logo image
-                        Image(
-                            painter = painterResource(id = R.drawable.qv_hero_logo),
-                            contentDescription = "QuantraVision - AI Trading Overlay",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                    )
                 }
             }
             
