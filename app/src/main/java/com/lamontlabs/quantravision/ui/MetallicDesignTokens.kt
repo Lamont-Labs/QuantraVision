@@ -1257,9 +1257,9 @@ data class RingData(
 fun GlassMorphicCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    blurRadius: Float = 20f,
-    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.3f),
-    borderColor: Color = NeonCyan.copy(alpha = 0.3f),
+    blurRadius: Float = 8f,
+    backgroundColor: Color = Color(0xFF0D1219).copy(alpha = 0.65f),
+    borderColor: Color = NeonCyan.copy(alpha = 0.5f),
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardModifier = modifier
