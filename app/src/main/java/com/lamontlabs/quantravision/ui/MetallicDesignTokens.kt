@@ -1142,6 +1142,18 @@ fun CircularDataRing(
     size: Dp = 240.dp,
     centerContent: @Composable (BoxScope.() -> Unit)? = null
 ) {
+    // Pre-compute all animated progress values outside Canvas
+    val animatedProgressList = rings.mapIndexed { index, ringData ->
+        animateFloatAsState(
+            targetValue = ringData.progress.coerceIn(0f, 1f),
+            animationSpec = tween(
+                durationMillis = 1000 + index * 200,
+                easing = FastOutSlowInEasing
+            ),
+            label = "ring_$index"
+        ).value
+    }
+    
     Box(
         modifier = modifier.size(size),
         contentAlignment = Alignment.Center
@@ -1153,14 +1165,7 @@ fun CircularDataRing(
             val ringSpacing = 16.dp.toPx()
             
             rings.forEachIndexed { index, ringData ->
-                val animatedProgress by animateFloatAsState(
-                    targetValue = ringData.progress.coerceIn(0f, 1f),
-                    animationSpec = tween(
-                        durationMillis = 1000 + index * 200,
-                        easing = FastOutSlowInEasing
-                    ),
-                    label = "ring_$index"
-                ).value
+                val animatedProgress = animatedProgressList[index]
                 
                 val ringRadius = canvasSize / 2f - (index * (strokeWidth + ringSpacing))
                 val ringSize = ringRadius * 2f
