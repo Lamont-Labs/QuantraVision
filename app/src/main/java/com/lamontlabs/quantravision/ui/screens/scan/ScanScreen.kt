@@ -24,7 +24,7 @@ fun ScanScreen(
     context: Context,
     onStartScan: () -> Unit
 ) {
-    Box(modifier: Modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         // Static brand background
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
@@ -287,7 +287,6 @@ fun ScanScreen(
                                     }
                                 }
                             }
-                        )
                         }
                     }
                 }
