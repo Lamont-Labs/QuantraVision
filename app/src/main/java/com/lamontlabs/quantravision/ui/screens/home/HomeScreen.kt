@@ -135,6 +135,7 @@ fun HomeScreen(
                             Text(
                                 text = "Total",
                                 style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp,
                                 color = Color.White.copy(alpha = 0.6f)
                             )
                         }
@@ -159,6 +160,7 @@ fun HomeScreen(
                             Text(
                                 text = "Week",
                                 style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp,
                                 color = Color.White.copy(alpha = 0.6f)
                             )
                         }
@@ -183,6 +185,7 @@ fun HomeScreen(
                             Text(
                                 text = "Success",
                                 style = MaterialTheme.typography.bodySmall,
+                                fontSize = 10.sp,
                                 color = Color.White.copy(alpha = 0.6f)
                             )
                         }
