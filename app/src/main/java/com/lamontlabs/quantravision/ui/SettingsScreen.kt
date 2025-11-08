@@ -1,11 +1,8 @@
 package com.lamontlabs.quantravision.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -19,262 +16,225 @@ import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.alerts.AlertManager
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
 
+/**
+ * Settings Screen - Clean configuration interface
+ * Streamlined design matching home screen style
+ */
 @Composable
 fun SettingsScreen() {
-    QuantraVisionTheme {
-        Surface(Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxWidth().padding(20.dp)) {
-                Text("Settings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                Spacer(Modifier.height(20.dp))
-                Text("Theme: Follows system (Dark optimized)", fontWeight = FontWeight.Bold)
-                Text("Overlay opacity: Adjustable in Quick Controls", fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(28.dp))
-                HorizontalDivider()
-                Spacer(Modifier.height(16.dp))
-                Text("Lamont Labs", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                Text("QuantraVision Overlay • v2.x", fontWeight = FontWeight.Bold)
-            }
-        }
-    }
+    // Delegate to full implementation with no navigation
+    SettingsScreenWithNav(navController = null, onClearDatabase = null)
 }
 
-@Composable
-fun AlertSettingsCard() {
-    val context = LocalContext.current
-    val alertManager = remember { AlertManager.getInstance(context) }
-    var voiceEnabled by remember { mutableStateOf(alertManager.isVoiceEnabled()) }
-    var hapticEnabled by remember { mutableStateOf(alertManager.isHapticEnabled()) }
-    
-    GlassMorphicCard(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(Modifier.padding(20.dp)) {
-            Text(
-                text = "Alert Settings",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    GlowingIcon(
-                        imageVector = Icons.Default.VolumeUp,
-                        contentDescription = null,
-                        size = 28.dp,
-                        glowColor = NeonCyan,
-                        glowIntensity = 0.6f
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text("Voice Announcements", fontWeight = FontWeight.Bold)
-                        Text(
-                            "Announce detected patterns",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                NeonSwitch(
-                    checked = voiceEnabled,
-                    onCheckedChange = { enabled ->
-                        voiceEnabled = enabled
-                        alertManager.setVoiceEnabled(enabled)
-                    }
-                )
-            }
-            
-            Spacer(Modifier.height(20.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    GlowingIcon(
-                        imageVector = Icons.Default.Vibration,
-                        contentDescription = null,
-                        size = 28.dp,
-                        glowColor = NeonCyan,
-                        glowIntensity = 0.6f
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text("Haptic Feedback", fontWeight = FontWeight.Bold)
-                        Text(
-                            "Vibrate on pattern detection",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                NeonSwitch(
-                    checked = hapticEnabled,
-                    onCheckedChange = { enabled ->
-                        hapticEnabled = enabled
-                        alertManager.setHapticEnabled(enabled)
-                    }
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreenWithNav(
     navController: androidx.navigation.NavHostController? = null,
     onClearDatabase: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
+    val alertManager = remember { AlertManager.getInstance(context) }
     val logoPrefs = com.lamontlabs.quantravision.overlay.FloatingLogoPreferences(context)
+    
+    var voiceEnabled by remember { mutableStateOf(alertManager.isVoiceEnabled()) }
+    var hapticEnabled by remember { mutableStateOf(alertManager.isHapticEnabled()) }
     var selectedSize by remember { mutableStateOf(logoPrefs.getLogoSize()) }
     var selectedOpacity by remember { mutableStateOf(logoPrefs.getLogoOpacity()) }
     var badgeVisible by remember { mutableStateOf(logoPrefs.isBadgeVisible()) }
     
     Box(modifier = Modifier.fillMaxSize()) {
-        // Static brand background - no animations
+        // Static brand background
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
-        Scaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                if (navController != null) {
-                    TopAppBar(
-                        title = { Text("Settings") },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.Default.ArrowBack, "Back")
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent
-                        )
-                    )
-                } else {
-                    TopAppBar(
-                        title = { Text("Settings") },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent
-                        )
-                    )
-                }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // ALERT SETTINGS
+            item {
+                NeonText(
+                    text = "ALERT SETTINGS",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    glowColor = NeonCyan,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
-        ) { padding ->
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(20.dp)
-            ) {
-                AlertSettingsCard()
-                
-                Spacer(Modifier.height(20.dp))
-                
-                // Floating Logo Settings - Enhanced MetallicCard with shimmer
-                MetallicCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    enableShimmer = true
-                ) {
-                    Column(Modifier.padding(20.dp)) {
-                        Text(
-                            text = "Floating Logo",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        
-                        Text(
-                            text = "Logo Size",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            listOf(
-                                com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.SMALL to "Small",
-                                com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.MEDIUM to "Medium",
-                                com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.LARGE to "Large"
-                            ).forEach { (size, label) ->
-                                val isSelected = selectedSize == size
-                                NeonBorderButton(
-                                    onClick = { 
-                                        selectedSize = size
-                                        logoPrefs.saveLogoSize(size)
-                                    },
-                                    isSelected = isSelected,
-                                    modifier = Modifier.weight(1f),
-                                    glowColor = NeonCyan,
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
-                                ) {
-                                    Text(
-                                        text = label,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        softWrap = false
-                                    )
-                                }
-                            }
-                        }
-                        
-                        Spacer(Modifier.height(20.dp))
-                        
-                        Text(
-                            text = "Logo Opacity",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            listOf(0.5f to "50%", 0.75f to "75%", 0.85f to "85%", 1.0f to "100%").forEach { (opacity, label) ->
-                                val isSelected = (selectedOpacity - opacity).let { kotlin.math.abs(it) < 0.01f }
-                                ShimmerButton(
-                                    onClick = { 
-                                        selectedOpacity = opacity
-                                        logoPrefs.saveLogoOpacity(opacity)
-                                    },
-                                    isSelected = isSelected,
-                                    modifier = Modifier.weight(1f),
-                                    enableShimmer = true,
-                                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp)
-                                ) {
-                                    Text(
-                                        text = label,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        softWrap = false,
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                }
-                            }
-                        }
-                        
-                        Spacer(Modifier.height(20.dp))
-                
+            
+            item {
+                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
+                    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Show pattern count badge", fontWeight = FontWeight.Bold)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    Icons.Default.VolumeUp,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = NeonCyan
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Column {
+                                    Text("Voice Announcements", fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text(
+                                        "Announce detected patterns",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                            NeonSwitch(
+                                checked = voiceEnabled,
+                                onCheckedChange = { enabled ->
+                                    voiceEnabled = enabled
+                                    alertManager.setVoiceEnabled(enabled)
+                                }
+                            )
+                        }
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    Icons.Default.Vibration,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = NeonCyan
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Column {
+                                    Text("Haptic Feedback", fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text(
+                                        "Vibrate on pattern detection",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                            NeonSwitch(
+                                checked = hapticEnabled,
+                                onCheckedChange = { enabled ->
+                                    hapticEnabled = enabled
+                                    alertManager.setHapticEnabled(enabled)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            
+            // FLOATING LOGO
+            item {
+                NeonText(
+                    text = "FLOATING LOGO",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    glowColor = NeonCyan,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            
+            item {
+                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
+                    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        // Logo Size
+                        Column {
+                            Text(
+                                text = "Logo Size",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                listOf(
+                                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.SMALL to "Small",
+                                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.MEDIUM to "Medium",
+                                    com.lamontlabs.quantravision.overlay.FloatingLogoPreferences.LogoSize.LARGE to "Large"
+                                ).forEach { (size, label) ->
+                                    val isSelected = selectedSize == size
+                                    NeonBorderButton(
+                                        onClick = { 
+                                            selectedSize = size
+                                            logoPrefs.saveLogoSize(size)
+                                        },
+                                        isSelected = isSelected,
+                                        modifier = Modifier.weight(1f),
+                                        glowColor = NeonCyan,
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
+                                    ) {
+                                        Text(
+                                            text = label,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            softWrap = false
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Logo Opacity
+                        Column {
+                            Text(
+                                text = "Logo Opacity",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(0.5f to "50%", 0.75f to "75%", 0.85f to "85%", 1.0f to "100%").forEach { (opacity, label) ->
+                                    val isSelected = (selectedOpacity - opacity).let { kotlin.math.abs(it) < 0.01f }
+                                    ShimmerButton(
+                                        onClick = { 
+                                            selectedOpacity = opacity
+                                            logoPrefs.saveLogoOpacity(opacity)
+                                        },
+                                        isSelected = isSelected,
+                                        modifier = Modifier.weight(1f),
+                                        enableShimmer = true,
+                                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp)
+                                    ) {
+                                        Text(
+                                            text = label,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            softWrap = false,
+                                            style = MaterialTheme.typography.labelMedium
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Badge Toggle
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Show pattern count badge", fontWeight = FontWeight.Bold, color = Color.White)
                             NeonSwitch(
                                 checked = badgeVisible,
                                 onCheckedChange = { 
@@ -285,40 +245,44 @@ fun SettingsScreenWithNav(
                         }
                     }
                 }
+            }
             
-                
-                Spacer(Modifier.height(28.dp))
-                
-                // General Settings - GlassMorphicCard for non-critical settings
-                GlassMorphicCard(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(Modifier.padding(20.dp)) {
-                        Text(
-                            text = "General",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        Text("Theme: Follows system (Dark optimized)", fontWeight = FontWeight.Bold)
+            // GENERAL
+            item {
+                NeonText(
+                    text = "GENERAL",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    glowColor = NeonCyan,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            
+            item {
+                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("Theme: Follows system (Dark optimized)", fontWeight = FontWeight.Bold, color = Color.White)
                         Spacer(Modifier.height(12.dp))
-                        Text("Overlay opacity: Adjustable in Quick Controls", fontWeight = FontWeight.Bold)
+                        Text("Overlay opacity: Adjustable in Quick Controls", fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
-                
-                Spacer(Modifier.height(28.dp))
-                
-                Text(
-                    text = "Help & Learning",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(bottom = 16.dp)
+            }
+            
+            // HELP & LEARNING
+            item {
+                NeonText(
+                    text = "HELP & LEARNING",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    glowColor = NeonCyan,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
-                // Help & Learning - MetallicCard with shimmer and GlowingIcon
-                MetallicCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    enableShimmer = true,
+            }
+            
+            item {
+                MetallicButton(
                     onClick = {
                         val onboardingManager = OnboardingManager.getInstance(context)
                         onboardingManager.resetOnboarding()
@@ -327,66 +291,54 @@ fun SettingsScreenWithNav(
                             "Onboarding reset. Restart the app to view the tour.",
                             android.widget.Toast.LENGTH_LONG
                         ).show()
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            GlowingIcon(
-                                imageVector = Icons.Default.Replay,
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Replay,
                                 contentDescription = null,
-                                size = 32.dp,
-                                glowColor = NeonCyan,
-                                glowIntensity = 0.7f
+                                modifier = Modifier.size(24.dp)
                             )
-                            Spacer(Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    "Replay Onboarding Tour", 
-                                    fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                                Text(
-                                    "Review the app tutorial again",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                "Replay Onboarding Tour",
+                                fontWeight = FontWeight.Bold
+                            )
                         }
-                        // Neon chevron
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier
-                                .size(24.dp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            "Review the app tutorial again",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.7f)
                         )
                     }
-                }
-            
-                
-                Spacer(Modifier.height(28.dp))
-                
-                // Developer section - Dark GlassMorphicCard with technical aesthetic
-                if (onClearDatabase != null) {
-                    Text(
-                        text = "Developer",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.White.copy(alpha = 0.5f)
                     )
-                    
+                }
+            }
+            
+            // DEVELOPER SECTION (conditional)
+            if (onClearDatabase != null) {
+                item {
+                    NeonText(
+                        text = "DEVELOPER",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        glowColor = Color(0xFFFF4444),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                
+                item {
                     GlassMorphicCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        isDark = true,
+                        backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f),
                         borderColor = Color(0xFFFF4444),
                         onClick = { onClearDatabase() }
                     ) {
@@ -401,25 +353,23 @@ fun SettingsScreenWithNav(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.weight(1f)
                             ) {
-                                GlowingIcon(
+                                Icon(
                                     imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    size = 32.dp,
-                                    glowColor = Color(0xFFFF4444),
-                                    iconColor = Color(0xFFFF4444),
-                                    glowIntensity = 0.8f
+                                    tint = Color(0xFFFF4444),
+                                    modifier = Modifier.size(24.dp)
                                 )
-                                Spacer(Modifier.width(16.dp))
+                                Spacer(Modifier.width(12.dp))
                                 Column {
                                     Text(
                                         "Clear Database", 
                                         fontWeight = FontWeight.Bold,
-                                        style = MaterialTheme.typography.titleSmall
+                                        color = Color.White
                                     )
                                     Text(
                                         "Delete all pattern detections",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = Color.White.copy(alpha = 0.7f)
                                     )
                                 }
                             }
@@ -431,23 +381,24 @@ fun SettingsScreenWithNav(
                             )
                         }
                     }
-                    
-                    Spacer(Modifier.height(28.dp))
                 }
+            }
             
-                
-                // Legal & Privacy section - Standard GlassMorphicCard
-                if (navController != null) {
-                    Text(
-                        text = "Legal & Privacy",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+            // LEGAL & PRIVACY (conditional)
+            if (navController != null) {
+                item {
+                    NeonText(
+                        text = "LEGAL & PRIVACY",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        glowColor = NeonCyan,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
-                    GlassMorphicCard(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                }
+                
+                item {
+                    GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
                         Column {
                             // Privacy Policy
                             Row(
@@ -462,24 +413,23 @@ fun SettingsScreenWithNav(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    GlowingIcon(
+                                    Icon(
                                         imageVector = Icons.Default.Lock,
                                         contentDescription = null,
-                                        size = 32.dp,
-                                        glowColor = NeonCyan,
-                                        glowIntensity = 0.6f
+                                        tint = NeonCyan,
+                                        modifier = Modifier.size(24.dp)
                                     )
-                                    Spacer(Modifier.width(16.dp))
+                                    Spacer(Modifier.width(12.dp))
                                     Column {
                                         Text(
                                             "Privacy Policy", 
                                             fontWeight = FontWeight.Bold,
-                                            style = MaterialTheme.typography.titleSmall
+                                            color = Color.White
                                         )
                                         Text(
                                             "How we handle your data",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = Color.White.copy(alpha = 0.7f)
                                         )
                                     }
                                 }
@@ -491,7 +441,7 @@ fun SettingsScreenWithNav(
                                 )
                             }
                             
-                            HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                            HorizontalDivider(Modifier.padding(horizontal = 20.dp), color = Color.White.copy(alpha = 0.1f))
                             
                             // Terms of Use
                             Row(
@@ -506,24 +456,23 @@ fun SettingsScreenWithNav(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    GlowingIcon(
+                                    Icon(
                                         imageVector = Icons.Default.Description,
                                         contentDescription = null,
-                                        size = 32.dp,
-                                        glowColor = NeonCyan,
-                                        glowIntensity = 0.6f
+                                        tint = NeonCyan,
+                                        modifier = Modifier.size(24.dp)
                                     )
-                                    Spacer(Modifier.width(16.dp))
+                                    Spacer(Modifier.width(12.dp))
                                     Column {
                                         Text(
                                             "Terms of Use", 
                                             fontWeight = FontWeight.Bold,
-                                            style = MaterialTheme.typography.titleSmall
+                                            color = Color.White
                                         )
                                         Text(
                                             "Conditions for using the app",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = Color.White.copy(alpha = 0.7f)
                                         )
                                     }
                                 }
@@ -535,7 +484,7 @@ fun SettingsScreenWithNav(
                                 )
                             }
                             
-                            HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                            HorizontalDivider(Modifier.padding(horizontal = 20.dp), color = Color.White.copy(alpha = 0.1f))
                             
                             // Disclaimer
                             Row(
@@ -550,24 +499,23 @@ fun SettingsScreenWithNav(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    GlowingIcon(
+                                    Icon(
                                         imageVector = Icons.Default.Warning,
                                         contentDescription = null,
-                                        size = 32.dp,
-                                        glowColor = NeonCyan,
-                                        glowIntensity = 0.6f
+                                        tint = NeonCyan,
+                                        modifier = Modifier.size(24.dp)
                                     )
-                                    Spacer(Modifier.width(16.dp))
+                                    Spacer(Modifier.width(12.dp))
                                     Column {
                                         Text(
                                             "Disclaimer", 
                                             fontWeight = FontWeight.Bold,
-                                            style = MaterialTheme.typography.titleSmall
+                                            color = Color.White
                                         )
                                         Text(
                                             "Educational purposes only",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = Color.White.copy(alpha = 0.7f)
                                         )
                                     }
                                 }
@@ -580,17 +528,29 @@ fun SettingsScreenWithNav(
                             }
                         }
                     }
-                    
-                    Spacer(Modifier.height(28.dp))
                 }
-                
-                // Footer
-                Spacer(Modifier.height(28.dp))
-                HorizontalDivider()
-                Spacer(Modifier.height(16.dp))
-                Text("Lamont Labs", color = NeonCyan, fontWeight = FontWeight.Bold)
-                Text("QuantraVision Overlay • v2.x", fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(40.dp))
+            }
+            
+            // FOOTER
+            item {
+                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Column {
+                            Text("Lamont Labs", color = NeonCyan, fontWeight = FontWeight.Bold)
+                            Text("QuantraVision Overlay • v2.x", fontWeight = FontWeight.Bold, color = Color.White)
+                        }
+                    }
+                }
             }
         }
     }
