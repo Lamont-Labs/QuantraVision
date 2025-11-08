@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -77,8 +78,12 @@ fun BottomNavScaffold(
                         icon = { Icon(item.icon, contentDescription = item.title) },
                         label = { 
                             Text(
-                                item.title,
-                                maxLines = 1
+                                text = item.title,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 11.sp
+                                ),
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             ) 
                         },
                         selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
@@ -93,7 +98,8 @@ fun BottomNavScaffold(
                                 // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
-                        }
+                        },
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }

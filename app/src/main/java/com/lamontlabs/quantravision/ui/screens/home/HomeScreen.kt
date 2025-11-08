@@ -237,56 +237,42 @@ fun HomeScreen(
                 }
             }
             
-            // Recent Detections Section
+            // Activity Summary Card
             item {
-                NeonText(
-                    text = "RECENT DETECTIONS",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    glowColor = NeonCyan,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            
-            if (recentDetections.isEmpty()) {
-                item {
-                    GlassMorphicCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)
+                GlassMorphicCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onViewDetections),
+                    backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null,
-                                modifier = Modifier.size(48.dp),
-                                tint = NeonCyan.copy(alpha = 0.5f)
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
+                        Column {
                             Text(
-                                "NO DETECTIONS YET",
+                                text = if (weekDetections > 0) "$weekDetections Detections This Week" else "No Detections Yet",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = NeonCyan
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                "Start scanning to detect chart patterns",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.6f),
-                                textAlign = TextAlign.Center
+                                text = "View all patterns →",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.6f)
                             )
                         }
+                        Icon(
+                            Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = NeonCyan.copy(alpha = 0.7f),
+                            modifier = Modifier.size(32.dp)
+                        )
                     }
-                }
-            } else {
-                items(recentDetections) { detection ->
-                    DetectionGlassCard(detection)
                 }
             }
             
