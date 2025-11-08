@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lamontlabs.quantravision.ui.MenuItemCard
+import com.lamontlabs.quantravision.ui.NeonCyan
 
 data class QuickAction(
     val icon: ImageVector,
@@ -36,20 +38,7 @@ fun QuickActionsMenu(
     onDismiss: () -> Unit,
     actions: List<QuickAction>
 ) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            )
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { it },
-            animationSpec = tween(300)
-        )
-    ) {
+    if (visible) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,56 +74,30 @@ fun QuickActionsMenu(
                     }
                 }
                 
-                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
                 
                 actions.forEach { action ->
-                    QuickActionItem(action = action)
-                    if (action != actions.last()) {
-                        Divider(modifier = Modifier.padding(horizontal = 16.dp))
-                    }
+                    MenuItemCard(
+                        title = action.title,
+                        subtitle = action.subtitle,
+                        onClick = {
+                            action.onClick()
+                            onDismiss()
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = action.icon,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
                 }
+                
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
-    }
-}
-
-@Composable
-private fun QuickActionItem(action: QuickAction) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = action.onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = action.icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(32.dp)
-        )
-        
-        Spacer(modifier = Modifier.width(16.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = action.title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-            action.subtitle?.let { subtitle ->
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
-        }
-        
-        Icon(
-            imageVector = Icons.Default.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-        )
     }
 }
