@@ -6,12 +6,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.templates.PatternCatalog
@@ -93,21 +95,20 @@ private fun TemplateRow(
     enabled: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
-    Card(Modifier.fillMaxWidth()) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(name, style = MaterialTheme.typography.titleMedium)
-                Text(id, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            IconToggleButton(checked = enabled, onCheckedChange = onToggle) {
-                if (enabled) Icon(Icons.Default.Check, contentDescription = "Enabled")
-                else Icon(Icons.Default.Close, contentDescription = "Disabled")
-            }
-        }
-    }
+    MenuItemCard(
+        title = name,
+        subtitle = id,
+        onClick = { onToggle(!enabled) },
+        icon = {
+            Icon(
+                imageVector = Icons.Default.Category,
+                contentDescription = null,
+                tint = if (enabled) NeonCyan else Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        badge = if (enabled) "✓ ENABLED" else null,
+        badgeColor = if (enabled) Color(0xFF00FF88) else Color.Gray,
+        showArrow = false
+    )
 }

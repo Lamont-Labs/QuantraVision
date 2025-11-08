@@ -6,14 +6,19 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import com.lamontlabs.quantravision.ui.MenuItemCard
+import com.lamontlabs.quantravision.ui.NeonCyan
 import timber.log.Timber
 
 /**
@@ -147,39 +152,32 @@ private fun FormatSelector(
     selectedFormat: ExportFormat,
     onFormatSelected: (ExportFormat) -> Unit
 ) {
-    Card {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Export Format", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            ExportFormat.values().forEach { format ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .selectable(
-                            selected = selectedFormat == format,
-                            onClick = { onFormatSelected(format) }
-                        )
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = selectedFormat == format,
-                        onClick = { onFormatSelected(format) }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            "Export Format",
+            style = MaterialTheme.typography.titleLarge,
+            color = NeonCyan
+        )
+        
+        ExportFormat.values().forEach { format ->
+            MenuItemCard(
+                title = format.name,
+                subtitle = when (format) {
+                    ExportFormat.PDF -> "Professional PDF report with charts"
+                    ExportFormat.CSV -> "Spreadsheet-compatible data export"
+                },
+                onClick = { onFormatSelected(format) },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Description,
+                        contentDescription = null,
+                        tint = if (selectedFormat == format) NeonCyan else Color.Gray,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Text(format.name, style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            when (format) {
-                                ExportFormat.PDF -> "Professional PDF report with charts"
-                                ExportFormat.CSV -> "Spreadsheet-compatible data export"
-                            },
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
+                },
+                badge = if (selectedFormat == format) "✓ SELECTED" else null,
+                badgeColor = if (selectedFormat == format) NeonCyan else Color.Gray
+            )
         }
     }
 }
@@ -189,36 +187,32 @@ private fun DateRangeSelector(
     selectedRange: DateRange,
     onRangeSelected: (DateRange) -> Unit
 ) {
-    Card {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Date Range", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            DateRange.values().forEach { range ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .selectable(
-                            selected = selectedRange == range,
-                            onClick = { onRangeSelected(range) }
-                        )
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = selectedRange == range,
-                        onClick = { onRangeSelected(range) }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            "Date Range",
+            style = MaterialTheme.typography.titleLarge,
+            color = NeonCyan
+        )
+        
+        DateRange.values().forEach { range ->
+            MenuItemCard(
+                title = when (range) {
+                    DateRange.LAST_7_DAYS -> "Last 7 days"
+                    DateRange.LAST_30_DAYS -> "Last 30 days"
+                    DateRange.ALL_TIME -> "All time"
+                },
+                onClick = { onRangeSelected(range) },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.CalendarToday,
+                        contentDescription = null,
+                        tint = if (selectedRange == range) NeonCyan else Color.Gray,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        when (range) {
-                            DateRange.LAST_7_DAYS -> "Last 7 days"
-                            DateRange.LAST_30_DAYS -> "Last 30 days"
-                            DateRange.ALL_TIME -> "All time"
-                        }
-                    )
-                }
-            }
+                },
+                badge = if (selectedRange == range) "✓ SELECTED" else null,
+                badgeColor = if (selectedRange == range) NeonCyan else Color.Gray
+            )
         }
     }
 }

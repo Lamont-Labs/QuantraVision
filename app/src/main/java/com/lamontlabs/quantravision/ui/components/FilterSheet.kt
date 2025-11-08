@@ -5,13 +5,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.detection.filtering.*
+import com.lamontlabs.quantravision.ui.MenuItemCard
+import com.lamontlabs.quantravision.ui.NeonCyan
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,94 +69,100 @@ fun FilterSheet(
             ) {
                 Text(
                     text = "Pattern Type",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    color = NeonCyan
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 PatternType.values().forEach { type ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = filter.patternTypes.contains(type),
-                            onCheckedChange = { checked ->
-                                filter = if (checked) {
-                                    filter.copy(patternTypes = filter.patternTypes + type)
-                                } else {
-                                    filter.copy(patternTypes = filter.patternTypes - type)
-                                }
+                    val isSelected = filter.patternTypes.contains(type)
+                    MenuItemCard(
+                        title = type.name.lowercase().replaceFirstChar { it.uppercase() },
+                        onClick = {
+                            filter = if (isSelected) {
+                                filter.copy(patternTypes = filter.patternTypes - type)
+                            } else {
+                                filter.copy(patternTypes = filter.patternTypes + type)
                             }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(type.name.lowercase().capitalize())
-                    }
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.Circle,
+                                contentDescription = null,
+                                tint = if (isSelected) NeonCyan else Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        showArrow = false,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
                     text = "Confidence Level",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    color = NeonCyan
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 ConfidenceLevel.values().forEach { level ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = filter.confidenceLevels.contains(level),
-                            onCheckedChange = { checked ->
-                                filter = if (checked) {
-                                    filter.copy(confidenceLevels = filter.confidenceLevels + level)
-                                } else {
-                                    filter.copy(confidenceLevels = filter.confidenceLevels - level)
-                                }
+                    val isSelected = filter.confidenceLevels.contains(level)
+                    MenuItemCard(
+                        title = level.name.lowercase().replaceFirstChar { it.uppercase() },
+                        onClick = {
+                            filter = if (isSelected) {
+                                filter.copy(confidenceLevels = filter.confidenceLevels - level)
+                            } else {
+                                filter.copy(confidenceLevels = filter.confidenceLevels + level)
                             }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(level.name.lowercase().capitalize())
-                    }
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.Circle,
+                                contentDescription = null,
+                                tint = if (isSelected) NeonCyan else Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        showArrow = false,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
                     text = "Timeframes",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
+                    color = NeonCyan
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 val timeframes = listOf("1m", "5m", "15m", "1h", "4h", "daily")
                 timeframes.forEach { timeframe ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = filter.timeframes.contains(timeframe),
-                            onCheckedChange = { checked ->
-                                filter = if (checked) {
-                                    filter.copy(timeframes = filter.timeframes + timeframe)
-                                } else {
-                                    filter.copy(timeframes = filter.timeframes - timeframe)
-                                }
+                    val isSelected = filter.timeframes.contains(timeframe)
+                    MenuItemCard(
+                        title = timeframe.uppercase(),
+                        onClick = {
+                            filter = if (isSelected) {
+                                filter.copy(timeframes = filter.timeframes - timeframe)
+                            } else {
+                                filter.copy(timeframes = filter.timeframes + timeframe)
                             }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(timeframe)
-                    }
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.Circle,
+                                contentDescription = null,
+                                tint = if (isSelected) NeonCyan else Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        showArrow = false,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
