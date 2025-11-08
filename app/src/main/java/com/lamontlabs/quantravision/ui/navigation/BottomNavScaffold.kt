@@ -30,10 +30,10 @@ sealed class BottomNavItem(
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 ) {
     object Home : BottomNavItem("home", "Home", Icons.Default.Home)
-    object Markets : BottomNavItem("markets", "Markets", Icons.Default.TrendingUp)
+    object Markets : BottomNavItem("markets", "Market", Icons.Default.TrendingUp)
     object Scan : BottomNavItem("scan", "Scan", Icons.Default.PlayArrow)
     object Learn : BottomNavItem("learn", "Learn", Icons.Default.School)
-    object Settings : BottomNavItem("settings", "Settings", Icons.Default.Settings)
+    object Settings : BottomNavItem("settings", "Config", Icons.Default.Settings)
 }
 
 /**
