@@ -93,6 +93,8 @@ fun FilterSheet(
                                 modifier = Modifier.size(24.dp)
                             )
                         },
+                        badge = if (isSelected) "✓ SELECTED" else null,
+                        badgeColor = if (isSelected) NeonCyan else Color.Gray,
                         showArrow = false,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
@@ -126,6 +128,8 @@ fun FilterSheet(
                                 modifier = Modifier.size(24.dp)
                             )
                         },
+                        badge = if (isSelected) "✓ SELECTED" else null,
+                        badgeColor = if (isSelected) NeonCyan else Color.Gray,
                         showArrow = false,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
@@ -160,6 +164,8 @@ fun FilterSheet(
                                 modifier = Modifier.size(24.dp)
                             )
                         },
+                        badge = if (isSelected) "✓ SELECTED" else null,
+                        badgeColor = if (isSelected) NeonCyan else Color.Gray,
                         showArrow = false,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
