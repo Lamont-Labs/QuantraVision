@@ -96,7 +96,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
+                        .padding(top = 4.dp, bottom = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     // Hero logo blends with solid black background
@@ -215,7 +215,7 @@ fun HomeScreen(
                         painter = painterResource(id = R.drawable.q_logo_transparent),
                         contentDescription = "Start Scan",
                         modifier = Modifier
-                            .size(180.dp)
+                            .size(140.dp)
                             .scale(scale)
                             .clickable(onClick = onStartScan),
                         contentScale = ContentScale.Fit
