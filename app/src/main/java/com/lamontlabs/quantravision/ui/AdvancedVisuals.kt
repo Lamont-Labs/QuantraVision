@@ -3,9 +3,14 @@ package com.lamontlabs.quantravision.ui
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -13,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlin.math.sin
 import kotlin.random.Random
@@ -711,4 +717,110 @@ fun PredictiveHeatmap(
                 )
             )
     )
+}
+
+// ============================================================================
+// MENU ITEM CARD - Glassmorphic menu style with cyan border
+// ============================================================================
+
+/**
+ * Menu item card matching the "No Detections Yet" style from overlay
+ * Dark glassmorphic background with cyan border glow and arrow indicator
+ * Used for all menu items, selections, and navigation options
+ */
+@Composable
+fun MenuItemCard(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    icon: @Composable (() -> Unit)? = null,
+    showArrow: Boolean = true,
+    badge: String? = null,
+    badgeColor: Color = NeonGold
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = Color(0xFF0D1219).copy(alpha = 0.7f),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+            )
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        NeonCyan.copy(alpha = 0.6f),
+                        NeonCyan.copy(alpha = 0.2f),
+                        NeonCyan.copy(alpha = 0.6f)
+                    )
+                ),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        ) {
+            // Left side: Icon + Text
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (icon != null) {
+                    icon()
+                }
+                
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = NeonCyan
+                        )
+                        
+                        if (badge != null) {
+                            androidx.compose.material3.Surface(
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                                color = badgeColor.copy(alpha = 0.2f)
+                            ) {
+                                androidx.compose.material3.Text(
+                                    text = badge,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = badgeColor
+                                )
+                            }
+                        }
+                    }
+                    
+                    if (subtitle != null) {
+                        androidx.compose.material3.Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+            }
+            
+            // Right side: Arrow
+            if (showArrow) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Filled.ChevronRight,
+                    contentDescription = null,
+                    tint = NeonCyan.copy(alpha = 0.7f),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
 }
