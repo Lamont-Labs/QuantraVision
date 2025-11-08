@@ -183,9 +183,9 @@ fun HomeScreen(
                                 color = NeonGold
                             )
                             Text(
-                                text = "Success",
+                                text = "Rate",
                                 style = MaterialTheme.typography.bodySmall,
-                                fontSize = 10.sp,
+                                fontSize = 11.sp,
                                 color = Color.White.copy(alpha = 0.6f)
                             )
                         }
