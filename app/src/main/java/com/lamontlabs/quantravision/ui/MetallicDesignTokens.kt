@@ -398,6 +398,13 @@ fun MetallicButton(
                 brush = if (isPressed) metallicCyanBrushDark else metallicCyanBrush,
                 shape = RoundedCornerShape(METAL_BUTTON_CORNER_RADIUS)
             )
+            .drawBehind {
+                // Horizontal reflection overlay for glassmorphic shimmer effect
+                drawRect(
+                    brush = horizontalReflectionBrush,
+                    alpha = 0.6f
+                )
+            }
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
