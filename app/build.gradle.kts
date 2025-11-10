@@ -197,7 +197,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.3")
     
     // PDF generation for trading notebooks
-    implementation("com.itextpdf:itextpdf:5.5.13.3")
+    implementation("com.itextpdf:itextpdf:5.5.13.4")
     
     // QR Code generation - ZXing
     implementation("com.google.zxing:core:3.5.3")
