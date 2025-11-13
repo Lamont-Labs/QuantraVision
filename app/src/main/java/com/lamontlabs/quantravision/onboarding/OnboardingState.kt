@@ -92,18 +92,30 @@ data class OnboardingState(
                 emptySet()
             }
             
-            // Migration logic: If disclaimer not accepted, force to DISCLAIMER step
+            // MIGRATION: Detect legacy data and shift ordinals if DISCLAIMER not accepted
             val disclaimerAccepted = DisclaimerManager.isAccepted(context)
-            val finalStepOrdinal = if (currentStepOrdinal >= 0 && !disclaimerAccepted) {
-                0 // Force to DISCLAIMER
+            val hasLegacyData = !disclaimerAccepted && currentStepOrdinal >= 0
+            
+            val migratedCurrentStep = if (hasLegacyData) {
+                // Legacy ordinals need +1 shift (WELCOME was 0, now 1, etc.)
+                // But force to DISCLAIMER (0) if not accepted
+                0
             } else {
                 currentStepOrdinal
             }
             
+            val migratedCompletedSteps = if (hasLegacyData) {
+                // Shift all completed step ordinals by +1
+                // Do NOT include DISCLAIMER (0) unless it was explicitly completed
+                completedSteps.map { it + 1 }.toSet()
+            } else {
+                completedSteps
+            }
+            
             return OnboardingState(
-                currentStep = OnboardingStep.fromOrdinal(finalStepOrdinal),
-                isCompleted = isCompleted,
-                completedSteps = completedSteps
+                currentStep = OnboardingStep.fromOrdinal(migratedCurrentStep),
+                isCompleted = isCompleted && disclaimerAccepted, // Force incomplete if disclaimer not accepted
+                completedSteps = migratedCompletedSteps
             )
         }
         
