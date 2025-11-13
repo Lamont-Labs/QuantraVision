@@ -1,10 +1,5 @@
 package com.lamontlabs.quantravision.ui.tutorial
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -132,13 +127,7 @@ fun FirstTimeWalkthrough(
             Spacer(modifier = Modifier.height(32.dp))
             
             // Step content
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically()
-            ) {
-                StepContent(step = steps[currentStep])
-            }
+            StepContent(step = steps[currentStep])
             
             Spacer(modifier = Modifier.height(32.dp))
             

@@ -1,9 +1,6 @@
 package com.lamontlabs.quantravision.ui.screens.onboarding
 
 import android.app.Activity
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -108,11 +105,7 @@ fun OnboardingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    AnimatedVisibility(
-                        visible = pagerState.currentPage < 4,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
+                    if (pagerState.currentPage < 4) {
                         TextButton(
                             onClick = { viewModel.skipOnboarding() },
                             shape = RoundedCornerShape(20.dp)
@@ -127,7 +120,7 @@ fun OnboardingScreen(
                         onClick = {
                             if (pagerState.currentPage < 4) {
                                 scope.launch {
-                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    pagerState.scrollToPage(pagerState.currentPage + 1)
                                 }
                             } else {
                                 viewModel.completeOnboarding()

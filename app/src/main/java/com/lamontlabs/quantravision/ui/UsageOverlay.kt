@@ -1,6 +1,5 @@
 package com.lamontlabs.quantravision.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -21,7 +20,7 @@ import com.lamontlabs.quantravision.core.PatternUsageLimiter
 @Composable
 fun UsageOverlay(limiter: PatternUsageLimiter) {
     val state by remember { mutableStateOf(limiter.state()) }
-    AnimatedVisibility(visible = state.tier == PatternUsageLimiter.Tier.FREE && state.detectionsRemaining <= 5) {
+    if (state.tier == PatternUsageLimiter.Tier.FREE && state.detectionsRemaining <= 5) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

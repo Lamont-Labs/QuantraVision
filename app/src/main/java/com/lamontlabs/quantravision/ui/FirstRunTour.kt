@@ -1,6 +1,5 @@
 package com.lamontlabs.quantravision.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,8 +27,7 @@ fun FirstRunTour(onFinish: () -> Unit) {
         Modifier.fillMaxSize().padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
-        AnimatedVisibility(visible = true) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(steps[index], style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(24.dp))
                 Button(onClick = {
@@ -38,6 +36,5 @@ fun FirstRunTour(onFinish: () -> Unit) {
                     Text(if (index < steps.lastIndex) "Next" else "Finish")
                 }
             }
-        }
     }
 }

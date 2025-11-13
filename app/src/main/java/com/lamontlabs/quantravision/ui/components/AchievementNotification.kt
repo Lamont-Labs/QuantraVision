@@ -1,7 +1,5 @@
 package com.lamontlabs.quantravision.ui.components
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,14 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.achievements.model.Achievement
 import com.lamontlabs.quantravision.ui.gold
-import kotlinx.coroutines.delay
 
 @Composable
 fun AchievementNotification(
@@ -27,49 +23,12 @@ fun AchievementNotification(
     onDismiss: () -> Unit,
     onViewAll: () -> Unit = {}
 ) {
-    var isVisible by remember { mutableStateOf(false) }
-    var scale by remember { mutableStateOf(0f) }
-    
-    LaunchedEffect(achievement) {
-        if (achievement != null) {
-            isVisible = true
-            
-            animate(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            ) { value, _ ->
-                scale = value
-            }
-            
-            delay(4000)
-            isVisible = false
-            delay(500)
-            onDismiss()
-        }
-    }
-    
-    AnimatedVisibility(
-        visible = isVisible && achievement != null,
-        enter = slideInVertically(
-            initialOffsetY = { -it },
-            animationSpec = tween(500, easing = EaseOutBack)
-        ) + fadeIn(),
-        exit = slideOutVertically(
-            targetOffsetY = { -it },
-            animationSpec = tween(300)
-        ) + fadeOut()
-    ) {
-        if (achievement != null) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .scale(scale),
-                shape = RoundedCornerShape(16.dp),
+    if (achievement != null) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
@@ -137,7 +96,6 @@ fun AchievementNotification(
                     }
                 }
             }
-        }
     }
 }
 

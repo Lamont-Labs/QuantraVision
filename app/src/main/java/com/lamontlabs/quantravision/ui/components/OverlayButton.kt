@@ -1,9 +1,5 @@
 package com.lamontlabs.quantravision.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,11 +52,7 @@ fun OverlayButton(
 ) {
     val onCol = MaterialTheme.colorScheme.primary // neon cyan
     val offCol = MaterialTheme.colorScheme.surfaceVariant
-    val tint = animateColorAsState(
-        if (isActive) onCol else MaterialTheme.colorScheme.onSurfaceVariant,
-        animationSpec = spring(stiffness = Spring.StiffnessLow),
-        label = "tint"
-    ).value
+    val tint = if (isActive) onCol else MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
         modifier = Modifier
@@ -69,7 +61,7 @@ fun OverlayButton(
     ) {
         BadgedBox(
             badge = {
-                AnimatedVisibility(visible = (remainingHighlights ?: -1) >= 0) {
+                if ((remainingHighlights ?: -1) >= 0) {
                     Badge(
                         containerColor = if ((remainingHighlights ?: 0) > 0) onCol else MaterialTheme.colorScheme.error
                     ) {
@@ -117,13 +109,14 @@ fun OverlayButton(
         }
 
         // Upgrade pill when quota exhausted
-        AnimatedVisibility(
-            visible = (remainingHighlights ?: 1) == 0,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (size / 2) + 12.dp)
-        ) {
-            UpgradePill(onUpgrade = onUpgrade)
+        if ((remainingHighlights ?: 1) == 0) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = (size / 2) + 12.dp)
+            ) {
+                UpgradePill(onUpgrade = onUpgrade)
+            }
         }
     }
 }
