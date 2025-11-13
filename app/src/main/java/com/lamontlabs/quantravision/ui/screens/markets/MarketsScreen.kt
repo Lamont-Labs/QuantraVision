@@ -51,33 +51,20 @@ fun MarketsScreen(
             
             // Template Manager
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "TEMPLATE MANAGER",
+                    subtitle = "Browse all 109 chart patterns",
                     onClick = onNavigateToTemplates,
+                    icon = {
+                        Icon(
+                            Icons.Default.Category,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.Category,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            "TEMPLATE MANAGER",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "Browse all 109 chart patterns",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
-                        )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NeonCyan.copy(alpha = 0.7f)
-                    )
-                }
+                )
             }
             
             // INTELLIGENCE STACK SECTION
@@ -94,227 +81,102 @@ fun MarketsScreen(
             
             // Intelligence Hub - PRO
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "INTELLIGENCE HUB",
+                    subtitle = "Regime Navigator • Pattern-to-Plan",
                     onClick = onNavigateToIntelligence,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.Psychology,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                "INTELLIGENCE HUB",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Surface(
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                color = NeonGold.copy(alpha = 0.2f)
-                            ) {
-                                Text(
-                                    "💎 PRO",
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = NeonGold
-                                )
-                            }
-                        }
-                        Text(
-                            "Regime Navigator • Pattern-to-Plan",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.Psychology,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NeonCyan.copy(alpha = 0.7f)
-                    )
-                }
+                    },
+                    badge = "💎 PRO",
+                    badgeColor = NeonGold,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Predictions - PRO
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "PREDICTIONS",
+                    subtitle = "AI-powered pattern forecasting",
                     onClick = onNavigateToPredictions,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.TrendingUp,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                "PREDICTIONS",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Surface(
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                color = NeonGold.copy(alpha = 0.2f)
-                            ) {
-                                Text(
-                                    "💎 PRO",
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = NeonGold
-                                )
-                            }
-                        }
-                        Text(
-                            "AI-powered pattern forecasting",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.TrendingUp,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NeonCyan.copy(alpha = 0.7f)
-                    )
-                }
+                    },
+                    badge = "💎 PRO",
+                    badgeColor = NeonGold,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Backtesting - PRO
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "BACKTESTING",
+                    subtitle = "Test patterns against historical data",
                     onClick = onNavigateToBacktesting,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.Timeline,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                "BACKTESTING",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Surface(
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                color = NeonGold.copy(alpha = 0.2f)
-                            ) {
-                                Text(
-                                    "💎 PRO",
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = NeonGold
-                                )
-                            }
-                        }
-                        Text(
-                            "Test patterns against historical data",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.Timeline,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NeonCyan.copy(alpha = 0.7f)
-                    )
-                }
+                    },
+                    badge = "💎 PRO",
+                    badgeColor = NeonGold,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Similarity Search - PRO
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "SIMILARITY SEARCH",
+                    subtitle = "Find similar historical patterns",
                     onClick = onNavigateToSimilarity,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                "SIMILARITY SEARCH",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Surface(
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                color = NeonGold.copy(alpha = 0.2f)
-                            ) {
-                                Text(
-                                    "💎 PRO",
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = NeonGold
-                                )
-                            }
-                        }
-                        Text(
-                            "Find similar historical patterns",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NeonCyan.copy(alpha = 0.7f)
-                    )
-                }
+                    },
+                    badge = "💎 PRO",
+                    badgeColor = NeonGold,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Multi-Chart View - PRO
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "MULTI-CHART VIEW",
+                    subtitle = "Analyze multiple timeframes",
                     onClick = onNavigateToMultiChart,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.Dashboard,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                "MULTI-CHART VIEW",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Surface(
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                color = NeonGold.copy(alpha = 0.2f)
-                            ) {
-                                Text(
-                                    "💎 PRO",
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = NeonGold
-                                )
-                            }
-                        }
-                        Text(
-                            "Analyze multiple timeframes",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.Dashboard,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NeonCyan.copy(alpha = 0.7f)
-                    )
-                }
+                    },
+                    badge = "💎 PRO",
+                    badgeColor = NeonGold,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Info Card

@@ -127,142 +127,74 @@ fun LearnScreen(
             
             // Module 1: Chart Patterns
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "Chart Patterns",
+                    subtitle = "Master 109 patterns • 48% complete",
                     onClick = onNavigateToTutorials,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.School,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Chart Patterns",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "Master 109 patterns • 48% complete",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.School,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Module 2: Technical Analysis
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "Technical Analysis",
+                    subtitle = "Support & Resistance • 35% complete",
                     onClick = onNavigateToTutorials,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.TrendingUp,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Technical Analysis",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "Support & Resistance • 35% complete",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.TrendingUp,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Module 3: Indicators
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "Indicators",
+                    subtitle = "RSI, MACD, Moving Averages • 25% complete",
                     onClick = onNavigateToTutorials,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Analytics,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Indicators",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "RSI, MACD, Moving Averages • 25% complete",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.Analytics,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // Module 4: Trading Psychology
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "Trading Psychology",
+                    subtitle = "Risk & Money Management • 60% complete",
                     onClick = onNavigateToTutorials,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Psychology,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Trading Psychology",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "Risk & Money Management • 60% complete",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.Psychology,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // ACHIEVEMENTS SECTION
@@ -278,38 +210,20 @@ fun LearnScreen(
             }
             
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "View All Achievements",
+                    subtitle = "7 of 15 unlocked",
                     onClick = onNavigateToAchievements,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.EmojiEvents,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = NeonGold
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "View All Achievements",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "7 of 15 unlocked",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            tint = NeonGold,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // RESOURCES SECTION
@@ -325,37 +239,20 @@ fun LearnScreen(
             }
             
             item {
-                MetallicButton(
+                MenuItemCard(
+                    title = "Trading Book",
+                    subtitle = "Comprehensive trading guide",
                     onClick = onNavigateToBook,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.MenuBook,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Trading Book",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "Comprehensive trading guide",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
+                    icon = {
+                        Icon(
+                            Icons.Default.MenuBook,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             
             // DISCLAIMER

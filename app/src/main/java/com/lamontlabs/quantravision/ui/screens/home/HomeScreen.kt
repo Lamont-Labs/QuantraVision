@@ -293,53 +293,47 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    MetallicButton(
+                    MenuItemCard(
+                        title = "VIEW ALL DETECTIONS",
                         onClick = onViewDetections,
+                        icon = {
+                            Icon(
+                                Icons.Default.List,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            Icons.Default.List,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            "VIEW ALL DETECTIONS",
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    )
                     
-                    MetallicButton(
+                    MenuItemCard(
+                        title = "PERFORMANCE ANALYTICS",
                         onClick = onNavigateToAnalytics,
+                        icon = {
+                            Icon(
+                                Icons.Default.Analytics,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            Icons.Default.Analytics,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            "PERFORMANCE ANALYTICS",
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    )
                     
-                    MetallicButton(
+                    MenuItemCard(
+                        title = "SYSTEM CONFIGURATION",
                         onClick = { /* Navigate to settings */ },
+                        icon = {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            "SYSTEM CONFIGURATION",
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    )
                 }
             }
             

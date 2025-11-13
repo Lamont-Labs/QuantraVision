@@ -337,50 +337,20 @@ fun SettingsScreenWithNav(
                 }
                 
                 item {
-                    GlassMorphicCard(
-                        backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f),
-                        borderColor = Color(0xFFFF4444),
-                        onClick = { onClearDatabase() }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(20.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Warning,
-                                    contentDescription = null,
-                                    tint = Color(0xFFFF4444),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Column {
-                                    Text(
-                                        "Clear Database", 
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                    Text(
-                                        "Delete all pattern detections",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White.copy(alpha = 0.7f)
-                                    )
-                                }
-                            }
+                    MenuItemCard(
+                        title = "Clear Database",
+                        subtitle = "Delete all pattern detections",
+                        onClick = { onClearDatabase() },
+                        icon = {
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = Icons.Default.Warning,
                                 contentDescription = null,
                                 tint = Color(0xFFFF4444),
                                 modifier = Modifier.size(24.dp)
                             )
-                        }
-                    }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
             
@@ -398,135 +368,51 @@ fun SettingsScreenWithNav(
                 }
                 
                 item {
-                    GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                        Column {
-                            // Privacy Policy
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { navController.navigate("legal/privacy") }
-                                    .padding(20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lock,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(Modifier.width(12.dp))
-                                    Column {
-                                        Text(
-                                            "Privacy Policy", 
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            "How we handle your data",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
-                                }
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        MenuItemCard(
+                            title = "Privacy Policy",
+                            subtitle = "How we handle your data",
+                            onClick = { navController.navigate("legal/privacy") },
+                            icon = {
                                 Icon(
-                                    imageVector = Icons.Default.ChevronRight,
+                                    imageVector = Icons.Default.Lock,
                                     contentDescription = null,
-                                    tint = NeonCyan.copy(alpha = 0.7f),
+                                    tint = NeonCyan,
                                     modifier = Modifier.size(24.dp)
                                 )
-                            }
-                            
-                            HorizontalDivider(Modifier.padding(horizontal = 20.dp), color = Color.White.copy(alpha = 0.1f))
-                            
-                            // Terms of Use
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { navController.navigate("legal/terms") }
-                                    .padding(20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Description,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(Modifier.width(12.dp))
-                                    Column {
-                                        Text(
-                                            "Terms of Use", 
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            "Conditions for using the app",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
-                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        
+                        MenuItemCard(
+                            title = "Terms of Use",
+                            subtitle = "Conditions for using the app",
+                            onClick = { navController.navigate("legal/terms") },
+                            icon = {
                                 Icon(
-                                    imageVector = Icons.Default.ChevronRight,
+                                    imageVector = Icons.Default.Description,
                                     contentDescription = null,
-                                    tint = NeonCyan.copy(alpha = 0.7f),
+                                    tint = NeonCyan,
                                     modifier = Modifier.size(24.dp)
                                 )
-                            }
-                            
-                            HorizontalDivider(Modifier.padding(horizontal = 20.dp), color = Color.White.copy(alpha = 0.1f))
-                            
-                            // Disclaimer
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { navController.navigate("legal/disclaimer") }
-                                    .padding(20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Warning,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(Modifier.width(12.dp))
-                                    Column {
-                                        Text(
-                                            "Disclaimer", 
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            "Educational purposes only",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
-                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        
+                        MenuItemCard(
+                            title = "Disclaimer",
+                            subtitle = "Educational purposes only",
+                            onClick = { navController.navigate("legal/disclaimer") },
+                            icon = {
                                 Icon(
-                                    imageVector = Icons.Default.ChevronRight,
+                                    imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = NeonCyan.copy(alpha = 0.7f),
+                                    tint = NeonCyan,
                                     modifier = Modifier.size(24.dp)
                                 )
-                            }
-                        }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }

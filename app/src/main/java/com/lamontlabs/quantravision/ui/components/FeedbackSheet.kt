@@ -32,7 +32,7 @@ fun FeedbackSheet(
     
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = Color(0xFF0D1219)
     ) {
         Column(
             modifier = Modifier

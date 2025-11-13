@@ -30,7 +30,8 @@ fun FilterSheet(
     
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = Color(0xFF0D1219)
     ) {
         Column(
             modifier = Modifier
