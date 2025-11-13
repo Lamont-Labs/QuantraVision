@@ -4,6 +4,7 @@ import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.alerts.VoiceAnnouncer
 import com.lamontlabs.quantravision.licensing.AdvancedFeatureGate
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import com.lamontlabs.quantravision.storage.AtomicFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,6 +19,8 @@ import kotlin.math.abs
  * 
  * Educational trading psychology tool that analyzes usage patterns and provides
  * evidence-based reminders about common psychological pitfalls.
+ * 
+ * TIER REQUIREMENT: Requires Pro tier ($49.99) only - Intelligence Stack exclusive
  * 
  * ⚠️ LEGAL NOTICE ⚠️
  * This is NOT psychological counseling, therapy, or medical advice.
@@ -120,6 +123,14 @@ class BehavioralGuardrails(private val context: Context) {
      */
     suspend fun recordView(patternMatch: PatternMatch): GuardrailWarning? = withContext(Dispatchers.IO) {
         
+        // CRITICAL TIER GATE: Behavioral Guardrails requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!ProFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Behavioral Guardrails requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
+            )
+        }
+        
         // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Behavioral Guardrails")
         
@@ -220,6 +231,14 @@ class BehavioralGuardrails(private val context: Context) {
         isWin: Boolean,
         profitLoss: Double
     ): GuardrailWarning? = withContext(Dispatchers.IO) {
+        
+        // CRITICAL TIER GATE: Behavioral Guardrails requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!ProFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Behavioral Guardrails requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
+            )
+        }
         
         // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Behavioral Guardrails")

@@ -9,6 +9,7 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.licensing.AdvancedFeatureGate
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import com.lamontlabs.quantravision.regime.RegimeNavigator
 import com.lamontlabs.quantravision.storage.AtomicFile
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,8 @@ import java.util.*
  * 
  * Packages pattern detections into tamper-proof, shareable capsules for
  * educational record-keeping.
+ * 
+ * TIER REQUIREMENT: Requires Pro tier ($49.99) only - Intelligence Stack exclusive
  * 
  * ⚠️ LEGAL NOTICE ⚠️
  * Proof Capsules are EDUCATIONAL DETECTION LOGS ONLY.
@@ -113,6 +116,15 @@ class ProofCapsuleGenerator(private val context: Context) {
         regimeContext: RegimeNavigator.MarketRegime? = null
     ): ProofCapsule = withContext(Dispatchers.IO) {
         
+        // CRITICAL TIER GATE: Proof Capsules requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!ProFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Proof Capsules requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
+            )
+        }
+        
+        // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Proof Capsules")
         
         try {

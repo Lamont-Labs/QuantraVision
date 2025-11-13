@@ -4,6 +4,7 @@ import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.alerts.VoiceAnnouncer
 import com.lamontlabs.quantravision.licensing.AdvancedFeatureGate
+import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import com.lamontlabs.quantravision.regime.RegimeNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,6 +15,8 @@ import kotlin.math.abs
  * PatternToPlanEngine
  * 
  * Generates EDUCATIONAL trade scenarios based on detected patterns.
+ * 
+ * TIER REQUIREMENT: Requires Pro tier ($49.99) only - Intelligence Stack exclusive
  * 
  * ⚠️ CRITICAL LEGAL NOTICE ⚠️
  * This is an EDUCATIONAL TOOL ONLY. All scenarios are hypothetical examples
@@ -93,6 +96,15 @@ class PatternToPlanEngine(private val context: Context) {
         priceData: List<Double>? = null
     ): TradeScenario = withContext(Dispatchers.Default) {
         
+        // CRITICAL TIER GATE: Pattern-to-Plan Engine requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!ProFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Pattern-to-Plan Engine requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
+            )
+        }
+        
+        // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Pattern-to-Plan Engine")
         
         try {
@@ -157,6 +169,15 @@ class PatternToPlanEngine(private val context: Context) {
         priceData: List<Double>? = null
     ): ScenarioVariations = withContext(Dispatchers.Default) {
         
+        // CRITICAL TIER GATE: Pattern-to-Plan Engine requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!ProFeatureGate.isActive(context)) {
+            throw IllegalStateException(
+                "Pattern-to-Plan Engine requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
+            )
+        }
+        
+        // CRITICAL LEGAL GATE: Enforce disclaimer acceptance
         AdvancedFeatureGate.requireAcceptance(context, "Pattern-to-Plan Engine")
         
         try {
