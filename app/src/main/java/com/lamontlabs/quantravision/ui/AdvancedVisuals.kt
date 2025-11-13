@@ -62,27 +62,12 @@ fun QuantumGridBackground(
     gridColor: Color = NeonCyan.copy(alpha = 0.15f),
     animateGrid: Boolean = true
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "gridAnimation")
-    
-    val shouldAnimate = animateGrid && performanceProfile.enableGridAnimation
-    
-    val gridOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = AnimationSpecs.GRID_SPACING_DP,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.GRID_ANIMATION_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "gridScroll"
-    )
+    // DISABLED: No animations per user requirement - static grid
+    val gridOffset = 0f
     
     Canvas(modifier = modifier.fillMaxSize()) {
         val gridSpacing = AnimationSpecs.GRID_SPACING_DP.dp.toPx()
-        val offset = if (shouldAnimate) gridOffset else 0f
+        val offset = 0f
         
         // Dark quantum gradient background - matches branded logo image
         drawRect(
@@ -160,23 +145,8 @@ fun CandlestickParallax(
     candleColor: Color = NeonCyan.copy(alpha = 0.1f),
     animate: Boolean = true
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "candleAnimation")
-    
-    val shouldAnimate = animate && performanceProfile.enableSecondaryAnimations
-    
-    val scrollOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 200f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.CANDLESTICK_SCROLL_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "candleScroll"
-    )
+    // DISABLED: No animations per user requirement - static candlesticks
+    val scrollOffset = 0f
     
     // Generate stable random candlestick data
     val candleData = remember {
@@ -193,7 +163,7 @@ fun CandlestickParallax(
     Canvas(modifier = modifier.fillMaxSize()) {
         val candleWidth = 20.dp.toPx()
         val candleSpacing = 30.dp.toPx()
-        val offset = if (shouldAnimate) scrollOffset else 0f
+        val offset = 0f
         
         candleData.forEachIndexed { index, candle ->
             val x = (index * candleSpacing) - offset
@@ -252,23 +222,9 @@ fun HolographicChart(
     lineColor: Color = NeonCyan,
     showScanline: Boolean = true
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "scanline")
-    
-    val shouldShowScanline = showScanline && performanceProfile.enableSecondaryAnimations
-    
-    val scanlineY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.SCANLINE_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "scanlinePosition"
-    )
+    // DISABLED: No animations per user requirement - static scanline
+    val scanlineY = 0.5f
+    val shouldShowScanline = false
     
     Canvas(modifier = modifier.fillMaxSize()) {
         if (dataPoints.isEmpty()) return@Canvas
@@ -381,40 +337,14 @@ fun MetallicHeroBadge(
     pulseSync: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "badgePulse")
-    
-    val shouldPulse = pulseSync && performanceProfile.enablePulseAnimations
-    
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.BADGE_PULSE_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulsing"
-    )
+    // DISABLED: No animations per user requirement - no pulsing badge
+    val pulseAlpha = 0.6f
+    val shouldPulse = false
     
     Box(
         modifier = modifier
     ) {
-        // Outer glow rings (only when pulse is enabled)
-        if (shouldPulse) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                drawCircle(
-                    color = NeonCyan.copy(alpha = pulseAlpha * 0.2f),
-                    radius = size.minDimension / 2f * 1.2f
-                )
-                drawCircle(
-                    color = NeonCyan.copy(alpha = pulseAlpha * 0.3f),
-                    radius = size.minDimension / 2f
-                )
-            }
-        }
+        // Outer glow rings disabled (no animations)
         
         // Content (logo)
         Box(
@@ -439,21 +369,8 @@ fun SignalTicker(
     modifier: Modifier = Modifier,
     tickerColor: Color = NeonCyan
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "ticker")
-    
-    val offset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = -1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.TICKER_SCROLL_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "tickerScroll"
-    )
+    // DISABLED: No animations per user requirement - static ticker
+    val offset = 0f
     
     Box(
         modifier = modifier
@@ -489,27 +406,12 @@ fun NeonBoundingBox(
     borderColor: Color = NeonCyan,
     animated: Boolean = true
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "boundingBox")
-    
-    val shouldAnimate = animated && performanceProfile.enableSecondaryAnimations
-    
-    val cornerOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 20f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.BOUNDING_BOX_CORNER_ANIMATION_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "cornerAnimation"
-    )
+    // DISABLED: No animations per user requirement - static bounding box
+    val cornerOffset = 0f
     
     Canvas(modifier = modifier.fillMaxSize()) {
         val strokeWidth = 3f
-        val cornerLength = if (shouldAnimate) 30.dp.toPx() + cornerOffset else 30.dp.toPx()
+        val cornerLength = 30.dp.toPx()
         
         // Top-left corner
         drawLine(
@@ -676,23 +578,8 @@ fun PredictiveHeatmap(
     modifier: Modifier = Modifier,
     showPulse: Boolean = true
 ) {
-    val performanceProfile = LocalPerformanceProfile.current
-    val infiniteTransition = rememberInfiniteTransition(label = "heatmapPulse")
-    
-    val shouldPulse = showPulse && performanceProfile.enablePulseAnimations && confidence >= 0.8f
-    
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.HEATMAP_PULSE_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulsing"
-    )
+    // DISABLED: No animations per user requirement - static heatmap
+    val pulseAlpha = 0.7f
     
     val heatmapColor = when {
         confidence >= 0.8f -> Color(0xFF00FF88) // High - Bright Green
@@ -701,7 +588,7 @@ fun PredictiveHeatmap(
         else -> Color(0xFFFF4444) // Low - Red
     }
     
-    val alpha = if (shouldPulse) pulseAlpha else 0.7f
+    val alpha = 0.7f
     
     Box(
         modifier = modifier

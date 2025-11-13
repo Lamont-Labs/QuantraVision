@@ -30,48 +30,18 @@ fun SplashScreen(
 ) {
     var startAnimation by remember { mutableStateOf(false) }
     
-    // Trigger animations on composition
+    // Trigger splash complete after delay
     LaunchedEffect(Unit) {
         startAnimation = true
         delay(3000) // Show for 3 seconds
         onSplashComplete()
     }
     
-    // Logo scale animation - zoom in effect
-    val logoScale by animateFloatAsState(
-        targetValue = if (startAnimation) 1f else 0.5f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "logoScale"
-    )
-    
-    // Logo alpha animation - fade in effect
-    val logoAlpha by animateFloatAsState(
-        targetValue = if (startAnimation) 1f else 0f,
-        animationSpec = tween(800, easing = FastOutSlowInEasing),
-        label = "logoAlpha"
-    )
-    
-    // Text alpha animation - delayed fade in
-    val textAlpha by animateFloatAsState(
-        targetValue = if (startAnimation) 1f else 0f,
-        animationSpec = tween(600, delayMillis = 400, easing = FastOutSlowInEasing),
-        label = "textAlpha"
-    )
-    
-    // Glow pulse animation
-    val infiniteTransition = rememberInfiniteTransition(label = "glowPulse")
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "glow"
-    )
+    // DISABLED: No animations per user requirement - static values
+    val logoScale = 1f
+    val logoAlpha = 1f
+    val textAlpha = 1f
+    val glowAlpha = 0.6f
     
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -141,22 +111,15 @@ fun SplashScreen(
             
             Spacer(modifier = Modifier.height(60.dp))
             
-            // Loading indicator - subtle pulsing dots
+            // Loading indicator - static dots (no animations)
             if (startAnimation) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.alpha(textAlpha)
                 ) {
                     repeat(3) { index ->
-                        val dotAlpha by infiniteTransition.animateFloat(
-                            initialValue = 0.3f,
-                            targetValue = 1f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(800, delayMillis = index * 200),
-                                repeatMode = RepeatMode.Reverse
-                            ),
-                            label = "dot_$index"
-                        )
+                        // DISABLED: No animations per user requirement - static dot alpha
+                        val dotAlpha = 0.7f
                         Box(
                             modifier = Modifier
                                 .size(8.dp)

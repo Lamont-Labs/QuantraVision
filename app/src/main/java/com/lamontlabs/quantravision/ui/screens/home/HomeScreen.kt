@@ -201,17 +201,8 @@ fun HomeScreen(
                         .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Pulsing animation
-                    val infiniteTransition = rememberInfiniteTransition(label = "scanPulse")
-                    val scale by infiniteTransition.animateFloat(
-                        initialValue = 1f,
-                        targetValue = 1.05f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(1500, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "buttonScale"
-                    )
+                    // DISABLED: No animations per user requirement - static scale
+                    val scale = 1f
                     
                     // Scan Q logo - blends with solid black background
                     Image(

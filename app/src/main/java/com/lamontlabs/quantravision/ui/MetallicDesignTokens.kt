@@ -113,13 +113,27 @@ data class PerformanceProfile(
             enablePulseAnimations = false,
             animationFrameRateMultiplier = 1.5f // Slower animations
         )
+        
+        /**
+         * No animations profile - ZERO animations for clean professional UI
+         * USER REQUIREMENT: NO animations anywhere in app
+         */
+        val NoAnimations = PerformanceProfile(
+            enableSecondaryAnimations = false,
+            enableParticleStarfield = false,
+            particleCount = 0,
+            enableGridAnimation = false,
+            enablePulseAnimations = false,
+            animationFrameRateMultiplier = 1.0f
+        )
     }
 }
 
 /**
  * CompositionLocal for accessing the current performance profile
+ * DEFAULT: NoAnimations (user explicitly requested NO animations)
  */
-val LocalPerformanceProfile = compositionLocalOf { PerformanceProfile.High }
+val LocalPerformanceProfile = compositionLocalOf { PerformanceProfile.NoAnimations }
 
 // ============================================================================
 // ANIMATION CONSTANTS - CENTRALIZED CONFIGURATION
@@ -305,21 +319,8 @@ fun NeonText(
     glowIntensity: Float = 0.8f,
     enablePulse: Boolean = false
 ) {
-    // Optional pulsing animation
-    val animatedIntensity = if (enablePulse) {
-        val infiniteTransition = rememberInfiniteTransition(label = "neonPulse")
-        infiniteTransition.animateFloat(
-            initialValue = glowIntensity * 0.7f,
-            targetValue = glowIntensity,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1500, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "glowPulse"
-        ).value
-    } else {
-        glowIntensity
-    }
+    // DISABLED: No pulsing animations per user requirement
+    val animatedIntensity = glowIntensity
     
     // Clean professional text with subtle shadow - no excessive blur layers
     Text(
@@ -781,71 +782,32 @@ val SubtleTextShadow = Shadow(
 
 /**
  * Remembers metallic shimmer animation state
- * Creates sweeping light effect across surface
- * Respects PerformanceProfile for low-end device optimization
+ * DISABLED - Returns static 0f (no animations per user requirement)
  * 
- * @param enabled Whether shimmer is enabled
- * @param durationMillis Animation duration (overridden by performance profile)
- * @return Animated float value from 0f to 1f
+ * @param enabled Whether shimmer is enabled (ignored)
+ * @param durationMillis Animation duration (ignored)
+ * @return Static 0f (animations disabled)
  */
 @Composable
 fun rememberMetallicShimmer(
     enabled: Boolean = true,
     durationMillis: Int = AnimationSpecs.SHIMMER_DURATION
 ): Float {
-    val performanceProfile = LocalPerformanceProfile.current
-    
-    // Disable shimmer on low performance mode
-    val isEnabled = enabled && performanceProfile.enableSecondaryAnimations
-    
-    val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
-    
-    val shimmerValue by infiniteTransition.animateFloat(
-        initialValue = -1f,
-        targetValue = 2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = (durationMillis * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "shimmerAnimation"
-    )
-    
-    return if (isEnabled) shimmerValue else 0f
+    // DISABLED: No animations per user requirement
+    return 0f
 }
 
 /**
  * Pulsing glow animation for important elements
- * Respects PerformanceProfile for low-end device optimization
+ * DISABLED - Returns static 1f (no animations per user requirement)
  */
 @Composable
 fun rememberMetallicPulse(
     enabled: Boolean = true,
     durationMillis: Int = AnimationSpecs.PULSE_DURATION_FAST
 ): Float {
-    val performanceProfile = LocalPerformanceProfile.current
-    
-    // Disable pulse on low performance mode
-    val isEnabled = enabled && performanceProfile.enablePulseAnimations
-    
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    
-    val pulseValue by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = (durationMillis * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseAnimation"
-    )
-    
-    return if (isEnabled) pulseValue else 1f
+    // DISABLED: No animations per user requirement
+    return 1f
 }
 
 // ============================================================================
@@ -929,11 +891,8 @@ fun MetallicAccordion(
     icon: @Composable (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val rotationAngle by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f,
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
-        label = "chevronRotation"
-    )
+    // DISABLED: No animations per user requirement - static rotation
+    val rotationAngle = if (expanded) 180f else 0f
     
     Column(
         modifier = modifier
@@ -1010,15 +969,7 @@ fun MetallicAccordion(
             }
         }
         
-        AnimatedVisibility(
-            visible = expanded,
-            enter = fadeIn(animationSpec = tween(300)) + expandVertically(
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
-            ),
-            exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
-            )
-        ) {
+        if (expanded) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1063,11 +1014,8 @@ fun CircularHUDProgress(
     showTicks: Boolean = true,
     centerContent: @Composable (BoxScope.() -> Unit)? = null
 ) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
-        label = "hudProgress"
-    )
+    // DISABLED: No animations per user requirement - use static progress value
+    val animatedProgress = progress.coerceIn(0f, 1f)
 
     Box(
         modifier = modifier.size(size),
@@ -1200,16 +1148,9 @@ fun CircularDataRing(
     size: Dp = 240.dp,
     centerContent: @Composable (BoxScope.() -> Unit)? = null
 ) {
-    // Pre-compute all animated progress values outside Canvas
-    val animatedProgressList = rings.mapIndexed { index, ringData ->
-        animateFloatAsState(
-            targetValue = ringData.progress.coerceIn(0f, 1f),
-            animationSpec = tween(
-                durationMillis = 1000 + index * 200,
-                easing = FastOutSlowInEasing
-            ),
-            label = "ring_$index"
-        ).value
+    // DISABLED: No animations per user requirement - use static progress values
+    val animatedProgressList = rings.map { ringData ->
+        ringData.progress.coerceIn(0f, 1f)
     }
     
     Box(
@@ -1382,20 +1323,8 @@ fun ParticleStarfield(
         }
     }
     
-    // Optional pulsing animation (disabled on low performance)
-    val infiniteTransition = rememberInfiniteTransition(label = "particles")
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                (AnimationSpecs.PULSE_DURATION * performanceProfile.animationFrameRateMultiplier).toInt(),
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "particlePulse"
-    )
+    // DISABLED: No animations per user requirement - use static alpha
+    val pulseAlpha = 0.6f
     
     Canvas(modifier = modifier.fillMaxSize()) {
         particles.forEach { (x, y, alpha) ->
