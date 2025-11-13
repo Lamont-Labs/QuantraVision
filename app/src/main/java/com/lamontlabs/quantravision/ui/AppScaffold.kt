@@ -252,10 +252,7 @@ private fun AppNavigationHost(
 
         composable("paywall") {
             com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
-                onDismiss = { navController.popBackStack() },
-                onBook = {},
-                onStandard = {},
-                onPro = {}
+                onDismiss = { navController.popBackStack() }
             )
         }
     }

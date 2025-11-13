@@ -63,8 +63,15 @@ fun PaywallScreen(
                         else -> Entitlements(hasBook = hasBook)
                     }
                 }
+                
+                // Initialize billing connection when screen loads
+                LaunchedEffect(billingManager) {
+                    billingManager.initialize()
+                }
+                
                 Paywall(
                     activity = activity,
+                    billingManager = billingManager,
                     entitlements = entitlements,
                     onStarter = onStandard ?: {},
                     onStandard = onStandard ?: {},
@@ -85,6 +92,7 @@ fun PaywallScreen(
 @Composable
 fun Paywall(
     activity: Activity,
+    billingManager: BillingManager,
     entitlements: Entitlements,
     onStarter: () -> Unit,
     onStandard: () -> Unit,
@@ -128,7 +136,10 @@ fun Paywall(
             isCurrentTier = currentTier == Tier.STARTER,
             isLowerTier = currentTier.ordinal > Tier.STARTER.ordinal,
             isUpgrade = false,
-            onClick = onStarter
+            onClick = {
+                billingManager.purchaseStarter()
+                onStarter()
+            }
         )
 
         PaywallTierCard(
@@ -145,7 +156,10 @@ fun Paywall(
             isCurrentTier = currentTier == Tier.STANDARD,
             isLowerTier = currentTier.ordinal > Tier.STANDARD.ordinal,
             isUpgrade = currentTier == Tier.STARTER,
-            onClick = onStandard
+            onClick = {
+                billingManager.purchaseStandard()
+                onStandard()
+            }
         )
 
         PaywallTierCard(
@@ -168,7 +182,10 @@ fun Paywall(
             isCurrentTier = currentTier == Tier.PRO,
             isLowerTier = false,
             isUpgrade = currentTier == Tier.STARTER || currentTier == Tier.STANDARD,
-            onClick = onPro
+            onClick = {
+                billingManager.purchasePro()
+                onPro()
+            }
         )
 
         // Show standalone book purchase for FREE and STARTER users only
@@ -198,7 +215,10 @@ fun Paywall(
                 isCurrentTier = false,
                 isLowerTier = false,
                 isUpgrade = false,
-                onClick = onBook
+                onClick = {
+                    billingManager.purchaseBook()
+                    onBook?.invoke()
+                }
             )
         }
 
