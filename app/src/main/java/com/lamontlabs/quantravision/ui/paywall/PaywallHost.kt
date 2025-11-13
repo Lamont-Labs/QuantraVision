@@ -7,8 +7,15 @@ import com.lamontlabs.quantravision.billing.*
 @Composable
 fun PaywallHost(activity: Activity, billing: BillingClientManager, purchasedSkus: Set<String>) {
     val ent = entitlementsFor(purchasedSkus)
+    val billingManager = remember { BillingManager(activity) }
+    
+    LaunchedEffect(billingManager) {
+        billingManager.initialize()
+    }
+    
     Paywall(
         activity = activity,
+        billingManager = billingManager,
         entitlements = ent,
         onStarter = { billing.launchPurchase(activity, Sku.STARTER) },
         onStandard = { billing.launchPurchase(activity, Sku.STANDARD) },

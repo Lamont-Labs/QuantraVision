@@ -49,7 +49,7 @@ fun AnalyticsDashboardScreen(
         }
     ) { padding ->
         if (!isProActive) {
-            ProUpgradePrompt(modifier = Modifier.padding(padding))
+            ProUpgradePrompt(context = context, modifier = Modifier.padding(padding))
         } else {
             when (val state = uiState) {
                 is AnalyticsDashboardViewModel.UiState.Loading -> {
@@ -423,7 +423,7 @@ private fun EmptyStateCard(message: String) {
 }
 
 @Composable
-private fun ProUpgradePrompt(modifier: Modifier = Modifier) {
+private fun ProUpgradePrompt(context: Context, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
