@@ -27,6 +27,7 @@ import com.lamontlabs.quantravision.billing.*
 fun PaywallScreen(
     onDismiss: () -> Unit,
     onBook: (() -> Unit)? = null,
+    onStarter: (() -> Unit)? = null,
     onStandard: (() -> Unit)? = null,
     onPro: (() -> Unit)? = null
 ) {
@@ -73,7 +74,7 @@ fun PaywallScreen(
                     activity = activity,
                     billingManager = billingManager,
                     entitlements = entitlements,
-                    onStarter = onStandard ?: {},
+                    onStarter = onStarter ?: {},
                     onStandard = onStandard ?: {},
                     onPro = onPro ?: {},
                     onBook = onBook,
