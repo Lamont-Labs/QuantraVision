@@ -13,7 +13,7 @@ import androidx.security.crypto.MasterKey
 object StandardFeatureGate {
     
     // DEBUG: Bypass all paywalls for testing (set to false for production)
-    private const val BYPASS_PAYWALLS = true
+    private const val BYPASS_PAYWALLS = false
     
     // Lock object for synchronized access to prevent race conditions (~0.01% of calls)
     private val lock = Any()

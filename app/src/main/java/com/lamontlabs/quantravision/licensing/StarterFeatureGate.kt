@@ -13,7 +13,7 @@ import androidx.security.crypto.MasterKey
 object StarterFeatureGate {
     
     // DEBUG: Bypass all paywalls for testing (set to false for production)
-    private const val BYPASS_PAYWALLS = true
+    private const val BYPASS_PAYWALLS = false
     
     private val lock = Any()
     

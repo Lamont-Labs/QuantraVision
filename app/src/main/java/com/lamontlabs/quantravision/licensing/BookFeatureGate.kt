@@ -19,7 +19,7 @@ import androidx.security.crypto.MasterKey
 object BookFeatureGate {
     
     // 🧪 TESTING BYPASS - Set to false for production
-    private const val BYPASS_PAYWALLS = true
+    private const val BYPASS_PAYWALLS = false
     
     /**
      * Get SharedPreferences with fallback to regular prefs if encrypted fails

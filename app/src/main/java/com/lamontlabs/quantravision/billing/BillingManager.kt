@@ -23,7 +23,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     private var productMap: Map<String, ProductDetails> = emptyMap()
     
     // DEBUG: Bypass all paywalls for testing (set to false for production)
-    private val BYPASS_PAYWALLS = true
+    private val BYPASS_PAYWALLS = false
     
     /**
      * SECURITY: Encrypted SharedPreferences with FAIL-CLOSED pattern
