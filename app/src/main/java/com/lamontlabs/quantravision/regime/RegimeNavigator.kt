@@ -14,7 +14,7 @@ import kotlin.math.sqrt
  * On-device market regime classifier that analyzes chart conditions to provide
  * educational context for detected patterns.
  * 
- * TIER REQUIREMENT: Requires Standard tier ($24.99) or Pro tier ($49.99)
+ * TIER REQUIREMENT: Requires Pro tier ($49.99) only
  * 
  * LEGAL: This is an EDUCATIONAL TOOL ONLY. Regime classifications are NOT
  * market predictions, forecasts, or trading recommendations. See legal/ADVANCED_FEATURES_DISCLAIMER.md
@@ -109,11 +109,11 @@ object RegimeNavigator {
         multiTimeframeData: Map<String, List<Double>>? = null
     ): MarketRegime = withContext(Dispatchers.Default) {
         
-        // CRITICAL TIER GATE: Regime Navigator requires Standard tier ($24.99) or higher
-        if (!com.lamontlabs.quantravision.licensing.StandardFeatureGate.isActive(context)) {
+        // CRITICAL TIER GATE: Regime Navigator requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!com.lamontlabs.quantravision.licensing.ProFeatureGate.isActive(context)) {
             throw IllegalStateException(
-                "Regime Navigator requires Standard tier ($24.99) or Pro tier ($49.99). " +
-                "Upgrade to unlock market condition analysis."
+                "Regime Navigator requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
             )
         }
         
@@ -179,11 +179,11 @@ object RegimeNavigator {
         regime: MarketRegime
     ): AnnotatedPattern = withContext(Dispatchers.Default) {
         
-        // CRITICAL TIER GATE: Regime Navigator requires Standard tier ($24.99) or higher
-        if (!com.lamontlabs.quantravision.licensing.StandardFeatureGate.isActive(context)) {
+        // CRITICAL TIER GATE: Regime Navigator requires Pro tier ($49.99) - Intelligence Stack exclusive
+        if (!com.lamontlabs.quantravision.licensing.ProFeatureGate.isActive(context)) {
             throw IllegalStateException(
-                "Regime Navigator requires Standard tier ($24.99) or Pro tier ($49.99). " +
-                "Upgrade to unlock market condition analysis."
+                "Regime Navigator requires Pro tier ($49.99). " +
+                "Upgrade to unlock Intelligence Stack features."
             )
         }
         
