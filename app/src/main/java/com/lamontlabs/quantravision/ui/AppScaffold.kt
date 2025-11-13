@@ -152,7 +152,10 @@ private fun AppNavigationHost(
         }
 
         composable("predictions") {
-            PredictionScreen(onBack = { navController.popBackStack() })
+            PredictionScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToPaywall = { navController.navigate("paywall") }
+            )
         }
 
         composable("backtesting") {

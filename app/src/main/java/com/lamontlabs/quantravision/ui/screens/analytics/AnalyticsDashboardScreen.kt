@@ -452,7 +452,13 @@ private fun ProUpgradePrompt(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(36.dp))
         Button(
-            onClick = {  },
+            onClick = {
+                android.widget.Toast.makeText(
+                    context,
+                    "Coming soon in future update",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            },
             shape = RoundedCornerShape(4.dp)
         ) {
             Text("Upgrade to Pro", fontWeight = FontWeight.Bold)

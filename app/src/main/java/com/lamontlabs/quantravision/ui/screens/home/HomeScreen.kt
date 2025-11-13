@@ -323,7 +323,13 @@ fun HomeScreen(
                     
                     MenuItemCard(
                         title = "SYSTEM CONFIGURATION",
-                        onClick = { /* Navigate to settings */ },
+                        onClick = {
+                            android.widget.Toast.makeText(
+                                context,
+                                "Settings is available in the bottom navigation bar",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        },
                         icon = {
                             Icon(
                                 Icons.Default.Settings,

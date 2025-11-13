@@ -45,7 +45,6 @@ fun QuickActionsMenu(
                     .padding(16.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .clickable(onClick = {})
             ) {
                 Row(
                     modifier = Modifier

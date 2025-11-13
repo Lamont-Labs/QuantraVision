@@ -30,7 +30,10 @@ private suspend fun loadPredictions(context: android.content.Context): List<Pred
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PredictionScreen(onBack: () -> Unit) {
+fun PredictionScreen(
+    onBack: () -> Unit,
+    onNavigateToPaywall: () -> Unit = {}
+) {
     val context = LocalContext.current
     var predictions by remember { mutableStateOf<List<PredictedPattern>>(emptyList()) }
     var isProActive by remember { mutableStateOf(false) }
@@ -103,7 +106,7 @@ fun PredictionScreen(onBack: () -> Unit) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(24.dp))
-                        Button(onClick = { /* Navigate to upgrade screen */ }) {
+                        Button(onClick = onNavigateToPaywall) {
                             Text("Upgrade to Pro")
                         }
                     }
