@@ -27,10 +27,13 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.lamontlabs.quantravision.onboarding.OnboardingStep
+import com.lamontlabs.quantravision.ui.DisclaimerManager
 import com.lamontlabs.quantravision.ui.MetallicButton
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.MetallicText
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -43,9 +46,11 @@ fun OnboardingScreen(
     val state by viewModel.state.collectAsState()
     val currentStepIndex by viewModel.currentStepIndex.collectAsState()
     
+    var disclaimerAccepted by remember { mutableStateOf(DisclaimerManager.isAccepted(context)) }
+    
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { 5 }
+        pageCount = { 6 }
     )
     val scope = rememberCoroutineScope()
     
@@ -59,6 +64,10 @@ fun OnboardingScreen(
         }
     }
     
+    LaunchedEffect(Unit) {
+        disclaimerAccepted = DisclaimerManager.isAccepted(context)
+    }
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -69,9 +78,13 @@ fun OnboardingScreen(
         ) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                userScrollEnabled = pagerState.currentPage > 0 || disclaimerAccepted
             ) { page ->
-                OnboardingPage(step = OnboardingStep.all()[page])
+                OnboardingPage(
+                    step = OnboardingStep.all()[page],
+                    onDisclaimerAcceptedChanged = { disclaimerAccepted = it }
+                )
             }
             
             Column(
@@ -83,7 +96,7 @@ fun OnboardingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    repeat(5) { index ->
+                    repeat(6) { index ->
                         Box(
                             modifier = Modifier
                                 .padding(4.dp)
@@ -105,7 +118,7 @@ fun OnboardingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    if (pagerState.currentPage < 4) {
+                    if (pagerState.currentPage > 0 && pagerState.currentPage < 5) {
                         TextButton(
                             onClick = { viewModel.skipOnboarding() },
                             shape = RoundedCornerShape(20.dp)
@@ -118,7 +131,10 @@ fun OnboardingScreen(
                     
                     MetallicButton(
                         onClick = {
-                            if (pagerState.currentPage < 4) {
+                            if (pagerState.currentPage < 5) {
+                                if (pagerState.currentPage == 0 && !disclaimerAccepted) {
+                                    return@MetallicButton
+                                }
                                 scope.launch {
                                     pagerState.scrollToPage(pagerState.currentPage + 1)
                                 }
@@ -126,11 +142,12 @@ fun OnboardingScreen(
                                 viewModel.completeOnboarding()
                             }
                         },
+                        enabled = pagerState.currentPage > 0 || disclaimerAccepted,
                         modifier = Modifier.widthIn(min = 120.dp),
-                        showTopStrip = pagerState.currentPage == 4
+                        showTopStrip = pagerState.currentPage == 5
                     ) {
                         Text(
-                            if (pagerState.currentPage < 4) "Next" else "Get Started",
+                            if (pagerState.currentPage < 5) "Next" else "Get Started",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -142,72 +159,79 @@ fun OnboardingScreen(
 }
 
 @Composable
-fun OnboardingPage(step: OnboardingStep) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = getStepIcon(step),
-            contentDescription = null,
-            modifier = Modifier.size(72.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        MetallicText(
-            text = step.title,
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 26.sp,
-                textAlign = TextAlign.Center
-            ),
-            glowIntensity = 0.8f,
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Text(
-            text = step.description,
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 2
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        MetallicCard(
-            modifier = Modifier.fillMaxWidth(),
-            enableShimmer = step == OnboardingStep.PRO_FEATURES,
-            elevation = 8.dp
+fun OnboardingPage(
+    step: OnboardingStep,
+    onDisclaimerAcceptedChanged: (Boolean) -> Unit = {}
+) {
+    if (step == OnboardingStep.DISCLAIMER) {
+        DisclaimerPage(onAcceptedChanged = onDisclaimerAcceptedChanged)
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+            Icon(
+                imageVector = getStepIcon(step),
+                contentDescription = null,
+                modifier = Modifier.size(72.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            MetallicText(
+                text = step.title,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontSize = 26.sp,
+                    textAlign = TextAlign.Center
+                ),
+                glowIntensity = 0.8f,
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = step.description,
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 2
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            MetallicCard(
+                modifier = Modifier.fillMaxWidth(),
+                enableShimmer = step == OnboardingStep.PRO_FEATURES,
+                elevation = 8.dp
             ) {
-                getStepFeatures(step).forEach { feature ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = feature,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    getStepFeatures(step).forEach { feature ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = feature,
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 }
             }
@@ -217,6 +241,7 @@ fun OnboardingPage(step: OnboardingStep) {
 
 fun getStepIcon(step: OnboardingStep): ImageVector {
     return when (step) {
+        OnboardingStep.DISCLAIMER -> Icons.Default.Warning
         OnboardingStep.WELCOME -> Icons.Default.Star
         OnboardingStep.DETECTION -> Icons.Default.Search
         OnboardingStep.INTELLIGENCE -> Icons.Default.Psychology
@@ -227,6 +252,7 @@ fun getStepIcon(step: OnboardingStep): ImageVector {
 
 fun getStepFeatures(step: OnboardingStep): List<String> {
     return when (step) {
+        OnboardingStep.DISCLAIMER -> emptyList()
         OnboardingStep.WELCOME -> listOf(
             "AI-powered pattern recognition",
             "100+ chart patterns supported",
@@ -257,5 +283,97 @@ fun getStepFeatures(step: OnboardingStep): List<String> {
             "🔥 STANDARD: 50 patterns + lessons + book",
             "💎 PRO: All 109 patterns + Intelligence Stack"
         )
+    }
+}
+
+@Composable
+fun DisclaimerPage(onAcceptedChanged: (Boolean) -> Unit = {}) {
+    val context = LocalContext.current
+    var disclaimerAccepted by remember { mutableStateOf(DisclaimerManager.isAccepted(context)) }
+    
+    val disclaimerText = remember {
+        try {
+            context.assets.open("legal/DISCLAIMER.txt").bufferedReader().use { it.readText() }
+        } catch (e: IOException) {
+            "Failed to load disclaimer text. Error: ${e.message}"
+        }
+    }
+    
+    Box(modifier = Modifier.fillMaxSize()) {
+        StaticBrandBackground(modifier = Modifier.fillMaxSize())
+        
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            MetallicText(
+                text = "Legal Disclaimer",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontSize = 28.sp,
+                    textAlign = TextAlign.Center
+                ),
+                glowIntensity = 0.8f,
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            MetallicCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                elevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = disclaimerText,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = disclaimerAccepted,
+                    onCheckedChange = { accepted ->
+                        disclaimerAccepted = accepted
+                        onAcceptedChanged(accepted)
+                        if (accepted) {
+                            DisclaimerManager.setAccepted(context, true)
+                        }
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "I have read and agree to the disclaimer",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
