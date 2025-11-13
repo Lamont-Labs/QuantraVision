@@ -80,9 +80,12 @@ data class OnboardingState(
         private const val KEY_CURRENT_STEP = "current_step"
         private const val KEY_IS_COMPLETED = "is_completed"
         private const val KEY_COMPLETED_STEPS = "completed_steps"
+        private const val KEY_SCHEMA_VERSION = "schema_version"
+        private const val CURRENT_SCHEMA_VERSION = 2
         
         fun load(context: Context): OnboardingState {
             val prefs = getPrefs(context)
+            val schemaVersion = prefs.getInt(KEY_SCHEMA_VERSION, 1)
             val currentStepOrdinal = prefs.getInt(KEY_CURRENT_STEP, 0)
             val isCompleted = prefs.getBoolean(KEY_IS_COMPLETED, false)
             val completedStepsString = prefs.getString(KEY_COMPLETED_STEPS, "") ?: ""
@@ -92,29 +95,31 @@ data class OnboardingState(
                 emptySet()
             }
             
-            // MIGRATION: Detect legacy data and shift ordinals if DISCLAIMER not accepted
+            // MIGRATION: Only migrate if schema version is 1 (legacy) AND we have actual saved data
+            val hasLegacyData = (schemaVersion == 1) && (currentStepOrdinal > 0 || completedSteps.isNotEmpty())
             val disclaimerAccepted = DisclaimerManager.isAccepted(context)
-            val hasLegacyData = !disclaimerAccepted && currentStepOrdinal >= 0
             
-            val migratedCurrentStep = if (hasLegacyData) {
-                // Legacy ordinals need +1 shift (WELCOME was 0, now 1, etc.)
-                // But force to DISCLAIMER (0) if not accepted
-                0
-            } else {
-                currentStepOrdinal
+            val migratedCurrentStep = when {
+                hasLegacyData && !disclaimerAccepted -> 0
+                hasLegacyData && disclaimerAccepted -> currentStepOrdinal + 1
+                else -> currentStepOrdinal
             }
             
             val migratedCompletedSteps = if (hasLegacyData) {
-                // Shift all completed step ordinals by +1
-                // Do NOT include DISCLAIMER (0) unless it was explicitly completed
                 completedSteps.map { it + 1 }.toSet()
             } else {
                 completedSteps
             }
             
+            val migratedIsCompleted = if (hasLegacyData) {
+                isCompleted && disclaimerAccepted
+            } else {
+                isCompleted
+            }
+            
             return OnboardingState(
                 currentStep = OnboardingStep.fromOrdinal(migratedCurrentStep),
-                isCompleted = isCompleted && disclaimerAccepted, // Force incomplete if disclaimer not accepted
+                isCompleted = migratedIsCompleted,
                 completedSteps = migratedCompletedSteps
             )
         }
@@ -122,6 +127,7 @@ data class OnboardingState(
         fun save(context: Context, state: OnboardingState) {
             val prefs = getPrefs(context)
             prefs.edit()
+                .putInt(KEY_SCHEMA_VERSION, CURRENT_SCHEMA_VERSION)
                 .putInt(KEY_CURRENT_STEP, state.currentStep.ordinal)
                 .putBoolean(KEY_IS_COMPLETED, state.isCompleted)
                 .putString(KEY_COMPLETED_STEPS, state.completedSteps.joinToString(","))
