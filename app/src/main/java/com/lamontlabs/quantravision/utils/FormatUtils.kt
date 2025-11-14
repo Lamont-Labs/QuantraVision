@@ -45,7 +45,7 @@ object FormatUtils {
     }
     
     fun formatConfidence(confidence: Float): String {
-        return "${(confidence * 100).toInt()}%"
+        return "${(confidence * 100f).toInt()}%"
     }
     
     fun formatNumber(value: Long): String {
