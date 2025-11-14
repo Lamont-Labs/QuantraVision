@@ -283,7 +283,7 @@ private fun AppNavigationHost(
         }
 
         composable("paywall") {
-            com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
+            com.lamontlabs.quantravision.ui.screens.paywall.PaywallScreen(
                 onBack = { navController.popBackStack() },
                 onPurchaseComplete = {
                     navController.popBackStack()

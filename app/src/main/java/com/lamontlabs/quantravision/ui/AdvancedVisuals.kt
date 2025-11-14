@@ -38,12 +38,14 @@ import kotlin.random.Random
  */
 @Composable
 fun StaticBrandBackground(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color.Black),
+        content = content
     )
 }
 

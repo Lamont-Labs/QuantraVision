@@ -299,9 +299,7 @@ fun DisclaimerPage(onAcceptedChanged: (Boolean) -> Unit = {}) {
         }
     }
     
-    Box(modifier = Modifier.fillMaxSize()) {
-        StaticBrandBackground(modifier = Modifier.fillMaxSize())
-        
+    StaticBrandBackground(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
