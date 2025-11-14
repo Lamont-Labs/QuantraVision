@@ -35,18 +35,22 @@ import kotlin.random.Random
 /**
  * Static brand background - Solid black for seamless logo blending
  * No animations, clean and minimal
+ * Content alignment is opt-in via contentAlignment parameter (defaults to TopStart)
  */
 @Composable
 fun StaticBrandBackground(
     modifier: Modifier = Modifier,
+    contentAlignment: Alignment = Alignment.TopStart,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(Color.Black),
-        content = content
-    )
+        contentAlignment = contentAlignment
+    ) {
+        content()
+    }
 }
 
 // ============================================================================

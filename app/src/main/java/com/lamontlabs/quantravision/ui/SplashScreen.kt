@@ -43,18 +43,16 @@ fun SplashScreen(
     val textAlpha = 1f
     val glowAlpha = 0.6f
     
-    Box(
+    StaticBrandBackground(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // Static brand background - no animations
-        StaticBrandBackground(modifier = Modifier.fillMaxSize())
-        
         // Content column
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp),
+                .padding(32.dp)
+                .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

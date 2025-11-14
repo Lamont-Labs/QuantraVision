@@ -95,8 +95,7 @@ fun TierUpgradeCelebration(
                     
                     NeonText(
                         text = "Welcome to ${tier.displayName}!",
-                        style = AppTypography.headlineLarge,
-                        textAlign = TextAlign.Center
+                        style = AppTypography.headlineLarge
                     )
                     
                     Spacer(modifier = Modifier.height(AppSpacing.xs))

@@ -243,7 +243,7 @@ private fun DetectionCard(detection: PatternMatch) {
                     style = AppTypography.bodySmall,
                     color = AppColors.NeonCyan,
                     modifier = Modifier.semantics {
-                        contentDescription = "Pattern confidence ${(detection.confidence * 100).toInt()} percent"
+                        contentDescription = "Pattern confidence ${(detection.confidence * 100f).toInt()} percent"
                     }
                 )
             }
