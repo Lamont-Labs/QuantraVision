@@ -37,3 +37,7 @@ packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "gobject-introspe
 
 [deployment]
 deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 44529
+externalPort = 80

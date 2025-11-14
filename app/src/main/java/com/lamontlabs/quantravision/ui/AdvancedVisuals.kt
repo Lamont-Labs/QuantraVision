@@ -33,20 +33,28 @@ import kotlin.random.Random
 // ============================================================================
 
 /**
- * Static brand background - Solid black for seamless logo blending
+ * Static brand background - Deep space gradient matching branded logo
  * No animations, clean and minimal
- * Content alignment is opt-in via contentAlignment parameter (defaults to TopStart)
+ * Content alignment is opt-in via contentAlignment parameter (defaults to Center for logo visibility)
  */
 @Composable
 fun StaticBrandBackground(
     modifier: Modifier = Modifier,
-    contentAlignment: Alignment = Alignment.TopStart,
+    contentAlignment: Alignment = Alignment.Center,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF010409), // Deep space blue-black (top)
+                        Color(0xFF0D1825), // Mid blue (center)
+                        Color(0xFF010409)  // Deep space blue-black (bottom)
+                    )
+                )
+            ),
         contentAlignment = contentAlignment
     ) {
         content()
