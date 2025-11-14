@@ -24,6 +24,7 @@ import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.components.EmptyState
 import com.lamontlabs.quantravision.ui.components.ErrorState
+import com.lamontlabs.quantravision.ui.components.FeatureDiscoveryBanner
 import com.lamontlabs.quantravision.ui.components.FeatureGate
 import com.lamontlabs.quantravision.ui.components.LoadingScreen
 import com.lamontlabs.quantravision.ui.theme.AppColors
@@ -59,6 +60,17 @@ fun MarketsScreen(
                 NeonText(
                     text = "Markets",
                     style = AppTypography.headlineLarge
+                )
+                
+                Spacer(modifier = Modifier.height(AppSpacing.md))
+                
+                FeatureDiscoveryBanner(
+                    feature = Feature.MARKET_DATA,
+                    title = "Real-Time Market Data Unlocked!",
+                    description = "Track live market trends and indicators for better pattern timing",
+                    icon = Icons.Default.TrendingUp,
+                    actionLabel = null,
+                    accentColor = AppColors.TierStandard
                 )
                 
                 Spacer(modifier = Modifier.height(AppSpacing.md))

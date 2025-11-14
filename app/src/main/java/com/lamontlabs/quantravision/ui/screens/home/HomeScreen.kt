@@ -26,6 +26,7 @@ import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.components.EmptyState
 import com.lamontlabs.quantravision.ui.components.ErrorState
+import com.lamontlabs.quantravision.ui.components.FeatureDiscoveryBanner
 import com.lamontlabs.quantravision.ui.components.LoadingScreen
 import com.lamontlabs.quantravision.ui.components.SectionHeader
 import com.lamontlabs.quantravision.ui.components.TierBadge
@@ -34,6 +35,7 @@ import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
 import com.lamontlabs.quantravision.ui.viewmodels.HomeViewModel
 import com.lamontlabs.quantravision.utils.FormatUtils
+import com.lamontlabs.quantravision.entitlements.Feature
 
 /**
  * HomeScreen - Main dashboard displaying user stats, recent detections, and achievements
@@ -90,6 +92,29 @@ fun HomeScreen(
                     }
                     
                     Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    
+                    FeatureDiscoveryBanner(
+                        feature = Feature.UNLIMITED_HIGHLIGHTS,
+                        title = "Unlimited Highlights Unlocked!",
+                        description = "Scan as many charts as you want without daily limits",
+                        icon = Icons.Default.AllInclusive,
+                        actionLabel = null,
+                        accentColor = AppColors.TierStarter
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
+                    
+                    FeatureDiscoveryBanner(
+                        feature = Feature.ADVANCED_EDUCATION,
+                        title = "Advanced Lessons Available!",
+                        description = "Access interactive lessons on advanced trading strategies",
+                        icon = Icons.Default.School,
+                        actionLabel = "Start Learning",
+                        onAction = onNavigateToAnalytics,
+                        accentColor = AppColors.TierPro
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
                     
                     Row(
                         modifier = Modifier.fillMaxWidth(),

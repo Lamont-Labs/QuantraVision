@@ -23,6 +23,7 @@ import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.components.EmptyState
 import com.lamontlabs.quantravision.ui.components.ErrorState
+import com.lamontlabs.quantravision.ui.components.FeatureDiscoveryBanner
 import com.lamontlabs.quantravision.ui.components.FeatureGate
 import com.lamontlabs.quantravision.ui.components.InlineFeatureGate
 import com.lamontlabs.quantravision.ui.components.LoadingScreen
@@ -83,6 +84,18 @@ fun LearnScreen(
             }
             
             Spacer(modifier = Modifier.height(AppSpacing.lg))
+            
+            FeatureDiscoveryBanner(
+                feature = Feature.TRADING_BOOK,
+                title = "Trading Book Unlocked!",
+                description = "Comprehensive guide to technical analysis and risk management",
+                icon = Icons.Default.Book,
+                actionLabel = "Read Now",
+                onAction = onNavigateToBook,
+                accentColor = AppColors.TierStandard
+            )
+            
+            Spacer(modifier = Modifier.height(AppSpacing.md))
             
             FeatureGate(
                 feature = Feature.TRADING_BOOK,

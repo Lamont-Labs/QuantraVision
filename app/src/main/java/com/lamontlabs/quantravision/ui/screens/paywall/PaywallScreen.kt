@@ -29,7 +29,10 @@ import com.lamontlabs.quantravision.entitlements.SubscriptionTier
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.components.TierUpgradeCelebration
 import com.lamontlabs.quantravision.ui.theme.*
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 /**
  * Professional Paywall Screen - Tier Comparison & Purchase Flow
@@ -54,7 +57,8 @@ import com.lamontlabs.quantravision.ui.theme.*
 fun PaywallScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
-    onPurchaseComplete: () -> Unit = {}
+    onPurchaseComplete: () -> Unit = {},
+    navController: NavController? = null
 ) {
     val context = LocalContext.current
     val activity = context as? Activity ?: error("PaywallScreen requires Activity context")
@@ -66,10 +70,33 @@ fun PaywallScreen(
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
+    // Track celebration modal state
+    var showCelebration by remember { mutableStateOf(false) }
+    var celebrationTier by remember { mutableStateOf<SubscriptionTier?>(null) }
+    
     LaunchedEffect(uiState.purchaseSuccess) {
         if (uiState.purchaseSuccess != null) {
-            onPurchaseComplete()
+            // Show celebration modal first
+            celebrationTier = uiState.currentTier
+            showCelebration = true
         }
+    }
+    
+    // Celebration Modal
+    celebrationTier?.let { tier ->
+        TierUpgradeCelebration(
+            tier = tier,
+            isVisible = showCelebration,
+            onDismiss = {
+                showCelebration = false
+                onPurchaseComplete()
+            },
+            onExploreFeature = { route ->
+                showCelebration = false
+                navController?.navigate(route)
+                onPurchaseComplete()
+            }
+        )
     }
     
     StaticBrandBackground {

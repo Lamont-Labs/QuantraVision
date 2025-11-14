@@ -22,6 +22,7 @@ fun QuantraVisionApp(context: Context) {
     QuantraVisionTheme {
         LaunchedEffect(Unit) {
             com.lamontlabs.quantravision.entitlements.EntitlementManager.initialize(context)
+            com.lamontlabs.quantravision.onboarding.FeatureDiscoveryStore.initialize(context)
         }
         
         val navController = rememberNavController()
@@ -287,7 +288,8 @@ private fun AppNavigationHost(
                 onBack = { navController.popBackStack() },
                 onPurchaseComplete = {
                     navController.popBackStack()
-                }
+                },
+                navController = navController
             )
         }
         }
