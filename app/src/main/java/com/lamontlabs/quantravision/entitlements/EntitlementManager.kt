@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -68,18 +70,23 @@ object EntitlementManager {
     private val _currentTier = MutableStateFlow(SubscriptionTier.FREE)
     val currentTier: StateFlow<SubscriptionTier> = _currentTier.asStateFlow()
     
-    private var isInitialized = false
+    private val _isInitialized = CompletableDeferred<Unit>()
+    val isInitialized: Deferred<Unit> = _isInitialized
+    
+    private var initializationComplete = false
     
     fun initialize(context: Context) {
         synchronized(lock) {
-            if (isInitialized) {
+            if (initializationComplete) {
                 Log.d(TAG, "Already initialized, skipping")
                 return
             }
             
             val tier = readTierFromStorage(context)
             _currentTier.value = tier
-            isInitialized = true
+            initializationComplete = true
+            
+            _isInitialized.complete(Unit)
             
             Log.d(TAG, "Initialized with tier: ${tier.tierName}")
         }

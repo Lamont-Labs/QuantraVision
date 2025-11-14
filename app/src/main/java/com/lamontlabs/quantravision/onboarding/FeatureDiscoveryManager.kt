@@ -48,7 +48,7 @@ object FeatureDiscoveryStore {
     private const val KEY_LAST_TIER = "last_tier"
     private const val KEY_DISCOVERED_PREFIX = "discovered_"
     
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     
     @Volatile
     private var cachedPrefs: SharedPreferences? = null
@@ -95,9 +95,9 @@ object FeatureDiscoveryStore {
     /**
      * Initialize the feature discovery store
      * Must be called once at app startup
-     * Observes tier changes and recomputes undiscovered features reactively
+     * Non-suspending - launches background job to observe tier changes
      */
-    suspend fun initialize(context: Context) {
+    fun initialize(context: Context) {
         if (isInitialized) {
             Log.d(TAG, "Already initialized, skipping")
             return
@@ -106,16 +106,23 @@ object FeatureDiscoveryStore {
         isInitialized = true
         Log.d(TAG, "Initializing FeatureDiscoveryStore")
         
-        withContext(Dispatchers.IO) {
-            val initial = computeUndiscoveredFeatures(context, EntitlementManager.currentTier.value)
-            _undiscoveredFeatures.value = initial
-            Log.d(TAG, "Initial undiscovered features seeded: ${initial.size}")
-        }
-        
-        EntitlementManager.currentTier.collect { tier ->
+        scope.launch {
+            EntitlementManager.isInitialized.await()
+            
             withContext(Dispatchers.IO) {
-                _undiscoveredFeatures.value = computeUndiscoveredFeatures(context, tier)
-                Log.d(TAG, "Tier changed to ${tier.tierName}, undiscovered features: ${_undiscoveredFeatures.value.size}")
+                val initial = computeUndiscoveredFeatures(context, EntitlementManager.currentTier.value)
+                _undiscoveredFeatures.value = initial
+                Log.d(TAG, "Seeded ${initial.size} undiscovered features")
+            }
+            
+            EntitlementManager.currentTier.collect { tier ->
+                withContext(Dispatchers.IO) {
+                    val updated = computeUndiscoveredFeatures(context, tier)
+                    if (updated != _undiscoveredFeatures.value) {
+                        _undiscoveredFeatures.value = updated
+                        Log.d(TAG, "Updated to ${updated.size} undiscovered features")
+                    }
+                }
             }
         }
     }
