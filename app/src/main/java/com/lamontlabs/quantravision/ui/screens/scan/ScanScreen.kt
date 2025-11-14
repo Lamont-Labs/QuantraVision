@@ -1,320 +1,184 @@
 package com.lamontlabs.quantravision.ui.screens.scan
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lamontlabs.quantravision.ui.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lamontlabs.quantravision.entitlements.EntitlementManager
+import com.lamontlabs.quantravision.entitlements.SubscriptionTier
+import com.lamontlabs.quantravision.ui.MetallicCard
+import com.lamontlabs.quantravision.ui.NeonText
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.theme.AppColors
+import com.lamontlabs.quantravision.ui.theme.AppSpacing
+import com.lamontlabs.quantravision.ui.theme.AppTypography
+import com.lamontlabs.quantravision.ui.viewmodels.ScanViewModel
 
 /**
- * Scan Screen - Clean Pattern Detection Interface
- * Streamlined design matching home screen style
+ * ScanScreen - Pattern scanner control and stats
  */
 @Composable
 fun ScanScreen(
-    context: Context,
-    onStartScan: () -> Unit,
+    modifier: Modifier = Modifier,
+    onNavigateToPaywall: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val viewModel = remember { ScanViewModel(context) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    StaticBrandBackground {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(AppSpacing.base)
+        ) {
+            NeonText(
+                text = "Pattern Scanner",
+                style = AppTypography.headlineLarge
+            )
+            
+            Spacer(modifier = Modifier.height(AppSpacing.lg))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+            ) {
+                StatCard(
+                    title = "Detections",
+                    value = "${uiState.detectionCount}",
+                    subtitle = "total",
+                    modifier = Modifier.weight(1f)
+                )
+                
+                StatCard(
+                    title = "Highlights",
+                    value = "${uiState.highlightsUsedToday}",
+                    subtitle = if (uiState.currentTier == SubscriptionTier.FREE) {
+                        "${uiState.highlightsRemaining} left"
+                    } else "Unlimited",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(AppSpacing.lg))
+            
+            if (uiState.currentTier == SubscriptionTier.PRO) {
+                MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(AppSpacing.md)) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Star,
+                                contentDescription = null,
+                                tint = AppColors.TierPro
+                            )
+                            Text(
+                                text = "AI Scan Learning",
+                                style = AppTypography.titleMedium,
+                                color = Color.White
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        
+                        LinearProgressIndicator(
+                            progress = uiState.scanLearningProgress / 100f,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        
+                        Text(
+                            text = "${uiState.scanLearningProgress}% learned from your scans",
+                            style = AppTypography.labelSmall,
+                            color = Color.White.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(AppSpacing.lg))
+            }
+            
+            Button(
+                onClick = {
+                    if (uiState.isOverlayActive) {
+                        viewModel.stopOverlay()
+                    } else if (uiState.hasOverlayPermission) {
+                        viewModel.startOverlay()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (uiState.isOverlayActive) AppColors.Error else AppColors.Success
+                )
+            ) {
+                Icon(
+                    imageVector = if (uiState.isOverlayActive) Icons.Default.Stop else Icons.Default.PlayArrow,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(AppSpacing.sm))
+                Text(
+                    text = if (uiState.isOverlayActive) "Stop Scanner" else "Start Scanner",
+                    style = AppTypography.titleMedium
+                )
+            }
+            
+            if (!uiState.hasOverlayPermission) {
+                Spacer(modifier = Modifier.height(AppSpacing.md))
+                Text(
+                    text = "⚠️ Overlay permission required to scan charts",
+                    style = AppTypography.bodySmall,
+                    color = AppColors.Warning,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatCard(
+    title: String,
+    value: String,
+    subtitle: String,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        // Static brand background
-        StaticBrandBackground(modifier = Modifier.fillMaxSize())
-        
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+    MetallicCard(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .padding(AppSpacing.md)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // START DETECTION BUTTON
-            item {
-                MetallicButton(
-                    onClick = onStartScan,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp)
-                ) {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        "START DETECTION",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                }
-            }
-            
-            // HOW IT WORKS SECTION
-            item {
-                NeonText(
-                    text = "HOW IT WORKS",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    glowColor = NeonCyan,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            
-            // Steps
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    // Step 1
-                    GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                        Row(
-                            modifier = Modifier.padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = NeonCyan.copy(alpha = 0.2f),
-                                modifier = Modifier.size(48.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        "1",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = NeonCyan
-                                    )
-                                }
-                            }
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    "Grant Permissions",
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    "Allow overlay & screen capture",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                            }
-                            Icon(
-                                Icons.Default.Security,
-                                contentDescription = null,
-                                tint = NeonCyan.copy(alpha = 0.6f),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                    
-                    // Step 2
-                    GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                        Row(
-                            modifier = Modifier.padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = NeonCyan.copy(alpha = 0.2f),
-                                modifier = Modifier.size(48.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        "2",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = NeonCyan
-                                    )
-                                }
-                            }
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    "Open Trading App",
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    "Navigate to your charts",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                            }
-                            Icon(
-                                Icons.Default.ShowChart,
-                                contentDescription = null,
-                                tint = NeonCyan.copy(alpha = 0.6f),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                    
-                    // Step 3
-                    GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                        Row(
-                            modifier = Modifier.padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = NeonCyan.copy(alpha = 0.2f),
-                                modifier = Modifier.size(48.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        "3",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = NeonCyan
-                                    )
-                                }
-                            }
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    "Real-Time Detection",
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    "Patterns overlaid instantly",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                            }
-                            Icon(
-                                Icons.Default.Radar,
-                                contentDescription = null,
-                                tint = NeonCyan.copy(alpha = 0.6f),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
-            }
-            
-            // FEATURES SECTION
-            item {
-                NeonText(
-                    text = "DETECTION FEATURES",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    glowColor = NeonGold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            
-            item {
-                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Speed,
-                                contentDescription = null,
-                                tint = NeonCyan,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Sub-Second Latency",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Vibration,
-                                contentDescription = null,
-                                tint = NeonCyan,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "Multi-Modal Alerts",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.OfflineBolt,
-                                contentDescription = null,
-                                tint = NeonCyan,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                "100% Offline Processing",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.TouchApp,
-                                contentDescription = null,
-                                tint = NeonGold,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        "Touch-Passthrough Overlay",
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Surface(
-                                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                        color = NeonGold.copy(alpha = 0.2f)
-                                    ) {
-                                        Text(
-                                            "💎 PRO",
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = NeonGold
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // INFO CARD
-            item {
-                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                    Row(
-                        modifier = Modifier.padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Text(
-                            text = "Detection works on any trading platform - TradingView, Robinhood, Webull, and more",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                    }
-                }
-            }
+            Text(
+                text = title,
+                style = AppTypography.labelMedium,
+                color = Color.White.copy(alpha = 0.7f)
+            )
+            Spacer(modifier = Modifier.height(AppSpacing.xs))
+            NeonText(
+                text = value,
+                style = AppTypography.headlineLarge
+            )
+            Text(
+                text = subtitle,
+                style = AppTypography.labelSmall,
+                color = Color.White.copy(alpha = 0.6f)
+            )
         }
     }
 }

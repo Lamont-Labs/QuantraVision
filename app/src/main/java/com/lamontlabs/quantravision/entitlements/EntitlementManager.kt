@@ -51,7 +51,9 @@ enum class Feature(val requiredTier: SubscriptionTier, val displayName: String) 
     
     BASIC_EDUCATION(SubscriptionTier.FREE, "Basic Lessons"),
     TRADING_BOOK(SubscriptionTier.STANDARD, "Trading Book Access"),
-    ADVANCED_EDUCATION(SubscriptionTier.PRO, "Advanced Interactive Lessons")
+    ADVANCED_EDUCATION(SubscriptionTier.PRO, "Advanced Interactive Lessons"),
+    
+    MARKET_DATA(SubscriptionTier.STANDARD, "Real-Time Market Data")
 }
 
 object EntitlementManager {

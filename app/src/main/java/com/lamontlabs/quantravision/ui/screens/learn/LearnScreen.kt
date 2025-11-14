@@ -1,282 +1,227 @@
 package com.lamontlabs.quantravision.ui.screens.learn
 
-import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.lamontlabs.quantravision.ui.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lamontlabs.quantravision.entitlements.EntitlementManager
+import com.lamontlabs.quantravision.entitlements.Feature
+import com.lamontlabs.quantravision.ui.MetallicCard
+import com.lamontlabs.quantravision.ui.NeonText
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.components.FeatureGate
+import com.lamontlabs.quantravision.ui.components.InlineFeatureGate
+import com.lamontlabs.quantravision.ui.components.SectionHeader
+import com.lamontlabs.quantravision.ui.theme.AppColors
+import com.lamontlabs.quantravision.ui.theme.AppSpacing
+import com.lamontlabs.quantravision.ui.theme.AppTypography
+import com.lamontlabs.quantravision.ui.viewmodels.LearnViewModel
 
 /**
- * Learn Screen - Clean Trading Education Hub
- * Streamlined design matching home screen style
+ * LearnScreen - Educational content and lessons
  */
 @Composable
 fun LearnScreen(
-    context: Context,
-    onNavigateToTutorials: () -> Unit,
-    onNavigateToBook: () -> Unit,
-    onNavigateToAchievements: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToTutorials: () -> Unit = {},
+    onNavigateToBook: () -> Unit = {},
+    onNavigateToPaywall: () -> Unit = {}
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        // Static brand background
-        StaticBrandBackground(modifier = Modifier.fillMaxSize())
-        
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+    val context = LocalContext.current
+    val viewModel = remember { LearnViewModel(context) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    StaticBrandBackground {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(AppSpacing.base)
         ) {
-            // PROGRESS OVERVIEW
-            item {
-                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "Your Progress",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Surface(
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                                color = NeonCyan.copy(alpha = 0.2f)
-                            ) {
-                                Text(
-                                    "48% Complete",
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = NeonCyan,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                        
-                        Divider(color = Color.White.copy(alpha = 0.1f))
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    "12",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = NeonCyan
-                                )
-                                Text(
-                                    "Lessons",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White.copy(alpha = 0.6f)
-                                )
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    "5",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = NeonGold
-                                )
-                                Text(
-                                    "Day Streak",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White.copy(alpha = 0.6f)
-                                )
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    "850",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF00FF88)
-                                )
-                                Text(
-                                    "XP Points",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White.copy(alpha = 0.6f)
-                                )
-                            }
-                        }
-                    }
+            NeonText(
+                text = "Learn",
+                style = AppTypography.headlineLarge
+            )
+            
+            Spacer(modifier = Modifier.height(AppSpacing.md))
+            
+            MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(AppSpacing.md)) {
+                    Text(
+                        text = "Your Progress",
+                        style = AppTypography.titleMedium,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    LinearProgressIndicator(
+                        progress = if (uiState.totalLessonCount > 0) {
+                            uiState.completedLessonCount.toFloat() / uiState.totalLessonCount
+                        } else 0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = "${uiState.completedLessonCount} of ${uiState.totalLessonCount} lessons completed",
+                        style = AppTypography.labelSmall,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
                 }
             }
             
-            // LEARNING MODULES SECTION
-            item {
-                NeonText(
-                    text = "LEARNING MODULES",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    glowColor = NeonCyan,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+            Spacer(modifier = Modifier.height(AppSpacing.lg))
             
-            // Module 1: Chart Patterns
-            item {
-                MenuItemCard(
-                    title = "Chart Patterns",
-                    subtitle = "Master 109 patterns • 48% complete",
-                    onClick = onNavigateToTutorials,
-                    icon = {
-                        Icon(
-                            Icons.Default.School,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // Module 2: Technical Analysis
-            item {
-                MenuItemCard(
-                    title = "Technical Analysis",
-                    subtitle = "Support & Resistance • 35% complete",
-                    onClick = onNavigateToTutorials,
-                    icon = {
-                        Icon(
-                            Icons.Default.TrendingUp,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // Module 3: Indicators
-            item {
-                MenuItemCard(
-                    title = "Indicators",
-                    subtitle = "RSI, MACD, Moving Averages • 25% complete",
-                    onClick = onNavigateToTutorials,
-                    icon = {
-                        Icon(
-                            Icons.Default.Analytics,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // Module 4: Trading Psychology
-            item {
-                MenuItemCard(
-                    title = "Trading Psychology",
-                    subtitle = "Risk & Money Management • 60% complete",
-                    onClick = onNavigateToTutorials,
-                    icon = {
-                        Icon(
-                            Icons.Default.Psychology,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // ACHIEVEMENTS SECTION
-            item {
-                NeonText(
-                    text = "ACHIEVEMENTS",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    glowColor = NeonGold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            
-            item {
-                MenuItemCard(
-                    title = "View All Achievements",
-                    subtitle = "7 of 15 unlocked",
-                    onClick = onNavigateToAchievements,
-                    icon = {
-                        Icon(
-                            Icons.Default.EmojiEvents,
-                            contentDescription = null,
-                            tint = NeonGold,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // RESOURCES SECTION
-            item {
-                NeonText(
-                    text = "RESOURCES",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    glowColor = NeonCyan,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            
-            item {
-                MenuItemCard(
-                    title = "Trading Book",
-                    subtitle = "Comprehensive trading guide",
-                    onClick = onNavigateToBook,
-                    icon = {
-                        Icon(
-                            Icons.Default.MenuBook,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // DISCLAIMER
-            item {
-                GlassMorphicCard(backgroundColor = Color(0xFF0D1219).copy(alpha = 0.7f)) {
-                    Row(
-                        modifier = Modifier.padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            FeatureGate(
+                feature = Feature.TRADING_BOOK,
+                onUpgradeClick = onNavigateToPaywall,
+                lockedContent = {
+                    InlineFeatureGate(
+                        feature = Feature.TRADING_BOOK,
+                        onUpgradeClick = onNavigateToPaywall
                     ) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Text(
-                            text = "Educational content only. Not financial advice.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
+                        BookCard(onClick = {})
                     }
                 }
+            ) {
+                BookCard(onClick = onNavigateToBook)
+            }
+            
+            Spacer(modifier = Modifier.height(AppSpacing.lg))
+            
+            SectionHeader(title = "Lessons")
+            Spacer(modifier = Modifier.height(AppSpacing.md))
+            
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                uiState.lessons.forEach { lesson ->
+                    LessonCard(
+                        lesson = lesson,
+                        onClick = {
+                            if (EntitlementManager.hasFeatureAccess(lesson.requiredTier)) {
+                                viewModel.markLessonComplete(lesson.id)
+                            } else {
+                                onNavigateToPaywall()
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BookCard(onClick: () -> Unit) {
+    MetallicCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppSpacing.md),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Book,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = AppColors.NeonGold
+            )
+            Column {
+                Text(
+                    text = "Trading Book",
+                    style = AppTypography.titleMedium,
+                    color = Color.White
+                )
+                Text(
+                    text = "Comprehensive pattern encyclopedia",
+                    style = AppTypography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LessonCard(
+    lesson: LearnViewModel.Lesson,
+    onClick: () -> Unit
+) {
+    FeatureGate(
+        feature = Feature.BASIC_EDUCATION,
+        lockedContent = {
+            InlineFeatureGate(
+                feature = Feature.BASIC_EDUCATION,
+                showUpgradePrompt = true
+            ) {
+                LessonCardContent(lesson, onClick)
+            }
+        }
+    ) {
+        LessonCardContent(lesson, onClick)
+    }
+}
+
+@Composable
+private fun LessonCardContent(lesson: LearnViewModel.Lesson, onClick: () -> Unit) {
+    MetallicCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppSpacing.md),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = lesson.title,
+                    style = AppTypography.titleSmall,
+                    color = Color.White
+                )
+                Text(
+                    text = lesson.description,
+                    style = AppTypography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+            
+            if (lesson.completed) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = "Completed",
+                    tint = AppColors.Success
+                )
+            } else {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Start",
+                    tint = AppColors.NeonCyan
+                )
             }
         }
     }
