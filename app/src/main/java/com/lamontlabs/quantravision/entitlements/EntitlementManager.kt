@@ -35,10 +35,10 @@ enum class Feature(val requiredTier: SubscriptionTier, val displayName: String) 
     LIMITED_HIGHLIGHTS(SubscriptionTier.FREE, "3 Highlights/Day"),
     UNLIMITED_HIGHLIGHTS(SubscriptionTier.STARTER, "Unlimited Highlights"),
     
-    REGIME_NAVIGATOR(SubscriptionTier.STANDARD, "Regime Navigator"),
-    PATTERN_TO_PLAN(SubscriptionTier.PRO, "Pattern-to-Plan Engine"),
-    BEHAVIORAL_GUARDRAILS(SubscriptionTier.STANDARD, "Behavioral Guardrails"),
-    PROOF_CAPSULES(SubscriptionTier.PRO, "Proof Capsules"),
+    REGIME_NAVIGATOR(SubscriptionTier.PRO, "Market Regime Detection"),
+    PATTERN_TO_PLAN(SubscriptionTier.PRO, "Trade Scenario Generator"),
+    BEHAVIORAL_GUARDRAILS(SubscriptionTier.PRO, "Psychology Protection"),
+    PROOF_CAPSULES(SubscriptionTier.PRO, "Detection Audit Trail"),
     
     BASIC_OVERLAY(SubscriptionTier.FREE, "Basic Pattern Overlay"),
     TRADE_SCENARIOS(SubscriptionTier.PRO, "Trade Scenario Overlay"),

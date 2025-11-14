@@ -25,7 +25,8 @@ import com.lamontlabs.quantravision.billing.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaywallScreen(
-    onDismiss: () -> Unit,
+    onBack: () -> Unit,
+    onPurchaseComplete: () -> Unit = {},
     onBook: (() -> Unit)? = null,
     onStarter: (() -> Unit)? = null,
     onStandard: (() -> Unit)? = null,
@@ -38,7 +39,7 @@ fun PaywallScreen(
             TopAppBar(
                 title = { Text("Upgrade") },
                 navigationIcon = {
-                    IconButton(onClick = onDismiss) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.Default.Close, "Close")
                     }
                 }
@@ -74,10 +75,24 @@ fun PaywallScreen(
                     activity = activity,
                     billingManager = billingManager,
                     entitlements = entitlements,
-                    onStarter = onStarter ?: {},
-                    onStandard = onStandard ?: {},
-                    onPro = onPro ?: {},
-                    onBook = onBook,
+                    onStarter = {
+                        onStarter?.invoke()
+                        onPurchaseComplete()
+                    },
+                    onStandard = {
+                        onStandard?.invoke()
+                        onPurchaseComplete()
+                    },
+                    onPro = {
+                        onPro?.invoke()
+                        onPurchaseComplete()
+                    },
+                    onBook = if (onBook != null) {
+                        {
+                            onBook.invoke()
+                            onPurchaseComplete()
+                        }
+                    } else null,
                     hasBook = hasBook
                 )
             } else {

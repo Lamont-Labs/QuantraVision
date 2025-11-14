@@ -128,64 +128,35 @@ private fun AppNavigationHost(
         // Main tab routes - NO BottomNavScaffold wrapper (bottom bar is at top level)
         composable("home") {
             com.lamontlabs.quantravision.ui.screens.home.HomeScreen(
-                context = context,
-                onStartScan = onStartScan,
-                onViewDetections = { navController.navigate("detections_list") },
-                onNavigateToAnalytics = { navController.navigate("analytics") }
+                onNavigateToAchievements = { navController.navigate("achievements") },
+                onNavigateToAnalytics = { navController.navigate("analytics") },
+                onNavigateToPaywall = { navController.navigate("paywall") }
             )
         }
         
         composable("markets") {
             com.lamontlabs.quantravision.ui.screens.markets.MarketsScreen(
-                context = context,
-                onNavigateToTemplates = { navController.navigate("templates") },
-                onNavigateToIntelligence = { navController.navigate("intelligence") },
-                onNavigateToPredictions = { navController.navigate("predictions") },
-                onNavigateToBacktesting = { navController.navigate("backtesting") },
-                onNavigateToSimilarity = { navController.navigate("similarity") },
-                onNavigateToMultiChart = { navController.navigate("multi_chart") }
+                onNavigateToPaywall = { navController.navigate("paywall") }
             )
         }
         
         composable("scan") {
             com.lamontlabs.quantravision.ui.screens.scan.ScanScreen(
-                context = context,
-                onStartScan = onStartScan
+                onNavigateToPaywall = { navController.navigate("paywall") }
             )
         }
         
         composable("learn") {
             com.lamontlabs.quantravision.ui.screens.learn.LearnScreen(
-                context = context,
                 onNavigateToTutorials = { navController.navigate("tutorials") },
                 onNavigateToBook = { navController.navigate("book") },
-                onNavigateToAchievements = { navController.navigate("achievements") }
+                onNavigateToPaywall = { navController.navigate("paywall") }
             )
         }
         
         composable("settings") {
-            SettingsScreenWithNav(
-                navController = navController,
-                onClearDatabase = {
-                    scope.launch {
-                        try {
-                            val db = PatternDatabase.getInstance(context)
-                            db.clearAllTables()
-                            android.widget.Toast.makeText(
-                                context,
-                                "Database cleared successfully",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: Exception) {
-                            timber.log.Timber.e(e, "Failed to clear database (likely locked)")
-                            android.widget.Toast.makeText(
-                                context,
-                                "Failed to clear database. Please try again.",
-                                android.widget.Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
+            SettingsScreen(
+                onNavigateToPaywall = { navController.navigate("paywall") }
             )
         }
 
@@ -274,7 +245,7 @@ private fun AppNavigationHost(
             IntelligenceScreen(
                 onBack = { navController.popBackStack() },
                 onRegimeNavigator = { navController.navigate("regime_navigator") },
-                onPatternToPlan = { navController.navigate("pattern_plan") },
+                onPatternToPlan = { navController.navigate("pattern_to_plan") },
                 onBehavioralGuardrails = { navController.navigate("behavioral_guardrails") },
                 onProofCapsules = { navController.navigate("proof_capsules") },
                 onUpgrade = { navController.navigate("paywall") }
@@ -282,24 +253,39 @@ private fun AppNavigationHost(
         }
 
         composable("regime_navigator") {
-            RegimeNavigatorScreen(onBack = { navController.popBackStack() })
+            com.lamontlabs.quantravision.ui.screens.intelligence.RegimeNavigatorScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToPaywall = { navController.navigate("paywall") }
+            )
         }
 
-        composable("pattern_plan") {
-            PatternPlanScreen(onBack = { navController.popBackStack() })
+        composable("pattern_to_plan") {
+            com.lamontlabs.quantravision.ui.screens.intelligence.PatternToPlanScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToPaywall = { navController.navigate("paywall") }
+            )
         }
 
         composable("behavioral_guardrails") {
-            BehavioralGuardrailsScreen(onBack = { navController.popBackStack() })
+            com.lamontlabs.quantravision.ui.screens.intelligence.BehavioralGuardrailsScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToPaywall = { navController.navigate("paywall") }
+            )
         }
 
         composable("proof_capsules") {
-            ProofCapsuleScreen(onBack = { navController.popBackStack() })
+            com.lamontlabs.quantravision.ui.screens.intelligence.ProofCapsulesScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToPaywall = { navController.navigate("paywall") }
+            )
         }
 
         composable("paywall") {
             com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
-                onDismiss = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onPurchaseComplete = {
+                    navController.popBackStack()
+                }
             )
         }
         }
