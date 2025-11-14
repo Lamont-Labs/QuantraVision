@@ -14,22 +14,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.achievements.model.Achievement
 import com.lamontlabs.quantravision.entitlements.SubscriptionTier
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.components.EmptyState
+import com.lamontlabs.quantravision.ui.components.ErrorState
+import com.lamontlabs.quantravision.ui.components.LoadingScreen
 import com.lamontlabs.quantravision.ui.components.SectionHeader
 import com.lamontlabs.quantravision.ui.components.TierBadge
 import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
 import com.lamontlabs.quantravision.ui.viewmodels.HomeViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+import com.lamontlabs.quantravision.utils.FormatUtils
 
 /**
  * HomeScreen - Main dashboard displaying user stats, recent detections, and achievements
@@ -46,83 +50,110 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
     StaticBrandBackground {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(AppSpacing.base)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    NeonText(
-                        text = "Welcome, ${uiState.userName}",
-                        style = AppTypography.headlineMedium
-                    )
-                    Spacer(modifier = Modifier.height(AppSpacing.xs))
-                    TierBadge(tier = uiState.currentTier)
-                }
-                
-                IconButton(onClick = onNavigateToPaywall) {
-                    Icon(Icons.Default.Star, "Upgrade", tint = AppColors.NeonGold)
-                }
+        when {
+            uiState.isLoading -> {
+                LoadingScreen(message = "Loading dashboard...")
             }
-            
-            Spacer(modifier = Modifier.height(AppSpacing.lg))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-            ) {
-                StatCard(
-                    title = "Highlights Today",
-                    value = "${uiState.todayHighlightCount}",
-                    subtitle = if (uiState.currentTier == SubscriptionTier.FREE) {
-                        "${uiState.highlightQuotaRemaining} remaining"
-                    } else "Unlimited",
-                    modifier = Modifier.weight(1f)
-                )
-                
-                StatCard(
-                    title = "Achievements",
-                    value = "${uiState.achievements.size}",
-                    subtitle = "unlocked",
-                    modifier = Modifier.weight(1f),
-                    onClick = onNavigateToAchievements
+            uiState.errorMessage != null -> {
+                ErrorState(
+                    message = uiState.errorMessage!!,
+                    onRetry = { viewModel.refresh() }
                 )
             }
-            
-            Spacer(modifier = Modifier.height(AppSpacing.lg))
-            
-            SectionHeader(
-                title = "Recent Detections",
-                actionText = "View All",
-                onActionClick = onNavigateToAnalytics
-            )
-            
-            Spacer(modifier = Modifier.height(AppSpacing.md))
-            
-            if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+            else -> {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(AppSpacing.base)
                 ) {
-                    CircularProgressIndicator()
-                }
-            } else if (uiState.recentDetections.isEmpty()) {
-                EmptyState(
-                    icon = Icons.Default.Search,
-                    message = "No patterns detected yet",
-                    actionText = "Start Scanning",
-                    onActionClick = { }
-                )
-            } else {
-                uiState.recentDetections.take(5).forEach { detection ->
-                    DetectionCard(detection = detection)
-                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            NeonText(
+                                text = "Welcome, ${uiState.userName}",
+                                style = AppTypography.headlineMedium
+                            )
+                            Spacer(modifier = Modifier.height(AppSpacing.xs))
+                            TierBadge(tier = uiState.currentTier)
+                        }
+                        
+                        IconButton(
+                            onClick = onNavigateToPaywall,
+                            modifier = Modifier.semantics { contentDescription = "Upgrade tier" }
+                        ) {
+                            Icon(Icons.Default.Star, contentDescription = "Upgrade", tint = AppColors.NeonGold)
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                    ) {
+                        StatCard(
+                            title = "Highlights Today",
+                            value = "${uiState.todayHighlightCount}",
+                            subtitle = if (uiState.currentTier == SubscriptionTier.FREE) {
+                                "${uiState.highlightQuotaRemaining} remaining"
+                            } else "Unlimited",
+                            modifier = Modifier.weight(1f)
+                        )
+                        
+                        StatCard(
+                            title = "Achievements",
+                            value = "${uiState.achievements.size}",
+                            subtitle = "unlocked",
+                            modifier = Modifier.weight(1f),
+                            onClick = onNavigateToAchievements
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    
+                    SectionHeader(
+                        title = "Recent Detections",
+                        actionText = "View All",
+                        onActionClick = onNavigateToAnalytics
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
+                    
+                    if (uiState.recentDetections.isEmpty()) {
+                        EmptyState(
+                            icon = Icons.Default.Search,
+                            message = "No patterns detected yet",
+                            description = "Start scanning charts to detect patterns",
+                            actionText = null,
+                            onActionClick = null
+                        )
+                    } else {
+                        uiState.recentDetections.take(5).forEach { detection ->
+                            DetectionCard(detection = detection)
+                            Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    
+                    if (uiState.achievements.isNotEmpty()) {
+                        SectionHeader(
+                            title = "Recent Achievements",
+                            actionText = "View All",
+                            onActionClick = onNavigateToAchievements
+                        )
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.md))
+                        
+                        uiState.achievements.take(3).forEach { achievement ->
+                            AchievementMiniCard(achievement = achievement)
+                            Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        }
+                    }
                 }
             }
         }
@@ -183,14 +214,17 @@ private fun DetectionCard(detection: PatternMatch) {
                     color = Color.White
                 )
                 Text(
-                    text = "Confidence: ${(detection.confidence * 100).toInt()}%",
+                    text = "Confidence: ${FormatUtils.formatConfidence(detection.confidence)}",
                     style = AppTypography.bodySmall,
-                    color = AppColors.NeonCyan
+                    color = AppColors.NeonCyan,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Pattern confidence ${(detection.confidence * 100).toInt()} percent"
+                    }
                 )
             }
             
             Text(
-                text = formatTimestamp(detection.timestamp),
+                text = FormatUtils.formatTimestamp(detection.timestamp),
                 style = AppTypography.labelSmall,
                 color = Color.White.copy(alpha = 0.5f)
             )
@@ -198,17 +232,34 @@ private fun DetectionCard(detection: PatternMatch) {
     }
 }
 
-private fun formatTimestamp(timestamp: Long): String {
-    val now = System.currentTimeMillis()
-    val diff = now - timestamp
-    
-    return when {
-        diff < 60_000 -> "Just now"
-        diff < 3600_000 -> "${diff / 60_000}m ago"
-        diff < 86400_000 -> "${diff / 3600_000}h ago"
-        else -> {
-            val sdf = SimpleDateFormat("MMM dd", Locale.getDefault())
-            sdf.format(Date(timestamp))
+@Composable
+private fun AchievementMiniCard(achievement: Achievement) {
+    MetallicCard(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppSpacing.md),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.EmojiEvents,
+                contentDescription = null,
+                tint = AppColors.NeonGold,
+                modifier = Modifier.size(24.dp)
+            )
+            Column {
+                Text(
+                    text = achievement.title,
+                    style = AppTypography.titleSmall,
+                    color = Color.White
+                )
+                Text(
+                    text = "Achievement unlocked!",
+                    style = AppTypography.labelSmall,
+                    color = AppColors.Success
+                )
+            }
         }
     }
 }

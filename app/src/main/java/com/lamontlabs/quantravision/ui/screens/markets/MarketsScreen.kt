@@ -14,19 +14,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lamontlabs.quantravision.entitlements.Feature
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.components.EmptyState
 import com.lamontlabs.quantravision.ui.components.ErrorState
 import com.lamontlabs.quantravision.ui.components.FeatureGate
+import com.lamontlabs.quantravision.ui.components.LoadingScreen
 import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppElevation
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
 import com.lamontlabs.quantravision.ui.viewmodels.MarketsViewModel
+import com.lamontlabs.quantravision.utils.ColorUtils
+import com.lamontlabs.quantravision.utils.FormatUtils
 
 /**
  * MarketsScreen - Real-time market data display
@@ -57,25 +63,36 @@ fun MarketsScreen(
                 
                 Spacer(modifier = Modifier.height(AppSpacing.md))
                 
-                if (uiState.isLoading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                when {
+                    uiState.isLoading -> {
+                        LoadingScreen(message = "Loading market data...")
                     }
-                } else if (uiState.errorMessage != null) {
-                    ErrorState(
-                        message = uiState.errorMessage!!,
-                        onRetry = { viewModel.refreshMarkets() }
-                    )
-                } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-                    ) {
-                        items(uiState.markets) { market ->
-                            MarketCard(
-                                market = market,
-                                isSelected = market == uiState.selectedMarket,
-                                onClick = { viewModel.selectMarket(market) }
-                            )
+                    uiState.errorMessage != null -> {
+                        ErrorState(
+                            message = uiState.errorMessage!!,
+                            onRetry = { viewModel.refreshMarkets() }
+                        )
+                    }
+                    uiState.markets.isEmpty() -> {
+                        EmptyState(
+                            icon = Icons.Default.TrendingUp,
+                            message = "No market data available",
+                            description = "Market data will appear here when available",
+                            actionText = "Refresh",
+                            onActionClick = { viewModel.refreshMarkets() }
+                        )
+                    }
+                    else -> {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                        ) {
+                            items(uiState.markets) { market ->
+                                MarketCard(
+                                    market = market,
+                                    isSelected = market == uiState.selectedMarket,
+                                    onClick = { viewModel.selectMarket(market) }
+                                )
+                            }
                         }
                     }
                 }
@@ -99,7 +116,12 @@ private fun MarketCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(AppSpacing.md),
+                .padding(AppSpacing.md)
+                .semantics(mergeDescendants = true) {
+                    contentDescription = "${market.symbol} at ${FormatUtils.formatCurrency(market.price)}, " +
+                        "change ${FormatUtils.formatPriceChange(market.change)}, " +
+                        "${FormatUtils.formatPercentage(market.changePercent.toFloat())}"
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -110,21 +132,21 @@ private fun MarketCard(
                     color = Color.White
                 )
                 Text(
-                    text = "$${String.format("%.2f", market.price)}",
+                    text = FormatUtils.formatCurrency(market.price),
                     style = AppTypography.bodyLarge,
                     color = Color.White
                 )
             }
             
             Column(horizontalAlignment = Alignment.End) {
-                val changeColor = if (market.change >= 0) AppColors.Success else AppColors.Error
+                val changeColor = ColorUtils.getPriceChangeColor(market.change)
                 Text(
-                    text = "${if (market.change >= 0) "+" else ""}${String.format("%.2f", market.change)}",
+                    text = FormatUtils.formatPriceChange(market.change),
                     style = AppTypography.bodyMedium,
                     color = changeColor
                 )
                 Text(
-                    text = "${if (market.changePercent >= 0) "+" else ""}${String.format("%.2f", market.changePercent)}%",
+                    text = FormatUtils.formatPercentage(market.changePercent.toFloat()),
                     style = AppTypography.labelMedium,
                     color = changeColor
                 )

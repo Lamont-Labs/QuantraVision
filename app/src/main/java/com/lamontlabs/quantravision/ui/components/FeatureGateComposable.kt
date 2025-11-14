@@ -164,7 +164,7 @@ private fun DefaultLockedContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = null,
+                        contentDescription = "Upgrade",
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(AppSpacing.sm))
@@ -205,7 +205,7 @@ fun TierBadge(
         ) {
             Icon(
                 imageVector = getTierIcon(tier),
-                contentDescription = null,
+                contentDescription = "${tier.name} tier required",
                 modifier = Modifier.size(16.dp),
                 tint = getTierColor(tier)
             )

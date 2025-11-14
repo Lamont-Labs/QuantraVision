@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
@@ -71,7 +73,7 @@ fun SettingsScreen(
                         }
                         
                         Button(onClick = onNavigateToPaywall) {
-                            Icon(Icons.Default.Star, null)
+                            Icon(Icons.Default.Star, contentDescription = "Upgrade")
                             Spacer(modifier = Modifier.width(AppSpacing.xs))
                             Text("Upgrade")
                         }
@@ -173,7 +175,10 @@ private fun SettingToggle(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            enabled = enabled
+            enabled = enabled,
+            modifier = Modifier.semantics {
+                contentDescription = "$title is ${if (checked) "enabled" else "disabled"}"
+            }
         )
     }
 }

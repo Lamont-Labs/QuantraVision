@@ -19,8 +19,6 @@ import com.lamontlabs.quantravision.achievements.model.Achievement
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
-import com.lamontlabs.quantravision.ui.components.EmptyState
-import com.lamontlabs.quantravision.ui.components.LoadingScreen
 import com.lamontlabs.quantravision.ui.components.SectionHeader
 import com.lamontlabs.quantravision.ui.theme.*
 import kotlinx.coroutines.launch
@@ -63,90 +61,83 @@ fun AchievementsScreen(
         }
     ) { paddingValues ->
         StaticBrandBackground {
-            when {
-                isLoading -> {
-                    LoadingScreen(message = "Loading achievements...")
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-                allAchievements.isEmpty() -> {
-                    EmptyState(
-                        icon = Icons.Default.EmojiEvents,
-                        message = "No achievements available",
-                        description = "Complete actions to unlock achievements",
-                        actionText = null,
-                        onActionClick = null
-                    )
-                }
-                else -> {
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .padding(AppSpacing.base)
-                    ) {
-                        MetallicCard(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(AppSpacing.md),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column {
-                                    NeonText(
-                                        text = "${unlockedAchievements.size}/${allAchievements.size}",
-                                        style = AppTypography.headlineLarge
-                                    )
-                                    Text(
-                                        text = "Achievements Unlocked",
-                                        style = AppTypography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.7f)
-                                    )
-                                }
-                                
-                                Icon(
-                                    Icons.Default.EmojiEvents,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
-                                    tint = AppColors.NeonGold
+            } else {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(AppSpacing.base)
+                ) {
+                    MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(AppSpacing.md),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                NeonText(
+                                    text = "${unlockedAchievements.size}/${allAchievements.size}",
+                                    style = AppTypography.headlineLarge
                                 )
+                                Text(
+                                    text = "Achievements Unlocked",
+                                    style = AppTypography.bodyMedium,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                            }
+                            
+                            Icon(
+                                Icons.Default.EmojiEvents,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = AppColors.NeonGold
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                    ) {
+                        if (unlockedAchievements.isNotEmpty()) {
+                            item {
+                                SectionHeader(title = "Unlocked")
+                                Spacer(modifier = Modifier.height(AppSpacing.sm))
+                            }
+                            
+                            items(unlockedAchievements) { achievement ->
+                                AchievementCard(
+                                    achievement = achievement,
+                                    unlocked = true
+                                )
+                            }
+                            
+                            item {
+                                Spacer(modifier = Modifier.height(AppSpacing.md))
                             }
                         }
                         
-                        Spacer(modifier = Modifier.height(AppSpacing.lg))
-                        
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-                        ) {
-                            if (unlockedAchievements.isNotEmpty()) {
-                                item {
-                                    SectionHeader(title = "Unlocked")
-                                    Spacer(modifier = Modifier.height(AppSpacing.sm))
-                                }
-                                
-                                items(unlockedAchievements) { achievement ->
-                                    AchievementCard(
-                                        achievement = achievement,
-                                        unlocked = true
-                                    )
-                                }
-                                
-                                item {
-                                    Spacer(modifier = Modifier.height(AppSpacing.md))
-                                }
+                        if (lockedAchievements.isNotEmpty()) {
+                            item {
+                                SectionHeader(title = "Locked")
+                                Spacer(modifier = Modifier.height(AppSpacing.sm))
                             }
                             
-                            if (lockedAchievements.isNotEmpty()) {
-                                item {
-                                    SectionHeader(title = "Locked")
-                                    Spacer(modifier = Modifier.height(AppSpacing.sm))
-                                }
-                                
-                                items(lockedAchievements) { achievement ->
-                                    AchievementCard(
-                                        achievement = achievement,
-                                        unlocked = false
-                                    )
-                                }
+                            items(lockedAchievements) { achievement ->
+                                AchievementCard(
+                                    achievement = achievement,
+                                    unlocked = false
+                                )
                             }
                         }
                     }

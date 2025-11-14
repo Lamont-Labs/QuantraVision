@@ -27,7 +27,8 @@ class HomeViewModel(private val context: Context) : ViewModel() {
         val highlightQuotaRemaining: Int = 0,
         val achievements: List<Achievement> = emptyList(),
         val showWelcomeMessage: Boolean = true,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val errorMessage: String? = null
     )
     
     private val _uiState = MutableStateFlow(UiState())
@@ -43,7 +44,7 @@ class HomeViewModel(private val context: Context) : ViewModel() {
     
     private fun loadHomeData() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             
             try {
                 val quotaState = HighlightQuota.state(context)
@@ -55,7 +56,11 @@ class HomeViewModel(private val context: Context) : ViewModel() {
                 
                 val recentDetections = database.patternDao().getRecent(since)
                 
-                val achievements = achievementManager.getAllAchievements()
+                val allAchievements = achievementManager.getAllAchievements()
+                val recentAchievements = allAchievements
+                    .filter { it.isUnlocked }
+                    .sortedByDescending { it.unlockedAt ?: 0L }
+                    .take(5)
                 
                 val currentTier = EntitlementManager.currentTier.value
                 
@@ -68,13 +73,18 @@ class HomeViewModel(private val context: Context) : ViewModel() {
                         recentDetections = recentDetections.take(10),
                         todayHighlightCount = quotaState.count,
                         highlightQuotaRemaining = quotaRemaining,
-                        achievements = achievements.filter { ach -> ach.isUnlocked }.take(5),
+                        achievements = recentAchievements,
                         showWelcomeMessage = showWelcome,
                         isLoading = false
                     )
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Failed to load dashboard data"
+                    )
+                }
             }
         }
     }
@@ -85,6 +95,10 @@ class HomeViewModel(private val context: Context) : ViewModel() {
                 _uiState.update { it.copy(currentTier = tier) }
             }
         }
+    }
+    
+    fun refresh() {
+        loadHomeData()
     }
     
     fun refreshData() {

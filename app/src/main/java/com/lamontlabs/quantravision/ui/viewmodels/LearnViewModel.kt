@@ -28,7 +28,8 @@ class LearnViewModel(private val context: Context) : ViewModel() {
         val hasBookAccess: Boolean = false,
         val completedLessonCount: Int = 0,
         val totalLessonCount: Int = 0,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val errorMessage: String? = null
     )
     
     private val _uiState = MutableStateFlow(UiState())
@@ -46,7 +47,7 @@ class LearnViewModel(private val context: Context) : ViewModel() {
     
     private fun loadLessons() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             
             try {
                 val allLessons = LessonRepository.getAllLessons()
@@ -81,7 +82,12 @@ class LearnViewModel(private val context: Context) : ViewModel() {
                     )
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Failed to load lessons"
+                    )
+                }
             }
         }
     }
@@ -96,8 +102,16 @@ class LearnViewModel(private val context: Context) : ViewModel() {
                 
                 loadLessons()
             } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(errorMessage = "Failed to mark lesson complete")
+                }
             }
         }
+    }
+    
+    fun refresh() {
+        checkBookAccess()
+        loadLessons()
     }
     
     fun refreshLessons() {

@@ -21,8 +21,11 @@ import com.lamontlabs.quantravision.entitlements.Feature
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.components.EmptyState
+import com.lamontlabs.quantravision.ui.components.ErrorState
 import com.lamontlabs.quantravision.ui.components.FeatureGate
 import com.lamontlabs.quantravision.ui.components.InlineFeatureGate
+import com.lamontlabs.quantravision.ui.components.LoadingScreen
 import com.lamontlabs.quantravision.ui.components.SectionHeader
 import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
@@ -101,26 +104,39 @@ fun LearnScreen(
             SectionHeader(title = "Lessons")
             Spacer(modifier = Modifier.height(AppSpacing.md))
             
-            if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+            when {
+                uiState.isLoading -> {
+                    LoadingScreen(message = "Loading lessons...")
                 }
-            } else {
-                uiState.lessons.forEach { lesson ->
-                    LessonCard(
-                        lesson = lesson,
-                        onClick = {
-                            if (EntitlementManager.hasFeatureAccess(lesson.requiredTier)) {
-                                viewModel.markLessonComplete(lesson.id)
-                            } else {
-                                onNavigateToPaywall()
-                            }
-                        }
+                uiState.errorMessage != null -> {
+                    ErrorState(
+                        message = uiState.errorMessage!!,
+                        onRetry = { viewModel.refresh() }
                     )
-                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                }
+                uiState.lessons.isEmpty() -> {
+                    EmptyState(
+                        icon = Icons.Default.School,
+                        message = "No lessons available yet",
+                        description = "Check back soon for educational content",
+                        actionText = null,
+                        onActionClick = null
+                    )
+                }
+                else -> {
+                    uiState.lessons.forEach { lesson ->
+                        LessonCard(
+                            lesson = lesson,
+                            onClick = {
+                                if (EntitlementManager.hasFeatureAccess(lesson.requiredTier)) {
+                                    viewModel.markLessonComplete(lesson.id)
+                                } else {
+                                    onNavigateToPaywall()
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    }
                 }
             }
         }

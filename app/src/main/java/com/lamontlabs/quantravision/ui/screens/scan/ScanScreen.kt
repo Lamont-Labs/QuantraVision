@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -81,7 +83,7 @@ fun ScanScreen(
                         ) {
                             Icon(
                                 Icons.Default.Star,
-                                contentDescription = null,
+                                contentDescription = "PRO feature",
                                 tint = AppColors.TierPro
                             )
                             Text(
@@ -119,7 +121,14 @@ fun ScanScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp),
+                    .height(64.dp)
+                    .semantics {
+                        contentDescription = if (uiState.isOverlayActive) {
+                            "Stop pattern scanner"
+                        } else {
+                            "Start pattern scanner"
+                        }
+                    },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (uiState.isOverlayActive) AppColors.Error else AppColors.Success
                 )

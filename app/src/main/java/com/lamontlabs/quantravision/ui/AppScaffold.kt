@@ -161,7 +161,7 @@ private fun AppNavigationHost(
         }
 
         composable("achievements") {
-            com.lamontlabs.quantravision.ui.screens.achievements.NewAchievementsScreen(
+            com.lamontlabs.quantravision.ui.screens.achievements.AchievementsScreen(
                 onBack = { navController.popBackStack() }
             )
         }

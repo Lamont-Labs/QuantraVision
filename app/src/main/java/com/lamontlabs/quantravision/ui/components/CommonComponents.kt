@@ -60,6 +60,7 @@ fun SectionHeader(
  * 
  * @param icon Icon to display
  * @param message Message to show user
+ * @param description Optional secondary description text
  * @param actionText Optional action button text
  * @param onActionClick Optional callback for action button
  */
@@ -67,6 +68,7 @@ fun SectionHeader(
 fun EmptyState(
     icon: ImageVector,
     message: String,
+    description: String? = null,
     actionText: String? = null,
     onActionClick: (() -> Unit)? = null
 ) {
@@ -79,19 +81,29 @@ fun EmptyState(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = "Empty state indicator",
             modifier = Modifier.size(64.dp),
             tint = Color.White.copy(alpha = 0.3f)
         )
         
         Text(
             text = message,
-            style = AppTypography.bodyLarge,
-            color = Color.White.copy(alpha = 0.5f),
+            style = AppTypography.titleLarge,
+            color = Color.White.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
         )
         
+        if (description != null) {
+            Text(
+                text = description,
+                style = AppTypography.bodyMedium,
+                color = Color.White.copy(alpha = 0.5f),
+                textAlign = TextAlign.Center
+            )
+        }
+        
         if (actionText != null && onActionClick != null) {
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             Button(onClick = onActionClick) {
                 Text(actionText)
             }
@@ -119,7 +131,7 @@ fun ErrorState(
     ) {
         Icon(
             imageVector = Icons.Default.Error,
-            contentDescription = null,
+            contentDescription = "Error occurred",
             modifier = Modifier.size(64.dp),
             tint = AppColors.Error
         )
@@ -133,9 +145,54 @@ fun ErrorState(
         
         if (onRetry != null) {
             Button(onClick = onRetry) {
-                Icon(Icons.Default.Refresh, null)
+                Icon(Icons.Default.Refresh, contentDescription = "Retry")
                 Spacer(modifier = Modifier.width(AppSpacing.sm))
                 Text("Retry")
+            }
+        }
+    }
+}
+
+/**
+ * SuccessState - Displays success message with optional action
+ * 
+ * @param icon Icon to display (defaults to CheckCircle)
+ * @param message Success message to show user
+ * @param actionText Optional action button text
+ * @param onActionClick Optional callback for action button
+ */
+@Composable
+fun SuccessState(
+    icon: ImageVector = Icons.Default.CheckCircle,
+    message: String,
+    actionText: String? = null,
+    onActionClick: (() -> Unit)? = null
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(AppSpacing.xxl),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "Success",
+            modifier = Modifier.size(64.dp),
+            tint = AppColors.Success
+        )
+        
+        Text(
+            text = message,
+            style = AppTypography.titleLarge,
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+        
+        if (actionText != null && onActionClick != null) {
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
+            Button(onClick = onActionClick) {
+                Text(actionText)
             }
         }
     }

@@ -659,3 +659,82 @@ fun MetallicText(
  * - Dialogs/modals: `high` (8dp)
  * - Navigation: `highest` (16dp)
  */
+
+// ============================================================================
+// ACCESSIBILITY SYSTEM
+// ============================================================================
+
+/**
+ * Accessibility constants and semantic labels for screen readers.
+ * 
+ * ## Usage
+ * ```kotlin
+ * IconButton(
+ *     onClick = onBack,
+ *     modifier = Modifier.minimumTouchTarget()
+ * ) {
+ *     Icon(Icons.Default.ArrowBack, contentDescription = AppAccessibility.Labels.NAVIGATE_BACK)
+ * }
+ * 
+ * // Using minimum touch target size
+ * Button(
+ *     modifier = Modifier.heightIn(min = AppAccessibility.MinTouchTargetSize)
+ * ) {
+ *     Text("Action")
+ * }
+ * ```
+ * 
+ * ## WCAG Standards
+ * - Minimum touch target: 48dp (Material Design 3)
+ * - Contrast ratio for normal text: 4.5:1 (WCAG AA)
+ * - Contrast ratio for large text: 3.0:1 (WCAG AA)
+ */
+object AppAccessibility {
+    /**
+     * Minimum touch target size per Material Design guidelines (48dp)
+     * All interactive elements should meet this minimum size
+     */
+    val MinTouchTargetSize = 48.dp
+    
+    /**
+     * WCAG AA standard minimum contrast ratio for normal text
+     */
+    val MinContrastRatio = 4.5f
+    
+    /**
+     * WCAG AA standard minimum contrast ratio for large text (18pt+)
+     */
+    val MinLargeTextContrastRatio = 3.0f
+    
+    /**
+     * Semantic labels for common actions used throughout the app.
+     * 
+     * These provide consistent, descriptive labels for screen readers,
+     * improving accessibility for users with visual impairments.
+     */
+    object Labels {
+        /** Navigate back to previous screen */
+        const val NAVIGATE_BACK = "Navigate back"
+        
+        /** Upgrade subscription tier */
+        const val UPGRADE_TIER = "Upgrade subscription tier"
+        
+        /** Close dialog or modal */
+        const val CLOSE = "Close"
+        
+        /** Open menu */
+        const val MENU = "Menu"
+        
+        /** Navigate to settings */
+        const val SETTINGS = "Settings"
+        
+        /** Search functionality */
+        const val SEARCH = "Search"
+        
+        /** Filter content */
+        const val FILTER = "Filter"
+        
+        /** Sort content */
+        const val SORT = "Sort"
+    }
+}

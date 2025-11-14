@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
-import com.lamontlabs.quantravision.entitlements.SubscriptionTier
+import com.lamontlabs.quantravision.entitlements.Feature
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +39,7 @@ class MarketsViewModel(private val context: Context) : ViewModel() {
     }
     
     private fun checkMarketAccess() {
-        val hasAccess = EntitlementManager.hasFeatureAccess(SubscriptionTier.STANDARD)
+        val hasAccess = EntitlementManager.hasFeatureAccess(Feature.MARKET_DATA)
         _uiState.update { it.copy(hasMarketAccess = hasAccess) }
     }
     
