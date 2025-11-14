@@ -34,6 +34,7 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 - **Pattern-to-Plan Overlay**: Integrates trade scenario display (entry, stop, target) directly into the overlay for instant user access (Pro tier).
 - **Offline Functionality**: All core features, including AI pattern recognition and Intelligence Stack, operate entirely on-device without cloud dependencies.
 - **Bottom Navigation Structure**: Features a 5-tab Material 3 NavigationBar with Home, Markets, Scan, Learn, and Settings sections, each offering specific functionalities and information.
+- **Tier Onboarding System**: Post-purchase celebration modal showcasing unlocked features with deep-links, contextual discovery banners on relevant screens highlighting new capabilities, reactive state management using FeatureDiscoveryStore with CompletableDeferred initialization latch to prevent deadlocks, and session-persistent dismissal tracking via SharedPreferences.
 
 ## External Dependencies
 
