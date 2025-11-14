@@ -18,6 +18,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun QuantraVisionApp(context: Context) {
     QuantraVisionTheme {
+        LaunchedEffect(Unit) {
+            com.lamontlabs.quantravision.entitlements.EntitlementManager.initialize(context)
+        }
+        
         val navController = rememberNavController()
         val detectorBridge = remember { HybridDetectorBridge(context) }
         val legacyDetector = remember { PatternDetector(context) }
@@ -25,7 +29,7 @@ fun QuantraVisionApp(context: Context) {
         val onboardingManager = remember { OnboardingManager.getInstance(context) }
         
         val startDestination = if (onboardingManager.hasCompletedOnboarding()) {
-            "dashboard"
+            "home"
         } else {
             "onboarding"
         }
@@ -48,74 +52,121 @@ private fun AppNavigationHost(
     detectorBridge: HybridDetectorBridge,
     legacyDetector: PatternDetector,
     scope: kotlinx.coroutines.CoroutineScope,
-    startDestination: String = "dashboard"
+    startDestination: String = "home"
 ) {
-    NavHost(navController, startDestination = startDestination) {
+    val onStartScan = {
+        // Start the overlay service for real-time detection
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (!android.provider.Settings.canDrawOverlays(context)) {
+                // Request overlay permission
+                android.widget.Toast.makeText(
+                    context,
+                    "Please grant overlay permission to start detection",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                val intent = android.content.Intent(
+                    android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    android.net.Uri.parse("package:${context.packageName}")
+                )
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            } else {
+                // Start overlay service
+                val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent)
+                } else {
+                    context.startService(serviceIntent)
+                }
+                android.widget.Toast.makeText(
+                    context,
+                    "Overlay started! Open your trading app to see pattern detection",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
+        } else {
+            // For older Android versions
+            val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
+            context.startService(serviceIntent)
+            android.widget.Toast.makeText(
+                context,
+                "Overlay started! Open your trading app to see pattern detection",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    
+    // Define main tab routes that should show the bottom bar
+    val mainTabRoutes = setOf("home", "markets", "scan", "learn", "settings")
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val showBottomBar = currentRoute in mainTabRoutes
+    
+    // ONE Scaffold wrapping ONE NavHost - correct architecture
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                com.lamontlabs.quantravision.ui.navigation.BottomNavigationBar(navController = navController)
+            }
+        }
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = Modifier.padding(paddingValues)
+        ) {
         composable("onboarding") {
             com.lamontlabs.quantravision.ui.screens.onboarding.OnboardingScreen(
                 onComplete = {
-                    navController.navigate("dashboard") {
+                    navController.navigate("home") {
                         popUpTo("onboarding") { inclusive = true }
                     }
                 }
             )
         }
-        composable("dashboard") {
-            com.lamontlabs.quantravision.ui.navigation.BottomNavScaffold(
+        
+        // Main tab routes - NO BottomNavScaffold wrapper (bottom bar is at top level)
+        composable("home") {
+            com.lamontlabs.quantravision.ui.screens.home.HomeScreen(
                 context = context,
-                onStartScan = {
-                    // Start the overlay service for real-time detection
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        if (!android.provider.Settings.canDrawOverlays(context)) {
-                            // Request overlay permission
-                            android.widget.Toast.makeText(
-                                context,
-                                "Please grant overlay permission to start detection",
-                                android.widget.Toast.LENGTH_LONG
-                            ).show()
-                            val intent = android.content.Intent(
-                                android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                android.net.Uri.parse("package:${context.packageName}")
-                            )
-                            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                        } else {
-                            // Start overlay service
-                            val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                context.startForegroundService(serviceIntent)
-                            } else {
-                                context.startService(serviceIntent)
-                            }
-                            android.widget.Toast.makeText(
-                                context,
-                                "Overlay started! Open your trading app to see pattern detection",
-                                android.widget.Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        // For older Android versions
-                        val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
-                        context.startService(serviceIntent)
-                        android.widget.Toast.makeText(
-                            context,
-                            "Overlay started! Open your trading app to see pattern detection",
-                            android.widget.Toast.LENGTH_LONG
-                        ).show()
-                    }
-                },
-                onNavigateToDetections = { navController.navigate("detections_list") },
+                onStartScan = onStartScan,
+                onViewDetections = { navController.navigate("detections_list") },
+                onNavigateToAnalytics = { navController.navigate("analytics") }
+            )
+        }
+        
+        composable("markets") {
+            com.lamontlabs.quantravision.ui.screens.markets.MarketsScreen(
+                context = context,
                 onNavigateToTemplates = { navController.navigate("templates") },
                 onNavigateToIntelligence = { navController.navigate("intelligence") },
-                onNavigateToTutorials = { navController.navigate("tutorials") },
-                onNavigateToBook = { navController.navigate("book") },
-                onNavigateToAchievements = { navController.navigate("achievements") },
-                onNavigateToAnalytics = { navController.navigate("analytics") },
                 onNavigateToPredictions = { navController.navigate("predictions") },
                 onNavigateToBacktesting = { navController.navigate("backtesting") },
                 onNavigateToSimilarity = { navController.navigate("similarity") },
-                onNavigateToMultiChart = { navController.navigate("multi_chart") },
-                onClearHighlights = {
+                onNavigateToMultiChart = { navController.navigate("multi_chart") }
+            )
+        }
+        
+        composable("scan") {
+            com.lamontlabs.quantravision.ui.screens.scan.ScanScreen(
+                context = context,
+                onStartScan = onStartScan
+            )
+        }
+        
+        composable("learn") {
+            com.lamontlabs.quantravision.ui.screens.learn.LearnScreen(
+                context = context,
+                onNavigateToTutorials = { navController.navigate("tutorials") },
+                onNavigateToBook = { navController.navigate("book") },
+                onNavigateToAchievements = { navController.navigate("achievements") }
+            )
+        }
+        
+        composable("settings") {
+            SettingsScreenWithNav(
+                navController = navController,
+                onClearDatabase = {
                     scope.launch {
                         try {
                             val db = PatternDatabase.getInstance(context)
@@ -185,10 +236,6 @@ private fun AppNavigationHost(
             )
         }
 
-        composable("settings") {
-            SettingsScreenWithNav(navController = navController)
-        }
-
         composable("legal/{documentType}") { backStackEntry ->
             val documentTypeString = backStackEntry.arguments?.getString("documentType") ?: "privacy"
             val documentType = when (documentTypeString) {
@@ -254,6 +301,7 @@ private fun AppNavigationHost(
             com.lamontlabs.quantravision.ui.paywall.PaywallScreen(
                 onDismiss = { navController.popBackStack() }
             )
+        }
         }
     }
 }

@@ -29,7 +29,8 @@ fun SettingsScreen() {
 @Composable
 fun SettingsScreenWithNav(
     navController: androidx.navigation.NavHostController? = null,
-    onClearDatabase: (() -> Unit)? = null
+    onClearDatabase: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val alertManager = remember { AlertManager.getInstance(context) }
@@ -41,7 +42,7 @@ fun SettingsScreenWithNav(
     var selectedOpacity by remember { mutableStateOf(logoPrefs.getLogoOpacity()) }
     var badgeVisible by remember { mutableStateOf(logoPrefs.isBadgeVisible()) }
     
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Static brand background
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         

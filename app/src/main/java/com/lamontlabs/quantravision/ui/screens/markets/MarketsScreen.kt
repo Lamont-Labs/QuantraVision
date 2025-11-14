@@ -26,9 +26,10 @@ fun MarketsScreen(
     onNavigateToPredictions: () -> Unit,
     onNavigateToBacktesting: () -> Unit,
     onNavigateToSimilarity: () -> Unit,
-    onNavigateToMultiChart: () -> Unit
+    onNavigateToMultiChart: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Static brand background
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         

@@ -1,6 +1,5 @@
 package com.lamontlabs.quantravision.ui.navigation
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,15 +10,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.lamontlabs.quantravision.ui.screens.home.HomeScreen
-import com.lamontlabs.quantravision.ui.screens.markets.MarketsScreen
-import com.lamontlabs.quantravision.ui.screens.scan.ScanScreen
-import com.lamontlabs.quantravision.ui.screens.learn.LearnScreen
-import com.lamontlabs.quantravision.ui.SettingsScreenWithNav
 
 /**
  * Bottom Navigation Items
@@ -38,27 +29,12 @@ sealed class BottomNavItem(
 }
 
 /**
- * Main Bottom Navigation Scaffold
- * Professional Material 3 navigation pattern with 5 tabs
+ * Bottom Navigation Bar Component
+ * Standalone navigation bar to be used at the top level of the app
+ * This should be placed in a Scaffold's bottomBar slot, NOT wrapping individual screens
  */
 @Composable
-fun BottomNavScaffold(
-    context: Context,
-    navController: NavHostController = rememberNavController(),
-    onStartScan: () -> Unit,
-    onNavigateToDetections: () -> Unit,
-    onNavigateToTemplates: () -> Unit,
-    onNavigateToIntelligence: () -> Unit,
-    onNavigateToTutorials: () -> Unit,
-    onNavigateToBook: () -> Unit,
-    onNavigateToAchievements: () -> Unit,
-    onNavigateToAnalytics: () -> Unit,
-    onNavigateToPredictions: () -> Unit,
-    onNavigateToBacktesting: () -> Unit,
-    onNavigateToSimilarity: () -> Unit,
-    onNavigateToMultiChart: () -> Unit,
-    onClearHighlights: () -> Unit
-) {
+fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Markets,
@@ -66,92 +42,58 @@ fun BottomNavScaffold(
         BottomNavItem.Learn,
         BottomNavItem.Settings
     )
+    
+    NavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+        
+        items.forEach { item ->
+            NavigationBarItem(
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                label = { 
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp
+                        ),
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    ) 
+                },
+                selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                onClick = {
+                    navController.navigate(item.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
 
+/**
+ * @deprecated Use BottomNavigationBar directly in the top-level Scaffold instead.
+ * This wrapper creates duplicate bottom bars when used inside NavHost routes.
+ */
+@Deprecated(
+    message = "Use BottomNavigationBar in top-level Scaffold instead",
+    replaceWith = ReplaceWith("BottomNavigationBar(navController)")
+)
+@Composable
+fun BottomNavScaffold(
+    navController: NavHostController,
+    content: @Composable (PaddingValues) -> Unit
+) {
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                items.forEach { item ->
-                    NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { 
-                            Text(
-                                text = item.title,
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 11.sp
-                                ),
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            ) 
-                        },
-                        selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                // Pop up to the start destination to avoid building up a large stack
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                // Avoid multiple copies of the same destination
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+            BottomNavigationBar(navController = navController)
         }
     ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = BottomNavItem.Home.route,
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            composable(BottomNavItem.Home.route) {
-                HomeScreen(
-                    context = context,
-                    onStartScan = onStartScan,
-                    onViewDetections = onNavigateToDetections,
-                    onNavigateToAnalytics = onNavigateToAnalytics
-                )
-            }
-            
-            composable(BottomNavItem.Markets.route) {
-                MarketsScreen(
-                    context = context,
-                    onNavigateToTemplates = onNavigateToTemplates,
-                    onNavigateToIntelligence = onNavigateToIntelligence,
-                    onNavigateToPredictions = onNavigateToPredictions,
-                    onNavigateToBacktesting = onNavigateToBacktesting,
-                    onNavigateToSimilarity = onNavigateToSimilarity,
-                    onNavigateToMultiChart = onNavigateToMultiChart
-                )
-            }
-            
-            composable(BottomNavItem.Scan.route) {
-                ScanScreen(
-                    context = context,
-                    onStartScan = onStartScan
-                )
-            }
-            
-            composable(BottomNavItem.Learn.route) {
-                LearnScreen(
-                    context = context,
-                    onNavigateToTutorials = onNavigateToTutorials,
-                    onNavigateToBook = onNavigateToBook,
-                    onNavigateToAchievements = onNavigateToAchievements
-                )
-            }
-            
-            composable(BottomNavItem.Settings.route) {
-                SettingsScreenWithNav(
-                    onClearDatabase = onClearHighlights
-                )
-            }
-        }
+        content(paddingValues)
     }
 }

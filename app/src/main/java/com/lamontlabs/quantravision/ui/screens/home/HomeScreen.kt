@@ -52,7 +52,8 @@ fun HomeScreen(
     context: Context,
     onStartScan: () -> Unit,
     onViewDetections: () -> Unit,
-    onNavigateToAnalytics: () -> Unit
+    onNavigateToAnalytics: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
     val db = remember { PatternDatabase.getInstance(context) }
@@ -81,7 +82,7 @@ fun HomeScreen(
     }
     
     // Simple static background matching the branded logo
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Static brand background - no animations
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         

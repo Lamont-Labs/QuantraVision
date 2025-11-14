@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.android.billingclient.api.*
+import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import kotlinx.coroutines.*
 
 /**
@@ -66,6 +67,8 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     var onTierChanged: ((String) -> Unit)? = null
 
     fun initialize(onReady: () -> Unit = {}) {
+        EntitlementManager.initialize(activity)
+        
         client = BillingClient.newBuilder(activity)
             .enablePendingPurchases()
             .setListener(this)
@@ -395,6 +398,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                     .putString(unlockedKey, normalizedTier)
                     .putString(purchaseTokenKey, token)
                     .apply()
+                EntitlementManager.updateTierFromString(normalizedTier)
                 onTierChanged?.invoke(normalizedTier)
             } catch (e: Exception) {
                 Log.e("BillingManager", "CRITICAL: Failed to save entitlements - purchase may not be persisted", e)

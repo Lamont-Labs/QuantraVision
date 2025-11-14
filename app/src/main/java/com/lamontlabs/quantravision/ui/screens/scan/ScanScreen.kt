@@ -22,9 +22,10 @@ import com.lamontlabs.quantravision.ui.*
 @Composable
 fun ScanScreen(
     context: Context,
-    onStartScan: () -> Unit
+    onStartScan: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Static brand background
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         

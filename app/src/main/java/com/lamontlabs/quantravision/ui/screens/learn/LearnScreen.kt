@@ -23,9 +23,10 @@ fun LearnScreen(
     context: Context,
     onNavigateToTutorials: () -> Unit,
     onNavigateToBook: () -> Unit,
-    onNavigateToAchievements: () -> Unit
+    onNavigateToAchievements: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Static brand background
         StaticBrandBackground(modifier = Modifier.fillMaxSize())
         
