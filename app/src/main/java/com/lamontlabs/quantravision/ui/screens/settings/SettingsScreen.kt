@@ -1,4 +1,4 @@
-package com.lamontlabs.quantravision.ui
+package com.lamontlabs.quantravision.ui.screens.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.entitlements.Feature
+import com.lamontlabs.quantravision.ui.MetallicCard
+import com.lamontlabs.quantravision.ui.NeonText
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.components.InlineFeatureGate
 import com.lamontlabs.quantravision.ui.components.SectionHeader
 import com.lamontlabs.quantravision.ui.components.TierBadge

@@ -14,6 +14,7 @@ import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
+import com.lamontlabs.quantravision.ui.screens.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
 @Composable
