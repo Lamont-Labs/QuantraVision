@@ -42,7 +42,7 @@ class SettingsViewModel(private val context: Context) : ViewModel() {
                 val voiceAlertsEnabled = prefs.getBoolean("voice_alerts_enabled", false)
                 
                 val appVersion = try {
-                    context.packageManager.getPackageInfo(context.packageName, 0).versionName
+                    context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "Unknown"
                 } catch (e: Exception) {
                     "Unknown"
                 }
