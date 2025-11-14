@@ -44,8 +44,8 @@ object FormatUtils {
         return String.format(Locale.US, "%.${decimalPlaces}f%%", value)
     }
     
-    fun formatConfidence(confidence: Float): String {
-        return "${(confidence * 100f).toInt()}%"
+    fun formatConfidence(confidence: Double): String {
+        return "${(confidence * 100.0).toInt()}%"
     }
     
     fun formatNumber(value: Long): String {
