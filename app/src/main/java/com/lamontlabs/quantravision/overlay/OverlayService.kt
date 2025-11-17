@@ -207,7 +207,7 @@ class OverlayService : Service() {
                 return
             }
             
-            mediaProjectionCallback = object : MediaProjection.Callback() {
+            val callback = object : MediaProjection.Callback() {
                 override fun onStop() {
                     super.onStop()
                     Log.i(TAG, "MediaProjection stopped by system or user")
@@ -228,8 +228,9 @@ class OverlayService : Service() {
                     Log.d(TAG, "Captured content visibility changed: $isVisible")
                 }
             }
+            mediaProjectionCallback = callback
             
-            mediaProjection?.registerCallback(mediaProjectionCallback, null)
+            mediaProjection?.registerCallback(callback, null)
             
             startLiveCapture()
             
