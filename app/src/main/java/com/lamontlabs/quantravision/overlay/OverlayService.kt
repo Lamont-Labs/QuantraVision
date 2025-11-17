@@ -518,7 +518,8 @@ class OverlayService : Service() {
         liveOverlayController = null
         
         try {
-            mediaProjectionCallback?.let { callback ->
+            val callback = mediaProjectionCallback
+            if (callback != null) {
                 mediaProjection?.unregisterCallback(callback)
             }
         } catch (e: android.os.DeadObjectException) {
