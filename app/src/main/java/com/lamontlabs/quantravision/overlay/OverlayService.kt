@@ -77,18 +77,11 @@ class OverlayService : Service() {
 
         resultController = PatternResultController(scope, autoClearTimeoutMs = 10_000L)
         resultController.onResultsCleared = {
-            if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            scope.launch(Dispatchers.Main.immediate) {
                 enhancedOverlayView?.clearAll()
                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                 floatingLogo?.updatePatternCount(0)
                 stateMachine.transitionToIdle()
-            } else {
-                scope.launch(Dispatchers.Main) {
-                    enhancedOverlayView?.clearAll()
-                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-                    floatingLogo?.updatePatternCount(0)
-                    stateMachine.transitionToIdle()
-                }
             }
         }
 
