@@ -3,7 +3,9 @@ package com.lamontlabs.quantravision.overlay
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
+import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
@@ -25,6 +27,7 @@ import com.lamontlabs.quantravision.PatternDetector
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.TradeScenarioInfo
 import com.lamontlabs.quantravision.planner.PatternToPlanEngine
+import com.lamontlabs.quantravision.capture.LiveOverlayController
 import kotlinx.coroutines.*
 
 class OverlayService : Service() {
@@ -39,6 +42,11 @@ class OverlayService : Service() {
     private var behavioralGuardrails: BehavioralGuardrails? = null
     private var alertManager: AlertManager? = null
     private var glowingBorderView: GlowingBorderView? = null
+    private var liveOverlayController: LiveOverlayController? = null
+    private var mediaProjection: MediaProjection? = null
+    private var mediaProjectionCallback: MediaProjection.Callback? = null
+    private var isLiveCaptureActive = false
+    private var detectionLoopJob: Job? = null
     private val TAG = "OverlayService"
 
     override fun onCreate() {
@@ -151,8 +159,200 @@ class OverlayService : Service() {
         }
         
         startForegroundService()
-        startDetectionLoop()
         startPowerPolicyApplicator()
+    }
+    
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        
+        if (intent?.action == "ACTION_START_WITH_PROJECTION") {
+            val resultCode = intent.getIntExtra("resultCode", -1)
+            val data = intent.getParcelableExtra<Intent>("data")
+            
+            if (resultCode != -1 && data != null) {
+                initializeMediaProjection(resultCode, data)
+            } else {
+                Log.e(TAG, "Invalid MediaProjection data received")
+                Toast.makeText(this, "Failed to start screen capture", Toast.LENGTH_SHORT).show()
+                stopSelf()
+            }
+        } else {
+            startDetectionLoop()
+        }
+        
+        return START_STICKY
+    }
+    
+    private fun initializeMediaProjection(resultCode: Int, data: Intent) {
+        scope.launch {
+            detectionLoopJob?.cancelAndJoin()
+            detectionLoopJob = null
+            
+            cleanupMediaProjectionResources()
+            delay(100)
+            
+            initializeProjectionInternal(resultCode, data)
+        }
+    }
+    
+    private fun initializeProjectionInternal(resultCode: Int, data: Intent) {
+        try {
+            val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
+            
+            if (mediaProjection == null) {
+                Log.e(TAG, "Failed to get MediaProjection")
+                Toast.makeText(this, "Screen capture permission denied", Toast.LENGTH_SHORT).show()
+                stopSelf()
+                return
+            }
+            
+            mediaProjectionCallback = object : MediaProjection.Callback() {
+                override fun onStop() {
+                    super.onStop()
+                    Log.i(TAG, "MediaProjection stopped by system or user")
+                    cleanupMediaProjectionResources()
+                    scope.launch(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "Screen capture stopped", Toast.LENGTH_SHORT).show()
+                        stopSelf()
+                    }
+                }
+                
+                override fun onCapturedContentResize(width: Int, height: Int) {
+                    super.onCapturedContentResize(width, height)
+                    Log.d(TAG, "Captured content resized to ${width}x${height}")
+                }
+                
+                override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
+                    super.onCapturedContentVisibilityChanged(isVisible)
+                    Log.d(TAG, "Captured content visibility changed: $isVisible")
+                }
+            }
+            
+            mediaProjection?.registerCallback(mediaProjectionCallback, null)
+            
+            startLiveCapture()
+            
+        } catch (e: SecurityException) {
+            Log.e(TAG, "SecurityException during MediaProjection initialization", e)
+            Toast.makeText(this, "Permission denied. Please grant screen capture permission.", Toast.LENGTH_LONG).show()
+            stopSelf()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to initialize MediaProjection", e)
+            Toast.makeText(this, "Failed to start screen capture: ${e.message}", Toast.LENGTH_SHORT).show()
+            stopSelf()
+        }
+    }
+    
+    private fun startLiveCapture() {
+        val displayMetrics = resources.displayMetrics
+        val width = 720
+        val height = 1280
+        val densityDpi = displayMetrics.densityDpi
+        
+        liveOverlayController = LiveOverlayController(
+            scope = scope,
+            onFrame = { bitmap ->
+                processFrame(bitmap)
+            },
+            targetFps = 12
+        )
+        
+        try {
+            mediaProjection?.let { projection ->
+                liveOverlayController?.start(projection, width, height, densityDpi)
+                isLiveCaptureActive = true
+                Log.i(TAG, "Live screen capture started at ${width}x${height}")
+            }
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "IllegalStateException during virtual display creation", e)
+            Toast.makeText(this, "Failed to create virtual display", Toast.LENGTH_SHORT).show()
+            stopSelf()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start live capture", e)
+            Toast.makeText(this, "Failed to start screen capture", Toast.LENGTH_SHORT).show()
+            stopSelf()
+        }
+    }
+    
+    private fun processFrame(bitmap: android.graphics.Bitmap) {
+        scope.launch {
+            try {
+                val detectorBridge = HybridDetectorBridge(applicationContext)
+                val patternToPlanEngine = PatternToPlanEngine(applicationContext)
+                val isProActive = ProFeatureGate.isActive(applicationContext)
+                
+                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
+                
+                val results = detectorBridge.detectPatternsOptimized(bitmap)
+                val allDetectedPatterns = mutableListOf<PatternMatch>()
+                
+                for (pattern in results) {
+                    val patternMatch = pattern.toPatternMatch()
+                    
+                    if (isProActive) {
+                        try {
+                            val mockPrice = 100.0
+                            val scenario = patternToPlanEngine.generateScenario(
+                                patternMatch = patternMatch,
+                                currentPrice = mockPrice
+                            )
+                            
+                            patternMatch.tradeScenario = TradeScenarioInfo(
+                                entryPrice = scenario.entryPrice,
+                                stopLoss = scenario.stopLoss,
+                                takeProfit = scenario.takeProfit
+                            )
+                        } catch (e: Exception) {
+                            timber.log.Timber.w(e, "Failed to generate trade scenario for ${patternMatch.patternName}")
+                        }
+                    }
+                    
+                    allDetectedPatterns.add(patternMatch)
+                    
+                    behavioralGuardrails?.let { guardrails ->
+                        scope.launch {
+                            try {
+                                val warning = guardrails.recordView(patternMatch)
+                                warning?.let { w ->
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            applicationContext,
+                                            w.message,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                timber.log.Timber.e(e, "Error recording behavioral view")
+                            }
+                        }
+                    }
+                }
+                
+                withContext(Dispatchers.Main) {
+                    enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                    floatingLogo?.updatePatternCount(allDetectedPatterns.size)
+                    
+                    if (allDetectedPatterns.isNotEmpty()) {
+                        val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
+                        if (highConfidencePattern) {
+                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                            glowingBorderView?.setPulsing(true)
+                        } else {
+                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                            glowingBorderView?.setPulsing(true)
+                        }
+                    } else {
+                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                        glowingBorderView?.setPulsing(false)
+                    }
+                }
+                
+            } catch (e: Exception) {
+                timber.log.Timber.e(e, "Error processing frame for pattern detection")
+            }
+        }
     }
 
     private fun startForegroundService() {
@@ -165,7 +365,12 @@ class OverlayService : Service() {
                 .setContentText("Running detection service with AI optimizations")
                 .setSmallIcon(R.drawable.ic_overlay_marker)
                 .build()
-            startForeground(1, notification)
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+            } else {
+                startForeground(1, notification)
+            }
         } catch (e: Exception) {
             // CRITICAL: Notification creation can fail on custom ROMs (~0.1-0.5%)
             Log.e(TAG, "Failed to start foreground service (custom ROM or notification restrictions)", e)
@@ -175,13 +380,18 @@ class OverlayService : Service() {
     }
 
     private fun startDetectionLoop() {
-        scope.launch {
+        if (isLiveCaptureActive) {
+            Log.i(TAG, "Skipping detection loop - live capture is active")
+            return
+        }
+        
+        detectionLoopJob = scope.launch {
             val detectorBridge = HybridDetectorBridge(applicationContext)
             val legacyDetector = PatternDetector(applicationContext)
             val patternToPlanEngine = PatternToPlanEngine(applicationContext)
             val isProActive = ProFeatureGate.isActive(applicationContext)
             
-            while (isActive) {
+            while (isActive && !isLiveCaptureActive) {
                 try {
                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
                     
@@ -296,8 +506,54 @@ class OverlayService : Service() {
         policyApplicator = PowerPolicyApplicator(applicationContext)
         policyApplicator?.start(scope, intervalMs = 5000)
     }
+    
+    private fun cleanupMediaProjectionResources() {
+        isLiveCaptureActive = false
+        
+        try {
+            liveOverlayController?.stop()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error stopping live overlay controller", e)
+        }
+        liveOverlayController = null
+        
+        try {
+            mediaProjectionCallback?.let { callback ->
+                mediaProjection?.unregisterCallback(callback)
+            }
+        } catch (e: android.os.DeadObjectException) {
+            Log.w(TAG, "MediaProjection already dead, skipping unregisterCallback()")
+        } catch (e: android.os.RemoteException) {
+            Log.w(TAG, "RemoteException unregistering callback", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error unregistering MediaProjection callback", e)
+        }
+        mediaProjectionCallback = null
+        
+        try {
+            mediaProjection?.stop()
+        } catch (e: android.os.DeadObjectException) {
+            Log.w(TAG, "MediaProjection already dead, skipping stop()")
+        } catch (e: android.os.RemoteException) {
+            Log.w(TAG, "RemoteException stopping MediaProjection", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error stopping MediaProjection", e)
+        }
+        mediaProjection = null
+    }
 
     override fun onDestroy() {
+        runBlocking {
+            try {
+                detectionLoopJob?.cancelAndJoin()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error canceling detection loop job", e)
+            }
+            detectionLoopJob = null
+            
+            cleanupMediaProjectionResources()
+        }
+        
         try {
             policyApplicator?.stop()
         } catch (e: Exception) {

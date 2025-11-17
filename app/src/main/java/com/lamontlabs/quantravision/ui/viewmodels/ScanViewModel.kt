@@ -1,14 +1,19 @@
 package com.lamontlabs.quantravision.ui.viewmodels
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.entitlements.Feature
 import com.lamontlabs.quantravision.entitlements.SubscriptionTier
+import com.lamontlabs.quantravision.overlay.OverlayService
 import com.lamontlabs.quantravision.quota.HighlightQuota
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,11 +30,16 @@ class ScanViewModel(private val context: Context) : ViewModel() {
         val scanLearningProgress: Int = 0,
         val highlightsUsedToday: Int = 0,
         val highlightsRemaining: Int = 0,
-        val currentTier: SubscriptionTier = SubscriptionTier.FREE
+        val currentTier: SubscriptionTier = SubscriptionTier.FREE,
+        val mediaProjectionIntent: Intent? = null
     )
     
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    
+    private val mediaProjectionManager by lazy {
+        context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    }
     
     private val database = PatternDatabase.getInstance(context)
     
@@ -90,11 +100,38 @@ class ScanViewModel(private val context: Context) : ViewModel() {
         }
     }
     
-    fun startOverlay() {
+    fun requestMediaProjectionPermission() {
+        val intent = mediaProjectionManager.createScreenCaptureIntent()
+        _uiState.update { it.copy(mediaProjectionIntent = intent) }
+    }
+    
+    fun onMediaProjectionResult(result: ActivityResult) {
+        _uiState.update { it.copy(mediaProjectionIntent = null) }
+        
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            startOverlayService(result.resultCode, result.data!!)
+        }
+    }
+    
+    private fun startOverlayService(resultCode: Int, data: Intent) {
+        val serviceIntent = Intent(context, OverlayService::class.java).apply {
+            action = "ACTION_START_WITH_PROJECTION"
+            putExtra("resultCode", resultCode)
+            putExtra("data", data)
+        }
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent)
+        } else {
+            context.startService(serviceIntent)
+        }
+        
         _uiState.update { it.copy(isOverlayActive = true) }
     }
     
     fun stopOverlay() {
+        val serviceIntent = Intent(context, OverlayService::class.java)
+        context.stopService(serviceIntent)
         _uiState.update { it.copy(isOverlayActive = false) }
     }
     

@@ -1,10 +1,13 @@
 package com.lamontlabs.quantravision.ui.screens.scan
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +40,18 @@ fun ScanScreen(
     val context = LocalContext.current
     val viewModel = remember { ScanViewModel(context) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    val mediaProjectionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.onMediaProjectionResult(result)
+    }
+    
+    LaunchedEffect(uiState.mediaProjectionIntent) {
+        uiState.mediaProjectionIntent?.let { intent ->
+            mediaProjectionLauncher.launch(intent)
+        }
+    }
     
     StaticBrandBackground {
         Column(
@@ -116,7 +131,7 @@ fun ScanScreen(
                     if (uiState.isOverlayActive) {
                         viewModel.stopOverlay()
                     } else if (uiState.hasOverlayPermission) {
-                        viewModel.startOverlay()
+                        viewModel.requestMediaProjectionPermission()
                     }
                 },
                 modifier = Modifier
