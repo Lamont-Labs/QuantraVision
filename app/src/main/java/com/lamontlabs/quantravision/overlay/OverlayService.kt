@@ -106,6 +106,7 @@ class OverlayService : Service() {
         resultController.onResultsCleared = {
             scope.launch(Dispatchers.Main.immediate) {
                 enhancedOverlayView?.clearAll()
+                overlayView?.visibility = android.view.View.GONE  // Hide ENTIRE overlay container when cleared
                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                 floatingLogo?.updatePatternCount(0)
                 stateMachine.transitionToIdle()
@@ -137,8 +138,10 @@ class OverlayService : Service() {
             if (enhancedOverlayView == null) {
                 Log.e(TAG, "CRITICAL: EnhancedOverlayView not found in overlay_layout")
             } else {
+                // Start with ENTIRE overlay container invisible to prevent touch interception
+                overlayView?.visibility = android.view.View.GONE
                 setupEnhancedOverlayTouchHandling()
-                Log.i(TAG, "✓ EnhancedOverlayView initialized successfully")
+                Log.i(TAG, "✓ EnhancedOverlayView initialized (overlay hidden until patterns detected)")
             }
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to add overlay view (permission likely revoked mid-operation)", e)
@@ -365,7 +368,14 @@ class OverlayService : Service() {
                 }
                 
             withContext(Dispatchers.Main) {
-                enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                // Show ENTIRE overlay container when patterns detected, hide when empty
+                if (allDetectedPatterns.isNotEmpty()) {
+                    overlayView?.visibility = android.view.View.VISIBLE
+                    enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                } else {
+                    overlayView?.visibility = android.view.View.GONE
+                }
+                
                 floatingLogo?.updatePatternCount(allDetectedPatterns.size)
                 
                 if (allDetectedPatterns.isNotEmpty()) {

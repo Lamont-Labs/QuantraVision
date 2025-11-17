@@ -16,7 +16,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_qv_logo"
+        android:src="@drawable/ic_q_logo"
         android:scaleType="fitCenter"
         android:clickable="false"
         android:focusable="false"
