@@ -127,6 +127,9 @@ class ScanViewModel(private val context: Context) : ViewModel() {
         }
         
         _uiState.update { it.copy(isOverlayActive = true) }
+        
+        // Minimize app to background so overlay is visible
+        (context as? Activity)?.moveTaskToBack(true)
     }
     
     fun stopOverlay() {
