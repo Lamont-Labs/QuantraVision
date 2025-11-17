@@ -79,13 +79,20 @@ class FloatingLogoButton(
     }
 
     fun show() {
+        android.util.Log.i("FloatingLogoButton", "show() called, isAdded=$isAdded")
         if (!isAdded) {
             try {
+                android.util.Log.i("FloatingLogoButton", "Adding logo view to WindowManager at position (${params.x}, ${params.y})...")
                 windowManager.addView(logoView, params)
                 isAdded = true
+                android.util.Log.i("FloatingLogoButton", "✓ Logo view successfully added to WindowManager")
             } catch (e: Exception) {
-                android.util.Log.e("FloatingLogoButton", "Failed to add logo view", e)
+                android.util.Log.e("FloatingLogoButton", "CRITICAL: Failed to add logo view to WindowManager", e)
+                android.util.Log.e("FloatingLogoButton", "Error details: ${e.message}")
+                android.util.Log.e("FloatingLogoButton", "Stack trace:", e)
             }
+        } else {
+            android.util.Log.w("FloatingLogoButton", "show() called but view already added, skipping")
         }
     }
 

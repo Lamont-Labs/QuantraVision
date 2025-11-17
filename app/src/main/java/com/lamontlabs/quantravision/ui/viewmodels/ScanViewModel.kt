@@ -114,23 +114,33 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     }
     
     private fun startOverlayService(resultCode: Int, data: Intent) {
+        android.util.Log.i("ScanViewModel", "=== Starting OverlayService ===")
+        android.util.Log.i("ScanViewModel", "MediaProjection resultCode: $resultCode")
+        android.util.Log.i("ScanViewModel", "MediaProjection data: $data")
+        
         // Store permission result in companion object (can't pass Intent through Intent extras)
         OverlayService.setMediaProjectionResult(resultCode, data)
+        android.util.Log.i("ScanViewModel", "✓ MediaProjection result stored in companion object")
         
         val serviceIntent = Intent(context, OverlayService::class.java).apply {
             action = "ACTION_START_WITH_PROJECTION"
         }
         
+        android.util.Log.i("ScanViewModel", "Starting service...")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(serviceIntent)
+            android.util.Log.i("ScanViewModel", "✓ startForegroundService() called")
         } else {
             context.startService(serviceIntent)
+            android.util.Log.i("ScanViewModel", "✓ startService() called")
         }
         
         _uiState.update { it.copy(isOverlayActive = true) }
         
         // Minimize app to background so overlay is visible
+        android.util.Log.i("ScanViewModel", "Minimizing app to background...")
         (context as? Activity)?.moveTaskToBack(true)
+        android.util.Log.i("ScanViewModel", "✓ App moved to background")
     }
     
     fun stopOverlay() {

@@ -69,6 +69,7 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.i(TAG, "=== OverlayService.onCreate() START ===")
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
@@ -80,6 +81,8 @@ class OverlayService : Service() {
                 ).show()
                 stopSelf()
                 return
+            } else {
+                Log.i(TAG, "✓ Overlay permission granted")
             }
         }
         
@@ -96,6 +99,7 @@ class OverlayService : Service() {
             return
         }
         windowManager = wm
+        Log.i(TAG, "✓ WindowManager initialized")
 
         resultController = PatternResultController(scope, autoClearTimeoutMs = 10_000L)
         resultController.onResultsCleared = {
@@ -120,9 +124,11 @@ class OverlayService : Service() {
             PixelFormat.TRANSLUCENT
         )
 
+        Log.i(TAG, "Creating full-screen overlay view...")
         try {
             windowManager.addView(view, params)
             overlayView = view
+            Log.i(TAG, "✓ Full-screen overlay view added")
             
             enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
             
@@ -130,7 +136,7 @@ class OverlayService : Service() {
                 Log.e(TAG, "CRITICAL: EnhancedOverlayView not found in overlay_layout")
             } else {
                 setupEnhancedOverlayTouchHandling()
-                Log.i(TAG, "EnhancedOverlayView initialized successfully")
+                Log.i(TAG, "✓ EnhancedOverlayView initialized successfully")
             }
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to add overlay view (permission likely revoked mid-operation)", e)
@@ -145,42 +151,64 @@ class OverlayService : Service() {
         
         if (ProFeatureGate.isActive(this)) {
             behavioralGuardrails = BehavioralGuardrails(this)
+            Log.i(TAG, "✓ Behavioral guardrails initialized")
         }
         
+        Log.i(TAG, "Creating FloatingMenu...")
         floatingMenu = FloatingMenu(this, windowManager) {
             stopSelf()
         }
+        Log.i(TAG, "✓ FloatingMenu created")
         
-        floatingLogo = FloatingLogoButton(this, windowManager).apply {
-            onClickListener = {
-                handleTap()
+        Log.i(TAG, "Creating FloatingLogoButton...")
+        try {
+            floatingLogo = FloatingLogoButton(this, windowManager).apply {
+                Log.i(TAG, "Setting up FloatingLogoButton callbacks...")
+                onClickListener = {
+                    handleTap()
+                }
+                onLongPressListener = {
+                    handleLongPress()
+                }
+                Log.i(TAG, "Calling FloatingLogoButton.show()...")
+                show()
+                Log.i(TAG, "✓ FloatingLogoButton.show() completed")
+                setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
             }
-            onLongPressListener = {
-                handleLongPress()
-            }
-            show()
-            setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+            Log.i(TAG, "✓ FloatingLogoButton fully initialized")
+        } catch (e: Exception) {
+            Log.e(TAG, "CRITICAL: Failed to create FloatingLogoButton", e)
+            Toast.makeText(this, "Failed to create overlay button", Toast.LENGTH_LONG).show()
+            stopSelf()
+            return
         }
         
+        Log.i(TAG, "Starting foreground service...")
         startForegroundService()
+        Log.i(TAG, "=== OverlayService.onCreate() COMPLETE ===")
     }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        Log.i(TAG, "=== OverlayService.onStartCommand() START ===")
+        Log.i(TAG, "Intent action: ${intent?.action}")
         
         if (intent?.action == "ACTION_START_WITH_PROJECTION") {
+            Log.i(TAG, "Consuming MediaProjection result from companion object...")
             val result = consumeMediaProjectionResult()
             
             if (result != null) {
                 val (resultCode, data) = result
+                Log.i(TAG, "✓ MediaProjection result found (resultCode=$resultCode)")
                 initializeMediaProjection(resultCode, data)
             } else {
-                Log.e(TAG, "Invalid MediaProjection data received - permission result not stored")
+                Log.e(TAG, "CRITICAL: MediaProjection data is NULL - permission result not stored")
                 Toast.makeText(this, "Failed to start screen capture", Toast.LENGTH_SHORT).show()
                 stopSelf()
             }
         }
         
+        Log.i(TAG, "=== OverlayService.onStartCommand() COMPLETE ===")
         return START_STICKY
     }
     
