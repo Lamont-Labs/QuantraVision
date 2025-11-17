@@ -200,7 +200,7 @@ dependencies {
     implementation("com.itextpdf:itextpdf:5.5.13.3")
     
     // QR Code generation - ZXing
-    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:core:3.5.4")
     
     // Material Icons Extended - For additional icons
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
