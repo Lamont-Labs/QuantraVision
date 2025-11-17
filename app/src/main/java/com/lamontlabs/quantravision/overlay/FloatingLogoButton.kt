@@ -1,25 +1,27 @@
 package com.lamontlabs.quantravision.overlay
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import kotlin.math.abs
 
+/**
+ * FloatingLogoButton - Simplified version with NO ANIMATIONS
+ * 
+ * Shows Q logo in bottom-right corner with:
+ * - Visual feedback for detection status (static, no animations)
+ * - Drag-and-drop repositioning
+ * - Click and long-press callbacks
+ */
 class FloatingLogoButton(
     private val context: Context,
     private val windowManager: WindowManager
@@ -37,9 +39,6 @@ class FloatingLogoButton(
     private var initialTouchY = 0f
     private var isDragging = false
     private var dragStartTime = 0L
-    
-    private var pulseAnimator: ObjectAnimator? = null
-    private var ringRotationAnimator: ValueAnimator? = null
     
     private val longPressThreshold = 500L
     
@@ -107,57 +106,25 @@ class FloatingLogoButton(
         }
     }
 
-    private fun openMainApp() {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        }
-        context.startActivity(intent)
-    }
-
     fun setDetectionStatus(status: LogoBadge.DetectionStatus) {
         badge.setDetectionStatus(status)
         
+        // Static visual feedback without animations
         when (status) {
-            LogoBadge.DetectionStatus.SCANNING -> startScanningAnimation()
-            LogoBadge.DetectionStatus.PATTERNS_FOUND -> stopScanningAnimation()
-            LogoBadge.DetectionStatus.HIGH_CONFIDENCE -> startPulseAnimation()
-            LogoBadge.DetectionStatus.IDLE -> stopAllAnimations()
-        }
-    }
-
-    private fun startScanningAnimation() {
-        stopAllAnimations()
-        ringRotationAnimator = ValueAnimator.ofFloat(0f, 360f).apply {
-            duration = 2000
-            repeatCount = ValueAnimator.INFINITE
-            interpolator = LinearInterpolator()
-            addUpdateListener { animation ->
-                badge.setRingRotation(animation.animatedValue as Float)
+            LogoBadge.DetectionStatus.SCANNING -> {
+                // Slightly dim while scanning
+                logoImage.alpha = 0.8f
             }
-            start()
+            LogoBadge.DetectionStatus.PATTERNS_FOUND,
+            LogoBadge.DetectionStatus.HIGH_CONFIDENCE -> {
+                // Full opacity for patterns found
+                logoImage.alpha = 1f
+            }
+            LogoBadge.DetectionStatus.IDLE -> {
+                // Normal opacity
+                logoImage.alpha = 1f
+            }
         }
-    }
-
-    private fun startPulseAnimation() {
-        stopAllAnimations()
-        pulseAnimator = ObjectAnimator.ofFloat(logoImage, "alpha", 1f, 0.6f, 1f).apply {
-            duration = 1000
-            repeatCount = ObjectAnimator.INFINITE
-            start()
-        }
-    }
-
-    private fun stopScanningAnimation() {
-        ringRotationAnimator?.cancel()
-        ringRotationAnimator = null
-    }
-
-    private fun stopAllAnimations() {
-        pulseAnimator?.cancel()
-        pulseAnimator = null
-        ringRotationAnimator?.cancel()
-        ringRotationAnimator = null
-        logoImage.alpha = 1f
     }
 
     private fun setupTouchListener() {
@@ -216,45 +183,26 @@ class FloatingLogoButton(
         val logoHeight = logoView.height
         
         val centerX = params.x + logoWidth / 2
-        val centerY = params.y + logoHeight / 2
         
         val snapMargin = 20
         
-        val targetX: Int
-        val targetY: Int
-        
-        if (centerX < screenWidth / 3) {
-            targetX = snapMargin
-        } else if (centerX > 2 * screenWidth / 3) {
-            targetX = screenWidth - logoWidth - snapMargin
+        // Snap to left or right edge based on current position
+        val targetX = if (centerX < screenWidth / 2) {
+            snapMargin
         } else {
-            targetX = params.x
+            screenWidth - logoWidth - snapMargin
         }
         
-        targetY = params.y.coerceIn(snapMargin, screenHeight - logoHeight - snapMargin)
+        val targetY = params.y.coerceIn(snapMargin, screenHeight - logoHeight - snapMargin)
         
-        val animator = ValueAnimator.ofInt(params.x, targetX)
-        animator.addUpdateListener { animation ->
-            params.x = animation.animatedValue as Int
-            windowManager.updateViewLayout(logoView, params)
-        }
-        animator.duration = 200
-        animator.start()
-        
+        // Update position immediately without animation
+        params.x = targetX
         params.y = targetY
         windowManager.updateViewLayout(logoView, params)
-        
-        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            vibrator?.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator?.vibrate(20)
-        }
     }
 
     fun cleanup() {
-        stopAllAnimations()
+        logoImage.alpha = 1f
         hide()
     }
 }
