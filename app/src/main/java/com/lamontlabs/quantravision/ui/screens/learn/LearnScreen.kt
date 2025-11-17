@@ -143,6 +143,7 @@ fun LearnScreen(
                             onClick = {
                                 if (EntitlementManager.hasFeatureAccess(lesson.requiredTier)) {
                                     viewModel.markLessonComplete(lesson.id)
+                                    onNavigateToTutorials()
                                 } else {
                                     onNavigateToPaywall()
                                 }

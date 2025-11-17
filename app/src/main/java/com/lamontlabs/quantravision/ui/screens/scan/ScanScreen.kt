@@ -47,6 +47,12 @@ fun ScanScreen(
         viewModel.onMediaProjectionResult(result)
     }
     
+    val overlayPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { _ ->
+        viewModel.refreshStats()
+    }
+    
     LaunchedEffect(uiState.mediaProjectionIntent) {
         uiState.mediaProjectionIntent?.let { intent ->
             mediaProjectionLauncher.launch(intent)
@@ -132,6 +138,12 @@ fun ScanScreen(
                         viewModel.stopOverlay()
                     } else if (uiState.hasOverlayPermission) {
                         viewModel.requestMediaProjectionPermission()
+                    } else {
+                        val intent = android.content.Intent(
+                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            android.net.Uri.parse("package:${context.packageName}")
+                        )
+                        overlayPermissionLauncher.launch(intent)
                     }
                 },
                 modifier = Modifier
@@ -162,13 +174,33 @@ fun ScanScreen(
             
             if (!uiState.hasOverlayPermission) {
                 Spacer(modifier = Modifier.height(AppSpacing.md))
-                Text(
-                    text = "⚠️ Overlay permission required to scan charts",
-                    style = AppTypography.bodySmall,
-                    color = AppColors.Warning,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(AppSpacing.md),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = AppColors.Warning,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        Text(
+                            text = "Overlay Permission Required",
+                            style = AppTypography.titleMedium,
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(AppSpacing.xs))
+                        Text(
+                            text = "Click 'Start Scanner' to grant overlay permission. This allows QuantraVision to detect patterns on top of your charts.",
+                            style = AppTypography.bodySmall,
+                            color = Color.White.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
     }
