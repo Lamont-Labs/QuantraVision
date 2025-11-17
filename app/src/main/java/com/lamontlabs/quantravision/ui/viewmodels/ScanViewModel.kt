@@ -114,10 +114,11 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     }
     
     private fun startOverlayService(resultCode: Int, data: Intent) {
+        // Store permission result in companion object (can't pass Intent through Intent extras)
+        OverlayService.setMediaProjectionResult(resultCode, data)
+        
         val serviceIntent = Intent(context, OverlayService::class.java).apply {
             action = "ACTION_START_WITH_PROJECTION"
-            putExtra("resultCode", resultCode)
-            putExtra("data", data)
         }
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

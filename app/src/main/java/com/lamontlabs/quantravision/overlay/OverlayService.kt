@@ -28,6 +28,31 @@ import timber.log.Timber
 
 class OverlayService : Service() {
 
+    companion object {
+        private const val TAG = "OverlayService"
+        
+        // Temporary storage for MediaProjection permission result
+        // Must be accessed from main thread only to avoid race conditions
+        @Volatile
+        private var pendingResultCode: Int = -1
+        @Volatile
+        private var pendingData: Intent? = null
+        
+        fun setMediaProjectionResult(resultCode: Int, data: Intent) {
+            pendingResultCode = resultCode
+            pendingData = data
+        }
+        
+        private fun consumeMediaProjectionResult(): Pair<Int, Intent>? {
+            val code = pendingResultCode
+            val data = pendingData
+            // Clear after reading
+            pendingResultCode = -1
+            pendingData = null
+            return if (code != -1 && data != null) Pair(code, data) else null
+        }
+    }
+
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
     private var enhancedOverlayView: EnhancedOverlayView? = null
@@ -41,8 +66,6 @@ class OverlayService : Service() {
     private val stateMachine = OverlayStateMachine()
     private val singleFrameCapture = SingleFrameCapture()
     private lateinit var resultController: PatternResultController
-    
-    private val TAG = "OverlayService"
 
     override fun onCreate() {
         super.onCreate()
@@ -146,13 +169,13 @@ class OverlayService : Service() {
         super.onStartCommand(intent, flags, startId)
         
         if (intent?.action == "ACTION_START_WITH_PROJECTION") {
-            val resultCode = intent.getIntExtra("resultCode", -1)
-            val data = intent.getParcelableExtra<Intent>("data")
+            val result = consumeMediaProjectionResult()
             
-            if (resultCode != -1 && data != null) {
+            if (result != null) {
+                val (resultCode, data) = result
                 initializeMediaProjection(resultCode, data)
             } else {
-                Log.e(TAG, "Invalid MediaProjection data received")
+                Log.e(TAG, "Invalid MediaProjection data received - permission result not stored")
                 Toast.makeText(this, "Failed to start screen capture", Toast.LENGTH_SHORT).show()
                 stopSelf()
             }
