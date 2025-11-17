@@ -30,11 +30,12 @@ class OverlayService : Service() {
 
     companion object {
         private const val TAG = "OverlayService"
+        private const val NO_RESULT = Int.MIN_VALUE  // Sentinel value distinct from Activity.RESULT_OK (-1)
         
         // Temporary storage for MediaProjection permission result
         // Must be accessed from main thread only to avoid race conditions
         @Volatile
-        private var pendingResultCode: Int = -1
+        private var pendingResultCode: Int = NO_RESULT
         @Volatile
         private var pendingData: Intent? = null
         
@@ -47,9 +48,9 @@ class OverlayService : Service() {
             val code = pendingResultCode
             val data = pendingData
             // Clear after reading
-            pendingResultCode = -1
+            pendingResultCode = NO_RESULT
             pendingData = null
-            return if (code != -1 && data != null) Pair(code, data) else null
+            return if (code != NO_RESULT && data != null) Pair(code, data) else null
         }
     }
 
