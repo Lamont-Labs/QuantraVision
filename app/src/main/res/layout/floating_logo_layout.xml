@@ -7,7 +7,9 @@
     <com.lamontlabs.quantravision.overlay.LogoBadge
         android:id="@+id/logo_badge"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false" />
 
     <ImageView
         android:id="@+id/logo_image"
@@ -16,6 +18,8 @@
         android:layout_gravity="center"
         android:src="@drawable/ic_qv_logo"
         android:scaleType="fitCenter"
+        android:clickable="false"
+        android:focusable="false"
         android:contentDescription="@string/floating_logo_description" />
 
 </FrameLayout>

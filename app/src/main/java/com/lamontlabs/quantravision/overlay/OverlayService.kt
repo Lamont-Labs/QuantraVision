@@ -216,15 +216,17 @@ class OverlayService : Service() {
     
     private fun setupEnhancedOverlayTouchHandling() {
         // EnhancedOverlayView only handles taps when showing results (for tap-to-clear)
-        enhancedOverlayView?.setOnTouchListener { _, event ->
+        // All other touches MUST pass through to underlying apps
+        enhancedOverlayView?.setOnTouchListener { view, event ->
             if (event.action == android.view.MotionEvent.ACTION_UP) {
                 if (stateMachine.getCurrentState() is OverlayState.ShowingResult) {
                     Timber.d("EnhancedOverlayView tapped → Clearing results")
                     resultController.manualClear()
-                    return@setOnTouchListener true
+                    return@setOnTouchListener true  // Consume tap to clear
                 }
             }
-            // Pass through touches when not showing results
+            // CRITICAL: Return false to pass through all touches when idle
+            // This allows user to interact with apps underneath the overlay
             false
         }
     }

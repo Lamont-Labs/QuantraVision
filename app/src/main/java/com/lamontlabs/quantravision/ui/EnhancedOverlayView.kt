@@ -37,6 +37,11 @@ class EnhancedOverlayView @JvmOverloads constructor(
     init {
         setLayerType(LAYER_TYPE_SOFTWARE, null)
         
+        // Explicitly disable touch/click handling to ensure pass-through
+        isClickable = false
+        isFocusable = false
+        isFocusableInTouchMode = false
+        
         borderPaint.style = Paint.Style.STROKE
         borderPaint.strokeWidth = 4f
         

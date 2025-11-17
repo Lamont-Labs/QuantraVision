@@ -20,6 +20,13 @@ class LogoBadge @JvmOverloads constructor(
     private var patternCount = 0
     private var detectionStatus = DetectionStatus.IDLE
     private var ringRotation = 0f
+    
+    init {
+        // Explicitly disable touch/click handling - parent handles touches
+        isClickable = false
+        isFocusable = false
+        isFocusableInTouchMode = false
+    }
 
     private val colorError = QuantraColors.errorInt
     private val colorSuccess = QuantraColors.successInt
@@ -87,6 +94,13 @@ class LogoBadge @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        
+        // Ensure view is properly sized before drawing
+        if (width <= 0 || height <= 0 || width > 200 || height > 200) {
+            android.util.Log.w("LogoBadge", "Unexpected size: ${width}x${height}, skipping draw")
+            return
+        }
+        
         val centerX = width / 2f
         val centerY = height / 2f
         val radius = (width.coerceAtMost(height) / 2f) - 10f
