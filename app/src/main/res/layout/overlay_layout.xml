@@ -9,9 +9,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.lamontlabs.quantravision.overlay.TapOverlayView
-        android:id="@+id/tap_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </FrameLayout>

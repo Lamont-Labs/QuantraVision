@@ -30,7 +30,6 @@ class OverlayService : Service() {
 
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
-    private var tapOverlayView: TapOverlayView? = null
     private var enhancedOverlayView: EnhancedOverlayView? = null
     private var floatingLogo: FloatingLogoButton? = null
     private var floatingMenu: FloatingMenu? = null
@@ -103,19 +102,12 @@ class OverlayService : Service() {
             overlayView = view
             
             enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
-            tapOverlayView = view.findViewById(R.id.tap_overlay)
             
             if (enhancedOverlayView == null) {
                 Log.e(TAG, "CRITICAL: EnhancedOverlayView not found in overlay_layout")
             } else {
+                setupEnhancedOverlayTouchHandling()
                 Log.i(TAG, "EnhancedOverlayView initialized successfully")
-            }
-            
-            if (tapOverlayView == null) {
-                Log.e(TAG, "CRITICAL: TapOverlayView not found in overlay_layout")
-            } else {
-                setupGestureCallbacks()
-                Log.i(TAG, "TapOverlayView initialized successfully")
             }
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to add overlay view (permission likely revoked mid-operation)", e)
@@ -137,6 +129,12 @@ class OverlayService : Service() {
         }
         
         floatingLogo = FloatingLogoButton(this, windowManager).apply {
+            onClickListener = {
+                handleTap()
+            }
+            onLongPressListener = {
+                handleLongPress()
+            }
             show()
             setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
         }
@@ -163,13 +161,18 @@ class OverlayService : Service() {
         return START_STICKY
     }
     
-    private fun setupGestureCallbacks() {
-        tapOverlayView?.onTap = {
-            handleTap()
-        }
-        
-        tapOverlayView?.onLongPress = {
-            handleLongPress()
+    private fun setupEnhancedOverlayTouchHandling() {
+        // EnhancedOverlayView only handles taps when showing results (for tap-to-clear)
+        enhancedOverlayView?.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_UP) {
+                if (stateMachine.getCurrentState() is OverlayState.ShowingResult) {
+                    Timber.d("EnhancedOverlayView tapped → Clearing results")
+                    resultController.manualClear()
+                    return@setOnTouchListener true
+                }
+            }
+            // Pass through touches when not showing results
+            false
         }
     }
     

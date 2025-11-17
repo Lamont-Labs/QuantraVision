@@ -25,7 +25,7 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 **State Management**: Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) for reactive state propagation.
 **Authentication & Licensing**: Four-tier lifetime access model managed via Google Play In-App Billing, secured with Google Play Integrity API, signature verification, and R8/ProGuard obfuscation.
 **Alert System**: Centralized AlertManager for voice, haptic, and visual alerts based on pattern strength.
-**Real-Time Overlay System**: Uses MediaProjection API for live chart overlay with touch-passthrough functionality and visual cues upon pattern detection.
+**Real-Time Overlay System**: Uses MediaProjection API for tap-to-scan overlay. Only the Q logo (FloatingLogoButton) captures taps to trigger single-frame scans. The rest of the screen has full touch-passthrough, allowing users to navigate to trading apps. Pattern highlights appear on EnhancedOverlayView and auto-clear after 10 seconds or can be manually cleared by tapping the highlighted area. Long-press on the Q logo returns to the main QuantraVision app.
 **Performance & Power Management**: An Adaptive Pipeline with a PowerPolicyApplicator adjusts performance based on device conditions.
 **Compliance & Provenance**: Adheres to Greyline OS v4.3 standards, including logging, digital signing of pattern catalogs, and SBOM maintenance.
 
