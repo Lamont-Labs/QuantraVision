@@ -46,11 +46,16 @@ class FloatingLogoButton(
     var onLongPressListener: (() -> Unit)? = null
 
     init {
-        val inflater = LayoutInflater.from(context)
+        // Use themed context so vector drawables render correctly
+        val themedContext = android.view.ContextThemeWrapper(context, R.style.Theme_QuantraVision)
+        val inflater = LayoutInflater.from(themedContext)
         logoView = inflater.inflate(R.layout.floating_logo_layout, null) as FrameLayout
         
         logoImage = logoView.findViewById(R.id.logo_image)
         badge = logoView.findViewById(R.id.logo_badge)
+        
+        // Ensure logo image appears above badge
+        logoImage.bringToFront()
         
         val logoSize = prefs.getLogoSize()
         val sizePx = (logoSize.dp * context.resources.displayMetrics.density).toInt()
