@@ -56,6 +56,7 @@ class OverlayService : Service() {
 
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
+    private var overlayParams: WindowManager.LayoutParams? = null  // Keep params for dynamic flag updates
     private var enhancedOverlayView: EnhancedOverlayView? = null
     private var floatingLogo: FloatingLogoButton? = null
     private var floatingMenu: FloatingMenu? = null
@@ -107,6 +108,7 @@ class OverlayService : Service() {
             scope.launch(Dispatchers.Main.immediate) {
                 enhancedOverlayView?.clearAll()
                 overlayView?.visibility = android.view.View.GONE  // Hide ENTIRE overlay container when cleared
+                setOverlayTouchPassThrough(enabled = true)  // CRITICAL: Re-enable touch pass-through when idle
                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                 floatingLogo?.updatePatternCount(0)
                 stateMachine.transitionToIdle()
@@ -116,22 +118,25 @@ class OverlayService : Service() {
         val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.overlay_layout, null)
 
+        // Start with FLAG_NOT_TOUCHABLE so touches pass through when idle
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or  // CRITICAL: Prevents touch interception when idle
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
 
-        Log.i(TAG, "Creating full-screen overlay view...")
+        Log.i(TAG, "Creating full-screen overlay view (NOT_TOUCHABLE for pass-through)...")
         try {
             windowManager.addView(view, params)
             overlayView = view
-            Log.i(TAG, "✓ Full-screen overlay view added")
+            overlayParams = params  // Store params for dynamic flag updates
+            Log.i(TAG, "✓ Full-screen overlay view added with pass-through enabled")
             
             enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
             
@@ -215,6 +220,32 @@ class OverlayService : Service() {
         
         Log.i(TAG, "=== OverlayService.onStartCommand() COMPLETE ===")
         return START_STICKY
+    }
+    
+    /**
+     * Enable or disable touch pass-through by toggling FLAG_NOT_TOUCHABLE on the overlay window.
+     * @param enabled true = touches pass through to underlying apps, false = overlay can receive touches
+     */
+    private fun setOverlayTouchPassThrough(enabled: Boolean) {
+        val view = overlayView ?: return
+        val params = overlayParams ?: return
+        
+        if (enabled) {
+            // Enable pass-through: add FLAG_NOT_TOUCHABLE
+            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            Log.d(TAG, "Touch pass-through ENABLED (FLAG_NOT_TOUCHABLE added)")
+        } else {
+            // Disable pass-through: remove FLAG_NOT_TOUCHABLE so tap-to-clear works
+            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            Log.d(TAG, "Touch pass-through DISABLED (FLAG_NOT_TOUCHABLE removed for tap-to-clear)")
+        }
+        
+        // Update the window with new flags
+        try {
+            windowManager.updateViewLayout(view, params)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update overlay window flags", e)
+        }
     }
     
     private fun setupEnhancedOverlayTouchHandling() {
@@ -371,9 +402,11 @@ class OverlayService : Service() {
                 // Show ENTIRE overlay container when patterns detected, hide when empty
                 if (allDetectedPatterns.isNotEmpty()) {
                     overlayView?.visibility = android.view.View.VISIBLE
+                    setOverlayTouchPassThrough(enabled = false)  // CRITICAL: Disable pass-through so tap-to-clear works
                     enhancedOverlayView?.updateMatches(allDetectedPatterns)
                 } else {
                     overlayView?.visibility = android.view.View.GONE
+                    setOverlayTouchPassThrough(enabled = true)  // Re-enable pass-through when no patterns
                 }
                 
                 floatingLogo?.updatePatternCount(allDetectedPatterns.size)
