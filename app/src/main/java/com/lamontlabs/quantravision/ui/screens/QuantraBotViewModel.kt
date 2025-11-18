@@ -3,7 +3,7 @@ package com.lamontlabs.quantravision.ui.screens
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lamontlabs.quantravision.AppDatabase
+import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.ai.quantrabot.QuantraBotEngine
 import kotlinx.coroutines.Dispatchers
@@ -136,8 +136,8 @@ class QuantraBotViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Get last pattern from database (use applicationContext)
-                val db = AppDatabase.getInstance(context.applicationContext)
-                val lastPattern = db.patternDao().getAllMatches()
+                val db = PatternDatabase.getInstance(context.applicationContext)
+                val lastPattern = db.patternDao().getAll()
                     .maxByOrNull { it.timestamp }
                 
                 if (lastPattern == null) {
@@ -250,8 +250,8 @@ class QuantraBotViewModel : ViewModel() {
     private fun loadRecentPatterns(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val db = AppDatabase.getInstance(context.applicationContext)
-                val allPatterns = db.patternDao().getAllMatches()
+                val db = PatternDatabase.getInstance(context.applicationContext)
+                val allPatterns = db.patternDao().getAll()
                 
                 // Get last 10 patterns
                 recentPatterns = allPatterns

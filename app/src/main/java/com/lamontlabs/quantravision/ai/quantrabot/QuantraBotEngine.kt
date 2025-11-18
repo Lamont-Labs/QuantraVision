@@ -2,8 +2,8 @@ package com.lamontlabs.quantravision.ai.quantrabot
 
 import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
-import com.lamontlabs.quantravision.ai.gemma.GemmaEngine
-import com.lamontlabs.quantravision.ai.PatternExplainer
+import com.lamontlabs.quantravision.intelligence.llm.GemmaEngine
+import com.lamontlabs.quantravision.intelligence.llm.PatternExplainer
 import com.lamontlabs.quantravision.intelligence.IndicatorContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

@@ -206,13 +206,9 @@ Keep it practical and actionable.
         
         // Add available indicators
         indicatorContext.rsi?.let { parts.add("RSI: ${String.format("%.1f", it)}") }
-        indicatorContext.macd?.let { parts.add("MACD: ${String.format("%.4f", it)}") }
-        indicatorContext.macdSignal?.let { parts.add("MACD Signal: ${String.format("%.4f", it)}") }
-        indicatorContext.volume?.let { parts.add("Volume: ${String.format("%.0f", it)}") }
-        
-        // Add context analysis
-        parts.add("Context: ${indicatorContext.context.name.lowercase().capitalize()}")
-        parts.add("Confluence: ${indicatorContext.confluence}")
+        indicatorContext.macd?.histogram?.let { parts.add("MACD: ${String.format("%.4f", it)}") }
+        indicatorContext.macd?.signal?.let { parts.add("MACD Signal: ${String.format("%.4f", it)}") }
+        indicatorContext.volume?.current?.let { parts.add("Volume: ${String.format("%.0f", it)}") }
         
         return if (parts.isEmpty()) {
             "Limited indicator data available."
