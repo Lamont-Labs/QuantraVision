@@ -16,8 +16,11 @@ import com.lamontlabs.quantravision.intelligence.IndicatorExtractor
 import com.lamontlabs.quantravision.intelligence.IndicatorContext
 import com.lamontlabs.quantravision.intelligence.ContextAnalyzer
 import com.lamontlabs.quantravision.intelligence.QuantraScorer
+import com.lamontlabs.quantravision.learning.adaptive.PatternLearningEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
@@ -35,6 +38,23 @@ class PatternDetector(private val context: Context) {
     private val indicatorExtractor = IndicatorExtractor(context)
     private val contextAnalyzer = ContextAnalyzer()
     private val quantraScorer = QuantraScorer()
+    
+    // Pattern Learning Engine for adaptive scoring
+    private val learningEngine: PatternLearningEngine by lazy {
+        PatternLearningEngine(
+            context = context,
+            patternDao = db.patternDao(),
+            learningDao = db.patternLearningDao()
+        )
+    }
+    private val learningScope = CoroutineScope(Dispatchers.Default)
+    
+    init {
+        // Initialize learning engine in background
+        learningScope.launch {
+            learningEngine.initialize()
+        }
+    }
     
     // GPU acceleration support
     private var gpuAvailable = false
@@ -430,13 +450,15 @@ class PatternDetector(private val context: Context) {
                 }
                 
                 // QuantraCore: Extract indicators and calculate composite score
+                // NOW WITH: Adaptive learning from historical scans!
                 val indicators = indicatorExtractor.extractIndicators(bitmap)
                 val analysis = contextAnalyzer.analyze(patternName, calibrated, indicators)
                 val scoreResult = quantraScorer.calculateScore(
                     patternName, 
                     calibrated, 
                     indicators, 
-                    analysis
+                    analysis,
+                    learningEngine  // Pass learning engine for adaptive adjustments
                 )
                 
                 Timber.i("QuantraScore: ${scoreResult.quantraScore}/100 (${scoreResult.grade.label}) - ${scoreResult.reasoning}")
@@ -464,10 +486,19 @@ class PatternDetector(private val context: Context) {
                 
                 results.add(match)
                 
+                // Record scan for learning engine (async, non-blocking)
+                learningScope.launch {
+                    learningEngine.recordScan(match)
+                }
+                
                 // Trigger alerts for detected pattern
                 AlertManager.getInstance(context).onPatternDetected(match)
                 
-                Timber.d("Detected: $patternName (conf=${String.format("%.3f", calibrated)}, scale=${String.format("%.2f", consensus.bestScale)})")
+                if (scoreResult.adaptiveAdjustment != 0.0) {
+                    Timber.d("🧠 Detected: $patternName (conf=${String.format("%.3f", calibrated)}, scale=${String.format("%.2f", consensus.bestScale)}, learned+${scoreResult.adaptiveAdjustment.toInt()})")
+                } else {
+                    Timber.d("Detected: $patternName (conf=${String.format("%.3f", calibrated)}, scale=${String.format("%.2f", consensus.bestScale)})")
+                }
             }
             
             Timber.i("Detection complete: ${results.size} patterns found [tf=$tfLabel]")

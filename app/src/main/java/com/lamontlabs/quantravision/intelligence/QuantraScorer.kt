@@ -1,13 +1,15 @@
 package com.lamontlabs.quantravision.intelligence
 
+import com.lamontlabs.quantravision.learning.adaptive.PatternLearningEngine
 import timber.log.Timber
 import kotlin.math.roundToInt
 
 /**
- * QuantraCore: QuantraScore Calculation Engine
+ * QuantraCore: QuantraScore Calculation Engine (ENHANCED with Adaptive Learning)
  * 
  * Calculates a 0-100 composite quality score for each pattern detection.
  * Combines pattern confidence, indicator confluence, and signal strength.
+ * NOW INCLUDES: Adaptive adjustments based on historical pattern learning!
  * 
  * Score Breakdown:
  * - 0-39: Low quality, filter out
@@ -20,6 +22,7 @@ import kotlin.math.roundToInt
  * QuantraScore = (PatternConfidence * ConfluenceBoost) * 100
  *              + BonusPoints (signal strength, multiple indicators)
  *              - Penalties (conflicts, missing indicators)
+ *              + AdaptiveAdjustment (learned from historical scans)
  */
 class QuantraScorer {
     
@@ -53,6 +56,7 @@ class QuantraScorer {
         val confluenceBoost: Double,        // Multiplier from confluence (0.8-1.3)
         val bonusPoints: Double,            // Bonus from signal strength
         val penalties: Double,              // Deductions from conflicts
+        val adaptiveAdjustment: Double = 0.0,  // Learning engine adjustment
         val grade: ScoreGrade,              // Letter grade
         val reasoning: String               // Human-readable explanation
     )
@@ -67,12 +71,14 @@ class QuantraScorer {
     
     /**
      * Calculate QuantraScore for a pattern detection
+     * ENHANCED: Now supports adaptive learning adjustments
      */
-    fun calculateScore(
+    suspend fun calculateScore(
         patternName: String,
         patternConfidence: Double,
         indicators: IndicatorContext,
-        analysis: ContextAnalyzer.AnalysisResult
+        analysis: ContextAnalyzer.AnalysisResult,
+        learningEngine: PatternLearningEngine? = null
     ): ScoreResult {
         
         // Base score from pattern confidence (0-100)
@@ -113,8 +119,17 @@ class QuantraScorer {
             penalties += PENALTY_NO_INDICATORS
         }
         
-        // Final score calculation
-        val rawScore = boostedScore + bonusPoints + penalties
+        // Get adaptive adjustment from learning engine
+        var adaptiveAdjustment = 0.0
+        if (learningEngine != null) {
+            adaptiveAdjustment = learningEngine.getAdaptiveAdjustment(patternName, indicators)
+            if (adaptiveAdjustment != 0.0) {
+                Timber.d("🧠 Adaptive learning: ${adaptiveAdjustment.toInt()} point adjustment")
+            }
+        }
+        
+        // Final score calculation (now includes adaptive learning!)
+        val rawScore = boostedScore + bonusPoints + penalties + adaptiveAdjustment
         val finalScore = rawScore.coerceIn(SCORE_MIN.toDouble(), SCORE_MAX.toDouble()).roundToInt()
         
         // Determine grade
@@ -141,11 +156,16 @@ class QuantraScorer {
             confluenceBoost = analysis.confidenceBoost,
             bonusPoints = bonusPoints,
             penalties = penalties,
+            adaptiveAdjustment = adaptiveAdjustment,
             grade = grade,
             reasoning = reasoning
         )
         
-        Timber.i("QuantraScore: $finalScore/100 (${grade.label}) - $patternName")
+        if (adaptiveAdjustment != 0.0) {
+            Timber.i("🧠 QuantraScore: $finalScore/100 (${grade.label}) - $patternName [+${adaptiveAdjustment.toInt()} learned]")
+        } else {
+            Timber.i("QuantraScore: $finalScore/100 (${grade.label}) - $patternName")
+        }
         return result
     }
     

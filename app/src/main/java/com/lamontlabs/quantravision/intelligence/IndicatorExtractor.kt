@@ -41,6 +41,7 @@ class IndicatorExtractor(private val context: Context) {
     
     /**
      * Extract all indicators from chart bitmap
+     * ENHANCED: Now captures ALL text and unknown indicators for learning engine
      */
     suspend fun extractIndicators(bitmap: Bitmap): IndicatorContext {
         return try {
@@ -52,30 +53,90 @@ class IndicatorExtractor(private val context: Context) {
             }
             
             val textStrings = allText.map { it.text }
-            Timber.d("OCR extracted ${textStrings.size} text elements")
+            Timber.d("🔍 OCR extracted ${textStrings.size} text elements")
             
-            // Extract each indicator type
+            // Extract known indicators
             val rsi = extractRSI(textStrings)
             val macd = extractMACD(textStrings)
             val volume = extractVolume(textStrings)
             val mas = extractMovingAverages(textStrings)
             val price = extractPrice(textStrings)
             
+            // Extract ANY other indicators for learning engine
+            val otherIndicators = extractUnknownIndicators(textStrings)
+            
             val context = IndicatorContext(
                 rsi = rsi,
                 macd = macd,
                 volume = volume,
                 movingAverages = mas,
-                priceLevel = price
+                priceLevel = price,
+                otherIndicators = otherIndicators,
+                rawText = textStrings  // Store all text for learning engine
             )
             
-            Timber.i("Indicators extracted: ${context.getSummary()}")
+            Timber.i("📊 Indicators extracted: ${context.getSummary()}")
+            if (!otherIndicators.isNullOrEmpty()) {
+                Timber.d("🧠 Unknown indicators for learning: ${otherIndicators.keys.joinToString()}")
+            }
             context
             
         } catch (e: Exception) {
             Timber.e(e, "Failed to extract indicators")
             IndicatorContext.empty()
         }
+    }
+    
+    /**
+     * Extract unknown/arbitrary indicators from chart
+     * Looks for patterns like "INDICATOR_NAME: VALUE" or "INDICATOR_NAME VALUE"
+     * Examples: "Stoch: 45.2", "ATR 1.25", "ADX: 32", "CCI 115"
+     */
+    private fun extractUnknownIndicators(textElements: List<String>): Map<String, String>? {
+        val indicators = mutableMapOf<String, String>()
+        
+        // Common indicator abbreviations to look for
+        val knownIndicators = setOf(
+            "ATR", "ADX", "CCI", "STOCH", "STOCHASTIC", "OBV", "MFI",
+            "WILLR", "ROC", "TRIX", "DPO", "AROON", "PSAR", "SAR",
+            "ICHIMOKU", "TENKAN", "KIJUN", "SENKOU", "BOLLINGER", "BB",
+            "KELTNER", "DONCHIAN", "PIVOT", "FIBONACCI", "FIB",
+            "VWAP", "AVWAP", "SMI", "UO", "WMA", "HMA", "DEMA", "TEMA"
+        )
+        
+        for (i in textElements.indices) {
+            val text = textElements[i].uppercase()
+            
+            // Check if this looks like an indicator name
+            val indicatorName = knownIndicators.firstOrNull { text.contains(it) }
+            
+            if (indicatorName != null) {
+                // Look for value in next few elements
+                for (j in i..(i + 3).coerceAtMost(textElements.size - 1)) {
+                    val value = parseNumber(textElements[j], allowNegative = true)
+                    if (value != null) {
+                        indicators[indicatorName.lowercase()] = value.toString()
+                        Timber.d("🔍 Found indicator: $indicatorName = $value")
+                        break
+                    }
+                }
+            }
+            
+            // Also look for "WORD: NUMBER" patterns (e.g., "Delta: 0.35")
+            if (text.contains(":") && text.length in 3..20) {
+                val parts = text.split(":")
+                if (parts.size == 2) {
+                    val name = parts[0].trim()
+                    val value = parseNumber(parts[1].trim(), allowNegative = true)
+                    if (value != null && name.matches(Regex("[A-Z]{2,10}"))) {
+                        indicators[name.lowercase()] = value.toString()
+                        Timber.d("🔍 Found pattern indicator: $name = $value")
+                    }
+                }
+            }
+        }
+        
+        return if (indicators.isNotEmpty()) indicators else null
     }
     
     /**

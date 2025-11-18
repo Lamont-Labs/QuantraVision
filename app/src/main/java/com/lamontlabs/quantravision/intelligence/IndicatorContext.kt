@@ -9,6 +9,9 @@ import com.google.gson.Gson
  * Used for multi-signal confluence analysis with pattern detection.
  * 
  * All values are nullable - if indicator not found or can't be parsed, it's null.
+ * 
+ * ENHANCED: Now captures ALL indicators from charts, not just predefined ones.
+ * Uses flexible "otherIndicators" map to store any detected indicators.
  */
 data class IndicatorContext(
     val rsi: Double? = null,              // RSI value (0-100)
@@ -16,6 +19,8 @@ data class IndicatorContext(
     val volume: VolumeContext? = null,    // Volume analysis
     val movingAverages: List<MovingAverage>? = null,  // Detected MAs
     val priceLevel: Double? = null,       // Current price if detected
+    val otherIndicators: Map<String, String>? = null,  // Universal capture: any indicator name -> value
+    val rawText: List<String>? = null,    // All OCR text for learning engine
     val timestamp: Long = System.currentTimeMillis()
 ) {
     
@@ -98,7 +103,35 @@ data class IndicatorContext(
                macd != null || 
                volume != null || 
                !movingAverages.isNullOrEmpty() ||
-               priceLevel != null
+               priceLevel != null ||
+               !otherIndicators.isNullOrEmpty() ||
+               !rawText.isNullOrEmpty()
+    }
+    
+    /**
+     * Get all indicators as a unified map for learning engine
+     * Converts structured indicators to flat key-value format
+     */
+    fun toUnifiedMap(): Map<String, Any> {
+        val map = mutableMapOf<String, Any>()
+        
+        rsi?.let { map["rsi"] = it }
+        macd?.histogram?.let { map["macd_histogram"] = it }
+        macd?.signal?.let { map["macd_signal"] = it }
+        macd?.crossover?.let { map["macd_crossover"] = it.name }
+        volume?.current?.let { map["volume"] = it }
+        volume?.spike?.let { if (it) map["volume_spike"] = true }
+        priceLevel?.let { map["price"] = it }
+        
+        movingAverages?.forEach { ma ->
+            map["ma_${ma.type.name.lowercase()}_${ma.period}"] = ma.value
+        }
+        
+        otherIndicators?.forEach { (key, value) ->
+            map[key] = value
+        }
+        
+        return map
     }
     
     /**

@@ -24,6 +24,8 @@ import com.lamontlabs.quantravision.learning.advanced.data.StrategyMetricsEntity
 import com.lamontlabs.quantravision.learning.data.ScanHistoryEntity
 import com.lamontlabs.quantravision.learning.data.PatternFrequencyEntity
 import com.lamontlabs.quantravision.learning.data.PatternCooccurrenceEntity
+import com.lamontlabs.quantravision.learning.adaptive.PatternIndicatorProfile
+import com.lamontlabs.quantravision.learning.adaptive.PatternLearningDao
 
 /**
  * Trade scenario information for Pattern-to-Plan integration
@@ -145,7 +147,7 @@ interface TrainingExampleDao {
     suspend fun getCount(): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class, TrainingExampleEntity::class], version = 13)
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class, TrainingExampleEntity::class, PatternIndicatorProfile::class], version = 14)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
@@ -155,6 +157,7 @@ abstract class PatternDatabase : RoomDatabase() {
     abstract fun learningProfileDao(): LearningProfileDao
     abstract fun advancedLearningDao(): AdvancedLearningDao
     abstract fun trainingExampleDao(): TrainingExampleDao
+    abstract fun patternLearningDao(): PatternLearningDao
 
     companion object {
         @Volatile private var INSTANCE: PatternDatabase? = null
@@ -169,7 +172,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -514,6 +517,28 @@ abstract class PatternDatabase : RoomDatabase() {
                 }
                 
                 Log.i(TAG, "Migration 12 -> 13: QuantraCore fields added successfully")
+            }
+        }
+        
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Pattern Learning Engine: Create pattern indicator profiles table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS pattern_indicator_profiles (
+                        patternName TEXT PRIMARY KEY NOT NULL,
+                        totalScans INTEGER NOT NULL,
+                        lastUpdated INTEGER NOT NULL,
+                        indicatorStatsJson TEXT DEFAULT NULL,
+                        indicatorFrequencyJson TEXT DEFAULT NULL,
+                        typicalRangesJson TEXT DEFAULT NULL,
+                        confidenceWeightsJson TEXT DEFAULT NULL,
+                        avgQuantraScore REAL NOT NULL,
+                        successRate REAL NOT NULL,
+                        learningPhase TEXT NOT NULL
+                    )
+                """.trimIndent())
+                
+                Log.i(TAG, "Migration 13 -> 14: Pattern Learning Engine table created successfully")
             }
         }
     }
