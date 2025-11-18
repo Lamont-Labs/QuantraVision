@@ -19,8 +19,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lamontlabs.quantravision.BuildConfig
 import com.lamontlabs.quantravision.devbot.ai.DiagnosticChatMessage
-import com.lamontlabs.quantravision.ui.theme.NeonCyan
-import com.lamontlabs.quantravision.ui.theme.NeonGold
+import com.lamontlabs.quantravision.ui.NeonCyan
+import com.lamontlabs.quantravision.ui.NeonGold
 
 @Composable
 fun DevBotScreen() {
