@@ -44,6 +44,7 @@ class QuantraBotViewModel : ViewModel() {
     
     /**
      * Initialize QuantraBot engine.
+     * CRITICAL: Uses applicationContext to avoid memory leaks (ViewModels outlive Activities)
      */
     fun initialize(context: Context) {
         if (_isReady.value) return // Already initialized
@@ -52,8 +53,9 @@ class QuantraBotViewModel : ViewModel() {
             try {
                 Timber.i("🤖 Initializing QuantraBotViewModel...")
                 
-                // Create engine
-                val engine = QuantraBotEngine(context)
+                // CRITICAL: Use applicationContext to avoid Activity memory leak
+                // ViewModels outlive Activities, so we must never hold Activity context
+                val engine = QuantraBotEngine(context.applicationContext)
                 quantraBotEngine = engine
                 
                 // Initialize
@@ -133,8 +135,8 @@ class QuantraBotViewModel : ViewModel() {
         
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Get last pattern from database
-                val db = AppDatabase.getInstance(context)
+                // Get last pattern from database (use applicationContext)
+                val db = AppDatabase.getInstance(context.applicationContext)
                 val lastPattern = db.patternDao().getAllMatches()
                     .maxByOrNull { it.timestamp }
                 
@@ -248,7 +250,7 @@ class QuantraBotViewModel : ViewModel() {
     private fun loadRecentPatterns(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val db = AppDatabase.getInstance(context)
+                val db = AppDatabase.getInstance(context.applicationContext)
                 val allPatterns = db.patternDao().getAllMatches()
                 
                 // Get last 10 patterns
