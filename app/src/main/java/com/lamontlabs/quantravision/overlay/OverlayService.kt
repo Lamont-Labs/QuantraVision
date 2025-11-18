@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
