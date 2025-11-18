@@ -10,6 +10,8 @@ import androidx.core.app.NotificationCompat
 import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.R
+import com.lamontlabs.quantravision.intelligence.IndicatorContext
+import com.lamontlabs.quantravision.intelligence.QuantraScorer
 import kotlinx.coroutines.*
 import timber.log.Timber
 
@@ -132,16 +134,41 @@ class PatternNotificationManager(private val context: Context) {
             // Build expandable notification using InboxStyle
             val inboxStyle = NotificationCompat.InboxStyle()
             
-            // Add each pattern as a line in expanded view
+            // Add each pattern as a line in expanded view with QuantraScore
             patterns.forEach { pattern ->
                 val confidencePercent = (pattern.confidence * 100).toInt()
-                val line = "${pattern.patternName} (${confidencePercent}% confidence)"
+                
+                // Get score grade emoji
+                val scoreEmoji = when {
+                    pattern.quantraScore >= QuantraScorer.THRESHOLD_EXCEPTIONAL -> "🔥"
+                    pattern.quantraScore >= QuantraScorer.THRESHOLD_GOOD -> "⭐"
+                    pattern.quantraScore >= QuantraScorer.THRESHOLD_FAIR -> "✅"
+                    else -> "⚠️"
+                }
+                
+                // Build pattern line with QuantraScore
+                val scorePart = if (pattern.quantraScore > 0) {
+                    " • $scoreEmoji${pattern.quantraScore}"
+                } else {
+                    ""
+                }
+                
+                // Add indicator summary if available
+                val indicators = IndicatorContext.fromJson(pattern.indicatorsJson)
+                val indicatorSummary = indicators?.let {
+                    if (it.hasAnyIndicators()) " • ${it.getSummary()}" else ""
+                } ?: ""
+                
+                val line = "${pattern.patternName} (${confidencePercent}%$scorePart)$indicatorSummary"
                 inboxStyle.addLine(line)
             }
             
-            // Set summary line for expanded view
+            // Set summary line for expanded view with average score
             val patternCount = patterns.size
-            inboxStyle.setBigContentTitle("$patternCount pattern${if (patternCount == 1) "" else "s"} detected")
+            val avgScore = patterns.map { it.quantraScore }.average().toInt()
+            val avgScoreText = if (avgScore > 0) " • Avg: $avgScore/100" else ""
+            
+            inboxStyle.setBigContentTitle("$patternCount pattern${if (patternCount == 1) "" else "s"} detected$avgScoreText")
             inboxStyle.setSummaryText("Tap to view details")
             
             // Build notification
