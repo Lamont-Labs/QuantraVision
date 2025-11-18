@@ -20,8 +20,9 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 
 ### Technical Implementations
 **Pattern Detection Engine**: Utilizes an OpenCV template matching system for 109 chart patterns, coordinated by a HybridDetectorBridge, with a BayesianFusionEngine for confidence scoring. TensorFlow Lite infrastructure is planned for future ML enhancements.
+**QuantraCore Intelligence System**: Multi-signal analysis engine that combines pattern detection with OCR-extracted technical indicators (RSI, MACD, volume) to generate a 0-100 QuantraScore for each pattern. Uses Google ML Kit Text Recognition for privacy-preserving on-device indicator extraction, ContextAnalyzer for confluence detection (bullish/bearish/neutral), and QuantraScorer to calculate composite quality scores. SmartFilter automatically filters patterns below quality threshold (default 60/100), eliminating noise and showing only high-probability trade setups. All processing is 100% offline with no cloud dependencies. Scores and indicator context stored in database for historical analysis.
 **Scan Learning Engine**: (PRO tier only) Learns from chart scans using perceptual image hashing for privacy-preserving, offline learning.
-**Data Storage**: Encrypted Room database for local storage of logs, user preferences, achievements, and scan learning data.
+**Data Storage**: Encrypted Room database for local storage of logs, user preferences, achievements, scan learning data, QuantraScores, and indicator context.
 **State Management**: Android Architecture Components (ViewModels, Repository pattern, LiveData/Flow) for reactive state propagation.
 **Authentication & Licensing**: Four-tier lifetime access model managed via Google Play In-App Billing, secured with Google Play Integrity API, signature verification, and R8/ProGuard obfuscation.
 **Alert System**: Centralized AlertManager for voice, haptic, and visual alerts based on pattern strength.
@@ -41,6 +42,7 @@ The application uses Jetpack Compose with the Material 3 Design System, optimize
 ### Core ML/CV Libraries
 - **OpenCV**: Computer vision for template matching and image processing.
 - **TensorFlow Lite**: Infrastructure for future ML enhancements.
+- **Google ML Kit Text Recognition**: On-device OCR for extracting technical indicators (RSI, MACD, volume) from chart screenshots. Privacy-preserving and offline.
 
 ### Android Framework
 - **Kotlin**: Primary programming language.
