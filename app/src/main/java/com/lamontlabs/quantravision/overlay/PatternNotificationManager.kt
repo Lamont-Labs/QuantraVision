@@ -12,6 +12,7 @@ import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.intelligence.IndicatorContext
 import com.lamontlabs.quantravision.intelligence.QuantraScorer
+import com.lamontlabs.quantravision.intelligence.llm.ExplanationReceiver
 import kotlinx.coroutines.*
 import timber.log.Timber
 
@@ -171,7 +172,25 @@ class PatternNotificationManager(private val context: Context) {
             inboxStyle.setBigContentTitle("$patternCount pattern${if (patternCount == 1) "" else "s"} detected$avgScoreText")
             inboxStyle.setSummaryText("Tap to view details")
             
-            // Build notification
+            // Create "Explain" action for first pattern (most relevant)
+            val firstPattern = patterns.first()
+            val explainIntent = Intent(context, ExplanationReceiver::class.java).apply {
+                action = ExplanationReceiver.ACTION_EXPLAIN
+                putExtra(ExplanationReceiver.EXTRA_PATTERN_NAME, firstPattern.patternName)
+                putExtra(ExplanationReceiver.EXTRA_QUANTRA_SCORE, firstPattern.quantraScore)
+                putExtra(ExplanationReceiver.EXTRA_CONFIDENCE, firstPattern.confidence)
+                putExtra(ExplanationReceiver.EXTRA_INDICATORS_JSON, firstPattern.indicatorsJson)
+                putExtra(ExplanationReceiver.EXTRA_PATTERN_ID, firstPattern.id)
+            }
+            
+            val explainPendingIntent = PendingIntent.getBroadcast(
+                context,
+                firstPattern.id.toInt(),
+                explainIntent,
+                pendingIntentFlags
+            )
+            
+            // Build notification with AI Explain action
             val notification = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_overlay_marker)
                 .setContentTitle("$patternCount pattern${if (patternCount == 1) "" else "s"} detected")
@@ -185,6 +204,11 @@ class PatternNotificationManager(private val context: Context) {
                     } else {
                         NotificationCompat.PRIORITY_DEFAULT
                     }
+                )
+                .addAction(
+                    R.drawable.ic_overlay_marker,  // Icon for action button
+                    "🧠 Explain",  // Action button text
+                    explainPendingIntent
                 )
                 .apply {
                     // Only add sound/vibration for high confidence patterns

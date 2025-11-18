@@ -42,5 +42,15 @@
           android:name="android.appwidget.provider"
           android:resource="@xml/widget_info"/>
     </receiver>
+    
+    <!-- AI Explanation Receiver -->
+    <receiver
+        android:name=".intelligence.llm.ExplanationReceiver"
+        android:exported="false"
+        android:enabled="true">
+      <intent-filter>
+        <action android:name="com.lamontlabs.quantravision.ACTION_EXPLAIN_PATTERN"/>
+      </intent-filter>
+    </receiver>
   </application>
 </manifest>
