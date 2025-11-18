@@ -219,9 +219,9 @@ class OverlayService : Service() {
                 "Scan canceled",
                 Toast.LENGTH_SHORT
             ).show()
+            stateMachine.transitionToIdle()
         }
         
-        stateMachine.transitionToIdle()
         Log.i(TAG, "✓ Scan canceled successfully")
     }
     

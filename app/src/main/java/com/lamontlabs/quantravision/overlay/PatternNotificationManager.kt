@@ -257,7 +257,7 @@ class PatternNotificationManager(private val context: Context) {
             )
             
             val notification = NotificationCompat.Builder(context, CHANNEL_ID_NORMAL)
-                .setSmallIcon(R.drawable.ic_quantravision_logo)
+                .setSmallIcon(R.drawable.ic_overlay_marker)
                 .setContentTitle("No Patterns Detected")
                 .setContentText("Chart scanned successfully — no recognizable patterns found")
                 .setContentIntent(pendingIntent)
