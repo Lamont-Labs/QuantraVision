@@ -1,0 +1,55 @@
+{
+  "patternName": "bullish_pennant",
+  "displayName": "Bullish Pennant",
+  "category": "continuation",
+  "bias": "bullish",
+  "description": "Short-term bullish continuation pattern resembling a small symmetrical triangle. Forms after a strong upward move (flagpole) and represents a brief consolidation before the uptrend resumes.",
+  "validationRules": [
+    "Must follow a strong upward price move (flagpole)",
+    "Converging trendlines forming small triangle",
+    "Pattern typically completes within 1-3 weeks",
+    "Volume should decrease during pennant formation",
+    "Breakout occurs upward with volume spike",
+    "Flagpole should be steep and relatively vertical"
+  ],
+  "invalidationSignals": [
+    "Downward breakout from the pennant",
+    "Pattern extends beyond 3 weeks (becomes triangle)",
+    "Volume increases during consolidation",
+    "Price breaks below the flagpole low",
+    "Pennant tilts downward significantly"
+  ],
+  "commonMistakes": [
+    "Entering during pennant formation instead of waiting for breakout",
+    "Confusing with triangle pattern - pennant is much shorter duration",
+    "Ignoring the flagpole - must have strong prior move",
+    "Not measuring flagpole length for target calculation",
+    "Trading without volume confirmation on breakout"
+  ],
+  "tradeSetup": {
+    "entry": "Breakout above upper pennant trendline with volume spike",
+    "stopLoss": "Below the lower pennant trendline or below flagpole midpoint",
+    "target": "Length of flagpole added to breakout point",
+    "riskRewardRatio": "Typically 3:1 or higher"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume decreases during pennant, spikes on breakout",
+      "RSI remains above 50 during consolidation",
+      "MACD stays positive throughout",
+      "Moving averages remain in bullish alignment"
+    ],
+    "conflicting": [
+      "Volume increasing during pennant (distribution)",
+      "RSI divergence forming",
+      "MACD bearish crossover",
+      "Price approaching major resistance"
+    ]
+  },
+  "confluenceFactors": [
+    "Pattern forms during strong uptrend",
+    "Breakout aligns with round number resistance",
+    "Higher timeframe shows bullish momentum",
+    "Forms after gap up (continuation gap)"
+  ]
+}

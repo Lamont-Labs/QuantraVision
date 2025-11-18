@@ -1,0 +1,55 @@
+{
+  "patternName": "morning_star",
+  "displayName": "Morning Star",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "Three-candle bullish reversal pattern signaling potential end of downtrend. Consists of large bearish candle, small-bodied candle (star), and large bullish candle that closes well into first candle's body.",
+  "validationRules": [
+    "First candle: Large bearish candle in downtrend",
+    "Second candle: Small body (any color) that gaps down",
+    "Third candle: Large bullish candle closing above midpoint of first candle",
+    "Gap down between first and second candle preferred",
+    "Gap up between second and third candle preferred",
+    "Third candle should have strong volume"
+  ],
+  "invalidationSignals": [
+    "Third candle fails to close above first candle's midpoint",
+    "No gaps present (reduces reliability)",
+    "Small third candle body (weak buying)",
+    "Fourth candle immediately reverses lower",
+    "Pattern forms at major resistance"
+  ],
+  "commonMistakes": [
+    "Entering before third candle confirmation",
+    "Expecting perfect gaps - they help but aren't mandatory",
+    "Ignoring the star candle color - can be bullish or bearish",
+    "Not waiting for volume confirmation on third candle",
+    "Trading pattern in consolidation instead of downtrend"
+  ],
+  "tradeSetup": {
+    "entry": "Above third candle high or on pullback",
+    "stopLoss": "Below the star candle low",
+    "target": "Nearest resistance or measured move",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume surge on third candle",
+      "RSI showing bullish divergence",
+      "Pattern forms at support level",
+      "MACD bullish crossover"
+    ],
+    "conflicting": [
+      "RSI overbought",
+      "Decreasing volume on third candle",
+      "Major resistance above",
+      "Downtrend still strong on higher timeframe"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms at key Fibonacci support",
+    "Occurs at round number support",
+    "Multiple timeframe alignment",
+    "Preceded by panic selling (capitulation)"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "patternName": "triple_top",
+  "displayName": "Triple Top",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "Bearish reversal pattern featuring three peaks at approximately the same price level. Forms after an uptrend and indicates strong resistance that price cannot break through, signaling potential trend reversal.",
+  "validationRules": [
+    "Must form after a clear uptrend",
+    "Three distinct peaks at roughly the same level (within 2-3%)",
+    "Support line connects the two troughs between peaks",
+    "Each peak should show rejection with volume",
+    "Breakout below support line confirms the pattern",
+    "Volume typically decreases on 2nd and 3rd peaks, increases on breakdown"
+  ],
+  "invalidationSignals": [
+    "Price breaks above the resistance level (peaks)",
+    "Fourth peak forms - pattern becomes consolidation",
+    "Support line never breaks",
+    "Volume increases on 2nd or 3rd peak (buyers still active)",
+    "Pattern takes longer than 3 months (loses reliability)"
+  ],
+  "commonMistakes": [
+    "Entering before support line breakdown",
+    "Expecting perfect symmetry - peaks can vary slightly",
+    "Not waiting for retest of broken support as resistance",
+    "Ignoring volume - should decrease on later peaks",
+    "Trading pattern in sideways consolidation vs clear uptrend"
+  ],
+  "tradeSetup": {
+    "entry": "Breakdown below support line with volume, or retest of broken support as resistance",
+    "stopLoss": "Above the most recent peak or above all three peaks for conservative approach",
+    "target": "Measured move: height of pattern projected downward from breakdown point",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "RSI showing bearish divergence at the peaks",
+      "MACD bearish crossover before breakdown",
+      "Volume spike on support breakdown (1.5x+ average)",
+      "Moving averages starting to roll over"
+    ],
+    "conflicting": [
+      "RSI oversold (<30) before breakdown",
+      "Increasing volume on 2nd or 3rd peak",
+      "Major support level just below support line",
+      "Bullish MACD crossover during formation"
+    ]
+  },
+  "confluenceFactors": [
+    "Peaks align with major resistance level",
+    "Occurs at Fibonacci extension level (161.8%, 200%)",
+    "Round number resistance (psychological level)",
+    "Multiple timeframe confirmation (visible on daily and weekly)"
+  ]
+}

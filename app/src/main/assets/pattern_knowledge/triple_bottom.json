@@ -1,0 +1,55 @@
+{
+  "patternName": "triple_bottom",
+  "displayName": "Triple Bottom",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "Bullish reversal pattern with three troughs at approximately the same price level. Forms after a downtrend showing strong support that price cannot break below, indicating potential trend reversal.",
+  "validationRules": [
+    "Must form after a clear downtrend",
+    "Three distinct troughs at roughly the same level (within 2-3%)",
+    "Resistance line connects the two peaks between troughs",
+    "Each trough should show buying pressure with volume",
+    "Breakout above resistance line confirms the pattern",
+    "Volume typically decreases on 2nd and 3rd troughs, increases on breakout"
+  ],
+  "invalidationSignals": [
+    "Price breaks below the support level (troughs)",
+    "Fourth trough forms - pattern becomes consolidation",
+    "Resistance line never breaks",
+    "Volume increases on 2nd or 3rd trough (sellers still active)",
+    "Pattern takes longer than 3 months (loses reliability)"
+  ],
+  "commonMistakes": [
+    "Entering before resistance line breakout",
+    "Expecting perfect symmetry - troughs can vary slightly",
+    "Not waiting for retest of broken resistance as support",
+    "Ignoring volume - should decrease on later troughs",
+    "Trading pattern in sideways range vs clear downtrend"
+  ],
+  "tradeSetup": {
+    "entry": "Breakout above resistance line with volume, or retest of broken resistance as support",
+    "stopLoss": "Below the most recent trough or below all three troughs for conservative approach",
+    "target": "Measured move: height of pattern projected upward from breakout point",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  ],
+  "indicators": {
+    "supportive": [
+      "RSI showing bullish divergence at the troughs",
+      "MACD bullish crossover before breakout",
+      "Volume spike on resistance breakout (1.5x+ average)",
+      "Moving averages starting to curl upward"
+    ],
+    "conflicting": [
+      "RSI overbought (>70) before breakout",
+      "Increasing volume on 2nd or 3rd trough",
+      "Major resistance level just above resistance line",
+      "Bearish MACD crossover during formation"
+    ]
+  },
+  "confluenceFactors": [
+    "Troughs align with major support level",
+    "Occurs at Fibonacci retracement level (38.2%, 50%, 61.8%)",
+    "Round number support (psychological level)",
+    "Multiple timeframe confirmation (visible on daily and weekly)"
+  ]
+}

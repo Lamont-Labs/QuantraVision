@@ -1,0 +1,55 @@
+{
+  "patternName": "three_white_soldiers",
+  "displayName": "Three White Soldiers",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "Strong bullish reversal candlestick pattern consisting of three consecutive long-bodied green candles with higher closes. Each candle opens within previous candle's body and closes near its high.",
+  "validationRules": [
+    "Three consecutive bullish candles",
+    "Each candle has a relatively long body (minimal wicks)",
+    "Each candle opens within the previous candle's real body",
+    "Each candle closes progressively higher",
+    "Candles close near their highs with small upper wicks",
+    "Pattern typically forms after a downtrend or at support"
+  ],
+  "invalidationSignals": [
+    "Fourth candle forms as bearish engulfing or shooting star",
+    "Large upper wicks indicating rejection at resistance",
+    "Decreasing candle body size (momentum fading)",
+    "Any candle closes below previous candle's low",
+    "Pattern forms at major resistance level"
+  ],
+  "commonMistakes": [
+    "Entering on the third candle without waiting for confirmation",
+    "Ignoring resistance levels above the pattern",
+    "Not checking for volume increase across the three candles",
+    "Confusing with smaller bullish candles - bodies must be substantial",
+    "Trading pattern at end of uptrend instead of downtrend"
+  ],
+  "tradeSetup": {
+    "entry": "Open of fourth candle or pullback to support",
+    "stopLoss": "Below the low of the first white soldier",
+    "target": "Nearest resistance or measured move based on pattern height",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume increasing across the three candles",
+      "RSI moving from oversold toward neutral/bullish",
+      "MACD bullish crossover or positive divergence",
+      "Pattern forms at key support level"
+    ],
+    "conflicting": [
+      "RSI already overbought before pattern completes",
+      "Volume decreasing (weak buying pressure)",
+      "Major resistance nearby",
+      "MACD showing bearish divergence"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms after extended downtrend",
+    "Occurs at Fibonacci retracement support",
+    "Aligns with round number support level",
+    "Multiple timeframe bullish alignment"
+  ]
+}

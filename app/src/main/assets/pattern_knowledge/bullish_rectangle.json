@@ -1,0 +1,55 @@
+{
+  "patternName": "bullish_rectangle",
+  "displayName": "Bullish Rectangle",
+  "category": "continuation",
+  "bias": "bullish",
+  "description": "Continuation pattern showing consolidation within parallel horizontal support and resistance lines during an uptrend. Represents temporary pause before uptrend resumes.",
+  "validationRules": [
+    "Must form during an established uptrend",
+    "Clear horizontal support and resistance levels",
+    "Price bounces between support and resistance at least twice",
+    "Volume typically decreases during consolidation",
+    "Breakout occurs upward through resistance with volume",
+    "Pattern usually takes 1-3 months to complete"
+  ],
+  "invalidationSignals": [
+    "Downward breakout through support",
+    "Pattern extends beyond 3 months (becomes range)",
+    "Volume increases during consolidation (distribution)",
+    "Support or resistance lines slope significantly",
+    "No clear prior uptrend"
+  ],
+  "commonMistakes": [
+    "Trading inside the rectangle instead of waiting for breakout",
+    "Entering on fake breakouts - wait for volume confirmation",
+    "Not measuring rectangle height for target",
+    "Confusing with top/bottom formation in ranging market",
+    "Ignoring prior trend direction"
+  ],
+  "tradeSetup": {
+    "entry": "Breakout above resistance with 1.5x average volume",
+    "stopLoss": "Below most recent swing low or below support line",
+    "target": "Height of rectangle added to breakout point",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume decreases during formation, spikes on breakout",
+      "RSI oscillates between 40-60 during consolidation",
+      "MACD remains above zero line",
+      "Moving averages still in bullish alignment"
+    ],
+    "conflicting": [
+      "Volume increasing inside rectangle (distribution)",
+      "RSI making lower highs (bearish divergence)",
+      "MACD crosses below zero",
+      "Major resistance above rectangle"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms in middle of strong trend (measured move)",
+    "Support aligns with key Fibonacci level",
+    "Higher timeframe confirms uptrend",
+    "Forms after pullback to moving average"
+  ]
+}

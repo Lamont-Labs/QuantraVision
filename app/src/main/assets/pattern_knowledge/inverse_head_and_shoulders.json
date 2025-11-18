@@ -1,0 +1,55 @@
+{
+  "patternName": "inverse_head_and_shoulders",
+  "displayName": "Inverse Head and Shoulders",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "Strong bullish reversal pattern consisting of three troughs with the middle trough (head) being the lowest and two higher troughs (shoulders) on either side. Forms after a downtrend and signals potential trend reversal.",
+  "validationRules": [
+    "Must form after a clear downtrend",
+    "Three distinct troughs with middle trough lowest",
+    "Left and right shoulders should be roughly equal in height",
+    "Neckline connects the peaks between the troughs",
+    "Volume should increase on the right shoulder and breakout",
+    "Breakout should occur above the neckline with strong volume"
+  ],
+  "invalidationSignals": [
+    "Price fails to break above neckline",
+    "Right shoulder falls below the head",
+    "Volume decreases during formation",
+    "Neckline has extreme downward slope (>15 degrees)",
+    "Pattern takes longer than 3 months to form (loses reliability)"
+  ],
+  "commonMistakes": [
+    "Entering before neckline breakout confirmation",
+    "Ignoring volume - must increase on breakout",
+    "Not waiting for neckline retest after breakout",
+    "Misjudging the shoulders - they don't need to be perfect mirrors",
+    "Using pattern in ranging market instead of clear downtrend"
+  ],
+  "tradeSetup": {
+    "entry": "Breakout above neckline with volume confirmation, or retest of neckline as support",
+    "stopLoss": "Below the right shoulder low or below the head for aggressive trades",
+    "target": "Measured move: distance from head to neckline projected upward from breakout point",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "RSI showing bullish divergence at the head",
+      "MACD bullish crossover during right shoulder formation",
+      "Volume spike on neckline breakout (1.5x+ average)",
+      "Moving averages starting to curl upward"
+    ],
+    "conflicting": [
+      "RSI overbought (>70) before breakout",
+      "Decreasing volume throughout pattern",
+      "Major resistance level just above neckline",
+      "Bearish MACD crossover during right shoulder"
+    ]
+  },
+  "confluenceFactors": [
+    "Pattern forms at a significant support level",
+    "Occurs at Fibonacci retracement level (38.2%, 50%, 61.8%)",
+    "Aligns with round number support (psychological level)",
+    "Multiple timeframe confirmation (pattern visible on daily and weekly)"
+  ]
+}

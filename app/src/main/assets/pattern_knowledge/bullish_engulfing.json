@@ -1,0 +1,55 @@
+{
+  "patternName": "bullish_engulfing",
+  "displayName": "Bullish Engulfing",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "Two-candle bullish reversal pattern where a large green candle completely engulfs the previous red candle's body. Signals shift from selling to buying pressure.",
+  "validationRules": [
+    "First candle: Bearish (red) candle",
+    "Second candle: Bullish (green) candle",
+    "Second candle body completely covers first candle body",
+    "Second candle opens below first candle close",
+    "Second candle closes above first candle open",
+    "Pattern forms after downtrend or at support"
+  ],
+  "invalidationSignals": [
+    "Second candle fails to fully engulf first candle",
+    "Third candle immediately reverses lower",
+    "Low volume on engulfing candle",
+    "Pattern forms in middle of uptrend (not reversal)",
+    "Major resistance immediately above"
+  ],
+  "commonMistakes": [
+    "Entering without waiting for confirmation candle",
+    "Not checking if wicks are engulfed (bodies are what matter)",
+    "Trading every engulfing pattern - context is key",
+    "Ignoring volume on engulfing candle",
+    "Not placing stop below engulfing candle low"
+  ],
+  "tradeSetup": {
+    "entry": "Above engulfing candle high or on pullback",
+    "stopLoss": "Below engulfing candle low",
+    "target": "Nearest resistance or risk-reward based target",
+    "riskRewardRatio": "Typically 2:1 minimum"
+  },
+  "indicators": {
+    "supportive": [
+      "High volume on engulfing candle (2x+ average)",
+      "RSI showing bullish divergence",
+      "Pattern at key support level",
+      "MACD bullish crossover"
+    ],
+    "conflicting": [
+      "RSI already overbought",
+      "Low volume (weak conviction)",
+      "Pattern in middle of range",
+      "Major resistance nearby"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms at major support level",
+    "Occurs after extended downtrend",
+    "Aligns with Fibonacci support",
+    "Multiple timeframe bullish signals"
+  ]
+}

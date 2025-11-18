@@ -1,0 +1,55 @@
+{
+  "patternName": "bearish_pennant",
+  "displayName": "Bearish Pennant",
+  "category": "continuation",
+  "bias": "bearish",
+  "description": "Short-term bearish continuation pattern resembling a small symmetrical triangle. Forms after a strong downward move (flagpole) and represents a brief consolidation before the downtrend resumes.",
+  "validationRules": [
+    "Must follow a strong downward price move (flagpole)",
+    "Converging trendlines forming small triangle",
+    "Pattern typically completes within 1-3 weeks",
+    "Volume should decrease during pennant formation",
+    "Breakout occurs downward with volume spike",
+    "Flagpole should be steep and relatively vertical"
+  ],
+  "invalidationSignals": [
+    "Upward breakout from the pennant",
+    "Pattern extends beyond 3 weeks (becomes triangle)",
+    "Volume increases during consolidation",
+    "Price breaks above the flagpole high",
+    "Pennant tilts upward significantly"
+  ],
+  "commonMistakes": [
+    "Entering during pennant formation instead of waiting for breakout",
+    "Confusing with triangle pattern - pennant is much shorter duration",
+    "Ignoring the flagpole - must have strong prior move",
+    "Not measuring flagpole length for target calculation",
+    "Trading without volume confirmation on breakdown"
+  ],
+  "tradeSetup": {
+    "entry": "Breakdown below lower pennant trendline with volume spike",
+    "stopLoss": "Above the upper pennant trendline or above flagpole midpoint",
+    "target": "Length of flagpole subtracted from breakdown point",
+    "riskRewardRatio": "Typically 3:1 or higher"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume decreases during pennant, spikes on breakdown",
+      "RSI remains below 50 during consolidation",
+      "MACD stays negative throughout",
+      "Moving averages remain in bearish alignment"
+    ],
+    "conflicting": [
+      "Volume increasing during pennant (accumulation)",
+      "RSI divergence forming",
+      "MACD bullish crossover",
+      "Price approaching major support"
+    ]
+  },
+  "confluenceFactors": [
+    "Pattern forms during strong downtrend",
+    "Breakdown aligns with round number support",
+    "Higher timeframe shows bearish momentum",
+    "Forms after gap down (continuation gap)"
+  ]
+}

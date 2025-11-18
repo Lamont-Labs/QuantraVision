@@ -1,0 +1,55 @@
+{
+  "patternName": "diamond_top",
+  "displayName": "Diamond Top",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "Rare bearish reversal pattern shaped like a diamond. Forms when price action widens then narrows, creating expanding then contracting volatility. Highly reliable when properly identified.",
+  "validationRules": [
+    "Forms after extended uptrend",
+    "First half: Broadening pattern (expanding volatility)",
+    "Second half: Narrowing pattern (contracting volatility)",
+    "Symmetrical diamond shape when complete",
+    "Breakdown through lower support line confirms pattern",
+    "Volume typically high during formation, increases on breakdown"
+  ],
+  "invalidationSignals": [
+    "Upward breakout through resistance",
+    "Asymmetrical shape (not diamond-like)",
+    "Pattern extends beyond 2-3 months",
+    "Volume decreasing during formation",
+    "Forms in middle of downtrend (not a top)"
+  ],
+  "commonMistakes": [
+    "Misidentifying other patterns as diamonds - they're rare",
+    "Entering before clear breakdown confirmation",
+    "Not measuring pattern height for target",
+    "Trading inside the diamond (high risk)",
+    "Expecting perfect symmetry - close approximation is enough"
+  ],
+  "tradeSetup": {
+    "entry": "Breakdown below lower support with volume confirmation",
+    "stopLoss": "Above the diamond's widest point or recent swing high",
+    "target": "Height of diamond measured from breakdown point",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "RSI showing bearish divergence throughout formation",
+      "Volume spike on breakdown",
+      "MACD bearish crossover",
+      "Pattern forms at major resistance"
+    ],
+    "conflicting": [
+      "RSI oversold before breakdown",
+      "Decreasing volume (weak selling)",
+      "Major support just below pattern",
+      "Higher timeframe still bullish"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms after 50%+ rally",
+    "Occurs at round number resistance",
+    "Aligns with Fibonacci extension level",
+    "Multiple timeframe bearish signals"
+  ]
+}

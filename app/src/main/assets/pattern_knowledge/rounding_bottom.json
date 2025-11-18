@@ -1,0 +1,55 @@
+{
+  "patternName": "rounding_bottom",
+  "displayName": "Rounding Bottom",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "Long-term bullish reversal pattern shaped like a bowl or saucer. Represents gradual shift from bearish to bullish sentiment. More reliable than sharp reversals due to longer formation time.",
+  "validationRules": [
+    "Forms after an extended downtrend",
+    "Smooth, rounded bottom with no sharp V-shape",
+    "Volume forms a U-shape (high at start, low in middle, increasing at end)",
+    "Pattern typically takes 3-6 months to form",
+    "Right side should mirror left side roughly",
+    "Breakout above resistance confirms pattern"
+  ],
+  "invalidationSignals": [
+    "Sharp V-shaped bottom instead of gradual rounding",
+    "Volume doesn't follow U-shape pattern",
+    "Price breaks below the lowest point of the pattern",
+    "Pattern completes too quickly (less than 1 month)",
+    "Irregular jagged price action instead of smooth curve"
+  ],
+  "commonMistakes": [
+    "Entering too early before pattern completes",
+    "Expecting exact symmetry between left and right sides",
+    "Ignoring volume - U-shape is critical",
+    "Confusing with cup and handle - rounding bottom has no handle",
+    "Not being patient - pattern takes months to form"
+  ],
+  "tradeSetup": {
+    "entry": "Breakout above neckline or resistance with volume confirmation",
+    "stopLoss": "Below the lowest point of the rounding bottom",
+    "target": "Depth of pattern added to breakout point",
+    "riskRewardRatio": "Typically 2:1 to 4:1 due to long formation"
+  },
+  "indicators": {
+    "supportive": [
+      "RSI gradually rising from oversold to neutral/bullish",
+      "MACD crossover from negative to positive",
+      "Volume U-shape pattern clearly visible",
+      "Moving averages curling upward"
+    ],
+    "conflicting": [
+      "Volume increasing on left side (continued selling)",
+      "RSI overbought before breakout",
+      "Major resistance just above pattern",
+      "MACD showing divergence"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms at major support level",
+    "Occurs after significant downtrend (30%+ decline)",
+    "Multiple timeframe alignment",
+    "Fundamental improvement in underlying asset"
+  ]
+}

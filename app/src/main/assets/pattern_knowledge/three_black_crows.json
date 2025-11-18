@@ -1,0 +1,55 @@
+{
+  "patternName": "three_black_crows",
+  "displayName": "Three Black Crows",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "Strong bearish reversal candlestick pattern consisting of three consecutive long-bodied red candles with lower closes. Each candle opens within previous candle's body and closes near its low.",
+  "validationRules": [
+    "Three consecutive bearish candles",
+    "Each candle has a relatively long body (minimal wicks)",
+    "Each candle opens within the previous candle's real body",
+    "Each candle closes progressively lower",
+    "Candles close near their lows with small lower wicks",
+    "Pattern typically forms after an uptrend or at resistance"
+  ],
+  "invalidationSignals": [
+    "Fourth candle forms as bullish engulfing or hammer",
+    "Large lower wicks indicating support/buying pressure",
+    "Decreasing candle body size (momentum fading)",
+    "Any candle closes above previous candle's high",
+    "Pattern forms at major support level"
+  ],
+  "commonMistakes": [
+    "Entering on the third candle without waiting for confirmation",
+    "Ignoring support levels below the pattern",
+    "Not checking for volume increase across the three candles",
+    "Confusing with smaller bearish candles - bodies must be substantial",
+    "Trading pattern at end of downtrend instead of uptrend"
+  ],
+  "tradeSetup": {
+    "entry": "Open of fourth candle or rally to resistance",
+    "stopLoss": "Above the high of the first black crow",
+    "target": "Nearest support or measured move based on pattern height",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume increasing across the three candles",
+      "RSI moving from overbought toward neutral/bearish",
+      "MACD bearish crossover or negative divergence",
+      "Pattern forms at key resistance level"
+    ],
+    "conflicting": [
+      "RSI already oversold before pattern completes",
+      "Volume decreasing (weak selling pressure)",
+      "Major support nearby",
+      "MACD showing bullish divergence"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms after extended uptrend",
+    "Occurs at Fibonacci extension resistance",
+    "Aligns with round number resistance level",
+    "Multiple timeframe bearish alignment"
+  ]
+}

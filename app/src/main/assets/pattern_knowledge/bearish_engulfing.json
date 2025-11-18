@@ -1,0 +1,55 @@
+{
+  "patternName": "bearish_engulfing",
+  "displayName": "Bearish Engulfing",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "Two-candle bearish reversal pattern where a large red candle completely engulfs the previous green candle's body. Signals shift from buying to selling pressure.",
+  "validationRules": [
+    "First candle: Bullish (green) candle",
+    "Second candle: Bearish (red) candle",
+    "Second candle body completely covers first candle body",
+    "Second candle opens above first candle close",
+    "Second candle closes below first candle open",
+    "Pattern forms after uptrend or at resistance"
+  ],
+  "invalidationSignals": [
+    "Second candle fails to fully engulf first candle",
+    "Third candle immediately reverses higher",
+    "Low volume on engulfing candle",
+    "Pattern forms in middle of downtrend (not reversal)",
+    "Major support immediately below"
+  ],
+  "commonMistakes": [
+    "Entering without waiting for confirmation candle",
+    "Not checking if wicks are engulfed (bodies are what matter)",
+    "Trading every engulfing pattern - context is key",
+    "Ignoring volume on engulfing candle",
+    "Not placing stop above engulfing candle high"
+  ],
+  "tradeSetup": {
+    "entry": "Below engulfing candle low or on rally",
+    "stopLoss": "Above engulfing candle high",
+    "target": "Nearest support or risk-reward based target",
+    "riskRewardRatio": "Typically 2:1 minimum"
+  },
+  "indicators": {
+    "supportive": [
+      "High volume on engulfing candle (2x+ average)",
+      "RSI showing bearish divergence",
+      "Pattern at key resistance level",
+      "MACD bearish crossover"
+    ],
+    "conflicting": [
+      "RSI already oversold",
+      "Low volume (weak conviction)",
+      "Pattern in middle of range",
+      "Major support nearby"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms at major resistance level",
+    "Occurs after extended uptrend",
+    "Aligns with Fibonacci resistance",
+    "Multiple timeframe bearish signals"
+  ]
+}

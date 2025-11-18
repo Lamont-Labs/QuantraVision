@@ -1,0 +1,55 @@
+{
+  "patternName": "evening_star",
+  "displayName": "Evening Star",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "Three-candle bearish reversal pattern signaling potential end of uptrend. Consists of large bullish candle, small-bodied candle (star), and large bearish candle that closes well into first candle's body.",
+  "validationRules": [
+    "First candle: Large bullish candle in uptrend",
+    "Second candle: Small body (any color) that gaps up",
+    "Third candle: Large bearish candle closing below midpoint of first candle",
+    "Gap up between first and second candle preferred",
+    "Gap down between second and third candle preferred",
+    "Third candle should have strong volume"
+  ],
+  "invalidationSignals": [
+    "Third candle fails to close below first candle's midpoint",
+    "No gaps present (reduces reliability)",
+    "Small third candle body (weak selling)",
+    "Fourth candle immediately reverses higher",
+    "Pattern forms at major support"
+  ],
+  "commonMistakes": [
+    "Entering before third candle confirmation",
+    "Expecting perfect gaps - they help but aren't mandatory",
+    "Ignoring the star candle color - can be bullish or bearish",
+    "Not waiting for volume confirmation on third candle",
+    "Trading pattern in consolidation instead of uptrend"
+  ],
+  "tradeSetup": {
+    "entry": "Below third candle low or on rally",
+    "stopLoss": "Above the star candle high",
+    "target": "Nearest support or measured move",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume surge on third candle",
+      "RSI showing bearish divergence",
+      "Pattern forms at resistance level",
+      "MACD bearish crossover"
+    ],
+    "conflicting": [
+      "RSI oversold",
+      "Decreasing volume on third candle",
+      "Major support below",
+      "Uptrend still strong on higher timeframe"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms at key Fibonacci resistance",
+    "Occurs at round number resistance",
+    "Multiple timeframe alignment",
+    "Preceded by euphoric buying (exhaustion)"
+  ]
+}

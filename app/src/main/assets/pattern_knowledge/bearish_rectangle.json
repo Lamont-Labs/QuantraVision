@@ -1,0 +1,55 @@
+{
+  "patternName": "bearish_rectangle",
+  "displayName": "Bearish Rectangle",
+  "category": "continuation",
+  "bias": "bearish",
+  "description": "Continuation pattern showing consolidation within parallel horizontal support and resistance lines during a downtrend. Represents temporary pause before downtrend resumes.",
+  "validationRules": [
+    "Must form during an established downtrend",
+    "Clear horizontal support and resistance levels",
+    "Price bounces between support and resistance at least twice",
+    "Volume typically decreases during consolidation",
+    "Breakdown occurs downward through support with volume",
+    "Pattern usually takes 1-3 months to complete"
+  ],
+  "invalidationSignals": [
+    "Upward breakout through resistance",
+    "Pattern extends beyond 3 months (becomes range)",
+    "Volume increases during consolidation (accumulation)",
+    "Support or resistance lines slope significantly",
+    "No clear prior downtrend"
+  ],
+  "commonMistakes": [
+    "Trading inside the rectangle instead of waiting for breakdown",
+    "Entering on fake breakdowns - wait for volume confirmation",
+    "Not measuring rectangle height for target",
+    "Confusing with top/bottom formation in ranging market",
+    "Ignoring prior trend direction"
+  ],
+  "tradeSetup": {
+    "entry": "Breakdown below support with 1.5x average volume",
+    "stopLoss": "Above most recent swing high or above resistance line",
+    "target": "Height of rectangle subtracted from breakdown point",
+    "riskRewardRatio": "Typically 2:1 to 3:1"
+  },
+  "indicators": {
+    "supportive": [
+      "Volume decreases during formation, spikes on breakdown",
+      "RSI oscillates between 40-60 during consolidation",
+      "MACD remains below zero line",
+      "Moving averages still in bearish alignment"
+    ],
+    "conflicting": [
+      "Volume increasing inside rectangle (accumulation)",
+      "RSI making higher lows (bullish divergence)",
+      "MACD crosses above zero",
+      "Major support below rectangle"
+    ]
+  },
+  "confluenceFactors": [
+    "Forms in middle of strong downtrend (measured move)",
+    "Resistance aligns with key Fibonacci level",
+    "Higher timeframe confirms downtrend",
+    "Forms after rally to moving average"
+  ]
+}
