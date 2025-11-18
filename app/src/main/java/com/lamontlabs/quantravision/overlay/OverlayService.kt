@@ -4,20 +4,17 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.PixelFormat
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
-import android.view.*
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
 import com.lamontlabs.quantravision.licensing.ProFeatureGate
-import com.lamontlabs.quantravision.ui.EnhancedOverlayView
 import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.PatternMatch
@@ -55,9 +52,7 @@ class OverlayService : Service() {
     }
 
     private lateinit var windowManager: WindowManager
-    private var overlayView: View? = null
-    private var overlayParams: WindowManager.LayoutParams? = null  // Keep params for dynamic flag updates
-    private var enhancedOverlayView: EnhancedOverlayView? = null
+    private lateinit var patternNotificationManager: PatternNotificationManager
     private var floatingLogo: FloatingLogoButton? = null
     private var floatingMenu: FloatingMenu? = null
     private var scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -103,60 +98,17 @@ class OverlayService : Service() {
         windowManager = wm
         Log.i(TAG, "✓ WindowManager initialized")
 
+        patternNotificationManager = PatternNotificationManager(this)
+        Log.i(TAG, "✓ PatternNotificationManager initialized")
+
         resultController = PatternResultController(scope, autoClearTimeoutMs = 10_000L)
         resultController.onResultsCleared = {
             scope.launch(Dispatchers.Main.immediate) {
-                enhancedOverlayView?.clearAll()
-                overlayView?.visibility = android.view.View.GONE  // Hide ENTIRE overlay container when cleared
-                setOverlayTouchPassThrough(enabled = true)  // CRITICAL: Re-enable touch pass-through when idle
+                patternNotificationManager.dismiss()
                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                 floatingLogo?.updatePatternCount(0)
                 stateMachine.transitionToIdle()
             }
-        }
-
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = inflater.inflate(R.layout.overlay_layout, null)
-
-        // Start with FLAG_NOT_TOUCHABLE so touches pass through when idle
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or  // CRITICAL: Prevents touch interception when idle
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        )
-
-        Log.i(TAG, "Creating full-screen overlay view (NOT_TOUCHABLE for pass-through)...")
-        try {
-            windowManager.addView(view, params)
-            overlayView = view
-            overlayParams = params  // Store params for dynamic flag updates
-            Log.i(TAG, "✓ Full-screen overlay view added with pass-through enabled")
-            
-            enhancedOverlayView = view.findViewById(R.id.overlay_canvas)
-            
-            if (enhancedOverlayView == null) {
-                Log.e(TAG, "CRITICAL: EnhancedOverlayView not found in overlay_layout")
-            } else {
-                // Start with ENTIRE overlay container invisible to prevent touch interception
-                overlayView?.visibility = android.view.View.GONE
-                setupEnhancedOverlayTouchHandling()
-                Log.i(TAG, "✓ EnhancedOverlayView initialized (overlay hidden until patterns detected)")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "CRITICAL: Failed to add overlay view (permission likely revoked mid-operation)", e)
-            Toast.makeText(
-                this,
-                "Failed to create overlay. Please check permissions.",
-                Toast.LENGTH_LONG
-            ).show()
-            stopSelf()
-            return
         }
         
         if (ProFeatureGate.isActive(this)) {
@@ -222,48 +174,6 @@ class OverlayService : Service() {
         return START_STICKY
     }
     
-    /**
-     * Enable or disable touch pass-through by toggling FLAG_NOT_TOUCHABLE on the overlay window.
-     * @param enabled true = touches pass through to underlying apps, false = overlay can receive touches
-     */
-    private fun setOverlayTouchPassThrough(enabled: Boolean) {
-        val view = overlayView ?: return
-        val params = overlayParams ?: return
-        
-        if (enabled) {
-            // Enable pass-through: add FLAG_NOT_TOUCHABLE
-            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            Log.d(TAG, "Touch pass-through ENABLED (FLAG_NOT_TOUCHABLE added)")
-        } else {
-            // Disable pass-through: remove FLAG_NOT_TOUCHABLE so tap-to-clear works
-            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
-            Log.d(TAG, "Touch pass-through DISABLED (FLAG_NOT_TOUCHABLE removed for tap-to-clear)")
-        }
-        
-        // Update the window with new flags
-        try {
-            windowManager.updateViewLayout(view, params)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to update overlay window flags", e)
-        }
-    }
-    
-    private fun setupEnhancedOverlayTouchHandling() {
-        // EnhancedOverlayView only handles taps when showing results (for tap-to-clear)
-        // All other touches MUST pass through to underlying apps
-        enhancedOverlayView?.setOnTouchListener { view, event ->
-            if (event.action == android.view.MotionEvent.ACTION_UP) {
-                if (stateMachine.getCurrentState() is OverlayState.ShowingResult) {
-                    Timber.d("EnhancedOverlayView tapped → Clearing results")
-                    resultController.manualClear()
-                    return@setOnTouchListener true  // Consume tap to clear
-                }
-            }
-            // CRITICAL: Return false to pass through all touches when idle
-            // This allows user to interact with apps underneath the overlay
-            false
-        }
-    }
     
     private fun handleTap() {
         Timber.d("Tap detected, current state: ${stateMachine.getCurrentState()}")
@@ -399,14 +309,10 @@ class OverlayService : Service() {
                 }
                 
             withContext(Dispatchers.Main) {
-                // Show ENTIRE overlay container when patterns detected, hide when empty
                 if (allDetectedPatterns.isNotEmpty()) {
-                    overlayView?.visibility = android.view.View.VISIBLE
-                    setOverlayTouchPassThrough(enabled = false)  // CRITICAL: Disable pass-through so tap-to-clear works
-                    enhancedOverlayView?.updateMatches(allDetectedPatterns)
+                    patternNotificationManager.showPatterns(allDetectedPatterns)
                 } else {
-                    overlayView?.visibility = android.view.View.GONE
-                    setOverlayTouchPassThrough(enabled = true)  // Re-enable pass-through when no patterns
+                    patternNotificationManager.dismiss()
                 }
                 
                 floatingLogo?.updatePatternCount(allDetectedPatterns.size)
@@ -541,6 +447,12 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
+        try {
+            patternNotificationManager.cleanup()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cleaning up pattern notification manager", e)
+        }
+        
         runBlocking {
             cleanupMediaProjectionResources()
         }
@@ -561,18 +473,6 @@ class OverlayService : Service() {
             floatingMenu?.cleanup()
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning up floating menu", e)
-        }
-        
-        overlayView?.let { view ->
-            try {
-                if (::windowManager.isInitialized) {
-                    windowManager.removeView(view)
-                } else {
-                    Log.w(TAG, "WindowManager not initialized during cleanup, skipping removeView")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error removing overlay view on destroy", e)
-            }
         }
         
         try {
