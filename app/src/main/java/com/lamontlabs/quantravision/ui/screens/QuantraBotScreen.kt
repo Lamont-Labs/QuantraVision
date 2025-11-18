@@ -115,7 +115,12 @@ fun QuantraBotScreen(
             ) {
                 if (messages.isEmpty()) {
                     item {
-                        WelcomeMessage()
+                        WelcomeMessage(
+                            onQuestionClick = { question ->
+                                viewModel.updateInputText(question)
+                                viewModel.sendMessage()
+                            }
+                        )
                     }
                 } else {
                     items(messages) { message ->
@@ -187,7 +192,9 @@ fun QuantraBotScreen(
 }
 
 @Composable
-private fun WelcomeMessage() {
+private fun WelcomeMessage(
+    onQuestionClick: (String) -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -226,18 +233,31 @@ private fun WelcomeMessage() {
             )
             
             Text(
-                text = "Try asking:",
+                text = "💡 Tap a question to get started:",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White.copy(alpha = 0.7f),
                 fontWeight = FontWeight.Bold
             )
             
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                SuggestedQuestion("What's the difference between a bull flag and cup and handle?")
-                SuggestedQuestion("Explain my last scan results")
-                SuggestedQuestion("What makes a Head and Shoulders pattern valid?")
+                SuggestedQuestion(
+                    text = "What makes a Head and Shoulders pattern valid?",
+                    onClick = { onQuestionClick("What makes a Head and Shoulders pattern valid?") }
+                )
+                SuggestedQuestion(
+                    text = "Difference between bull flag and cup and handle?",
+                    onClick = { onQuestionClick("What's the difference between a bull flag and cup and handle?") }
+                )
+                SuggestedQuestion(
+                    text = "Explain my last scan results",
+                    onClick = { onQuestionClick("Explain my last scan results") }
+                )
+                SuggestedQuestion(
+                    text = "How do I use QuantraScore effectively?",
+                    onClick = { onQuestionClick("How do I use QuantraScore to find high-quality patterns?") }
+                )
             }
         }
     }
@@ -263,13 +283,37 @@ private fun BulletPoint(text: String) {
 }
 
 @Composable
-private fun SuggestedQuestion(text: String) {
-    Text(
-        text = "\"$text\"",
-        style = MaterialTheme.typography.bodySmall,
-        color = NeonCyan.copy(alpha = 0.7f),
-        modifier = Modifier.padding(start = 8.dp)
-    )
+private fun SuggestedQuestion(
+    text: String,
+    onClick: () -> Unit
+) {
+    androidx.compose.material3.Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = NeonCyan.copy(alpha = 0.1f),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodySmall,
+                color = NeonCyan.copy(alpha = 0.9f),
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.Default.Send,
+                contentDescription = "Ask",
+                tint = NeonCyan.copy(alpha = 0.5f),
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
 }
 
 @Composable
