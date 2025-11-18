@@ -12,6 +12,10 @@ import com.lamontlabs.quantravision.detection.TemporalTracker
 import com.lamontlabs.quantravision.time.TimeframeEstimator
 import com.lamontlabs.quantravision.prediction.PatternPredictionEngine
 import com.lamontlabs.quantravision.licensing.ProFeatureGate
+import com.lamontlabs.quantravision.intelligence.IndicatorExtractor
+import com.lamontlabs.quantravision.intelligence.IndicatorContext
+import com.lamontlabs.quantravision.intelligence.ContextAnalyzer
+import com.lamontlabs.quantravision.intelligence.QuantraScorer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.opencv.android.Utils
@@ -26,6 +30,11 @@ class PatternDetector(private val context: Context) {
     private val templateLibrary = TemplateLibrary(context)
     private val db = PatternDatabase.getInstance(context)
     private val provenance = Provenance(context)
+    
+    // QuantraCore components for multi-signal analysis
+    private val indicatorExtractor = IndicatorExtractor(context)
+    private val contextAnalyzer = ContextAnalyzer()
+    private val quantraScorer = QuantraScorer()
     
     // GPU acceleration support
     private var gpuAvailable = false
@@ -420,7 +429,25 @@ class PatternDetector(private val context: Context) {
                     Timber.w("Pattern detected but bounding box unavailable: $patternName (no best match found)")
                 }
                 
-                // Create pattern match result
+                // QuantraCore: Extract indicators and calculate composite score
+                val indicators = indicatorExtractor.extractIndicators(bitmap)
+                val analysis = contextAnalyzer.analyze(patternName, calibrated, indicators)
+                val scoreResult = quantraScorer.calculateScore(
+                    patternName, 
+                    calibrated, 
+                    indicators, 
+                    analysis
+                )
+                
+                Timber.i("QuantraScore: ${scoreResult.quantraScore}/100 (${scoreResult.grade.label}) - ${scoreResult.reasoning}")
+                
+                // SmartFilter: Only include patterns that meet quality threshold (60+)
+                if (!quantraScorer.meetsThreshold(scoreResult.quantraScore, QuantraScorer.THRESHOLD_FAIR)) {
+                    Timber.d("Pattern filtered out (low QuantraScore): $patternName (${scoreResult.quantraScore}/100)")
+                    return@forEach  // Skip this pattern
+                }
+                
+                // Create pattern match result with QuantraScore
                 val match = PatternMatch(
                     patternName = patternName,
                     confidence = calibrated,
@@ -430,7 +457,9 @@ class PatternDetector(private val context: Context) {
                     consensusScore = consensus.consensusScore,
                     windowMs = 7000L,
                     originPath = originPath,
-                    detectionBounds = detectionBounds
+                    detectionBounds = detectionBounds,
+                    quantraScore = scoreResult.quantraScore,
+                    indicatorsJson = if (indicators.hasAnyIndicators()) indicators.toJson() else null
                 )
                 
                 results.add(match)
