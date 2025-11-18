@@ -46,7 +46,9 @@ data class PatternMatch(
     val consensusScore: Double,   // Consensus across scales
     val windowMs: Long,           // Temporal stability window contribution
     val originPath: String = "",  // Source image path (e.g., "validation/test_1234567890.png")
-    val detectionBounds: String? = null  // Bounding box as "x,y,w,h" or null if unavailable
+    val detectionBounds: String? = null,  // Bounding box as "x,y,w,h" or null if unavailable
+    val quantraScore: Int = 0,    // QuantraCore: 0-100 composite quality score
+    val indicatorsJson: String? = null  // QuantraCore: JSON of IndicatorContext (RSI, MACD, volume, etc.)
 ) {
     @Ignore
     var tradeScenario: TradeScenarioInfo? = null  // Pattern-to-Plan trade info (Pro tier only, not persisted)
@@ -143,7 +145,7 @@ interface TrainingExampleDao {
     suspend fun getCount(): Int
 }
 
-@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class, TrainingExampleEntity::class], version = 12)
+@Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class, TrainingExampleEntity::class], version = 13)
 abstract class PatternDatabase : RoomDatabase() {
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
@@ -167,7 +169,7 @@ abstract class PatternDatabase : RoomDatabase() {
                         PatternDatabase::class.java,
                         "PatternMatch.db"
                     )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING) // CRITICAL: Prevents database locked errors (~0.1%)
                         .build()
                     INSTANCE = instance
@@ -494,6 +496,24 @@ abstract class PatternDatabase : RoomDatabase() {
                 """.trimIndent())
                 
                 Log.i(TAG, "Migration 11 -> 12: Incremental Learning Engine table created successfully")
+            }
+        }
+        
+        val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // QuantraCore: Add QuantraScore and indicator context fields
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN quantraScore INTEGER NOT NULL DEFAULT 0")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'quantraScore' may already exist, skipping: ${e.message}")
+                }
+                try {
+                    database.execSQL("ALTER TABLE PatternMatch ADD COLUMN indicatorsJson TEXT DEFAULT NULL")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Column 'indicatorsJson' may already exist, skipping: ${e.message}")
+                }
+                
+                Log.i(TAG, "Migration 12 -> 13: QuantraCore fields added successfully")
             }
         }
     }
