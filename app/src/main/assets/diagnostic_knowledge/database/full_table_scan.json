@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_FullTableScan",
+  "category": "database",
+  "description": "Query scans entire table instead of using index, causing linear performance degradation as table grows.",
+  "commonCauses": [
+    "No WHERE clause on large table",
+    "WHERE clause doesn't match any index",
+    "Using LIKE with leading wildcard (%pattern)",
+    "OR conditions not optimized",
+    "Type casting in WHERE clause",
+    "Implicit type conversion preventing index use",
+    "Complex expressions in WHERE clause"
+  ],
+  "solutions": [
+    "Add appropriate index for query pattern",
+    "Rewrite query to leverage existing indexes",
+    "Use LIMIT to reduce result set size",
+    "Split query into indexed parts with UNION",
+    "Avoid leading wildcards in LIKE queries",
+    "Use proper data types to avoid conversions",
+    "Consider full-text search for text queries"
+  ],
+  "prevention": [
+    "Always use WHERE clause with indexed column",
+    "Create indexes for all frequently queried columns",
+    "Use EXPLAIN QUERY PLAN to verify index usage",
+    "Avoid complex expressions in WHERE clause",
+    "Paginate large result sets with LIMIT/OFFSET",
+    "Monitor query execution time in production",
+    "Review slow query logs weekly"
+  ],
+  "examples": [
+    "SELECT * FROM scans WHERE userId = ? LIMIT 100 -- Uses index",
+    "CREATE INDEX idx_scans_user ON scans(userId)",
+    "-- Avoid: SELECT * FROM scans WHERE CAST(timestamp AS TEXT) LIKE '%'"
+  ],
+  "relatedErrors": [
+    "Slow query performance",
+    "Database query timeout"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "errorName": "BackgroundUIAccess",
+  "category": "ui_threading",
+  "description": "Attempting to update UI from background thread. CalledFromWrongThreadException - only UI thread can update views.",
+  "commonCauses": [
+    "Thread modifying views directly",
+    "AsyncTask doInBackground updating UI",
+    "Coroutine on Dispatchers.IO updating views",
+    "Callback from background thread",
+    "Network response handler updating UI",
+    "Database callback modifying views",
+    "Timer task updating UI"
+  ],
+  "solutions": [
+    "Use runOnUiThread { } for UI updates",
+    "Use withContext(Dispatchers.Main) in coroutines",
+    "Post to Handler(Looper.getMainLooper())",
+    "Use LiveData.postValue() from background",
+    "Use view.post { } for view updates",
+    "Switch to main dispatcher before UI work",
+    "Use StateFlow which handles thread switching"
+  ],
+  "prevention": [
+    "Always update UI on main thread",
+    "Use withContext(Dispatchers.Main) for UI code",
+    "Use LiveData/StateFlow for automatic thread handling",
+    "Enable StrictMode to detect violations",
+    "Use view.post { } for safe UI updates",
+    "Test all async code paths",
+    "Use Espresso for UI testing"
+  ],
+  "examples": [
+    "runOnUiThread { textView.text = result }",
+    "lifecycleScope.launch(Dispatchers.IO) { val data = fetch(); withContext(Dispatchers.Main) { updateUI(data) } }",
+    "view.post { textView.text = newText }",
+    "liveData.postValue(newValue) // Safe from any thread",
+    "Handler(Looper.getMainLooper()).post { updateUI() }"
+  ],
+  "relatedErrors": [
+    "CalledFromWrongThreadException",
+    "ViewRootImpl$CalledFromWrongThreadException",
+    "IllegalStateException"
+  ]
+}

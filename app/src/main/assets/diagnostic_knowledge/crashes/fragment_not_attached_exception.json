@@ -1,0 +1,43 @@
+{
+  "errorName": "FragmentNotAttachedException",
+  "category": "crashes",
+  "description": "Fragment accessed Context, Activity, or Resources after being detached. Common in async operations completing after fragment removal.",
+  "commonCauses": [
+    "Async operation completing after fragment detached",
+    "Accessing requireContext() after onDetach()",
+    "Callback from ViewModel after fragment destroyed",
+    "Background thread updating UI after fragment gone",
+    "Navigation occurring while async work running",
+    "Fragment transaction not checking isAdded",
+    "LiveData/Flow observation not lifecycle-aware"
+  ],
+  "solutions": [
+    "Check isAdded before accessing context/activity",
+    "Use viewLifecycleOwner for observations",
+    "Cancel coroutines in onDestroyView",
+    "Use context ?: return pattern",
+    "Check if (view != null) before UI operations",
+    "Use WeakReference for fragment callbacks",
+    "Implement proper lifecycle awareness"
+  ],
+  "prevention": [
+    "Always use viewLifecycleOwner for fragment observations",
+    "Cancel all async operations in onDestroyView",
+    "Check isAdded before context access",
+    "Use lifecycle-aware components",
+    "Avoid long-lived references to fragments",
+    "Use Navigation component for fragment management",
+    "Test rapid fragment replacement scenarios"
+  ],
+  "examples": [
+    "override fun onViewCreated(view: View, savedInstanceState: Bundle?) { viewModel.data.observe(viewLifecycleOwner) { ... } }",
+    "context ?: return // Safe exit if fragment detached",
+    "if (isAdded) { requireContext().getString(R.string.message) }",
+    "private val scope = lifecycleScope; override fun onDestroyView() { super.onDestroyView(); scope.coroutineContext.cancelChildren() }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "NullPointerException",
+    "IllegalStateException fragment not attached"
+  ]
+}

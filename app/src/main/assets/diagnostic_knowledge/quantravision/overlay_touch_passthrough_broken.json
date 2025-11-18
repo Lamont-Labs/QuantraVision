@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_OverlayTouchPassthroughBroken",
+  "category": "quantravision",
+  "description": "Overlay blocks touches to underlying chart app instead of passing through. User cannot interact with trading platform.",
+  "commonCauses": [
+    "FLAG_NOT_TOUCHABLE not set in LayoutParams",
+    "Overlay view consuming touch events",
+    "Interactive UI elements in overlay preventing passthrough",
+    "FLAG_NOT_FOCUSABLE missing",
+    "Touch listener on overlay view",
+    "Android version specific touch handling changes",
+    "View hierarchy blocking touches"
+  ],
+  "solutions": [
+    "Set FLAG_NOT_TOUCHABLE for passthrough overlay",
+    "Remove touch listeners from overlay views",
+    "Use FLAG_NOT_FOCUSABLE | FLAG_NOT_TOUCHABLE",
+    "Set clickable = false on all overlay views",
+    "Implement selective touch interception only for controls",
+    "Test touch passthrough on target Android versions",
+    "Use FLAG_WATCH_OUTSIDE_TOUCH for monitoring only"
+  ],
+  "prevention": [
+    "Always set FLAG_NOT_TOUCHABLE for non-interactive overlays",
+    "Test touch passthrough with real trading apps",
+    "Document touch handling requirements",
+    "Separate interactive controls from overlay layer",
+    "Test on Android 8+ (touch handling changes)",
+    "Verify passthrough on app launch",
+    "Monitor user reports of interaction issues"
+  ],
+  "examples": [
+    "params.flags = FLAG_NOT_TOUCHABLE or FLAG_NOT_FOCUSABLE",
+    "overlayView.isClickable = false; overlayView.isFocusable = false",
+    "// For pattern results: FLAG_NOT_TOUCH_MODAL to allow background touches"
+  ],
+  "relatedErrors": [
+    "Overlay blocking chart interaction",
+    "Touch events not reaching app below"
+  ]
+}

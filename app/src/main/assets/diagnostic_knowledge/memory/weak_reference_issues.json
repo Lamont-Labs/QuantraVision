@@ -1,0 +1,43 @@
+{
+  "errorName": "WeakReferenceIssues",
+  "category": "memory",
+  "description": "Incorrect use of WeakReference causing objects to be collected prematurely or not preventing leaks.",
+  "commonCauses": [
+    "WeakReference to object with no strong references",
+    "WeakReference collected before use",
+    "Using WeakReference when strong reference needed",
+    "Not checking if weakRef.get() returns null",
+    "WeakReference to value types (Integer, String)",
+    "Complex object graphs with weak references",
+    "WeakHashMap used incorrectly"
+  ],
+  "solutions": [
+    "Always check weakRef.get() != null before use",
+    "Keep strong reference to object if needed temporarily",
+    "Use WeakReference only for avoiding leaks",
+    "Handle null case when getting WeakReference",
+    "Use appropriate reference type (Weak/Soft/Phantom)",
+    "Document WeakReference usage clearly",
+    "Test reference behavior under memory pressure"
+  ],
+  "prevention": [
+    "Understand WeakReference lifecycle and GC behavior",
+    "Use WeakReference for callback/listener scenarios",
+    "Always handle null from weakRef.get()",
+    "Don't use WeakReference for business logic",
+    "Use SoftReference for memory-sensitive caches",
+    "Test with aggressive GC to verify behavior",
+    "Document why WeakReference is used"
+  ],
+  "examples": [
+    "class MyListener(activity: Activity) { private val weakActivity = WeakReference(activity); fun notify() { weakActivity.get()?.updateUI() } }",
+    "val activity = weakRef.get() ?: return // Safe null check",
+    "private val cache = Collections.synchronizedMap(WeakHashMap<Key, Value>())",
+    "// SoftReference for caches: private val cache = SoftReference(expensiveData)"
+  ],
+  "relatedErrors": [
+    "NullPointerException",
+    "IllegalStateException",
+    "ConcurrentModificationException"
+  ]
+}

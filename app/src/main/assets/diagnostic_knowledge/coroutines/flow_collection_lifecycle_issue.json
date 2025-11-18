@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_FlowCollectionLifecycleIssue",
+  "category": "coroutines",
+  "description": "Flow collection not properly tied to lifecycle, causing memory leaks or crashes. Flow lifecycle management issue.",
+  "commonCauses": [
+    "Collecting Flow with GlobalScope",
+    "Flow collection outliving lifecycle owner",
+    "Using flow.collect instead of lifecycle-aware collection",
+    "Fragment collecting with Fragment lifecycle instead of viewLifecycle",
+    "Flow collected in onCreate without cancellation",
+    "StateFlow collected without lifecycle awareness",
+    "Channel receive loop not cancelled properly"
+  ],
+  "solutions": [
+    "Use repeatOnLifecycle for lifecycle-aware collection",
+    "Use collectLatestLifecycleAware extension",
+    "Collect in lifecycleScope or viewLifecycleOwner.lifecycleScope",
+    "Use Flow.flowWithLifecycle() for automatic lifecycle binding",
+    "Cancel collection job in appropriate lifecycle method",
+    "Use launchWhenStarted only if absolutely necessary",
+    "Prefer collectAsStateWithLifecycle in Compose"
+  ],
+  "prevention": [
+    "Always use lifecycle-aware Flow collection",
+    "Use repeatOnLifecycle(STARTED) for UI flows",
+    "Use viewLifecycleOwner.lifecycleScope in Fragments",
+    "Prefer collectAsStateWithLifecycle in Compose",
+    "Test Flow collection across lifecycle transitions",
+    "Monitor Flow collection cancellation",
+    "Document Flow collection strategy"
+  ],
+  "examples": [
+    "lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.STARTED) { flow.collect { updateUI(it) } } }",
+    "viewLifecycleOwner.lifecycleScope.launch { viewModel.uiState.collect { render(it) } }",
+    "val state by viewModel.state.collectAsStateWithLifecycle() // Compose"
+  ],
+  "relatedErrors": [
+    "Memory leak from Flow collection",
+    "Crash from UI update after destroy"
+  ]
+}

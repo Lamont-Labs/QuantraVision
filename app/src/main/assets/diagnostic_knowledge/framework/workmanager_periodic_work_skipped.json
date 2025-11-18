@@ -1,0 +1,41 @@
+{
+  "errorName": "WorkManager_PeriodicWorkSkipped",
+  "category": "framework",
+  "description": "Periodic WorkManager tasks skipped or not running at expected intervals. Background sync unreliable.",
+  "commonCauses": [
+    "Repeat interval less than minimum (15 minutes)",
+    "Device in Doze mode suppressing periodic work",
+    "App in battery optimization preventing background execution",
+    "Flex interval misconfigured",
+    "Work taking longer than repeat interval",
+    "Too many periodic workers scheduled",
+    "Device manufacturer aggressive background limits"
+  ],
+  "solutions": [
+    "Use minimum 15-minute interval for periodic work",
+    "Configure flex interval appropriately: PeriodicWorkRequest.Builder(15, MINUTES, 5, MINUTES)",
+    "Request battery optimization exemption if critical",
+    "Use expedited work for important periodic tasks",
+    "Monitor execution intervals in production",
+    "Implement manual trigger option for users",
+    "Use foreground service for critical periodic work"
+  ],
+  "prevention": [
+    "Never use interval less than 15 minutes",
+    "Set realistic flex intervals",
+    "Test on devices with aggressive battery management",
+    "Monitor periodic work execution in analytics",
+    "Document expected vs actual execution frequency",
+    "Implement user-visible sync indicator",
+    "Test with battery saver enabled"
+  ],
+  "examples": [
+    "PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES).setConstraints(constraints).build()",
+    "PeriodicWorkRequest.Builder(worker, 1, TimeUnit.HOURS, 15, TimeUnit.MINUTES) // Flex interval",
+    "WorkManager.enqueueUniquePeriodicWork(\"sync\", KEEP, workRequest)"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException interval too short",
+    "Periodic work not executing regularly"
+  ]
+}

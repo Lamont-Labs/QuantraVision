@@ -1,0 +1,42 @@
+{
+  "errorName": "Coroutine_ChannelBufferOverflow",
+  "category": "coroutines",
+  "description": "Channel buffer overflows, causing send suspension or data loss. Channel capacity misconfiguration.",
+  "commonCauses": [
+    "Channel capacity too small for send rate",
+    "RENDEZVOUS channel with no immediate consumer",
+    "Producer faster than consumer",
+    "BUFFERED channel (default 64) insufficient",
+    "No backpressure strategy",
+    "Send called from main thread blocking UI",
+    "UNLIMITED capacity causing memory issues"
+  ],
+  "solutions": [
+    "Use appropriate capacity: Channel(capacity)",
+    "Use Channel.BUFFERED (64) for typical cases",
+    "Implement backpressure with offer/trySend",
+    "Use Channel.UNLIMITED carefully (memory implications)",
+    "Balance producer and consumer rates",
+    "Use Flow instead of Channel for cold streams",
+    "Monitor channel buffer usage"
+  ],
+  "prevention": [
+    "Choose appropriate channel capacity for use case",
+    "Use trySend for non-blocking send attempts",
+    "Monitor channel buffer fill rate",
+    "Test with realistic send/receive rates",
+    "Consider Flow for simpler reactive streams",
+    "Document channel capacity rationale",
+    "Implement backpressure when producer is faster"
+  ],
+  "examples": [
+    "val channel = Channel<Event>(capacity = Channel.BUFFERED) // 64 buffer",
+    "val result = channel.trySend(event) // Non-blocking",
+    "if (result.isFailure) { handleBackpressure() }",
+    "// Avoid: Channel<Event>() // RENDEZVOUS requires immediate consumer"
+  ],
+  "relatedErrors": [
+    "Send suspends indefinitely",
+    "OutOfMemoryError from UNLIMITED channel"
+  ]
+}

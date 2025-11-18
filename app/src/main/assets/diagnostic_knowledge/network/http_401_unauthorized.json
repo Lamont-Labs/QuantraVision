@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_401_Unauthorized",
+  "category": "network",
+  "description": "HTTP 401 response indicates missing or invalid authentication credentials. Client must authenticate before accessing resource.",
+  "commonCauses": [
+    "Missing Authorization header",
+    "Expired authentication token",
+    "Invalid API key or credentials",
+    "Token not refreshed properly",
+    "Incorrect authentication scheme (Bearer, Basic, etc.)",
+    "Session expired on server",
+    "OAuth token revoked"
+  ],
+  "solutions": [
+    "Implement automatic token refresh",
+    "Check and update Authorization header",
+    "Use interceptor to add auth tokens",
+    "Handle 401 to trigger re-authentication flow",
+    "Verify API key configuration",
+    "Implement token expiration handling",
+    "Clear session and prompt user login"
+  ],
+  "prevention": [
+    "Implement proper token lifecycle management",
+    "Use refresh tokens before expiration",
+    "Add authentication interceptor to HTTP client",
+    "Test authentication flow thoroughly",
+    "Monitor token expiration times",
+    "Implement automatic re-authentication",
+    "Log authentication failures for debugging"
+  ],
+  "examples": [
+    "client.newBuilder().addInterceptor { chain -> chain.proceed(chain.request().newBuilder().addHeader(\"Authorization\", \"Bearer $token\").build()) }",
+    "if (response.code == 401) { refreshToken(); retry() }",
+    "class AuthInterceptor(private val tokenProvider: () -> String) : Interceptor { override fun intercept(chain: Chain) = chain.proceed(chain.request().newBuilder().header(\"Authorization\", \"Bearer ${tokenProvider()}\").build()) }"
+  ],
+  "relatedErrors": [
+    "HTTP_403_Forbidden",
+    "TokenExpiredException",
+    "AuthenticationException"
+  ]
+}

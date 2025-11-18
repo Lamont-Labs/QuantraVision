@@ -1,0 +1,42 @@
+{
+  "errorName": "ActivityNotFoundException",
+  "category": "crashes",
+  "description": "No Activity found to handle Intent. Common when starting intents for apps/features not installed on device.",
+  "commonCauses": [
+    "Starting intent for app not installed",
+    "Incorrect action or data URI",
+    "Missing intent-filter in target activity",
+    "Trying to open file type with no handler",
+    "Starting activity not declared in manifest",
+    "Using implicit intent with no matching apps",
+    "Incorrect package name in explicit intent"
+  ],
+  "solutions": [
+    "Check if intent can be handled: resolveActivity(packageManager) != null",
+    "Use try-catch when starting activities",
+    "Query PackageManager for handling apps",
+    "Provide fallback when no app found",
+    "Use intent chooser: Intent.createChooser()",
+    "Check for specific app before launching",
+    "Handle exception gracefully with user message"
+  ],
+  "prevention": [
+    "Always check if intent can be handled before starting",
+    "Use queryIntentActivities() to verify handlers exist",
+    "Declare all activities in AndroidManifest.xml",
+    "Test on devices with minimal apps installed",
+    "Provide user-friendly error messages",
+    "Use intent chooser for ambiguous actions",
+    "Document required apps/features clearly"
+  ],
+  "examples": [
+    "if (intent.resolveActivity(packageManager) != null) { startActivity(intent) } else { showError() }",
+    "try { startActivity(intent) } catch (e: ActivityNotFoundException) { Toast.makeText(this, \"No app found\", LENGTH_SHORT).show() }",
+    "val chooser = Intent.createChooser(intent, \"Choose app\"); startActivity(chooser)"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "SecurityException",
+    "RuntimeException"
+  ]
+}

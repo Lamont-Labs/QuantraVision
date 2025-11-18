@@ -1,0 +1,43 @@
+{
+  "errorName": "HandlerMessageLeak",
+  "category": "ui_threading",
+  "description": "Pending Handler messages not cleared, keeping Activity alive. Memory leak through message queue references.",
+  "commonCauses": [
+    "Handler messages pending when activity destroyed",
+    "Delayed messages not removed",
+    "postDelayed without removeCallbacks",
+    "Long delay keeping activity reference",
+    "Handler in activity without cleanup",
+    "Message containing activity reference",
+    "Runnable capturing activity"
+  ],
+  "solutions": [
+    "Call removeCallbacksAndMessages(null) in onDestroy",
+    "Use static Handler with WeakReference",
+    "Clear specific messages: removeCallbacks(runnable)",
+    "Use Handler(Looper.getMainLooper()) for global handler",
+    "Implement proper cleanup in lifecycle methods",
+    "Use coroutines with lifecycle scope instead",
+    "Check if activity isFinishing before posting"
+  ],
+  "prevention": [
+    "Always clear handler messages in onDestroy/onStop",
+    "Use static Handler with WeakReference to activity",
+    "Prefer lifecycleScope.launch with delay over handler",
+    "Remove callbacks before activity destruction",
+    "Test with LeakCanary",
+    "Use Handler.Callback pattern",
+    "Document handler cleanup requirements"
+  ],
+  "examples": [
+    "override fun onDestroy() { super.onDestroy(); handler.removeCallbacksAndMessages(null) }",
+    "handler.postDelayed(runnable, delay); // Later: handler.removeCallbacks(runnable)",
+    "// Better: lifecycleScope.launch { delay(1000); updateUI() }",
+    "class MyHandler(activity: Activity) : Handler(Looper.getMainLooper()) { private val weak = WeakReference(activity) }"
+  ],
+  "relatedErrors": [
+    "Handler leak",
+    "Activity leak",
+    "OutOfMemoryError"
+  ]
+}

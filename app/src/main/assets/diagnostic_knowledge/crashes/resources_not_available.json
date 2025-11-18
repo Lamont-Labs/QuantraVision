@@ -1,0 +1,42 @@
+{
+  "errorName": "ResourcesNotAvailableException",
+  "category": "crashes",
+  "description": "Attempting to access resources from invalid or destroyed context. Common in async callbacks after activity destroyed.",
+  "commonCauses": [
+    "Using Application context for themed resources",
+    "Accessing resources after configuration change",
+    "Context leaked to background thread",
+    "Fragment accessing resources after detach",
+    "Using destroyed Activity context",
+    "Theme-dependent resources from wrong context",
+    "Resources accessed during process death recovery"
+  ],
+  "solutions": [
+    "Use activity context for themed resources",
+    "Check context validity before resource access",
+    "Use applicationContext only for non-themed resources",
+    "Store resource IDs, resolve in valid context",
+    "Handle configuration changes properly",
+    "Use lifecycle-aware context access",
+    "Cache resolved resources when appropriate"
+  ],
+  "prevention": [
+    "Use appropriate context type for resource needs",
+    "Never hold long-lived Activity context references",
+    "Access resources in lifecycle-aware manner",
+    "Test configuration changes and process death",
+    "Use ViewModel for non-UI resources",
+    "Document context requirements in code",
+    "Use WeakReference for context in callbacks"
+  ],
+  "examples": [
+    "val color = ContextCompat.getColor(requireContext(), R.color.primary) // Use requireContext in fragments",
+    "class MyCallback(context: Context) { private val appContext = context.applicationContext }",
+    "if (isAdded && context != null) { getString(R.string.message) }"
+  ],
+  "relatedErrors": [
+    "ResourcesNotFoundException",
+    "IllegalStateException",
+    "NullPointerException"
+  ]
+}

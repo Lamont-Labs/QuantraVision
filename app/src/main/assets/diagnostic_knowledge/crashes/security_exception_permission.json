@@ -1,0 +1,42 @@
+{
+  "errorName": "SecurityException_Permission",
+  "category": "crashes",
+  "description": "App attempts to perform action requiring permission without having that permission granted. Critical for runtime permissions on Android 6.0+.",
+  "commonCauses": [
+    "Accessing location without LOCATION permission",
+    "Reading contacts without READ_CONTACTS",
+    "Camera access without CAMERA permission",
+    "Writing external storage without permission",
+    "Not requesting runtime permissions on API 23+",
+    "Permission revoked during app lifecycle",
+    "Background location on Android 10+ without proper permission"
+  ],
+  "solutions": [
+    "Check permissions before access: ContextCompat.checkSelfPermission()",
+    "Request runtime permissions with ActivityResultContracts",
+    "Handle permission denial gracefully",
+    "Explain why permission is needed before requesting",
+    "Use registerForActivityResult for permission requests",
+    "Check if permission was previously denied",
+    "Implement fallback when permission denied"
+  ],
+  "prevention": [
+    "Always check permissions before sensitive operations",
+    "Declare permissions in AndroidManifest.xml",
+    "Use runtime permission flow for API 23+",
+    "Test permission flows on multiple Android versions",
+    "Handle all permission states: granted, denied, permanently denied",
+    "Use Accompanist Permissions for Compose",
+    "Document required permissions clearly"
+  ],
+  "examples": [
+    "val launcher = registerForActivityResult(RequestPermission()) { granted -> if (granted) access() }",
+    "if (checkSelfPermission(CAMERA) == GRANTED) { openCamera() } else { requestPermissions() }",
+    "when { shouldShowRequestPermissionRationale(LOCATION) -> showRationale(); else -> launcher.launch(LOCATION) }"
+  ],
+  "relatedErrors": [
+    "SecurityException",
+    "IllegalStateException",
+    "RecoverableSecurityException"
+  ]
+}

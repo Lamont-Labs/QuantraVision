@@ -1,0 +1,43 @@
+{
+  "errorName": "NoClassDefFoundError",
+  "category": "crashes",
+  "description": "Class was present at compile time but not found at runtime. Differs from ClassNotFoundException - indicates class loading failure.",
+  "commonCauses": [
+    "Static initialization block threw exception",
+    "ProGuard removed class but not references",
+    "Multidex configuration missing",
+    "Dependency not included in final APK",
+    "Class initialization circular dependency",
+    "OutOfMemoryError during class loading",
+    "Native library loading failed"
+  ],
+  "solutions": [
+    "Enable multidex for apps exceeding 64K methods",
+    "Check for exceptions in static initializers",
+    "Add ProGuard keep rules for missing classes",
+    "Verify dependencies are packaged in APK",
+    "Check class initialization order",
+    "Increase heap size if OOM during init",
+    "Validate native library loading"
+  ],
+  "prevention": [
+    "Enable multidex on projects with many dependencies",
+    "Avoid complex static initialization",
+    "Test with minifyEnabled true",
+    "Review ProGuard warnings carefully",
+    "Use @Keep annotation on critical classes",
+    "Monitor APK size and method count",
+    "Test class loading on low-memory devices"
+  ],
+  "examples": [
+    "android { defaultConfig { multiDexEnabled = true } }",
+    "-keep class com.example.** { *; }",
+    "@Keep object MyObject { init { /* safe initialization */ } }",
+    "class App : MultiDexApplication() { override fun attachBaseContext(base: Context) { super.attachBaseContext(base); MultiDex.install(this) } }"
+  ],
+  "relatedErrors": [
+    "ClassNotFoundException",
+    "ExceptionInInitializerError",
+    "OutOfMemoryError"
+  ]
+}

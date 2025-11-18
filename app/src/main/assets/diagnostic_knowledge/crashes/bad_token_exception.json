@@ -1,0 +1,42 @@
+{
+  "errorName": "BadTokenException",
+  "category": "crashes",
+  "description": "Unable to add window - token is invalid. Typically occurs when showing Dialog/Toast with destroyed Activity context.",
+  "commonCauses": [
+    "Showing dialog after activity destroyed",
+    "Using application context for dialogs",
+    "Toast shown after activity finished",
+    "PopupWindow with invalid window token",
+    "Dialog shown during activity transition",
+    "Window added to wrong context",
+    "Async callback showing UI after activity gone"
+  ],
+  "solutions": [
+    "Use activity context for dialogs, not application context",
+    "Check if activity is finishing before showing dialog",
+    "Use DialogFragment which handles lifecycle",
+    "Dismiss dialogs in activity lifecycle methods",
+    "Use try-catch when showing dialogs from async",
+    "Ensure UI operations on valid activity instance",
+    "Use LifecycleObserver to track activity state"
+  ],
+  "prevention": [
+    "Never use application context for dialogs",
+    "Always use DialogFragment for dialogs",
+    "Check isFinishing before showing UI",
+    "Use lifecycle-aware components",
+    "Cancel async operations in onDestroy",
+    "Use Compose for lifecycle-managed UI",
+    "Avoid showing dialogs from background threads"
+  ],
+  "examples": [
+    "if (!isFinishing && !isDestroyed) { dialog.show() }",
+    "viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event -> if (event == ON_DESTROY) dialog?.dismiss() })",
+    "// Use DialogFragment instead of Dialog for automatic lifecycle"
+  ],
+  "relatedErrors": [
+    "WindowLeakedException",
+    "IllegalStateException",
+    "NullPointerException"
+  ]
+}

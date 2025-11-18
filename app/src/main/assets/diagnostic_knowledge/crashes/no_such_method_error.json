@@ -1,0 +1,43 @@
+{
+  "errorName": "NoSuchMethodError",
+  "category": "crashes",
+  "description": "Method exists at compile time but not at runtime. Typically caused by dependency version conflicts or ProGuard issues.",
+  "commonCauses": [
+    "Dependency version mismatch",
+    "ProGuard/R8 removing or renaming methods",
+    "Outdated library versions",
+    "Conflicting transitive dependencies",
+    "API level mismatch (using newer API on old device)",
+    "Partial library updates",
+    "Kotlin version incompatibility"
+  ],
+  "solutions": [
+    "Update all dependencies to compatible versions",
+    "Add ProGuard keep rules for missing methods",
+    "Use dependency resolution strategy in Gradle",
+    "Check for transitive dependency conflicts",
+    "Verify API level compatibility",
+    "Use @RequiresApi annotation",
+    "Clean and rebuild project"
+  ],
+  "prevention": [
+    "Keep dependencies up to date and compatible",
+    "Use bill of materials (BOM) for version management",
+    "Test with minifyEnabled true in debug builds",
+    "Use strict dependency resolution",
+    "Document minimum API levels for features",
+    "Run dependency tree analysis regularly",
+    "Use @RequiresApi for version-specific code"
+  ],
+  "examples": [
+    "implementation(platform(\"androidx.compose:compose-bom:2023.10.01\"))",
+    "-keep class com.library.** { *; }",
+    "@RequiresApi(Build.VERSION_CODES.O) fun useNewApi() { ... }",
+    "configurations.all { resolutionStrategy { force(\"com.example:lib:1.0.0\") } }"
+  ],
+  "relatedErrors": [
+    "NoClassDefFoundError",
+    "ClassNotFoundException",
+    "IncompatibleClassChangeError"
+  ]
+}

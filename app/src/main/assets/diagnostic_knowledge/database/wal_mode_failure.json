@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_WALModeFailure",
+  "category": "database",
+  "description": "Write-Ahead Logging mode fails to enable or causes issues. WAL is critical for concurrent database access in Android.",
+  "commonCauses": [
+    "Database on external storage (WAL requires internal storage)",
+    "File system doesn't support shared memory",
+    "Database opened with multiple connections in different modes",
+    "Insufficient storage space for WAL file",
+    "Database file permissions incorrect",
+    "WAL checkpoint failures accumulating",
+    "Android version below API 16"
+  ],
+  "solutions": [
+    "Ensure database on internal storage only",
+    "Check available storage before enabling WAL",
+    "Use single RoomDatabase instance",
+    "Implement WAL checkpoint strategy: TRUNCATE or RESTART",
+    "Verify file permissions are correct",
+    "Fall back to DELETE mode on WAL failure",
+    "Monitor WAL file size growth"
+  ],
+  "prevention": [
+    "Always store database on internal storage",
+    "Enable WAL mode in RoomDatabase.Builder",
+    "Implement periodic WAL checkpoint",
+    "Monitor -wal file size (shouldn't grow unbounded)",
+    "Test WAL mode on various Android versions",
+    "Use Room's built-in WAL configuration",
+    "Document WAL mode requirements in code"
+  ],
+  "examples": [
+    ".setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)",
+    "context.getDatabasePath(\"quantra.db\") // internal storage",
+    "db.openHelper.writableDatabase.rawQuery(\"PRAGMA wal_checkpoint(TRUNCATE)\")"
+  ],
+  "relatedErrors": [
+    "SQLiteException unable to enable WAL",
+    "IllegalStateException journal mode"
+  ]
+}

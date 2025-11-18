@@ -1,0 +1,43 @@
+{
+  "errorName": "HandlerThreadNotQuit",
+  "category": "ui_threading",
+  "description": "HandlerThread not quit/stopped causing thread and looper leak. Resource management issue with background handlers.",
+  "commonCauses": [
+    "HandlerThread started but never quit",
+    "Looper.quit() not called",
+    "HandlerThread in activity without cleanup",
+    "Service using HandlerThread without stopping",
+    "HandlerThread outliving component lifecycle",
+    "quitSafely() not called in onDestroy",
+    "Thread reference leaked"
+  ],
+  "solutions": [
+    "Call handlerThread.quitSafely() in lifecycle methods",
+    "Use quit() for immediate termination",
+    "Implement proper HandlerThread lifecycle",
+    "Store HandlerThread reference for cleanup",
+    "Use try-finally pattern for thread management",
+    "Use coroutines instead of HandlerThread",
+    "Implement cleanup in onDestroy"
+  ],
+  "prevention": [
+    "Always quit HandlerThread in onDestroy/onStop",
+    "Use quitSafely() to process pending messages",
+    "Prefer coroutines over HandlerThread",
+    "Test HandlerThread cleanup scenarios",
+    "Document thread lifecycle requirements",
+    "Use lifecycle-aware thread management",
+    "Monitor active threads in debug builds"
+  ],
+  "examples": [
+    "private val handlerThread = HandlerThread(\"MyThread\"); override fun onDestroy() { super.onDestroy(); handlerThread.quitSafely() }",
+    "handlerThread.start(); val handler = Handler(handlerThread.looper); // Later: handlerThread.quitSafely()",
+    "// Better: use coroutines: private val scope = CoroutineScope(Dispatchers.IO); override fun onDestroy() { scope.cancel() }",
+    "try { handlerThread.start(); /* work */ } finally { handlerThread.quitSafely() }"
+  ],
+  "relatedErrors": [
+    "Thread leak",
+    "Looper leak",
+    "OutOfMemoryError"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_IndicatorParsingError",
+  "category": "quantravision",
+  "description": "Extracted OCR text fails to parse into valid indicator values (RSI, MACD, etc). Affects QuantraScore accuracy.",
+  "commonCauses": [
+    "OCR text contains artifacts or noise characters",
+    "Unexpected number format (commas, decimals, scientific notation)",
+    "Missing expected indicator labels in text",
+    "Text parsing regex doesn't match actual format",
+    "Multiple indicators extracted as single text block",
+    "Localization affecting number formats",
+    "OCR confidence low causing garbled text"
+  ],
+  "solutions": [
+    "Implement robust text cleaning: remove non-numeric artifacts",
+    "Use flexible parsing: support multiple number formats",
+    "Apply regex patterns for each indicator type",
+    "Validate parsed values against reasonable ranges",
+    "Implement fuzzy matching for indicator labels",
+    "Handle multiple parsing strategies with fallbacks",
+    "Log raw OCR text for debugging parsing failures"
+  ],
+  "prevention": [
+    "Test parsing with diverse chart screenshots",
+    "Support international number formats",
+    "Implement indicator value range validation",
+    "Use multiple parsing strategies with confidence scoring",
+    "Log parsing failures with raw text for improvement",
+    "Build test suite with real OCR extraction samples",
+    "Implement graceful degradation for parsing failures"
+  ],
+  "examples": [
+    "val rsiValue = text.replace(\"[^0-9.]\".toRegex(), \"\").toFloatOrNull()",
+    "val indicators = extractIndicators(text) ?: return defaultIndicatorContext()",
+    "if (rsi !in 0.0..100.0) { Log.w(TAG, \"Invalid RSI: $rsi\"); return null }"
+  ],
+  "relatedErrors": [
+    "NumberFormatException parsing indicator",
+    "IllegalArgumentException invalid indicator value"
+  ]
+}

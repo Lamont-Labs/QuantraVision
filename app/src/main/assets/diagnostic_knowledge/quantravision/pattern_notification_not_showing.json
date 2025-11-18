@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_PatternNotificationNotShowing",
+  "category": "quantravision",
+  "description": "Pattern detection notifications fail to display when patterns found. User misses important trading opportunities.",
+  "commonCauses": [
+    "Notification permission not granted (Android 13+)",
+    "Notification channel not created or disabled",
+    "Do Not Disturb mode blocking notifications",
+    "App in battery optimization preventing background work",
+    "Notification priority too low",
+    "Notification posted from background thread incorrectly",
+    "Notification ID conflict causing replacement"
+  ],
+  "solutions": [
+    "Request notification permission on Android 13+",
+    "Create notification channel with HIGH importance",
+    "Check notification channel status before posting",
+    "Use unique notification IDs for each pattern",
+    "Set notification priority: setPriority(PRIORITY_HIGH)",
+    "Post notification on main thread or use NotificationManagerCompat",
+    "Verify app not in battery optimization"
+  ],
+  "prevention": [
+    "Always request notification permission on Android 13+",
+    "Create notification channels at app startup",
+    "Test notifications with Do Not Disturb enabled",
+    "Use NotificationManagerCompat for compatibility",
+    "Monitor notification display rate in analytics",
+    "Test on various Android versions (8+)",
+    "Provide clear permission request explanation"
+  ],
+  "examples": [
+    "if (Build.VERSION.SDK_INT >= 33) { requestPermission(POST_NOTIFICATIONS) }",
+    "val channel = NotificationChannel(CHANNEL_ID, \"Patterns\", IMPORTANCE_HIGH)",
+    "NotificationManagerCompat.from(context).notify(uniqueId, notification)"
+  ],
+  "relatedErrors": [
+    "SecurityException POST_NOTIFICATIONS",
+    "Notifications not appearing"
+  ]
+}

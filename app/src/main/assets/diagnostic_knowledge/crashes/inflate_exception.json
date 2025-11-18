@@ -1,0 +1,42 @@
+{
+  "errorName": "InflateException",
+  "category": "crashes",
+  "description": "Error inflating XML layout file. Indicates malformed XML, missing resources, or incorrect view attributes.",
+  "commonCauses": [
+    "Typo in XML attribute names",
+    "Reference to non-existent resource (@drawable/missing)",
+    "Custom view class not found or wrong package",
+    "Incorrect XML syntax or structure",
+    "Missing required attributes on views",
+    "Incompatible attribute values",
+    "ProGuard removing custom view classes"
+  ],
+  "solutions": [
+    "Check XML syntax and attribute names carefully",
+    "Verify all resource references exist (@drawable, @string, etc.)",
+    "Ensure custom view classes are accessible",
+    "Use fully qualified names for custom views",
+    "Add ProGuard keep rules for custom views",
+    "Check for circular view references in includes",
+    "Validate XML with lint before building"
+  ],
+  "prevention": [
+    "Use Android Studio's layout preview to catch errors early",
+    "Enable strict XML validation in IDE",
+    "Test layouts on multiple API levels",
+    "Keep ProGuard rules for all custom views",
+    "Use ViewBinding to avoid runtime inflation errors",
+    "Regularly run lint checks",
+    "Use merge tags and includes carefully"
+  ],
+  "examples": [
+    "<com.example.CustomView android:id=\"@+id/custom\" android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\" />",
+    "-keep public class * extends android.view.View { public <init>(android.content.Context); }",
+    "val binding = ActivityMainBinding.inflate(layoutInflater) // ViewBinding prevents many inflate errors"
+  ],
+  "relatedErrors": [
+    "ClassNotFoundException",
+    "ResourcesNotFoundException",
+    "IllegalStateException"
+  ]
+}

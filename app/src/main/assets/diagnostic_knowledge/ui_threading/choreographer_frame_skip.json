@@ -1,0 +1,43 @@
+{
+  "errorName": "ChoreographerFrameSkip",
+  "category": "ui_threading",
+  "description": "Frame rendering takes longer than 16ms (60fps) causing dropped frames. Visual performance issue.",
+  "commonCauses": [
+    "Heavy computation in draw/measure/layout",
+    "Allocations during frame rendering",
+    "Complex view hierarchies",
+    "Overdraw and rendering inefficiency",
+    "Main thread blocked during vsync",
+    "Expensive onDraw operations",
+    "Layout inflation during animation"
+  ],
+  "solutions": [
+    "Optimize onDraw/onMeasure/onLayout",
+    "Remove allocations from rendering path",
+    "Flatten view hierarchy",
+    "Use ConstraintLayout to reduce nesting",
+    "Profile with GPU Rendering in developer options",
+    "Use Systrace to identify bottlenecks",
+    "Implement view recycling and caching"
+  ],
+  "prevention": [
+    "Keep frame budget under 16ms (60fps) or 11ms (90fps)",
+    "Never allocate objects in onDraw",
+    "Optimize view hierarchy depth and count",
+    "Use ViewStub for conditional views",
+    "Test on low-end devices",
+    "Monitor frame metrics with FrameMetricsAggregator",
+    "Use Compose for better performance"
+  ],
+  "examples": [
+    "Choreographer.getInstance().postFrameCallback { /* Work aligned with vsync */ }",
+    "// Profile: adb shell setprop debug.hwui.profile visual_bars",
+    "window.addOnFrameMetricsAvailableListener({ _, metrics, _ -> val duration = metrics.getMetric(TOTAL_DURATION) })",
+    "// Optimize: Move paint creation out of onDraw: private val paint = Paint()"
+  ],
+  "relatedErrors": [
+    "Frame drops",
+    "Jank",
+    "Animation stutter"
+  ]
+}

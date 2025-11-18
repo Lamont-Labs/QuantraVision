@@ -1,0 +1,42 @@
+{
+  "errorName": "TooManyRedirects",
+  "category": "network",
+  "description": "Exceeded maximum number of HTTP redirects. Infinite redirect loop or misconfigured server.",
+  "commonCauses": [
+    "Redirect loop (A → B → A)",
+    "Misconfigured server redirects",
+    "Authentication redirect loop",
+    "HTTP/HTTPS redirect conflict",
+    "Proxy redirect issues",
+    "Server configuration error",
+    "Cookie/session redirect loop"
+  ],
+  "solutions": [
+    "Increase max redirect limit if legitimate",
+    "Fix server redirect configuration",
+    "Check for authentication loops",
+    "Handle redirects manually if needed",
+    "Detect redirect loops programmatically",
+    "Use direct URL if redirects unnecessary",
+    "Log redirect chain for debugging"
+  ],
+  "prevention": [
+    "Configure reasonable redirect limit (default 20)",
+    "Test redirect chains thoroughly",
+    "Implement redirect loop detection",
+    "Monitor redirect behavior",
+    "Use canonical URLs to avoid redirects",
+    "Test with different auth states",
+    "Validate server redirect configuration"
+  ],
+  "examples": [
+    "val client = OkHttpClient.Builder().followRedirects(true).followSslRedirects(true).build() // Max 20 redirects",
+    "class RedirectInterceptor : Interceptor { private val visited = mutableSetOf<String>(); override fun intercept(chain: Chain): Response { if (chain.request().url.toString() in visited) throw TooManyRedirectsException(); visited.add(chain.request().url.toString()); return chain.proceed(chain.request()) } }",
+    "if (response.isRedirect && redirectCount++ > 10) throw TooManyRedirectsException()"
+  ],
+  "relatedErrors": [
+    "ProtocolException",
+    "IOException",
+    "RedirectLoopException"
+  ]
+}

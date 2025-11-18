@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_GlobalScopeMisuse",
+  "category": "coroutines",
+  "description": "GlobalScope used incorrectly for UI-related work, causing memory leaks and crashes. Anti-pattern in Android development.",
+  "commonCauses": [
+    "GlobalScope.launch for Activity/Fragment work",
+    "UI updates in GlobalScope coroutine",
+    "Database operations in GlobalScope outliving Activity",
+    "Network requests in GlobalScope without cancellation",
+    "Using GlobalScope instead of viewModelScope",
+    "Long-running operations without lifecycle awareness",
+    "Misunderstanding GlobalScope application-level scope"
+  ],
+  "solutions": [
+    "Replace GlobalScope with viewModelScope or lifecycleScope",
+    "Use applicationScope for true app-level work only",
+    "Ensure all UI work uses lifecycle-aware scopes",
+    "Use WorkManager for background work outliving components",
+    "Cancel work appropriately with component lifecycle",
+    "Document when GlobalScope is truly needed (rare)",
+    "Implement proper structured concurrency"
+  ],
+  "prevention": [
+    "Never use GlobalScope for Activity/Fragment/ViewModel work",
+    "Use viewModelScope in ViewModels",
+    "Use lifecycleScope in Activities/Fragments",
+    "Use rememberCoroutineScope in Compose",
+    "Enable IDE warnings for GlobalScope usage",
+    "Code review for GlobalScope usage",
+    "Test component destruction scenarios"
+  ],
+  "examples": [
+    "// WRONG: GlobalScope.launch { updateUI() }",
+    "// CORRECT: viewModelScope.launch { updateUI() }",
+    "// CORRECT: lifecycleScope.launch { fetchData() }"
+  ],
+  "relatedErrors": [
+    "Memory leak from GlobalScope",
+    "Crash from UI update after destroy"
+  ]
+}

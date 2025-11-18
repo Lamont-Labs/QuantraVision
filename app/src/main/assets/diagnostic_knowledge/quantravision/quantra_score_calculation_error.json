@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_QuantraScoreCalculationError",
+  "category": "quantravision",
+  "description": "QuantraScore calculation fails or returns invalid values. Core QuantraVision intelligence feature affected.",
+  "commonCauses": [
+    "Missing required components for calculation (confidence, context, confluence)",
+    "Division by zero in weighting formula",
+    "Invalid input ranges (confidence > 1.0 or < 0.0)",
+    "ContextAnalyzer returning null values",
+    "HistoricalAnalyzer data unavailable",
+    "Weight configuration sum != 1.0",
+    "NaN propagation from invalid calculations"
+  ],
+  "solutions": [
+    "Validate all inputs before calculation",
+    "Use safe division with zero checks",
+    "Normalize weights to sum to 1.0",
+    "Provide default values for missing components",
+    "Clamp inputs to valid ranges [0.0, 1.0]",
+    "Handle null components gracefully",
+    "Return fallback score on calculation error"
+  ],
+  "prevention": [
+    "Implement comprehensive input validation",
+    "Test QuantraScore with edge cases (nulls, zeros, extremes)",
+    "Validate weight configuration at initialization",
+    "Use data classes with value constraints",
+    "Log calculation inputs for debugging",
+    "Implement unit tests for all score calculation paths",
+    "Monitor QuantraScore distribution in production"
+  ],
+  "examples": [
+    "val quantraScore = (confidence * 0.4 + contextScore * 0.3 + confluenceScore * 0.3).coerceIn(0.0, 1.0)",
+    "require(weights.values.sum() == 1.0) { \"Weights must sum to 1.0\" }",
+    "val safeScore = calculateScore() ?: DEFAULT_QUANTRA_SCORE"
+  ],
+  "relatedErrors": [
+    "ArithmeticException division by zero",
+    "IllegalArgumentException invalid score component"
+  ]
+}

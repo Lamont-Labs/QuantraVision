@@ -1,0 +1,43 @@
+{
+  "errorName": "LiveDataObserverLeak",
+  "category": "memory",
+  "description": "LiveData observer not removed or using wrong LifecycleOwner, causing memory leak of observer and its context.",
+  "commonCauses": [
+    "Using observeForever without removeObserver",
+    "Using activity as LifecycleOwner in fragment",
+    "Observer holding strong reference to activity",
+    "Multiple observations not cleaned up",
+    "Lambda observer capturing activity/fragment",
+    "Using lifecycleOwner instead of viewLifecycleOwner in fragments",
+    "Observer registered but lifecycle destroyed"
+  ],
+  "solutions": [
+    "Always use appropriate LifecycleOwner (viewLifecycleOwner in fragments)",
+    "Remove observers with removeObserver() if using observeForever",
+    "Use viewLifecycleOwner for fragment view observations",
+    "Don't capture activity/fragment in observer lambdas",
+    "Remove observers in onDestroyView for fragments",
+    "Use observe() instead of observeForever when possible",
+    "Let lifecycle automatically manage observer removal"
+  ],
+  "prevention": [
+    "Always use viewLifecycleOwner in fragments for view-related observations",
+    "Avoid observeForever - use lifecycle-aware observe()",
+    "Don't pass strong references in observer callbacks",
+    "Use observe(viewLifecycleOwner) { } pattern",
+    "Test observer cleanup with LeakCanary",
+    "Document LifecycleOwner usage in fragments",
+    "Review all LiveData observations"
+  ],
+  "examples": [
+    "// Fragment: viewModel.data.observe(viewLifecycleOwner) { /* Update UI */ }",
+    "// Activity: viewModel.data.observe(this) { /* Update UI */ }",
+    "// If observeForever: override fun onDestroy() { viewModel.data.removeObserver(observer) }",
+    "// Bad in fragment: observe(lifecycleOwner) // Good: observe(viewLifecycleOwner)"
+  ],
+  "relatedErrors": [
+    "Fragment leak",
+    "Activity leak",
+    "OutOfMemoryError"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_ForeignKeyConstraintFailed",
+  "category": "database",
+  "description": "Foreign key constraint violation when inserting or updating records. Parent record doesn't exist or child records prevent deletion.",
+  "commonCauses": [
+    "Inserting child record before parent exists",
+    "Deleting parent record with existing children",
+    "Foreign key column value doesn't match any parent key",
+    "Updating parent key without updating children",
+    "Foreign keys not enabled in SQLite",
+    "Cascade delete not configured properly",
+    "Transaction order incorrect for related entities"
+  ],
+  "solutions": [
+    "Enable foreign keys: PRAGMA foreign_keys = ON",
+    "Insert parent records before children",
+    "Use CASCADE delete in foreign key definition",
+    "Wrap related inserts in transaction",
+    "Validate parent existence before child insert",
+    "Use Room's foreign key cascading options",
+    "Delete children before parent or use ON DELETE CASCADE"
+  ],
+  "prevention": [
+    "Always enable foreign keys in Room configuration",
+    "Define foreign keys with appropriate cascade behavior",
+    "Use @ForeignKey annotation with onDelete = CASCADE",
+    "Test foreign key scenarios in unit tests",
+    "Validate data integrity before operations",
+    "Use transactions for multi-entity operations",
+    "Document entity relationships clearly"
+  ],
+  "examples": [
+    "@ForeignKey(entity = User::class, parentColumns = [\"id\"], childColumns = [\"userId\"], onDelete = CASCADE)",
+    "db.openHelper.writableDatabase.execSQL(\"PRAGMA foreign_keys = ON\")",
+    "@Transaction suspend fun insertUserWithScans(user: User, scans: List<Scan>)"
+  ],
+  "relatedErrors": [
+    "SQLiteConstraintException FOREIGN KEY",
+    "ForeignKeyConstraint failed"
+  ]
+}

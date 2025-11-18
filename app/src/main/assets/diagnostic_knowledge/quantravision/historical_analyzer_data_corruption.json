@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_HistoricalAnalyzerDataCorruption",
+  "category": "quantravision",
+  "description": "HistoricalAnalyzer database corrupted, losing pattern performance history. Learning engine degraded.",
+  "commonCauses": [
+    "Database migration failure for learning tables",
+    "Concurrent write corruption during analysis",
+    "App killed during batch historical update",
+    "Invalid data insertion violating constraints",
+    "Disk full during database write",
+    "TypeConverter error in historical data",
+    "Room schema mismatch"
+  ],
+  "solutions": [
+    "Implement database integrity check at startup",
+    "Rebuild historical data from scan history",
+    "Use WAL mode to prevent corruption",
+    "Validate data before insertion",
+    "Implement automatic backup and restore",
+    "Clear corrupted data and restart learning",
+    "Use transaction for batch updates"
+  ],
+  "prevention": [
+    "Enable WAL mode for learning database",
+    "Implement regular database backups",
+    "Use transactions for all historical updates",
+    "Validate data integrity periodically",
+    "Test database migrations thoroughly",
+    "Monitor database health metrics",
+    "Implement recovery procedures for corruption"
+  ],
+  "examples": [
+    "db.openHelper.writableDatabase.rawQuery(\"PRAGMA integrity_check\")",
+    "@Transaction suspend fun updateHistoricalData(data: List<HistoricalRecord>)",
+    "if (isCorrupted) { clearHistoricalData(); rebuildFromScans() }"
+  ],
+  "relatedErrors": [
+    "SQLiteDatabaseCorruptException",
+    "Room migration failure for learning tables"
+  ]
+}

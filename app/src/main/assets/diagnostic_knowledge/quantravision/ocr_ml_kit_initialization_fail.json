@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_OCRMLKitInitializationFail",
+  "category": "quantravision",
+  "description": "ML Kit Text Recognition fails to initialize, preventing indicator extraction from charts. Critical for QuantraVision intelligence.",
+  "commonCauses": [
+    "ML Kit model not downloaded yet",
+    "Insufficient storage for model download",
+    "Network unavailable during model download",
+    "Google Play Services outdated or missing",
+    "Model download interrupted",
+    "Initialization timeout",
+    "Incompatible ML Kit version with device"
+  ],
+  "solutions": [
+    "Use TextRecognition.getClient with retry logic",
+    "Check model availability before first use",
+    "Implement model download progress tracking",
+    "Handle RemoteModelManager for model lifecycle",
+    "Provide offline fallback mode",
+    "Update Google Play Services",
+    "Use bundled model variant if available"
+  ],
+  "prevention": [
+    "Bundle ML Kit model with app for offline use",
+    "Check model download on app startup",
+    "Implement graceful degradation without OCR",
+    "Test on devices with limited storage",
+    "Monitor ML Kit initialization success rate",
+    "Provide user feedback during model download",
+    "Use RemoteModelManager to pre-download models"
+  ],
+  "examples": [
+    "val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)",
+    "RemoteModelManager.getInstance().download(model, conditions).addOnSuccessListener { }",
+    "recognizer.process(inputImage).addOnFailureListener { e -> handleOCRFailure(e) }"
+  ],
+  "relatedErrors": [
+    "MlKitException model not available",
+    "RemoteModelException download failed"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Compose_SideEffectOrdering",
+  "category": "framework",
+  "description": "Side effects execute in wrong order or at wrong time in Compose lifecycle, causing state inconsistencies.",
+  "commonCauses": [
+    "SideEffect used instead of LaunchedEffect for coroutines",
+    "DisposableEffect cleanup running before replacement ready",
+    "Multiple effect types with conflicting ordering assumptions",
+    "Effect key changes causing unexpected re-execution",
+    "State update in SideEffect triggering recomposition mid-composition",
+    "Effect dependency on unstable value",
+    "Mixing imperative and declarative updates"
+  ],
+  "solutions": [
+    "Use LaunchedEffect for suspend functions, not SideEffect",
+    "Use SideEffect only for non-suspend side effects",
+    "Use DisposableEffect when cleanup is needed",
+    "Order effects by dependency: LaunchedEffect before SideEffect",
+    "Avoid state updates in SideEffect body",
+    "Use proper keys for effect lifecycle control",
+    "Test effect execution order with Compose tests"
+  ],
+  "prevention": [
+    "Understand effect lifecycle differences clearly",
+    "LaunchedEffect: coroutines; SideEffect: sync effects; DisposableEffect: cleanup",
+    "Document effect purpose and ordering requirements",
+    "Test effect execution in various scenarios",
+    "Use single effect type per Composable when possible",
+    "Avoid complex effect interdependencies",
+    "Review Compose effect documentation regularly"
+  ],
+  "examples": [
+    "LaunchedEffect(key) { suspendFunction() } // For coroutines",
+    "SideEffect { synchronousEffect() } // Non-suspend, runs after composition",
+    "DisposableEffect(key) { setup(); onDispose { cleanup() } }"
+  ],
+  "relatedErrors": [
+    "State inconsistency from effect ordering",
+    "Effect running at unexpected time"
+  ]
+}

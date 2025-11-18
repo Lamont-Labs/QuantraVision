@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_SharedFlowReplayCacheOverflow",
+  "category": "coroutines",
+  "description": "SharedFlow replay cache grows unbounded, causing memory issues. Improper SharedFlow configuration.",
+  "commonCauses": [
+    "replay parameter set too high for use case",
+    "Emitting to SharedFlow faster than collection",
+    "Using large replay without extraBufferCapacity",
+    "No buffer overflow strategy configured",
+    "SharedFlow accumulating events without consumers",
+    "Long-lived SharedFlow with continuous emissions",
+    "Replay cache never cleared or reset"
+  ],
+  "solutions": [
+    "Use appropriate replay value for use case (0-10 typical)",
+    "Configure extraBufferCapacity for burst handling",
+    "Use BufferOverflow.DROP_OLDEST for bounded cache",
+    "Limit emission rate if possible",
+    "Consider StateFlow for single-value state",
+    "Reset SharedFlow when no longer needed",
+    "Monitor replay cache size in debug builds"
+  ],
+  "prevention": [
+    "Use minimal replay value necessary",
+    "Configure BufferOverflow strategy explicitly",
+    "Use StateFlow for simple state (replay=1, drop oldest)",
+    "Monitor SharedFlow buffer size",
+    "Test with rapid emission scenarios",
+    "Document replay cache rationale",
+    "Prefer StateFlow over SharedFlow when appropriate"
+  ],
+  "examples": [
+    "val sharedFlow = MutableSharedFlow<Event>(replay = 1, extraBufferCapacity = 64, onBufferOverflow = BufferOverflow.DROP_OLDEST)",
+    "val stateFlow = MutableStateFlow(initialState) // Better for state",
+    "// Avoid: MutableSharedFlow<Event>(replay = Int.MAX_VALUE) // Unbounded!"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError from SharedFlow",
+    "SharedFlow buffer growing unbounded"
+  ]
+}

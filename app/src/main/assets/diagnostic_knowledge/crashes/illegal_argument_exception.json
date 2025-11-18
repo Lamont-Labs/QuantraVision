@@ -1,0 +1,42 @@
+{
+  "errorName": "IllegalArgumentException",
+  "category": "crashes",
+  "description": "Method received invalid argument that violates its contract. Common when passing invalid parameters to Android APIs.",
+  "commonCauses": [
+    "Passing invalid color value to setColor()",
+    "Negative dimensions to View.measure()",
+    "Invalid date/time values",
+    "Empty string where non-empty expected",
+    "Out of range indices or positions",
+    "Invalid format strings",
+    "Null passed where non-null required (Java APIs)"
+  ],
+  "solutions": [
+    "Validate all inputs before passing to APIs",
+    "Use require() for parameter validation in Kotlin",
+    "Add bounds checking for numeric parameters",
+    "Check string formats before parsing",
+    "Use safe parsing with try-catch for user input",
+    "Document valid parameter ranges",
+    "Use sealed classes for restricted parameter sets"
+  ],
+  "prevention": [
+    "Use Kotlin's type system to restrict invalid values",
+    "Implement validation at API boundaries",
+    "Use inline classes for validated types",
+    "Add precondition checks with require()",
+    "Document parameter constraints in KDoc",
+    "Use value classes for domain-specific types",
+    "Test edge cases and boundary conditions"
+  ],
+  "examples": [
+    "require(value >= 0) { \"Value must be non-negative: $value\" }",
+    "fun setAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float) { ... }",
+    "@IntRange(from = 0, to = 100) fun setProgress(progress: Int) { ... }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "NullPointerException",
+    "NumberFormatException"
+  ]
+}

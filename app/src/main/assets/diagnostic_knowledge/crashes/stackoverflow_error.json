@@ -1,0 +1,42 @@
+{
+  "errorName": "StackOverflowError",
+  "category": "crashes",
+  "description": "Stack memory exhausted due to excessive recursion or deep call chains. Indicates infinite or overly deep recursive calls.",
+  "commonCauses": [
+    "Infinite recursion without base case",
+    "Circular dependencies causing recursive initialization",
+    "Deep nested view hierarchies",
+    "Recursive XML layout includes",
+    "toString() methods calling each other recursively",
+    "Equals/hashCode with circular object references",
+    "Property getters recursively calling themselves"
+  ],
+  "solutions": [
+    "Add proper base case to recursive functions",
+    "Convert recursion to iteration using loop",
+    "Increase stack size with -Xss flag (temporary workaround)",
+    "Break circular dependencies in object graph",
+    "Flatten view hierarchy - reduce nesting levels",
+    "Use iterative algorithms instead of recursive",
+    "Implement tail recursion where possible"
+  ],
+  "prevention": [
+    "Always define clear base cases for recursion",
+    "Limit maximum recursion depth with counter",
+    "Use iteration for deep operations",
+    "Design object graphs without circular references",
+    "Keep view hierarchies shallow (< 10 levels)",
+    "Review toString/equals/hashCode for recursion",
+    "Use Kotlin's tailrec for optimized recursion"
+  ],
+  "examples": [
+    "tailrec fun factorial(n: Int, acc: Int = 1): Int = if (n <= 1) acc else factorial(n - 1, n * acc)",
+    "fun traverse(node: Node) { val stack = Stack<Node>(); while (stack.isNotEmpty()) { /* iterative */ } }",
+    "private var recursionDepth = 0; fun recursive() { if (++recursionDepth > 1000) return; recursionDepth-- }"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "IllegalStateException",
+    "ConcurrentModificationException"
+  ]
+}

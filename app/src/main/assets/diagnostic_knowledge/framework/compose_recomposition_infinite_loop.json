@@ -1,0 +1,41 @@
+{
+  "errorName": "Compose_RecompositionInfiniteLoop",
+  "category": "framework",
+  "description": "Jetpack Compose enters infinite recomposition loop, freezing UI and draining battery. Critical performance issue.",
+  "commonCauses": [
+    "State update inside composition without proper key",
+    "remember without keys causing recreation on every recomposition",
+    "LaunchedEffect with unstable key triggering repeatedly",
+    "derivedStateOf calculation modifying state",
+    "Passing lambda that creates new instance on every composition",
+    "Unstable class used as remember key",
+    "SideEffect modifying state read during composition"
+  ],
+  "solutions": [
+    "Use stable keys for remember: remember(key) { ... }",
+    "Move state updates to LaunchedEffect or handlers",
+    "Mark data classes with @Stable or @Immutable",
+    "Use rememberUpdatedState for callback parameters",
+    "Extract lambdas outside composition or use remember { }",
+    "Use derivedStateOf only for calculations, not mutations",
+    "Profile with Compose Recomposition Counter"
+  ],
+  "prevention": [
+    "Enable Compose recomposition debugging in Layout Inspector",
+    "Mark all data classes with @Stable when appropriate",
+    "Never update state directly in composition body",
+    "Use remember with stable keys consistently",
+    "Test Composables with Compose Test to catch loops",
+    "Profile recomposition counts in debug builds",
+    "Use remember for expensive calculations and lambdas"
+  ],
+  "examples": [
+    "val state = remember(key) { mutableStateOf(value) } // Stable key",
+    "@Immutable data class UiState(val data: List<Item>)",
+    "LaunchedEffect(key) { updateState() } // Not in composition"
+  ],
+  "relatedErrors": [
+    "ANR from excessive recomposition",
+    "StackOverflowError in Compose"
+  ]
+}

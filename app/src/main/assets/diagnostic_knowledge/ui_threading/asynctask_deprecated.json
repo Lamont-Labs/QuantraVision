@@ -1,0 +1,43 @@
+{
+  "errorName": "AsyncTaskDeprecated",
+  "category": "ui_threading",
+  "description": "Using deprecated AsyncTask causing lifecycle issues and memory leaks. Legacy threading pattern no longer recommended.",
+  "commonCauses": [
+    "AsyncTask used in modern Android code",
+    "AsyncTask retaining activity reference",
+    "AsyncTask continuing after activity destroyed",
+    "Configuration change losing AsyncTask",
+    "Multiple AsyncTask instances",
+    "Non-static AsyncTask inner class",
+    "AsyncTask result delivered to destroyed activity"
+  ],
+  "solutions": [
+    "Migrate to Kotlin coroutines with lifecycleScope",
+    "Use WorkManager for background tasks",
+    "Implement ViewModel + LiveData pattern",
+    "Use RxJava if already in project",
+    "Convert to suspend functions",
+    "Use Executors with lifecycle awareness",
+    "Implement proper cancellation"
+  ],
+  "prevention": [
+    "Never use AsyncTask in new code",
+    "Migrate existing AsyncTask to coroutines",
+    "Use viewModelScope for data operations",
+    "Implement lifecycle-aware components",
+    "Use WorkManager for deferrable work",
+    "Test migration thoroughly",
+    "Remove AsyncTask dependencies"
+  ],
+  "examples": [
+    "// Old: class MyTask : AsyncTask<>() { }",
+    "// New: lifecycleScope.launch(Dispatchers.IO) { val result = doWork(); withContext(Main) { updateUI(result) } }",
+    "// ViewModel: viewModelScope.launch { _data.value = repository.getData() }",
+    "// Background work: WorkManager.getInstance(context).enqueue(OneTimeWorkRequest.from(MyWorker::class.java))"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "IllegalStateException",
+    "Configuration change issues"
+  ]
+}

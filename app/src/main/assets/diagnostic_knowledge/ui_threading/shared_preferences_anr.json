@@ -1,0 +1,43 @@
+{
+  "errorName": "SharedPreferencesANR",
+  "category": "ui_threading",
+  "description": "SharedPreferences.commit() blocking main thread or apply() causing ANR from many pending writes. Storage I/O threading issue.",
+  "commonCauses": [
+    "Using commit() instead of apply() on main thread",
+    "Too many apply() calls queuing up",
+    "Large preferences file",
+    "commit() in onCreate/onResume",
+    "Synchronous file I/O from preferences",
+    "Multiple concurrent commit() calls",
+    "SharedPreferences contention"
+  ],
+  "solutions": [
+    "Use apply() instead of commit() on main thread",
+    "Limit number of apply() calls",
+    "Batch preference updates together",
+    "Use commit() only when return value needed",
+    "Migrate to DataStore for large data",
+    "Use background thread for commit()",
+    "Reduce preferences file size"
+  ],
+  "prevention": [
+    "Always use apply() for fire-and-forget updates",
+    "Use commit() only on background threads",
+    "Batch multiple updates into single edit",
+    "Migrate to Jetpack DataStore",
+    "Monitor SharedPreferences file size",
+    "Use DataStore for complex data",
+    "Test with StrictMode enabled"
+  ],
+  "examples": [
+    "prefs.edit().putString(\"key\", value).apply() // Not commit()",
+    "prefs.edit().apply { putString(\"key1\", val1); putString(\"key2\", val2) }.apply() // Batch",
+    "// On background: viewModelScope.launch(Dispatchers.IO) { prefs.edit().putString(\"key\", value).commit() }",
+    "// Best: Migrate to DataStore: dataStore.edit { it[KEY] = value }"
+  ],
+  "relatedErrors": [
+    "ANR",
+    "StrictMode violation",
+    "I/O performance issue"
+  ]
+}

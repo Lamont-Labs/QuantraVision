@@ -1,0 +1,43 @@
+{
+  "errorName": "CursorNotClosed",
+  "category": "memory",
+  "description": "Database Cursor not closed after use, causing resource leak and potential database lock. Critical resource management issue.",
+  "commonCauses": [
+    "Cursor returned but never closed",
+    "Exception thrown before cursor.close()",
+    "Cursor leaked from method",
+    "Forgetting to close in finally block",
+    "Multiple return paths missing close",
+    "Async operation not closing cursor",
+    "Helper method not using try-with-resources"
+  ],
+  "solutions": [
+    "Use try-with-resources or use {} extension",
+    "Always close in finally block if not using use {}",
+    "Use Room instead of raw SQL cursors",
+    "Implement AutoCloseable pattern",
+    "Use cursor.use { } for automatic closing",
+    "Add StrictMode to detect unclosed cursors",
+    "Wrap cursor operations in try-finally"
+  ],
+  "prevention": [
+    "Always use cursor.use { } for automatic resource management",
+    "Migrate to Room to avoid manual cursor management",
+    "Enable StrictMode to detect leaks",
+    "Never return raw Cursor from methods",
+    "Use try-with-resources pattern consistently",
+    "Test with StrictMode detectLeakedClosableObjects()",
+    "Review all database access code"
+  ],
+  "examples": [
+    "cursor.use { while (it.moveToNext()) { /* process */ } } // Auto-closes",
+    "val cursor = db.query(...); try { /* use cursor */ } finally { cursor?.close() }",
+    "// Best: Use Room instead of raw cursors",
+    "@Dao interface UserDao { @Query(\"SELECT * FROM users\") fun getAll(): List<User> }"
+  ],
+  "relatedErrors": [
+    "SQLiteDatabaseLockedException",
+    "StrictMode violation",
+    "Resource leak"
+  ]
+}

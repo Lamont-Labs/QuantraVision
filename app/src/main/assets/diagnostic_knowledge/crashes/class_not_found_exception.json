@@ -1,0 +1,43 @@
+{
+  "errorName": "ClassNotFoundException",
+  "category": "crashes",
+  "description": "JVM cannot find specified class at runtime. Common with reflection, dynamic loading, or ProGuard issues.",
+  "commonCauses": [
+    "Class removed by ProGuard/R8",
+    "Incorrect class name in reflection",
+    "Missing dependency at runtime",
+    "Class not in classpath",
+    "Typo in fully qualified class name",
+    "Dynamic feature module not loaded",
+    "Multidex issues on old Android versions"
+  ],
+  "solutions": [
+    "Add ProGuard keep rules for reflected classes",
+    "Use ::class.java instead of Class.forName() where possible",
+    "Verify class name spelling and package",
+    "Ensure all dependencies are included",
+    "Check build configuration and dependencies",
+    "Use @Keep annotation on classes used via reflection",
+    "Enable multidex if needed"
+  ],
+  "prevention": [
+    "Minimize use of reflection when possible",
+    "Add proper ProGuard rules for all reflected classes",
+    "Use @Keep annotation on reflection targets",
+    "Test with minifyEnabled true before release",
+    "Document classes used via reflection",
+    "Use KClass references instead of string names",
+    "Verify multidex configuration on API < 21"
+  ],
+  "examples": [
+    "-keep class com.example.ReflectedClass { *; }",
+    "@Keep class MyReflectedClass { ... }",
+    "val clazz = MyClass::class.java // Compile-time safe",
+    "multiDexEnabled = true // in build.gradle"
+  ],
+  "relatedErrors": [
+    "NoClassDefFoundError",
+    "NoSuchMethodError",
+    "IllegalAccessException"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "NumberFormatException",
+  "category": "crashes",
+  "description": "Failed to parse string as number. Common when parsing user input or data from external sources.",
+  "commonCauses": [
+    "Parsing empty or null strings",
+    "Non-numeric characters in string",
+    "Incorrect locale/formatting",
+    "Overflow for target number type",
+    "Whitespace in numeric strings",
+    "Currency symbols or commas in input",
+    "Scientific notation not supported by parser"
+  ],
+  "solutions": [
+    "Use toIntOrNull() instead of toInt() in Kotlin",
+    "Validate input before parsing",
+    "Use try-catch for parsing external data",
+    "Trim whitespace before parsing",
+    "Remove non-numeric characters first",
+    "Provide default values with Elvis operator",
+    "Use appropriate parser for format (DecimalFormat)"
+  ],
+  "prevention": [
+    "Use Kotlin's safe parsing: toIntOrNull(), toDoubleOrNull()",
+    "Validate user input with input filters",
+    "Use EditText inputType=\"number\" for numeric fields",
+    "Sanitize data from external sources",
+    "Test parsing with edge cases (empty, special chars)",
+    "Provide clear error messages for invalid input",
+    "Use data classes with validated constructors"
+  ],
+  "examples": [
+    "val number = input.toIntOrNull() ?: 0",
+    "try { Integer.parseInt(str) } catch (e: NumberFormatException) { defaultValue }",
+    "editText.inputType = InputType.TYPE_CLASS_NUMBER",
+    "val cleaned = input.replace(Regex(\"[^0-9.-]\"), \"\")"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException",
+    "NullPointerException",
+    "ParseException"
+  ]
+}

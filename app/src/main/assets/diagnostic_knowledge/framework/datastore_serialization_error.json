@@ -1,0 +1,41 @@
+{
+  "errorName": "DataStore_SerializationError",
+  "category": "framework",
+  "description": "Proto DataStore serialization fails when saving data. Data not persisted correctly.",
+  "commonCauses": [
+    "Proto message not matching .proto schema",
+    "Required field missing in proto message",
+    "Proto field type mismatch",
+    "Proto file not compiled (protobuf-lite issue)",
+    "Concurrent updateData calls causing conflicts",
+    "DataStore file corrupted",
+    "Proto default values not set correctly"
+  ],
+  "solutions": [
+    "Validate proto message before updateData",
+    "Ensure all required fields populated",
+    "Use proto builder pattern correctly",
+    "Recompile proto files after schema changes",
+    "Handle CorruptionException with CorruptionHandler",
+    "Use synchronized updateData for safety",
+    "Provide default values for optional fields"
+  ],
+  "prevention": [
+    "Define all proto fields as optional when possible",
+    "Test serialization with various data combinations",
+    "Implement CorruptionHandler for DataStore",
+    "Validate proto schema at build time",
+    "Monitor serialization errors in production",
+    "Use proto3 for simpler optional field handling",
+    "Test with corrupted DataStore file"
+  ],
+  "examples": [
+    "dataStore.updateData { prefs -> prefs.toBuilder().setTheme(Theme.DARK).build() }",
+    "val dataStore = context.createDataStore(fileName = \"settings.pb\", serializer = SettingsSerializer)",
+    "object SettingsSerializer : Serializer<Settings> { override suspend fun readFrom(input: InputStream): Settings = Settings.parseFrom(input) }"
+  ],
+  "relatedErrors": [
+    "InvalidProtocolBufferException",
+    "CorruptionException DataStore"
+  ]
+}

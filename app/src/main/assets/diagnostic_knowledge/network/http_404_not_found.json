@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_404_NotFound",
+  "category": "network",
+  "description": "HTTP 404 indicates requested resource doesn't exist on server. Common API endpoint or resource ID error.",
+  "commonCauses": [
+    "Incorrect API endpoint URL",
+    "Resource deleted or moved",
+    "Typo in URL path",
+    "API version mismatch",
+    "Resource ID doesn't exist",
+    "Base URL misconfigured",
+    "Endpoint removed in API update"
+  ],
+  "solutions": [
+    "Verify API endpoint is correct",
+    "Check API documentation for current endpoints",
+    "Validate resource exists before accessing",
+    "Handle 404 gracefully with fallback",
+    "Use API versioning properly",
+    "Implement proper error handling",
+    "Cache valid resource IDs"
+  ],
+  "prevention": [
+    "Use constants for API endpoints",
+    "Test all API endpoints thoroughly",
+    "Implement API versioning strategy",
+    "Validate resource IDs before requests",
+    "Monitor 404 errors in analytics",
+    "Keep API documentation synchronized",
+    "Use generated API clients where possible"
+  ],
+  "examples": [
+    "try { api.getUser(id) } catch (e: HttpException) { if (e.code() == 404) showResourceNotFound() }",
+    "companion object { const val BASE_URL = \"https://api.example.com/v1/\"; const val USERS_ENDPOINT = \"users/\" }",
+    "if (response.code == 404) { cacheInvalidate(resourceId); showNotFoundError() }"
+  ],
+  "relatedErrors": [
+    "HTTP_410_Gone",
+    "ResourceNotFoundException",
+    "InvalidUrlException"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Navigation_ArgumentTypeMismatch",
+  "category": "framework",
+  "description": "Navigation argument type mismatch causing crashes when navigating between destinations.",
+  "commonCauses": [
+    "Passing String when destination expects Int",
+    "Custom Parcelable not matching argument type",
+    "Nullable argument passed as non-null",
+    "Argument serialization failure",
+    "Type changed in destination but not at call site",
+    "Using wrong Safe Args generated class",
+    "Bundle argument type doesn't match navArgument type"
+  ],
+  "solutions": [
+    "Use Safe Args plugin for type-safe navigation",
+    "Validate argument types match destination definition",
+    "Use proper NavType for custom types",
+    "Implement custom NavType for complex objects",
+    "Parse arguments defensively with type checks",
+    "Use JSON for complex objects as String argument",
+    "Test navigation with various argument combinations"
+  ],
+  "prevention": [
+    "Always use Safe Args plugin for type safety",
+    "Define argument types explicitly in nav graph",
+    "Use primitive types when possible (Int, String, Boolean)",
+    "Test navigation arguments in instrumented tests",
+    "Document argument types and constraints",
+    "Use sealed classes for type-safe argument passing",
+    "Validate arguments before navigation call"
+  ],
+  "examples": [
+    "navController.navigate(ScanFragmentDirections.actionToDetail(scanId = 123))",
+    "<argument android:name=\"scanId\" app:argType=\"integer\" />",
+    "val args: DetailFragmentArgs by navArgs()"
+  ],
+  "relatedErrors": [
+    "ClassCastException argument parsing",
+    "IllegalArgumentException wrong argument type"
+  ]
+}

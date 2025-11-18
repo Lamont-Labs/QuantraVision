@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_QuantraBotKnowledgeLoadFail",
+  "category": "quantravision",
+  "description": "QuantraBot pattern knowledge base fails to load, preventing chat functionality. DevBot for patterns unavailable.",
+  "commonCauses": [
+    "Pattern knowledge JSON files missing from assets",
+    "JSON parsing error in knowledge files",
+    "Asset loading I/O exception",
+    "Knowledge schema version mismatch",
+    "Corrupted knowledge file in APK",
+    "Insufficient memory for knowledge loading",
+    "Concurrent knowledge access during load"
+  ],
+  "solutions": [
+    "Validate all pattern knowledge files exist in assets",
+    "Implement robust JSON parsing with error recovery",
+    "Use lazy loading for knowledge base",
+    "Provide fallback to minimal knowledge set",
+    "Cache loaded knowledge in memory",
+    "Log specific file causing load failure",
+    "Implement incremental knowledge loading"
+  ],
+  "prevention": [
+    "Validate knowledge JSON files in build process",
+    "Test knowledge loading in instrumented tests",
+    "Implement knowledge schema validation",
+    "Monitor knowledge load success rate",
+    "Version knowledge files and handle migrations",
+    "Test with all pattern knowledge files",
+    "Implement knowledge integrity checks"
+  ],
+  "examples": [
+    "val knowledge = assets.open(\"pattern_knowledge/bull_flag.json\").bufferedReader().use { it.readText() }",
+    "try { loadKnowledge() } catch (e: Exception) { useMinimalKnowledge() }",
+    "knowledgeFiles.forEach { file -> loadAndValidate(file) }"
+  ],
+  "relatedErrors": [
+    "JsonSyntaxException parsing knowledge",
+    "FileNotFoundException pattern knowledge"
+  ]
+}

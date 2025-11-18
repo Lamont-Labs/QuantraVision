@@ -1,0 +1,44 @@
+{
+  "errorName": "CoroutineLeak",
+  "category": "memory",
+  "description": "Coroutine references Activity/Fragment after destruction, or GlobalScope causing leaks. Lifecycle-unaware coroutine management.",
+  "commonCauses": [
+    "Using GlobalScope.launch in Activity/Fragment",
+    "Coroutine not cancelled when lifecycle destroyed",
+    "Coroutine scope outliving owner",
+    "Long-running coroutine with Activity reference",
+    "Not using viewLifecycleOwner scope in fragments",
+    "Job not cancelled in onDestroy",
+    "Coroutine context holding Activity"
+  ],
+  "solutions": [
+    "Use lifecycleScope or viewLifecycleOwner.lifecycleScope",
+    "Cancel Job in onDestroy if using custom scope",
+    "Never use GlobalScope for UI-related operations",
+    "Use viewModelScope for ViewModel coroutines",
+    "Check lifecycle state before UI updates",
+    "Use suspendCancellableCoroutine properly",
+    "Implement proper coroutine cancellation"
+  ],
+  "prevention": [
+    "Always use lifecycle-aware scopes (lifecycleScope, viewModelScope)",
+    "Never use GlobalScope in components with lifecycle",
+    "Use viewLifecycleOwner.lifecycleScope in fragments",
+    "Cancel custom scopes in onDestroy",
+    "Test coroutine cancellation behavior",
+    "Use structured concurrency principles",
+    "Document coroutine lifecycle management"
+  ],
+  "examples": [
+    "// Fragment: viewLifecycleOwner.lifecycleScope.launch { /* work */ }",
+    "// Activity: lifecycleScope.launch { /* work */ }",
+    "// ViewModel: viewModelScope.launch { /* work */ }",
+    "// Custom scope: private val job = Job(); override fun onDestroy() { job.cancel() }",
+    "lifecycleScope.launch { if (lifecycle.currentState.isAtLeast(STARTED)) { updateUI() } }"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "Fragment leak",
+    "OutOfMemoryError"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "errorName": "DNSLookupFailure",
+  "category": "network",
+  "description": "DNS resolution failed or returned no results. Name resolution problem preventing connection.",
+  "commonCauses": [
+    "DNS server not responding",
+    "No internet connection",
+    "DNS cache poisoning",
+    "Incorrect DNS configuration",
+    "VPN interfering with DNS",
+    "Domain doesn't exist",
+    "DNS filtering/blocking"
+  ],
+  "solutions": [
+    "Check internet connectivity",
+    "Retry with different DNS server",
+    "Clear DNS cache",
+    "Use IP address fallback if available",
+    "Implement DNS fallback mechanism",
+    "Check VPN/proxy settings",
+    "Use custom DNS resolver (1.1.1.1, 8.8.8.8)"
+  ],
+  "prevention": [
+    "Implement DNS fallback mechanism",
+    "Check connectivity before DNS lookup",
+    "Use reliable DNS servers",
+    "Cache successful DNS results",
+    "Test with various network configurations",
+    "Monitor DNS resolution success rate",
+    "Implement retry logic for DNS failures"
+  ],
+  "examples": [
+    "try { InetAddress.getByName(hostname) } catch (e: UnknownHostException) { tryAlternateDNS() }",
+    "val dns = object : Dns { override fun lookup(hostname: String) = try { Dns.SYSTEM.lookup(hostname) } catch (e: UnknownHostException) { customDNSLookup(hostname) } }",
+    "if (!isNetworkAvailable()) throw NoConnectivityException() else performDNSLookup()"
+  ],
+  "relatedErrors": [
+    "UnknownHostException",
+    "SocketException",
+    "NetworkException"
+  ]
+}

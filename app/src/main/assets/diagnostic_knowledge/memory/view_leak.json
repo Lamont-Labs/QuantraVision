@@ -1,0 +1,43 @@
+{
+  "errorName": "ViewLeak",
+  "category": "memory",
+  "description": "View objects retained after activity/fragment destroyed. Views hold reference to context causing activity leaks.",
+  "commonCauses": [
+    "Static view references",
+    "View referenced from singleton",
+    "Handler with view as callback target",
+    "Animator not cancelled holding view reference",
+    "Listener registered but not unregistered",
+    "Background thread referencing view",
+    "ImageView with Drawable holding view reference"
+  ],
+  "solutions": [
+    "Never use static view references",
+    "Null view references in onDestroy",
+    "Cancel animators in onPause/onStop",
+    "Unregister all view listeners",
+    "Use WeakReference for view in callbacks",
+    "Clear drawable from ImageView in onDestroy",
+    "Remove callbacks: handler.removeCallbacksAndMessages(null)"
+  ],
+  "prevention": [
+    "Never store views in static fields",
+    "Always unregister listeners in lifecycle methods",
+    "Cancel animations in onPause/onStop",
+    "Use WeakReference for long-lived view references",
+    "Clear view references in onDestroyView/onDestroy",
+    "Test with LeakCanary",
+    "Avoid passing views to background threads"
+  ],
+  "examples": [
+    "// Bad: companion object { var staticView: View? = null }",
+    "override fun onDestroyView() { super.onDestroyView(); animator?.cancel(); view.setOnClickListener(null) }",
+    "imageView.setImageDrawable(null) // Clear drawable to release resources",
+    "class ViewCallback(view: View) { private val weakView = WeakReference(view) }"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "Context leak",
+    "OutOfMemoryError"
+  ]
+}

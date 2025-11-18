@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_MultimapError",
+  "category": "database",
+  "description": "Room multimap query (Map<Key, List<Value>>) fails or returns unexpected structure. Requires proper query design.",
+  "commonCauses": [
+    "Query doesn't properly group related items",
+    "Key column not unique per group",
+    "MapInfo annotation missing or incorrect",
+    "Return type doesn't match query structure",
+    "JOIN query producing duplicate keys",
+    "Value collection type mismatch",
+    "Complex query incompatible with multimap"
+  ],
+  "solutions": [
+    "Use @MapInfo to specify key and value columns",
+    "Ensure query groups items by key column",
+    "Return Map<Key, List<Value>> from DAO method",
+    "Use proper JOIN to create key-value groupings",
+    "Validate key uniqueness in query",
+    "Use @Relation instead for one-to-many relationships",
+    "Test multimap query with sample data"
+  ],
+  "prevention": [
+    "Prefer @Relation for one-to-many mappings when possible",
+    "Use @MapInfo annotation for clarity",
+    "Document multimap query structure",
+    "Test with various data distributions",
+    "Validate query results in unit tests",
+    "Consider performance implications of multimap queries",
+    "Use appropriate indexes for join columns"
+  ],
+  "examples": [
+    "@MapInfo(keyColumn = \"userId\", valueColumn = \"scanId\") @Query(\"SELECT userId, scanId FROM scans\") fun getUserScans(): Map<Int, List<Int>>",
+    "@Query(\"SELECT u.id as userId, s.* FROM users u JOIN scans s ON u.id = s.userId\") fun getUserScanMap(): Map<User, List<Scan>>",
+    "@Transaction @Query(...) fun getMultimap(): Map<String, List<Item>>"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException multimap query",
+    "Room cannot process multimap return type"
+  ]
+}

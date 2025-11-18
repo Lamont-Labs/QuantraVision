@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_502_BadGateway",
+  "category": "network",
+  "description": "HTTP 502 indicates gateway/proxy received invalid response from upstream server. Infrastructure or deployment issue.",
+  "commonCauses": [
+    "Backend server down or restarting",
+    "Gateway timeout from upstream",
+    "Server deployment in progress",
+    "Backend overloaded",
+    "Network issue between servers",
+    "Misconfigured reverse proxy",
+    "DNS resolution failure"
+  ],
+  "solutions": [
+    "Retry request after short delay",
+    "Implement exponential backoff",
+    "Fall back to cached data",
+    "Check server status page",
+    "Show maintenance message if persistent",
+    "Implement circuit breaker",
+    "Monitor and alert on 502 errors"
+  ],
+  "prevention": [
+    "Implement automatic retry with backoff",
+    "Use health check endpoints",
+    "Implement circuit breaker pattern",
+    "Cache data for offline use",
+    "Monitor infrastructure health",
+    "Set up proper alerting",
+    "Have fallback mechanisms"
+  ],
+  "examples": [
+    "if (response.code == 502) { delay(5000); return retry() }",
+    "try { api.call() } catch (e: HttpException) { if (e.code() == 502) useCachedData() }",
+    "// Circuit breaker: if (errorRate > threshold) openCircuit()"
+  ],
+  "relatedErrors": [
+    "HTTP_500_InternalServerError",
+    "HTTP_503_ServiceUnavailable",
+    "HTTP_504_GatewayTimeout"
+  ]
+}

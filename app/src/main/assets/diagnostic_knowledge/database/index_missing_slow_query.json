@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_MissingIndexSlowQuery",
+  "category": "database",
+  "description": "Database query performs full table scan due to missing index, causing severe performance degradation on large datasets.",
+  "commonCauses": [
+    "WHERE clause on non-indexed column",
+    "Index not created during migration",
+    "Composite index needed but only single-column index exists",
+    "Query using functions on indexed column (breaks index)",
+    "ORDER BY on non-indexed column",
+    "JOIN on non-indexed foreign key",
+    "Type mismatch preventing index usage"
+  ],
+  "solutions": [
+    "Add index: @Index(value = [\"columnName\"])",
+    "Create composite index for multi-column WHERE",
+    "Use EXPLAIN QUERY PLAN to verify index usage",
+    "Rewrite query to use indexed columns",
+    "Create covering index for frequently accessed columns",
+    "Add foreign key indexes explicitly",
+    "Avoid functions in WHERE clause on indexed columns"
+  ],
+  "prevention": [
+    "Index all foreign key columns",
+    "Index columns frequently used in WHERE, ORDER BY, JOIN",
+    "Use Room's @Index annotation on entities",
+    "Run EXPLAIN QUERY PLAN in tests to verify indexes",
+    "Create composite indexes for common multi-column queries",
+    "Monitor query performance in production",
+    "Review slow query logs regularly"
+  ],
+  "examples": [
+    "@Entity(indices = [Index(value = [\"userId\", \"timestamp\"])])",
+    "CREATE INDEX idx_pattern_confidence ON patterns(confidence)",
+    "EXPLAIN QUERY PLAN SELECT * FROM scans WHERE userId = ?"
+  ],
+  "relatedErrors": [
+    "Slow query warning",
+    "ANR from database query"
+  ]
+}

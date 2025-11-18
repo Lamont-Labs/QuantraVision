@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_FlowExceptionTransparency",
+  "category": "coroutines",
+  "description": "Flow exception transparency violated, causing crashes or unexpected behavior. Improper Flow error handling.",
+  "commonCauses": [
+    "Emitting values in catch block (violates transparency)",
+    "Throwing exception from catch operator",
+    "Exception in onCompletion not handled",
+    "Try-catch around emit() in flow builder",
+    "Exception handling in wrong Flow operator",
+    "Rethrowing different exception type",
+    "Catching exception but continuing emission"
+  ],
+  "solutions": [
+    "Use catch operator for downstream exception handling",
+    "Don't emit in catch block (emit fallback before catch)",
+    "Use onCompletion for cleanup, not error handling",
+    "Handle exceptions upstream before emission",
+    "Use retry/retryWhen for transient errors",
+    "Emit error state instead of throwing in certain cases",
+    "Understand exception transparency principle"
+  ],
+  "prevention": [
+    "Follow Flow exception transparency rules",
+    "Use catch only for downstream exceptions",
+    "Never emit from catch operator",
+    "Handle exceptions before Flow emission",
+    "Test exception scenarios in Flows",
+    "Document exception handling strategy",
+    "Use onCompletion for cleanup only"
+  ],
+  "examples": [
+    "flow { emit(data) }.catch { e -> emit(fallbackData) } // WRONG: emitting in catch",
+    "flow { emit(data) }.onEach { }.catch { handleError(it) } // CORRECT",
+    "flow { try { emit(getData()) } catch (e: Exception) { emit(fallback) } } // CORRECT: Handle before emit"
+  ],
+  "relatedErrors": [
+    "IllegalStateException Flow invariant violated",
+    "Exception transparency error"
+  ]
+}

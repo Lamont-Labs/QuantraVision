@@ -1,0 +1,42 @@
+{
+  "errorName": "ANR_InputDispatching",
+  "category": "crashes",
+  "description": "Input event (touch, key) not dispatched within 5 seconds, causing system watchdog to trigger ANR dialog. Critical for user interaction responsiveness.",
+  "commonCauses": [
+    "Heavy processing in onTouchEvent or onClick handlers",
+    "Synchronous network calls triggered by button clicks",
+    "Complex layout inflation blocking UI thread",
+    "Database queries in event handlers",
+    "Image processing in touch handlers",
+    "Recursive view traversal during input events",
+    "Waiting for locks held by background threads"
+  ],
+  "solutions": [
+    "Move all work from event handlers to coroutines: launch(Dispatchers.Default)",
+    "Use debouncing for rapid touch events",
+    "Implement touch handling with minimal processing",
+    "Defer heavy work: post to handler or launch coroutine",
+    "Profile input latency with systrace",
+    "Break complex operations into async chunks",
+    "Use ViewModelScope for event-triggered operations"
+  ],
+  "prevention": [
+    "Keep all event handlers under 16ms (60fps)",
+    "Never block UI thread in touch/click handlers",
+    "Use StrictMode to detect main thread violations",
+    "Implement proper event debouncing/throttling",
+    "Test with slow devices and StrictMode enabled",
+    "Monitor input latency in production with Firebase Performance",
+    "Use Choreographer to align work with vsync"
+  ],
+  "examples": [
+    "button.setOnClickListener { viewModelScope.launch { processClick() } }",
+    "override fun onTouchEvent(event: MotionEvent): Boolean { handler.post { process() }; return true }",
+    "fun debounce(wait: Long, action: () -> Unit) { handler.removeCallbacks(runnable); handler.postDelayed(runnable, wait) }"
+  ],
+  "relatedErrors": [
+    "ANR_ApplicationNotResponding",
+    "NetworkOnMainThreadException",
+    "StrictMode violation"
+  ]
+}

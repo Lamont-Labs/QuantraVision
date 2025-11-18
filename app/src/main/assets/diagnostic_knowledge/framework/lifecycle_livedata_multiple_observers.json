@@ -1,0 +1,41 @@
+{
+  "errorName": "Lifecycle_LiveDataMultipleObservers",
+  "category": "framework",
+  "description": "Multiple LiveData observers registered causing duplicate events or incorrect state updates.",
+  "commonCauses": [
+    "Observer registered in onStart/onResume instead of onCreate",
+    "Fragment observing same LiveData multiple times",
+    "Not removing observer before re-adding",
+    "Observing in both Fragment and Activity",
+    "Configuration change causing observer re-registration",
+    "Using observe() in onCreateView every time",
+    "Lambda creating new observer instance each call"
+  ],
+  "solutions": [
+    "Register observers once in onCreate or Fragment.onViewCreated",
+    "Use viewLifecycleOwner in Fragments to auto-remove on view destroy",
+    "Remove observer before re-registering if needed",
+    "Use SingleLiveEvent for one-time events",
+    "Check observer count before registration (debug)",
+    "Use distinctUntilChanged to avoid duplicate values",
+    "Observe ViewModel LiveData, not raw data sources"
+  ],
+  "prevention": [
+    "Register observers once during initialization",
+    "Use viewLifecycleOwner for Fragment view observations",
+    "Test configuration changes to verify single observer",
+    "Use SingleLiveEvent or Event wrapper for one-shot events",
+    "Monitor observer count in debug builds",
+    "Use Transformations.map/switchMap to avoid multiple observers",
+    "Document observer registration location clearly"
+  ],
+  "examples": [
+    "override fun onViewCreated(...) { viewModel.data.observe(viewLifecycleOwner) { } }",
+    "class SingleLiveEvent<T> : MutableLiveData<T>() { /* one-time event */ }",
+    "liveData.distinctUntilChanged().observe(owner) { }"
+  ],
+  "relatedErrors": [
+    "Duplicate event handling",
+    "State updated multiple times"
+  ]
+}

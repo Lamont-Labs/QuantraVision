@@ -1,0 +1,42 @@
+{
+  "errorName": "ANR_ServiceTimeout",
+  "category": "crashes",
+  "description": "Service onCreate/onStartCommand takes longer than 20 seconds (foreground) or 200 seconds (background), triggering ANR.",
+  "commonCauses": [
+    "Heavy initialization in onCreate()",
+    "Synchronous network calls in service startup",
+    "Large file operations in onCreate()",
+    "Database migration during service start",
+    "Complex object initialization blocking",
+    "Waiting for other services to respond",
+    "Resource-intensive computations in onStartCommand()"
+  ],
+  "solutions": [
+    "Move initialization to WorkManager or coroutines",
+    "Call startForeground() within 5 seconds for foreground services",
+    "Defer heavy work to background threads immediately",
+    "Use IntentService or JobIntentService for background work",
+    "Implement lazy initialization for service components",
+    "Return START_STICKY and defer work to coroutine",
+    "Profile service startup with Android Profiler"
+  ],
+  "prevention": [
+    "Keep onCreate() minimal - only essential setup",
+    "Call startForeground() immediately for foreground services",
+    "Use WorkManager instead of Service when possible",
+    "Test service startup under various conditions",
+    "Monitor service lifecycle timing",
+    "Implement proper dependency injection for services",
+    "Use Hilt or Dagger for lazy service dependencies"
+  ],
+  "examples": [
+    "override fun onCreate() { super.onCreate(); startForeground(ID, notification); scope.launch { init() } }",
+    "override fun onStartCommand(...): Int { scope.launch(Dispatchers.IO) { work() }; return START_STICKY }",
+    "class MyService : Service() { private val job = SupervisorJob(); private val scope = CoroutineScope(Dispatchers.IO + job) }"
+  ],
+  "relatedErrors": [
+    "ANR_ApplicationNotResponding",
+    "IllegalStateException",
+    "RemoteServiceException"
+  ]
+}

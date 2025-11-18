@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_DAOCompileError",
+  "category": "database",
+  "description": "Room annotation processor fails to generate DAO implementation code. Common with SQL syntax errors or type mismatches.",
+  "commonCauses": [
+    "SQL syntax error in @Query annotation",
+    "Return type doesn't match query result",
+    "Parameter type mismatch in query",
+    "Missing @Dao annotation on interface",
+    "Column name mismatch between query and entity",
+    "Unsupported return type for query",
+    "Kotlin suspend function without proper Flow/LiveData"
+  ],
+  "solutions": [
+    "Validate SQL syntax in query annotation",
+    "Ensure return type matches query projection",
+    "Use correct parameter types matching column types",
+    "Add @Dao annotation to interface",
+    "Verify column names match entity fields",
+    "Use supported return types: Flow, LiveData, List, suspend",
+    "Check Room compiler error messages carefully"
+  ],
+  "prevention": [
+    "Test queries with sample data in unit tests",
+    "Use Room's compile-time query verification",
+    "Enable kapt error logging for detailed messages",
+    "Follow Room's naming conventions strictly",
+    "Use data classes for query results",
+    "Validate SQL in database client before adding to DAO",
+    "Keep Room library version up to date"
+  ],
+  "examples": [
+    "@Dao interface ScanDao { @Query(\"SELECT * FROM scans\") fun getAll(): Flow<List<Scan>> }",
+    "@Query(\"SELECT userId, COUNT(*) as count FROM scans GROUP BY userId\") fun getCounts(): List<UserCount>",
+    "data class UserCount(val userId: Int, val count: Int)"
+  ],
+  "relatedErrors": [
+    "Room cannot verify query",
+    "Type mismatch in query result"
+  ]
+}

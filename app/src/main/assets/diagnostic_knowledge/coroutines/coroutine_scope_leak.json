@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_ScopeLeak",
+  "category": "coroutines",
+  "description": "Coroutine scope leaks causing memory leaks and continued execution after component destroyed. Critical coroutine lifecycle issue.",
+  "commonCauses": [
+    "Using GlobalScope instead of lifecycle-aware scope",
+    "Creating custom CoroutineScope without cancellation",
+    "Scope not cancelled in onDestroy/onCleared",
+    "Infinite loop in coroutine without cancellation checks",
+    "Scope captured in long-lived object",
+    "Parent scope outliving intended lifecycle",
+    "Job not cancelled on cleanup"
+  ],
+  "solutions": [
+    "Use viewModelScope or lifecycleScope instead of GlobalScope",
+    "Cancel custom scopes in onDestroy/onCleared",
+    "Use CoroutineScope(SupervisorJob() + Dispatchers.Main) with manual cancel",
+    "Check isActive in long-running loops",
+    "Store Job reference and cancel in cleanup",
+    "Use structured concurrency with proper parent scope",
+    "Implement cancellation in all cleanup methods"
+  ],
+  "prevention": [
+    "Always use lifecycle-aware scopes (viewModelScope, lifecycleScope)",
+    "Never use GlobalScope except for app-level work",
+    "Cancel all custom scopes in appropriate lifecycle methods",
+    "Test coroutine cancellation scenarios",
+    "Use LeakCanary to detect scope leaks",
+    "Implement isActive checks in long operations",
+    "Document scope lifecycle clearly"
+  ],
+  "examples": [
+    "viewModelScope.launch { /* Auto-cancelled in onCleared */ }",
+    "lifecycleScope.launch { /* Auto-cancelled on lifecycle destroy */ }",
+    "private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main); override fun onDestroy() { scope.cancel() }"
+  ],
+  "relatedErrors": [
+    "Memory leak from coroutines",
+    "Work continues after component destroyed"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Paging_SourceInvalidationLoop",
+  "category": "framework",
+  "description": "PagingSource invalidates in loop, causing constant reloading and UI flickering. Paging 3 issue.",
+  "commonCauses": [
+    "Database change triggering invalidation during load",
+    "Load function modifying database causing re-invalidation",
+    "Room InvalidationTracker too aggressive",
+    "PagingSource.invalidate() called on every load",
+    "State update during paging causing invalidation",
+    "Multiple PagingSource instances for same data",
+    "Flow collection triggering database updates"
+  ],
+  "solutions": [
+    "Don't modify database during PagingSource.load()",
+    "Use stable query that doesn't trigger own invalidation",
+    "Implement proper load state handling",
+    "Debounce invalidation triggers",
+    "Use transaction to group database changes",
+    "Create new PagingSource instance on invalidation, don't reuse",
+    "Separate read and write operations temporally"
+  ],
+  "prevention": [
+    "Never update database in PagingSource.load() implementation",
+    "Test paging with database updates",
+    "Monitor PagingSource creation frequency",
+    "Use Room's built-in PagingSource support",
+    "Implement proper separation of concerns (read vs write)",
+    "Test with rapid database changes",
+    "Use LoadState to detect invalidation loops"
+  ],
+  "examples": [
+    "override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> { return try { LoadResult.Page(...) } catch (e: Exception) { LoadResult.Error(e) } }",
+    "@Query(\"SELECT * FROM items ORDER BY id\") fun pagingSource(): PagingSource<Int, Item>",
+    "// Avoid: load() { updateDatabase(); queryData() } // Causes loop!"
+  ],
+  "relatedErrors": [
+    "Constant UI refresh",
+    "PagingSource created repeatedly"
+  ]
+}

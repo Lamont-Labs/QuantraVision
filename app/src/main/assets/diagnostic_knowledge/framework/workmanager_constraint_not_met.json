@@ -1,0 +1,41 @@
+{
+  "errorName": "WorkManager_ConstraintNotMet",
+  "category": "framework",
+  "description": "WorkManager work never executes because constraints never satisfied. Background tasks stuck pending.",
+  "commonCauses": [
+    "NETWORK_CONNECTED constraint but device offline",
+    "BATTERY_NOT_LOW but device battery critically low",
+    "DEVICE_CHARGING but device never plugged in",
+    "Multiple constraints creating impossible conditions",
+    "Constraint too strict for realistic device usage",
+    "Work scheduled but device doze mode preventing execution",
+    "ContentUriTriggers not firing"
+  ],
+  "solutions": [
+    "Use realistic constraints for your use case",
+    "Implement fallback for critical work without strict constraints",
+    "Monitor work state: WorkManager.getWorkInfoById()",
+    "Use NETWORK_TYPE_NOT_REQUIRED if offline capability exists",
+    "Test constraints in realistic conditions",
+    "Combine constraints reasonably (avoid CHARGING + NETWORK_METERED)",
+    "Provide user feedback when work delayed by constraints"
+  ],
+  "prevention": [
+    "Choose minimum necessary constraints",
+    "Test work execution under various device conditions",
+    "Monitor work state in production (ENQUEUED vs RUNNING)",
+    "Document constraint rationale",
+    "Use expedited work for time-sensitive tasks",
+    "Implement constraint monitoring in debug builds",
+    "Test with battery saver and airplane mode"
+  ],
+  "examples": [
+    "Constraints.Builder().setRequiredNetworkType(CONNECTED).build()",
+    "val workInfo = WorkManager.getInstance(context).getWorkInfoById(workId).await()",
+    "if (workInfo.state == WorkInfo.State.ENQUEUED) { /* Waiting for constraints */ }"
+  ],
+  "relatedErrors": [
+    "Work stuck in ENQUEUED state",
+    "Background task never runs"
+  ]
+}

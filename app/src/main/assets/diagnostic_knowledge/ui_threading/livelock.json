@@ -1,0 +1,43 @@
+{
+  "errorName": "Livelock",
+  "category": "ui_threading",
+  "description": "Threads actively responding to each other but making no progress. Similar to deadlock but threads aren't blocked.",
+  "commonCauses": [
+    "Two threads continuously yielding to each other",
+    "Priority inversion causing livelock",
+    "Threads backing off and retrying indefinitely",
+    "Resource contention with retry logic",
+    "Overly polite lock acquisition",
+    "Mutex tryLock loop without progress",
+    "State machine oscillating between states"
+  ],
+  "solutions": [
+    "Introduce randomized backoff delays",
+    "Use timeout-based retry logic",
+    "Implement priority-based arbitration",
+    "Add progress detection and escape mechanism",
+    "Use proper lock ordering instead of tryLock loops",
+    "Implement circuit breaker pattern",
+    "Add deadlock/livelock detection"
+  ],
+  "prevention": [
+    "Design lock acquisition with clear ordering",
+    "Avoid tryLock loops without timeout/limit",
+    "Implement exponential backoff with jitter",
+    "Monitor thread progress metrics",
+    "Test concurrent scenarios thoroughly",
+    "Use higher-level concurrency primitives",
+    "Document retry and backoff strategies"
+  ],
+  "examples": [
+    "val backoff = (100 * 2.pow(attempts) * Random.nextDouble(0.5, 1.5)).toLong(); delay(backoff)",
+    "var attempts = 0; while (attempts++ < MAX_ATTEMPTS && !tryAcquire()) { delay(backoff(attempts)) }",
+    "// Better: Use proper mutex: mutex.withLock { /* work */ }",
+    "if (System.currentTimeMillis() - startTime > MAX_TIME) throw LivelockException()"
+  ],
+  "relatedErrors": [
+    "Deadlock",
+    "Performance degradation",
+    "Thread starvation"
+  ]
+}

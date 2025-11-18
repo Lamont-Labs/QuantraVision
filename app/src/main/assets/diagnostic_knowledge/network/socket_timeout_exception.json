@@ -1,0 +1,42 @@
+{
+  "errorName": "SocketTimeoutException",
+  "category": "network",
+  "description": "Socket read/write operation timed out. Server didn't respond within configured timeout period.",
+  "commonCauses": [
+    "Slow network connection",
+    "Server processing taking too long",
+    "Large response payload",
+    "Network congestion",
+    "Timeout configured too short",
+    "Mobile network latency",
+    "Server under heavy load"
+  ],
+  "solutions": [
+    "Increase read/write timeout",
+    "Retry with exponential backoff",
+    "Show loading indicator to user",
+    "Implement request cancellation",
+    "Use streaming for large responses",
+    "Optimize request/response size",
+    "Switch to async polling pattern"
+  ],
+  "prevention": [
+    "Set appropriate timeouts (30-60 seconds)",
+    "Implement automatic retry with backoff",
+    "Use progress indicators for long requests",
+    "Test on slow networks (2G simulation)",
+    "Optimize API response sizes",
+    "Implement request timeout handling",
+    "Monitor request duration metrics"
+  ],
+  "examples": [
+    "val client = OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(60, SECONDS).writeTimeout(60, SECONDS).build()",
+    "try { api.download() } catch (e: SocketTimeoutException) { showTimeoutError(); retry() }",
+    "suspend fun <T> withTimeout(timeout: Long, block: suspend () -> T) = withTimeout(timeout) { block() }"
+  ],
+  "relatedErrors": [
+    "TimeoutException",
+    "HTTP_504_GatewayTimeout",
+    "ConnectException"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "ThreadInterruptedIgnored",
+  "category": "ui_threading",
+  "description": "Thread interruption caught but not handled properly, preventing cancellation. Cooperative cancellation failure.",
+  "commonCauses": [
+    "InterruptedException caught and ignored",
+    "catch (InterruptedException) with empty block",
+    "Not re-interrupting thread after catch",
+    "Swallowing interrupt without cleanup",
+    "Thread.sleep in try-catch without handling",
+    "Blocking operation ignoring interruption",
+    "Thread continues after interrupt signal"
+  ],
+  "solutions": [
+    "Re-interrupt thread: Thread.currentThread().interrupt()",
+    "Propagate interruption to caller",
+    "Exit loop/method after interruption",
+    "Clean up resources before exiting",
+    "Convert to InterruptedIOException if needed",
+    "Log interruption for debugging",
+    "Implement proper cancellation logic"
+  ],
+  "prevention": [
+    "Always handle InterruptedException properly",
+    "Re-set interrupt status after catching",
+    "Propagate interruption or exit cleanly",
+    "Use coroutines for better cancellation",
+    "Test thread cancellation scenarios",
+    "Document interruption handling policy",
+    "Never catch and ignore InterruptedException"
+  ],
+  "examples": [
+    "try { Thread.sleep(1000) } catch (e: InterruptedException) { Thread.currentThread().interrupt(); cleanup(); return }",
+    "// Or propagate: @Throws(InterruptedException::class) fun doWork() { /* ... */ }",
+    "// Better: use coroutines: launch { delay(1000); /* Handles cancellation automatically */ }",
+    "catch (e: InterruptedException) { logger.warn(\"Thread interrupted\"); Thread.currentThread().interrupt(); throw RuntimeException(\"Interrupted\", e) }"
+  ],
+  "relatedErrors": [
+    "Thread not cancelling",
+    "Resource leak",
+    "Shutdown timeout"
+  ]
+}

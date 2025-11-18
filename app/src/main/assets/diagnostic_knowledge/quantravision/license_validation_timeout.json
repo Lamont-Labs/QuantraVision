@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_LicenseValidationTimeout",
+  "category": "quantravision",
+  "description": "License validation times out when verifying user's subscription tier. Feature access delayed or denied incorrectly.",
+  "commonCauses": [
+    "Network timeout querying Play Billing",
+    "Billing server overloaded or slow",
+    "Purchase verification network request timeout",
+    "Cached entitlement expired and refresh failed",
+    "Device offline during validation",
+    "Billing API rate limiting",
+    "Complex validation logic taking too long"
+  ],
+  "solutions": [
+    "Implement timeout with fallback to cached entitlement",
+    "Use short timeout (3-5s) with retry",
+    "Cache valid entitlements with reasonable TTL",
+    "Implement optimistic unlocking with background verification",
+    "Provide offline mode with last known entitlement",
+    "Simplify validation logic for speed",
+    "Queue validation for later if offline"
+  ],
+  "prevention": [
+    "Cache entitlements aggressively (1-24 hours TTL)",
+    "Implement background entitlement refresh",
+    "Use local validation for most feature checks",
+    "Test validation under poor network conditions",
+    "Monitor validation latency in production",
+    "Implement circuit breaker for failing validations",
+    "Default to cached entitlement on timeout"
+  ],
+  "examples": [
+    "withTimeout(5000) { validateLicense() } ?: cachedEntitlement",
+    "val entitlement = entitlementCache.get() ?: fetchWithTimeout()",
+    "if (isOnline) { refreshEntitlement() } else { useCached() }"
+  ],
+  "relatedErrors": [
+    "TimeoutException license validation",
+    "NetworkException during validation"
+  ]
+}

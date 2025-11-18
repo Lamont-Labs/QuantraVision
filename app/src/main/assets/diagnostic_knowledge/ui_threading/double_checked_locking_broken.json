@@ -1,0 +1,43 @@
+{
+  "errorName": "DoubleCheckedLockingBroken",
+  "category": "ui_threading",
+  "description": "Incorrect double-checked locking causing potential race conditions. Subtle threading bug in singleton pattern.",
+  "commonCauses": [
+    "Double-checked locking without volatile",
+    "Field not marked @Volatile in Kotlin",
+    "Java memory model visibility issues",
+    "Partial object construction visible",
+    "Singleton pattern implemented incorrectly",
+    "Lazy initialization without proper synchronization",
+    "Field reordering breaking initialization"
+  ],
+  "solutions": [
+    "Use @Volatile annotation on field",
+    "Use Kotlin's lazy { } delegate",
+    "Use Synchronized method for simple cases",
+    "Use AtomicReference for lock-free approach",
+    "Implement holder pattern for static singletons",
+    "Use dependency injection instead",
+    "Validate with memory model analysis tools"
+  ],
+  "prevention": [
+    "Use Kotlin's lazy { } for thread-safe initialization",
+    "Always use @Volatile with double-checked locking",
+    "Prefer dependency injection over singletons",
+    "Use object declaration in Kotlin",
+    "Test concurrent initialization scenarios",
+    "Review memory model implications",
+    "Use static analysis tools"
+  ],
+  "examples": [
+    "@Volatile private var instance: MySingleton? = null; fun getInstance(): MySingleton = instance ?: synchronized(this) { instance ?: MySingleton().also { instance = it } }",
+    "// Better: val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { MySingleton() }",
+    "// Best: object MySingleton { /* Kotlin object is thread-safe */ }",
+    "// DI: @Singleton class MySingleton @Inject constructor()"
+  ],
+  "relatedErrors": [
+    "Race condition",
+    "NullPointerException",
+    "Partial initialization"
+  ]
+}

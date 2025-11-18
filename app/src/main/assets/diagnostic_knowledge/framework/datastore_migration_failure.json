@@ -1,0 +1,41 @@
+{
+  "errorName": "DataStore_MigrationFailure",
+  "category": "framework",
+  "description": "DataStore migration from SharedPreferences fails, causing data loss or crashes. Proto DataStore migration issue.",
+  "commonCauses": [
+    "Migration function throwing exception",
+    "Proto schema changed without migration",
+    "SharedPreferences keys don't match migration mapping",
+    "DataStore file corrupted during migration",
+    "Migration not registered in DataStore builder",
+    "Concurrent access during migration",
+    "Proto deserialization error in migration"
+  ],
+  "solutions": [
+    "Implement DataMigration<Preferences> interface",
+    "Test migration with all SharedPreferences values",
+    "Provide default values for missing preferences",
+    "Use try-catch in migration with fallback",
+    "Register migration: .addDataMigration(migration)",
+    "Validate proto schema version in migration",
+    "Handle corrupted data gracefully"
+  ],
+  "prevention": [
+    "Test migration from SharedPreferences thoroughly",
+    "Implement migration for every proto schema change",
+    "Provide default values for all new fields",
+    "Test migration with various SharedPreferences states",
+    "Monitor migration success rate in production",
+    "Implement migration version tracking",
+    "Test migration idempotency"
+  ],
+  "examples": [
+    "val migration = object : DataMigration<Preferences> { override suspend fun migrate(currentData: Preferences) = ... }",
+    "dataStore.updateData { preferences -> preferences.toBuilder().setVersion(2).build() }",
+    "val dataStore = context.preferencesDataStore(name = \"settings\").addDataMigration(migration)"
+  ],
+  "relatedErrors": [
+    "IOException during DataStore migration",
+    "Data lost after migration"
+  ]
+}

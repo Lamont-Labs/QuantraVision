@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_500_InternalServerError",
+  "category": "network",
+  "description": "HTTP 500 indicates server encountered unexpected condition. Server-side error requiring retry logic.",
+  "commonCauses": [
+    "Server software bug or crash",
+    "Database connection failure on server",
+    "Unhandled exception on backend",
+    "Server resource exhaustion",
+    "Misconfigured server",
+    "Timeout in server-side processing",
+    "Third-party service failure"
+  ],
+  "solutions": [
+    "Implement retry logic with exponential backoff",
+    "Handle gracefully with user message",
+    "Log error for debugging",
+    "Fall back to cached data if available",
+    "Report to error monitoring service",
+    "Show user-friendly error message",
+    "Implement circuit breaker pattern"
+  ],
+  "prevention": [
+    "Implement automatic retry with backoff",
+    "Use circuit breaker for fault tolerance",
+    "Cache data for offline access",
+    "Monitor 5xx error rates",
+    "Implement fallback mechanisms",
+    "Test error handling scenarios",
+    "Use error reporting service (Crashlytics, Sentry)"
+  ],
+  "examples": [
+    "suspend fun <T> retryWithBackoff(times: Int = 3, block: suspend () -> T): T { repeat(times - 1) { try { return block() } catch (e: HttpException) { if (e.code() >= 500) delay(1000 * 2.0.pow(it).toLong()) else throw e } }; return block() }",
+    "if (response.code in 500..599) { showServerError(); logError(response) }",
+    "class CircuitBreaker { var state = CLOSED; fun call() { if (state == OPEN) throw CircuitOpenException() } }"
+  ],
+  "relatedErrors": [
+    "HTTP_502_BadGateway",
+    "HTTP_503_ServiceUnavailable",
+    "ServerException"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "TransactionTooLargeException",
+  "category": "crashes",
+  "description": "Binder transaction buffer exceeded (1MB limit). Occurs when passing large data between app components via Intent/Bundle.",
+  "commonCauses": [
+    "Passing large Bitmap in Intent extras",
+    "Large serialized object in Bundle",
+    "Passing entire ArrayList of objects",
+    "Fragment arguments with large data",
+    "Large Parcelable objects",
+    "Passing complex object graphs",
+    "Activity result with large data payload"
+  ],
+  "solutions": [
+    "Pass data ID/URI instead of full object",
+    "Store large data in ViewModel or repository",
+    "Use shared preferences or database for transfer",
+    "Pass file URI instead of bitmap data",
+    "Implement proper data layer architecture",
+    "Use Navigation component arguments (limited size)",
+    "Split large operations into smaller chunks"
+  ],
+  "prevention": [
+    "Never pass Bitmaps in Intent extras",
+    "Keep Bundle/Arguments under 500KB",
+    "Use ViewModels for sharing data between fragments",
+    "Pass IDs and fetch data in destination",
+    "Use proper data layer (Repository pattern)",
+    "Implement content providers for large data",
+    "Test with large datasets early"
+  ],
+  "examples": [
+    "// Bad: intent.putExtra(\"bitmap\", largeBitmap)",
+    "// Good: intent.putExtra(\"imageUri\", imageUri.toString())",
+    "viewModel.setData(largeObject) // Share via ViewModel",
+    "navController.navigate(R.id.dest, bundleOf(\"id\" to objectId)) // Pass ID only"
+  ],
+  "relatedErrors": [
+    "RuntimeException",
+    "OutOfMemoryError",
+    "IllegalStateException"
+  ]
+}

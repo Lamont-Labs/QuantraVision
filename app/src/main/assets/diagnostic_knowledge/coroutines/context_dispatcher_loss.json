@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_ContextDispatcherLoss",
+  "category": "coroutines",
+  "description": "Coroutine dispatcher context lost during execution, causing UI updates on wrong thread. Context propagation issue.",
+  "commonCauses": [
+    "withContext switching dispatcher without switching back",
+    "Callback executed on wrong dispatcher",
+    "suspend function not preserving caller context",
+    "Using Dispatchers.Unconfined incorrectly",
+    "Context not inherited in child coroutines",
+    "Flow collection dispatcher mismatch",
+    "Blocking call in wrong dispatcher context"
+  ],
+  "solutions": [
+    "Use withContext(Dispatchers.Main) for UI updates",
+    "Ensure suspend functions preserve caller context",
+    "Use flowOn() to specify Flow collection dispatcher",
+    "Avoid Dispatchers.Unconfined unless necessary",
+    "Let coroutines inherit parent context by default",
+    "Explicitly specify dispatcher when needed",
+    "Test dispatcher context in coroutines"
+  ],
+  "prevention": [
+    "Always use withContext for dispatcher changes",
+    "Use flowOn() for Flow dispatcher specification",
+    "Understand coroutine context inheritance",
+    "Avoid Dispatchers.Unconfined in production",
+    "Test UI updates happen on Main thread",
+    "Use StrictMode to detect threading violations",
+    "Document expected dispatcher for suspend functions"
+  ],
+  "examples": [
+    "suspend fun loadData() = withContext(Dispatchers.IO) { database.load() }",
+    "flow.flowOn(Dispatchers.IO).collect { withContext(Dispatchers.Main) { updateUI(it) } }",
+    "viewModelScope.launch(Dispatchers.Main) { val data = withContext(Dispatchers.IO) { fetch() }; updateUI(data) }"
+  ],
+  "relatedErrors": [
+    "CalledFromWrongThreadException",
+    "NetworkOnMainThreadException"
+  ]
+}

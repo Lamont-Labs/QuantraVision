@@ -1,0 +1,43 @@
+{
+  "errorName": "ViewPostLeak",
+  "category": "ui_threading",
+  "description": "view.post() runnable holding reference to destroyed view/activity. Subtle memory leak through view's handler.",
+  "commonCauses": [
+    "view.post() with long delay",
+    "Runnable posted but view destroyed",
+    "view.postDelayed() not removed",
+    "Runnable capturing activity/fragment",
+    "View detached with pending runnables",
+    "Anonymous runnable holding references",
+    "Recycled view with pending posts"
+  ],
+  "solutions": [
+    "Remove callbacks in onDetachedFromWindow",
+    "Check if view.isAttachedToWindow before executing",
+    "Use WeakReference in runnables",
+    "Cancel posts in lifecycle methods",
+    "Use coroutines with lifecycle scope instead",
+    "Implement view lifecycle awareness",
+    "Clear references before posting"
+  ],
+  "prevention": [
+    "Override onDetachedFromWindow to clear posts",
+    "Use lifecycleScope instead of view.post for delays",
+    "Check isAttachedToWindow in runnable",
+    "Use static runnable with WeakReference",
+    "Test view recycling scenarios",
+    "Use ViewTreeLifecycleOwner for lifecycle awareness",
+    "Document view post cleanup requirements"
+  ],
+  "examples": [
+    "override fun onDetachedFromWindow() { super.onDetachedFromWindow(); removeCallbacks(runnable) }",
+    "view.post { if (view.isAttachedToWindow) { /* update */ } }",
+    "// Better: findViewTreeLifecycleOwner()?.lifecycleScope?.launch { delay(1000); update() }",
+    "class MyRunnable(view: View) : Runnable { private val weakView = WeakReference(view) }"
+  ],
+  "relatedErrors": [
+    "View leak",
+    "Activity leak",
+    "OutOfMemoryError"
+  ]
+}

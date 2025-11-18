@@ -1,0 +1,43 @@
+{
+  "errorName": "PriorityInversion",
+  "category": "ui_threading",
+  "description": "High-priority thread blocked by low-priority thread holding needed resource. Scheduling anomaly causing delays.",
+  "commonCauses": [
+    "Low-priority thread holding lock needed by high-priority",
+    "UI thread waiting for background thread lock",
+    "Medium-priority thread preempting low-priority",
+    "Unbounded priority inversion",
+    "Resource held by sleeping low-priority thread",
+    "Critical section in background thread",
+    "Improper use of thread priorities"
+  ],
+  "solutions": [
+    "Use priority inheritance/ceiling protocols",
+    "Minimize lock scope and duration",
+    "Avoid priority-based scheduling when possible",
+    "Use fair locks to reduce inversion",
+    "Implement priority donation mechanisms",
+    "Redesign to avoid shared locks between different priorities",
+    "Use async message passing instead of locks"
+  ],
+  "prevention": [
+    "Avoid mixing thread priorities with shared locks",
+    "Keep synchronized sections minimal",
+    "Use lock-free data structures when possible",
+    "Prefer message passing over shared memory",
+    "Test with various priority scenarios",
+    "Use coroutines which handle scheduling better",
+    "Document locking and priority requirements"
+  ],
+  "examples": [
+    "// Avoid: UI thread waiting for lock held by background thread",
+    "// Better: Use message passing: handler.post { /* UI update from background */ }",
+    "// Best: coroutines handle priorities automatically",
+    "val fairLock = ReentrantLock(true) // Reduces priority inversion effects"
+  ],
+  "relatedErrors": [
+    "Deadlock",
+    "ANR",
+    "Performance degradation"
+  ]
+}

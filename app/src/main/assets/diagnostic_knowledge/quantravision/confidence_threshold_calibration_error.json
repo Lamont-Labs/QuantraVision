@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_ConfidenceThresholdCalibrationError",
+  "category": "quantravision",
+  "description": "Confidence threshold calibration produces invalid thresholds, causing all patterns to pass or fail filtering.",
+  "commonCauses": [
+    "Calibration data insufficient or biased",
+    "Threshold calculation overflow or underflow",
+    "Invalid statistical assumptions in calibration",
+    "Feedback data quality too low",
+    "Calibration algorithm converging to extreme values",
+    "Time window for calibration too narrow",
+    "Outliers skewing threshold calculation"
+  ],
+  "solutions": [
+    "Implement min/max bounds on threshold values",
+    "Require minimum calibration data samples (n > 100)",
+    "Use robust statistics (median, IQR) for outlier resistance",
+    "Validate threshold sanity before applying",
+    "Implement gradual threshold adjustment",
+    "Reset to default if calibration produces invalid result",
+    "Log calibration inputs and outputs for debugging"
+  ],
+  "prevention": [
+    "Define acceptable threshold ranges (0.5-0.95)",
+    "Test calibration with edge case data distributions",
+    "Require diverse calibration data (various patterns, contexts)",
+    "Implement threshold change rate limiting",
+    "Monitor threshold distribution across users",
+    "Validate calibration algorithm with simulations",
+    "Provide manual override for threshold reset"
+  ],
+  "examples": [
+    "val threshold = calibrate(data).coerceIn(0.5, 0.95)",
+    "require(calibrationSamples.size > MIN_SAMPLES) { \"Insufficient data\" }",
+    "if (!threshold.isFinite() || threshold !in 0.0..1.0) { useDefault() }"
+  ],
+  "relatedErrors": [
+    "Invalid threshold calculated",
+    "All patterns pass/fail filter"
+  ]
+}

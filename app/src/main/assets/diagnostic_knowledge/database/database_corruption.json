@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_CorruptionError",
+  "category": "database",
+  "description": "SQLite database file corrupted, causing read/write failures and potential data loss. Severe issue requiring recovery.",
+  "commonCauses": [
+    "App killed during write transaction",
+    "Device powered off during database write",
+    "Storage hardware failure",
+    "File system error or corruption",
+    "Concurrent write from multiple processes",
+    "Manual file modification outside app",
+    "Operating system crash during write"
+  ],
+  "solutions": [
+    "Attempt automatic recovery: PRAGMA integrity_check",
+    "Restore from backup if available",
+    "Export uncorrupted data to new database",
+    "Use .recover command on writable database",
+    "Delete and recreate database (last resort)",
+    "Implement database backup before migration",
+    "Log corruption event for analytics"
+  ],
+  "prevention": [
+    "Enable WAL mode for crash resistance",
+    "Implement automatic backup strategy",
+    "Use Room's fallback mechanisms",
+    "Avoid multiple processes accessing same database",
+    "Implement database integrity checks on startup",
+    "Use transactions for all write operations",
+    "Test recovery procedures regularly"
+  ],
+  "examples": [
+    ".setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)",
+    "db.openHelper.readableDatabase.rawQuery(\"PRAGMA integrity_check\")",
+    "Room.databaseBuilder(...).createFromAsset(\"backup.db\")"
+  ],
+  "relatedErrors": [
+    "SQLiteDatabaseCorruptException",
+    "SQLiteException database disk image is malformed"
+  ]
+}

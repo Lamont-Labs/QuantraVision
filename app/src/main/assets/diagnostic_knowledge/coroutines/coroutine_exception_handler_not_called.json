@@ -1,0 +1,42 @@
+{
+  "errorName": "Coroutine_ExceptionHandlerNotCalled",
+  "category": "coroutines",
+  "description": "CoroutineExceptionHandler not invoked despite exception. Handler installation or scope hierarchy issue.",
+  "commonCauses": [
+    "Handler installed on child coroutine instead of root",
+    "Using async instead of launch (exceptions surface on await)",
+    "Handler in wrong scope level",
+    "Exception caught before reaching handler",
+    "SupervisorJob preventing handler invocation",
+    "Handler on non-root coroutine",
+    "CancellationException not handled by CEH"
+  ],
+  "solutions": [
+    "Install CoroutineExceptionHandler on root scope",
+    "Use launch for fire-and-forget with handler",
+    "Don't catch exception before it reaches handler",
+    "Understand async exceptions surface on await()",
+    "Combine SupervisorJob + CEH correctly",
+    "Test handler invocation with various exceptions",
+    "Use structured concurrency properly"
+  ],
+  "prevention": [
+    "Install CEH on CoroutineScope, not individual launches",
+    "Understand exception propagation in coroutine hierarchy",
+    "Test exception handling thoroughly",
+    "Document exception handling strategy",
+    "Use SupervisorScope for independent child failures",
+    "Monitor exception handler invocations in debug",
+    "Understand CancellationException special handling"
+  ],
+  "examples": [
+    "val handler = CoroutineExceptionHandler { _, e -> handleException(e) }",
+    "val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main + handler)",
+    "scope.launch { throw Exception() } // Handler called",
+    "// NOT called: launch { async { throw Exception() }.await() } // Exception on await"
+  ],
+  "relatedErrors": [
+    "Handler not catching exceptions",
+    "Exceptions still crashing despite handler"
+  ]
+}

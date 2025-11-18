@@ -1,0 +1,41 @@
+{
+  "errorName": "ViewModel_FactoryCrash",
+  "category": "framework",
+  "description": "ViewModelProvider.Factory crashes when creating ViewModel. App crashes on screen navigation or rotation.",
+  "commonCauses": [
+    "Factory not providing required constructor parameters",
+    "Missing SavedStateHandle in factory",
+    "Dependency injection not set up correctly",
+    "Factory class mismatch with ViewModel constructor",
+    "Null parameter passed to ViewModel constructor",
+    "Factory not implementing NewInstanceFactory correctly",
+    "Hilt/Dagger injection missing @HiltViewModel"
+  ],
+  "solutions": [
+    "Implement ViewModelProvider.Factory.create() correctly",
+    "Use AbstractSavedStateViewModelFactory for SavedState support",
+    "Provide all ViewModel constructor dependencies",
+    "Use @HiltViewModel for Hilt ViewModels",
+    "Validate all parameters before ViewModel creation",
+    "Use viewModels() delegate with correct factory",
+    "Test ViewModel creation in isolation"
+  ],
+  "prevention": [
+    "Use Hilt @HiltViewModel for automatic factory generation",
+    "Test ViewModel creation with all parameter combinations",
+    "Validate factory implementation in unit tests",
+    "Use AbstractSavedStateViewModelFactory for complex cases",
+    "Document ViewModel dependencies clearly",
+    "Avoid complex factory logic; keep it simple",
+    "Use default ViewModelProvider.Factory when possible"
+  ],
+  "examples": [
+    "@HiltViewModel class ScanViewModel @Inject constructor(repo: Repo) : ViewModel()",
+    "class Factory(private val repo: Repo) : ViewModelProvider.Factory { override fun <T : ViewModel> create(modelClass: Class<T>): T = ScanViewModel(repo) as T }",
+    "val viewModel: ScanViewModel by viewModels { factory }"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException ViewModel creation",
+    "ClassCastException in factory"
+  ]
+}

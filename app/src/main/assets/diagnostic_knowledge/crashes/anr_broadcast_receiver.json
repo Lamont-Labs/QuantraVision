@@ -1,0 +1,42 @@
+{
+  "errorName": "ANR_BroadcastReceiver",
+  "category": "crashes",
+  "description": "BroadcastReceiver.onReceive() takes longer than 10 seconds to execute, triggering ANR. System-level timeout for broadcast handling.",
+  "commonCauses": [
+    "Long-running operations in onReceive()",
+    "Synchronous network calls in broadcast handler",
+    "Database operations blocking receiver",
+    "File I/O in onReceive()",
+    "Starting foreground service without goAsync()",
+    "Complex initialization in receiver",
+    "Waiting for locks in onReceive()"
+  ],
+  "solutions": [
+    "Use goAsync() for work exceeding 10 seconds",
+    "Start WorkManager for long operations",
+    "Launch JobIntentService instead of doing work directly",
+    "Keep onReceive() minimal - delegate to service",
+    "Use PendingResult pattern with goAsync()",
+    "Move processing to WorkManager or JobScheduler",
+    "Never do network/database work in onReceive()"
+  ],
+  "prevention": [
+    "Always use goAsync() if work might exceed 1 second",
+    "Delegate all real work to WorkManager",
+    "Keep onReceive() under 1 second total",
+    "Use WorkManager.enqueue() for background tasks",
+    "Test receivers with StrictMode enabled",
+    "Monitor receiver execution time",
+    "Document timeout expectations clearly"
+  ],
+  "examples": [
+    "val pendingResult = goAsync(); scope.launch { doWork(); pendingResult.finish() }",
+    "WorkManager.getInstance(context).enqueue(OneTimeWorkRequest.from(MyWorker::class.java))",
+    "override fun onReceive(ctx: Context, intent: Intent) { ctx.startService(Intent(ctx, MyService::class.java)) }"
+  ],
+  "relatedErrors": [
+    "ANR_ApplicationNotResponding",
+    "IllegalStateException",
+    "TimeoutException"
+  ]
+}

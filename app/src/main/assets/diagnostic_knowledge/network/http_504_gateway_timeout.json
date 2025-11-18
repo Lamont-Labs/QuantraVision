@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_504_GatewayTimeout",
+  "category": "network",
+  "description": "HTTP 504 indicates gateway didn't receive timely response from upstream server. Timeout at infrastructure level.",
+  "commonCauses": [
+    "Backend processing taking too long",
+    "Database queries timing out",
+    "Slow third-party API calls",
+    "Network congestion",
+    "Backend server unresponsive",
+    "Gateway timeout configured too short",
+    "Heavy computational operations"
+  ],
+  "solutions": [
+    "Retry with exponential backoff",
+    "Increase client timeout",
+    "Use job queue for long operations",
+    "Implement request timeout handling",
+    "Show progress indicator for long requests",
+    "Fall back to cached data",
+    "Consider async/polling pattern"
+  ],
+  "prevention": [
+    "Set appropriate client timeouts",
+    "Implement retry logic for timeouts",
+    "Use async APIs for long operations",
+    "Monitor request duration",
+    "Optimize backend performance",
+    "Use WebSocket for real-time updates",
+    "Implement proper timeout handling"
+  ],
+  "examples": [
+    "val client = OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).writeTimeout(60, TimeUnit.SECONDS).build()",
+    "if (response.code == 504) { delay(backoff); return retryWithLongerTimeout() }",
+    "try { api.longOperation() } catch (e: SocketTimeoutException) { showTimeoutError(); retry() }"
+  ],
+  "relatedErrors": [
+    "SocketTimeoutException",
+    "HTTP_502_BadGateway",
+    "TimeoutException"
+  ]
+}

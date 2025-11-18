@@ -1,0 +1,41 @@
+{
+  "errorName": "Paging_RemoteMediatorError",
+  "category": "framework",
+  "description": "RemoteMediator fails to sync data from network to database. Offline-first paging broken.",
+  "commonCauses": [
+    "RemoteMediator.load() not inserting data to database",
+    "Database transaction failing in RemoteMediator",
+    "Network request timing out in load()",
+    "MediatorResult.Success returned without actual sync",
+    "Remote keys not managed correctly",
+    "endOfPaginationReached logic incorrect",
+    "Concurrent mediator loads causing conflicts"
+  ],
+  "solutions": [
+    "Insert fetched data in RemoteMediator.load()",
+    "Use @Transaction for atomic database updates",
+    "Implement proper remote key management",
+    "Return MediatorResult.Error on failures",
+    "Set endOfPaginationReached correctly",
+    "Add timeout to network requests",
+    "Test RemoteMediator in isolation"
+  ],
+  "prevention": [
+    "Test RemoteMediator with network on/off scenarios",
+    "Implement proper remote key tracking",
+    "Use Room transaction for mediator database updates",
+    "Monitor mediator success rate in production",
+    "Test edge cases: first load, refresh, append, prepend",
+    "Validate endOfPaginationReached logic",
+    "Implement mediator load timeout"
+  ],
+  "examples": [
+    "@OptIn(ExperimentalPagingApi::class) class ScanRemoteMediator : RemoteMediator<Int, Scan>() { override suspend fun load(...): MediatorResult { ... } }",
+    "database.withTransaction { remoteKeyDao.insertAll(keys); scanDao.insertAll(scans) }",
+    "MediatorResult.Success(endOfPaginationReached = response.isEmpty())"
+  ],
+  "relatedErrors": [
+    "Offline data not loading",
+    "RemoteMediator load fails silently"
+  ]
+}

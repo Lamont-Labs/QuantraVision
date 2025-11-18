@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_OCRTextExtractionEmpty",
+  "category": "quantravision",
+  "description": "ML Kit OCR extracts no text from chart image despite visible indicators. Affects QuantraVision context analysis accuracy.",
+  "commonCauses": [
+    "Image contrast too low for text detection",
+    "Text size too small for recognition",
+    "Image preprocessing removing text features",
+    "Rotated or skewed text not detected",
+    "Font style incompatible with ML Kit",
+    "Image resolution too low",
+    "Text color similar to background"
+  ],
+  "solutions": [
+    "Apply image preprocessing: contrast enhancement, sharpening",
+    "Use higher resolution for OCR region",
+    "Crop specific regions with text before OCR",
+    "Apply adaptive thresholding to improve contrast",
+    "Try multiple image preprocessing variations",
+    "Use deskewing before OCR if needed",
+    "Validate image quality before OCR attempt"
+  ],
+  "prevention": [
+    "Capture charts at high resolution for OCR",
+    "Implement robust image preprocessing pipeline",
+    "Test OCR with various chart styles and themes",
+    "Crop legend and indicator areas precisely",
+    "Apply contrast adjustment before OCR",
+    "Validate image quality metrics before processing",
+    "Provide fallback detection without OCR"
+  ],
+  "examples": [
+    "val enhanced = Imgproc.equalizeHist(grayImage) // Improve contrast",
+    "val cropped = Imgproc.resize(roi, Size(roi.width * 2.0, roi.height * 2.0)) // Upscale",
+    "Imgproc.threshold(gray, binary, 0.0, 255.0, THRESH_BINARY or THRESH_OTSU)"
+  ],
+  "relatedErrors": [
+    "Empty text blocks from ML Kit",
+    "OCR confidence too low"
+  ]
+}

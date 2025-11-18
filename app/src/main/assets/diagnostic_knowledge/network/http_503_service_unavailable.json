@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_503_ServiceUnavailable",
+  "category": "network",
+  "description": "HTTP 503 indicates server temporarily unable to handle request. Overload or maintenance situation.",
+  "commonCauses": [
+    "Server under maintenance",
+    "Server overloaded",
+    "Rate limiting at infrastructure level",
+    "Backend services down",
+    "Database connection pool exhausted",
+    "Temporary server capacity issues",
+    "DDoS protection activated"
+  ],
+  "solutions": [
+    "Respect Retry-After header",
+    "Implement exponential backoff retry",
+    "Show maintenance message to user",
+    "Use cached data if available",
+    "Reduce request frequency",
+    "Implement circuit breaker",
+    "Queue requests for later"
+  ],
+  "prevention": [
+    "Implement robust retry logic",
+    "Respect Retry-After header always",
+    "Cache aggressively",
+    "Implement offline mode",
+    "Monitor service availability",
+    "Have fallback data sources",
+    "Test with service unavailable scenarios"
+  ],
+  "examples": [
+    "val retryAfter = response.header(\"Retry-After\")?.toIntOrNull() ?: 60; delay(retryAfter * 1000L); return retry()",
+    "if (response.code == 503) { showMaintenanceMode(); useCachedData() }",
+    "class ServiceUnavailableInterceptor : Interceptor { override fun intercept(chain: Chain) = chain.proceed(request).also { if (it.code == 503) scheduleRetry() } }"
+  ],
+  "relatedErrors": [
+    "HTTP_502_BadGateway",
+    "HTTP_504_GatewayTimeout",
+    "ServiceUnavailableException"
+  ]
+}

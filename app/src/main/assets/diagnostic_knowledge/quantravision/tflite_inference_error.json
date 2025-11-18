@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_TFLiteInferenceError",
+  "category": "quantravision",
+  "description": "TensorFlow Lite inference fails during AI explanation generation. Pattern explanations unavailable or incorrect.",
+  "commonCauses": [
+    "Input tensor shape mismatch with model expectations",
+    "Input data type incorrect (float32 vs int8)",
+    "Tensor not allocated before inference",
+    "Input preprocessing incorrect",
+    "Output tensor reading error",
+    "Model execution timeout",
+    "Concurrent inference attempts on same interpreter"
+  ],
+  "solutions": [
+    "Validate input tensor shape before inference",
+    "Ensure correct data type conversion",
+    "Allocate tensors: interpreter.allocateTensors()",
+    "Preprocess input according to model requirements",
+    "Use synchronized access for interpreter",
+    "Implement inference timeout with coroutines",
+    "Create separate interpreter per thread if concurrent"
+  ],
+  "prevention": [
+    "Document model input/output specifications clearly",
+    "Implement comprehensive input validation",
+    "Test inference with various input patterns",
+    "Use thread-safe interpreter wrapper",
+    "Profile inference time to detect issues early",
+    "Validate output tensor format after inference",
+    "Test on diverse device configurations"
+  ],
+  "examples": [
+    "inputTensor.copyFrom(preprocessedInput); interpreter.run(inputTensor, outputTensor)",
+    "val inputShape = interpreter.getInputTensor(0).shape() // [1, 512, 512, 3]",
+    "synchronized(interpreter) { interpreter.run(input, output) }"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException tensor shape mismatch",
+    "TFLiteException inference failed"
+  ]
+}

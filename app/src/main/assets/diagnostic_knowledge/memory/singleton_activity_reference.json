@@ -1,0 +1,43 @@
+{
+  "errorName": "SingletonActivityReference",
+  "category": "memory",
+  "description": "Singleton pattern holding reference to Activity, preventing all activities from being garbage collected. Severe memory leak.",
+  "commonCauses": [
+    "Singleton initialized with activity context",
+    "Singleton storing activity reference directly",
+    "Singleton callback holding activity",
+    "Repository/Manager storing activity",
+    "Event bus registered with activity",
+    "Singleton listener with activity reference",
+    "Global state tied to activity lifecycle"
+  ],
+  "solutions": [
+    "Use application context in singletons",
+    "Use WeakReference for activity references",
+    "Pass context per call instead of storing",
+    "Use dependency injection with proper scoping",
+    "Implement callback pattern with WeakReference",
+    "Use lifecycle-aware components",
+    "Separate singleton from UI layer"
+  ],
+  "prevention": [
+    "Never pass activity to singleton constructors",
+    "Always use applicationContext for singletons",
+    "Use Hilt/Dagger for proper dependency scoping",
+    "Implement repository pattern without context",
+    "Use WeakReference if activity access needed",
+    "Test with LeakCanary",
+    "Design singletons independent of UI lifecycle"
+  ],
+  "examples": [
+    "// Bad: object MySingleton { private var activity: Activity? = null }",
+    "// Good: object MySingleton { fun doWork(context: Context) { val app = context.applicationContext } }",
+    "class MySingleton private constructor() { private var weakActivity: WeakReference<Activity>? = null }",
+    "@Singleton class Repository @Inject constructor(@ApplicationContext context: Context)"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "OutOfMemoryError",
+    "Context leak"
+  ]
+}

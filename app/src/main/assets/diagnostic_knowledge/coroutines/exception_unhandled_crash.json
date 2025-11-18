@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_ExceptionUnhandledCrash",
+  "category": "coroutines",
+  "description": "Unhandled exception in coroutine crashes app. Exception propagation not properly managed.",
+  "commonCauses": [
+    "Exception in launch without try-catch or handler",
+    "async exception not caught when await() called",
+    "Exception in child coroutine propagating to parent",
+    "No CoroutineExceptionHandler in scope",
+    "SupervisorJob not used when child failure should be isolated",
+    "Exception in Flow not caught",
+    "Background coroutine exception crashing app"
+  ],
+  "solutions": [
+    "Use try-catch in coroutine body for expected exceptions",
+    "Install CoroutineExceptionHandler in scope",
+    "Use SupervisorJob for independent child failure handling",
+    "Wrap async.await() in try-catch",
+    "Use catch operator for Flow exceptions",
+    "Handle exceptions at appropriate level",
+    "Test exception scenarios thoroughly"
+  ],
+  "prevention": [
+    "Install CoroutineExceptionHandler in all custom scopes",
+    "Use SupervisorJob when children should fail independently",
+    "Wrap risky operations in try-catch",
+    "Use Flow.catch() for Flow error handling",
+    "Test exception propagation scenarios",
+    "Document exception handling strategy",
+    "Monitor crash reports for coroutine exceptions"
+  ],
+  "examples": [
+    "val handler = CoroutineExceptionHandler { _, e -> Log.e(TAG, \"Error\", e) }",
+    "val scope = CoroutineScope(SupervisorJob() + handler)",
+    "viewModelScope.launch { try { riskyOperation() } catch (e: Exception) { handleError(e) } }"
+  ],
+  "relatedErrors": [
+    "Uncaught exception crashes app",
+    "CancellationException propagates incorrectly"
+  ]
+}

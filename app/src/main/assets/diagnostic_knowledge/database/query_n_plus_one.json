@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_NPlusOneQuery",
+  "category": "database",
+  "description": "N+1 query problem where one query returns N items, then N additional queries fetch related data. Causes severe performance issues.",
+  "commonCauses": [
+    "Lazy loading relationships in loop",
+    "Separate queries for each item's related data",
+    "Room @Relation not used for one-to-many",
+    "Missing JOIN in initial query",
+    "Individual queries instead of batch query",
+    "Accessing lazy properties in tight loop",
+    "Not using @Transaction for nested queries"
+  ],
+  "solutions": [
+    "Use Room @Relation for automatic JOIN loading",
+    "Fetch all related data in single query with JOIN",
+    "Use @Transaction to load nested objects efficiently",
+    "Implement batch query for multiple IDs",
+    "Use embedded objects with @Embedded",
+    "Preload relationships with eager loading",
+    "Cache relationship data appropriately"
+  ],
+  "prevention": [
+    "Design entities with @Relation for relationships",
+    "Use @Transaction for queries loading nested data",
+    "Profile database queries to detect N+1 pattern",
+    "Prefer JOINs over separate queries",
+    "Use Flow to observe complete object graphs",
+    "Test with realistic data sizes (1000+ items)",
+    "Monitor query count in debug builds"
+  ],
+  "examples": [
+    "data class UserWithScans(@Embedded val user: User, @Relation(...) val scans: List<Scan>)",
+    "@Transaction @Query(\"SELECT * FROM users\") fun getUsersWithScans(): Flow<List<UserWithScans>>",
+    "@Query(\"SELECT * FROM patterns WHERE id IN (:ids)\") suspend fun loadByIds(ids: List<Int>)"
+  ],
+  "relatedErrors": [
+    "Performance degradation with large datasets",
+    "ANR from excessive queries"
+  ]
+}

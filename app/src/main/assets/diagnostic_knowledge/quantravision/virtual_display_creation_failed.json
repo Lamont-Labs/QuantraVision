@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_VirtualDisplayCreationFailed",
+  "category": "quantravision",
+  "description": "VirtualDisplay creation fails when attempting to capture screen for pattern detection. Core functionality blocker.",
+  "commonCauses": [
+    "Invalid display metrics (width, height, or density)",
+    "MediaProjection not granted or expired",
+    "ImageReader surface not ready",
+    "Display flags incompatible with device",
+    "Memory insufficient for display buffer",
+    "Multiple VirtualDisplay creation attempts",
+    "Surface destroyed before VirtualDisplay created"
+  ],
+  "solutions": [
+    "Validate display metrics before creation",
+    "Ensure ImageReader created before VirtualDisplay",
+    "Use recommended display flags: VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR",
+    "Handle null return from createVirtualDisplay",
+    "Reduce display resolution if creation fails",
+    "Create ImageReader surface first, then VirtualDisplay",
+    "Check MediaProjection validity before use"
+  ],
+  "prevention": [
+    "Use device screen metrics for VirtualDisplay dimensions",
+    "Create ImageReader before VirtualDisplay setup",
+    "Validate MediaProjection token before VirtualDisplay creation",
+    "Test on various screen sizes and densities",
+    "Implement fallback to lower resolution on failure",
+    "Log VirtualDisplay creation parameters for debugging",
+    "Handle creation failure gracefully with user notification"
+  ],
+  "examples": [
+    "val metrics = resources.displayMetrics; val virtualDisplay = mediaProjection.createVirtualDisplay(\"QV\", metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.surface, null, null)",
+    "imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)",
+    "virtualDisplay ?: run { Log.e(TAG, \"VirtualDisplay creation failed\"); return }"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException invalid display",
+    "NullPointerException VirtualDisplay null"
+  ]
+}

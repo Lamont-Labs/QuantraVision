@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_StateFlowConflationLoss",
+  "category": "coroutines",
+  "description": "StateFlow conflation causing intermediate values to be lost. Misunderstanding StateFlow behavior.",
+  "commonCauses": [
+    "Expecting StateFlow to emit all values like SharedFlow",
+    "Rapid emissions conflated into single value",
+    "Using StateFlow for events instead of state",
+    "Collector slower than emission rate",
+    "Misunderstanding StateFlow always has value",
+    "Expecting StateFlow to queue events",
+    "Using StateFlow where Channel is appropriate"
+  ],
+  "solutions": [
+    "Use SharedFlow for events requiring all values",
+    "Use Channel for event queue semantics",
+    "Understand StateFlow conflates to latest value",
+    "Use StateFlow only for state representation",
+    "Accept conflation as intended behavior for state",
+    "Use distinctUntilChanged if needed",
+    "Consider Flow or Channel for event streams"
+  ],
+  "prevention": [
+    "Use StateFlow only for state, not events",
+    "Use SharedFlow with replay=0 for events",
+    "Use Channel for queued event processing",
+    "Document StateFlow vs SharedFlow choice",
+    "Test rapid emission scenarios",
+    "Understand conflation behavior",
+    "Choose appropriate Flow type for use case"
+  ],
+  "examples": [
+    "val state = MutableStateFlow(UiState()) // State: conflation OK",
+    "val events = MutableSharedFlow<Event>() // Events: all values needed",
+    "val queue = Channel<Event>(Channel.BUFFERED) // Queue: process all"
+  ],
+  "relatedErrors": [
+    "Missing state updates",
+    "Events lost in StateFlow"
+  ]
+}

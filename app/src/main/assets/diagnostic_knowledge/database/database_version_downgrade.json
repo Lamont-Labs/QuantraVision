@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_VersionDowngrade",
+  "category": "database",
+  "description": "Attempting to open database with older version than current schema. Common during app downgrades or testing.",
+  "commonCauses": [
+    "User installed older app version over newer one",
+    "Debug build with older schema version",
+    "Database copied from newer app version",
+    "Version number accidentally decreased in code",
+    "Testing with older APK on device with newer database",
+    "Separate build variants with different versions",
+    "Development build replacing production build"
+  ],
+  "solutions": [
+    "Implement downgrade migration: .addMigrations(MIGRATION_DOWN)",
+    "Use fallbackToDestructiveMigrationOnDowngrade() for dev only",
+    "Export database before downgrade if data important",
+    "Clear app data before installing older version",
+    "Prevent installation of older versions in production",
+    "Implement version check and data export",
+    "Use single source of truth for version number"
+  ],
+  "prevention": [
+    "Never decrease version number in production",
+    "Use VERSION_CODE for database versioning",
+    "Implement version validation in debug builds",
+    "Test downgrade scenarios if supporting rollback",
+    "Document minimum supported database version",
+    "Use build config to ensure version consistency",
+    "Prevent app downgrades via Play Store settings"
+  ],
+  "examples": [
+    ".fallbackToDestructiveMigrationOnDowngrade() // Debug only!",
+    "@Database(version = BuildConfig.DB_VERSION)",
+    "if (currentVersion < installedVersion) { exportData(); clearDatabase() }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException database downgrade",
+    "SQLiteException downgrade from version"
+  ]
+}

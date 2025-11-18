@@ -1,0 +1,43 @@
+{
+  "errorName": "ExecutorShutdownTimeout",
+  "category": "ui_threading",
+  "description": "Executor service doesn't shutdown within timeout, tasks still running. Resource management and lifecycle issue.",
+  "commonCauses": [
+    "Long-running tasks preventing shutdown",
+    "Tasks waiting for external resources",
+    "Infinite loop in executor task",
+    "awaitTermination timeout too short",
+    "Tasks blocked on I/O",
+    "Executor shutdown not called",
+    "Tasks waiting for each other"
+  ],
+  "solutions": [
+    "Implement proper task cancellation",
+    "Use shutdownNow() for immediate termination",
+    "Increase awaitTermination timeout",
+    "Interrupt long-running tasks",
+    "Implement task timeout mechanisms",
+    "Use Thread.interrupt() handling",
+    "Track and cancel pending tasks explicitly"
+  ],
+  "prevention": [
+    "Always shutdown executors in lifecycle methods",
+    "Implement proper task cancellation",
+    "Use coroutines which handle cancellation better",
+    "Set reasonable task timeouts",
+    "Test executor shutdown scenarios",
+    "Document shutdown requirements",
+    "Use try-finally for executor management"
+  ],
+  "examples": [
+    "executor.shutdown(); if (!executor.awaitTermination(60, TimeUnit.SECONDS)) { executor.shutdownNow() }",
+    "override fun onDestroy() { super.onDestroy(); executor.shutdownNow(); executor.awaitTermination(10, TimeUnit.SECONDS) }",
+    "// Better: use coroutines: private val scope = CoroutineScope(Job()); override fun onDestroy() { scope.cancel() }",
+    "val future = executor.submit(task); // Later: future.cancel(true)"
+  ],
+  "relatedErrors": [
+    "RejectedExecutionException",
+    "InterruptedException",
+    "Timeout"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "CacheOverflow",
+  "category": "memory",
+  "description": "Cache grows without bounds causing memory exhaustion. Lack of eviction policy leads to OutOfMemoryError.",
+  "commonCauses": [
+    "HashMap/ArrayList used as cache without size limit",
+    "No cache eviction strategy",
+    "Cache key space unbounded",
+    "Image cache without memory limits",
+    "Caching everything without pruning",
+    "Memory cache and disk cache both unlimited",
+    "No cache invalidation on memory pressure"
+  ],
+  "solutions": [
+    "Use LruCache with proper size limit",
+    "Implement cache eviction based on memory",
+    "Set maximum cache entries",
+    "Use Glide/Coil which handle caching",
+    "Implement onTrimMemory to clear caches",
+    "Use SoftReference for memory-sensitive caching",
+    "Monitor cache hit rate and adjust size"
+  ],
+  "prevention": [
+    "Always use LruCache for in-memory caching",
+    "Set cache size as fraction of available memory",
+    "Implement memory pressure awareness",
+    "Use disk cache for persistence, memory for speed",
+    "Test with large datasets",
+    "Monitor cache size with Profiler",
+    "Implement cache statistics and monitoring"
+  ],
+  "examples": [
+    "val maxMemory = Runtime.getRuntime().maxMemory() / 1024; val cacheSize = maxMemory / 8; val cache = LruCache<String, Bitmap>(cacheSize.toInt())",
+    "override fun onTrimMemory(level: Int) { when (level) { TRIM_MEMORY_RUNNING_LOW -> cache.trimToSize(cache.maxSize() / 2) } }",
+    "val cache = object : LruCache<String, Data>(maxSize) { override fun sizeOf(key: String, value: Data) = value.size }",
+    "// Use Glide: Glide.with(context).load(url).into(imageView) // Auto cache management"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "GC_Thrashing",
+    "Performance issues"
+  ]
+}

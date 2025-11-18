@@ -1,0 +1,43 @@
+{
+  "errorName": "MobileDataDisabled",
+  "category": "network",
+  "description": "Mobile data disabled while WiFi unavailable. Network type restriction or data saver mode.",
+  "commonCauses": [
+    "Mobile data turned off in settings",
+    "Data saver mode enabled",
+    "App restricted in data usage settings",
+    "Roaming data disabled while roaming",
+    "SIM card not activated",
+    "No data plan or quota exceeded",
+    "Network type restriction (3G only, etc.)"
+  ],
+  "solutions": [
+    "Check if mobile data is enabled",
+    "Request user to enable mobile data",
+    "Detect data saver mode",
+    "Check app data usage restrictions",
+    "Provide WiFi-only option",
+    "Queue work for WiFi connection",
+    "Show data usage warning"
+  ],
+  "prevention": [
+    "Detect network type before large downloads",
+    "Respect user data preferences",
+    "Implement WiFi-only mode option",
+    "Monitor data usage restrictions",
+    "Test with various network types",
+    "Handle roaming scenarios",
+    "Use WorkManager constraints for network type"
+  ],
+  "examples": [
+    "val cm = getSystemService(ConnectivityManager::class.java); val capabilities = cm.getNetworkCapabilities(cm.activeNetwork); val isWiFi = capabilities?.hasTransport(TRANSPORT_WIFI) == true; val isCellular = capabilities?.hasTransport(TRANSPORT_CELLULAR) == true",
+    "if (cm.isActiveNetworkMetered && isLargeDownload) { showDataWarning() }",
+    "val constraints = Constraints.Builder().setRequiredNetworkType(UNMETERED).build() // WiFi only",
+    "if (cm.restrictBackgroundStatus == RESTRICT_BACKGROUND_STATUS_ENABLED) { showDataSaverWarning() }"
+  ],
+  "relatedErrors": [
+    "NetworkNotAvailable",
+    "ConnectException",
+    "DataDisabledException"
+  ]
+}

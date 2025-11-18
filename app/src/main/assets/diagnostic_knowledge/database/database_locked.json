@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_LockedError",
+  "category": "database",
+  "description": "Database locked by another transaction, causing timeouts and app hangs. Common with concurrent write operations.",
+  "commonCauses": [
+    "Long-running transaction blocking other operations",
+    "Nested transactions on same connection",
+    "Write operation while read transaction active",
+    "Multiple threads accessing database without proper synchronization",
+    "Transaction not committed or rolled back",
+    "WAL mode not enabled for concurrent reads",
+    "Deadlock between multiple transactions"
+  ],
+  "solutions": [
+    "Enable WAL mode: .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)",
+    "Keep transactions short and focused",
+    "Use Room's transaction helpers: @Transaction",
+    "Commit or rollback transactions promptly",
+    "Use single-threaded executor for writes if needed",
+    "Increase database busy timeout",
+    "Implement retry logic with exponential backoff"
+  ],
+  "prevention": [
+    "Always enable WAL mode for concurrent access",
+    "Use Room's built-in transaction management",
+    "Keep transactions under 500ms duration",
+    "Avoid nested transactions",
+    "Use Dispatchers.IO for database operations",
+    "Log transaction duration in debug builds",
+    "Test concurrent database access scenarios"
+  ],
+  "examples": [
+    ".setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)",
+    "@Transaction suspend fun complexOperation() { /* atomic updates */ }",
+    "db.runInTransaction { dao.insert(); dao.update() }"
+  ],
+  "relatedErrors": [
+    "SQLiteDatabaseLockedException",
+    "SQLiteException database is locked"
+  ]
+}

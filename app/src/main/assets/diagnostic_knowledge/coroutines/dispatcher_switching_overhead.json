@@ -1,0 +1,43 @@
+{
+  "errorName": "Coroutine_DispatcherSwitchingOverhead",
+  "category": "coroutines",
+  "description": "Excessive dispatcher switching causing performance degradation. Inefficient coroutine context management.",
+  "commonCauses": [
+    "withContext called repeatedly in tight loop",
+    "Switching dispatchers for small operations",
+    "Unnecessary Main -> IO -> Main switches",
+    "Flow emitting on wrong dispatcher requiring frequent switches",
+    "Not batching operations on same dispatcher",
+    "Switching for operations that don't require it",
+    "Over-optimization with dispatcher changes"
+  ],
+  "solutions": [
+    "Batch operations on same dispatcher",
+    "Use flowOn() once instead of switching per emission",
+    "Keep operations on appropriate dispatcher initially",
+    "Avoid withContext for trivial operations",
+    "Profile dispatcher switches with coroutine debugger",
+    "Use single withContext for entire operation",
+    "Minimize Main <-> IO switches"
+  ],
+  "prevention": [
+    "Design operations to minimize dispatcher switches",
+    "Use flowOn() for Flow dispatcher specification",
+    "Batch database/network operations on IO dispatcher",
+    "Avoid premature dispatcher optimization",
+    "Profile performance before optimizing switches",
+    "Keep related operations on same dispatcher",
+    "Test performance with realistic workloads"
+  ],
+  "examples": [
+    "// GOOD: Single switch for entire operation",
+    "val results = withContext(Dispatchers.IO) { items.map { process(it) } }",
+    "// BAD: Switch per item",
+    "items.forEach { withContext(Dispatchers.IO) { process(it) } }",
+    "flow { emit(data) }.flowOn(Dispatchers.IO) // Single dispatcher specification"
+  ],
+  "relatedErrors": [
+    "Performance degradation",
+    "Excessive thread pool usage"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "LowMemoryKiller",
+  "category": "memory",
+  "description": "Android system kills app process due to excessive memory usage. System-level memory management issue.",
+  "commonCauses": [
+    "App exceeding memory budget for device class",
+    "Memory leaks accumulating over time",
+    "Large heap allocation on low-memory device",
+    "Too many background services",
+    "Keeping too much data in memory",
+    "Not responding to memory pressure signals",
+    "Process priority too low during memory pressure"
+  ],
+  "solutions": [
+    "Implement onTrimMemory() to release memory",
+    "Monitor memory usage with ActivityManager",
+    "Release caches when TRIM_MEMORY_RUNNING_LOW",
+    "Reduce memory footprint of app",
+    "Fix memory leaks detected by LeakCanary",
+    "Use android:largeHeap=\"true\" only as last resort",
+    "Implement proper component lifecycle management"
+  ],
+  "prevention": [
+    "Keep memory usage below device class limits",
+    "Implement robust onTrimMemory() handling",
+    "Use getMemoryClass() to know limits",
+    "Test on low-memory devices (1-2GB RAM)",
+    "Monitor memory usage in production",
+    "Release resources when app backgrounded",
+    "Avoid memory leaks with LeakCanary"
+  ],
+  "examples": [
+    "override fun onTrimMemory(level: Int) { super.onTrimMemory(level); when (level) { TRIM_MEMORY_RUNNING_CRITICAL -> { clearCaches(); releaseResources() } } }",
+    "val memoryClass = (getSystemService(ACTIVITY_SERVICE) as ActivityManager).memoryClass",
+    "override fun onStop() { super.onStop(); largeDataSet.clear(); imageCache.evictAll() }",
+    "val memoryInfo = ActivityManager.MemoryInfo(); activityManager.getMemoryInfo(memoryInfo); if (memoryInfo.lowMemory) handleLowMemory()"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "Process killed",
+    "Application terminated"
+  ]
+}

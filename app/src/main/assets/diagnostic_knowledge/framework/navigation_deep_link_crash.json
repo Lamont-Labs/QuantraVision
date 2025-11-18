@@ -1,0 +1,41 @@
+{
+  "errorName": "Navigation_DeepLinkCrash",
+  "category": "framework",
+  "description": "Navigation deep link crashes app when launched. Intent handling or argument parsing failure.",
+  "commonCauses": [
+    "Deep link URI pattern mismatch with actual URI",
+    "Required navigation argument missing from deep link",
+    "Argument type mismatch (expecting Int, got String)",
+    "NavHost not initialized when deep link processed",
+    "Deep link to non-existent destination",
+    "Intent filter in manifest incorrect",
+    "Multiple NavHosts handling same deep link"
+  ],
+  "solutions": [
+    "Validate deep link URIs match nav graph patterns exactly",
+    "Provide default values for optional arguments",
+    "Parse and validate arguments before navigation",
+    "Ensure NavHost ready before processing deep links",
+    "Test deep links with adb: adb shell am start -a android.intent.action.VIEW -d 'uri'",
+    "Handle missing or malformed arguments gracefully",
+    "Use NavDeepLinkBuilder for programmatic deep links"
+  ],
+  "prevention": [
+    "Test all deep links with adb shell commands",
+    "Validate deep link URI patterns in nav graph",
+    "Provide default values for all navigation arguments",
+    "Use type-safe navigation arguments (Safe Args plugin)",
+    "Document deep link format and requirements",
+    "Test deep links from cold start and warm start",
+    "Implement deep link validation in CI tests"
+  ],
+  "examples": [
+    "<deepLink app:uri=\"quantra://scan/{scanId}\" />",
+    "adb shell am start -a android.intent.action.VIEW -d 'quantra://scan/123'",
+    "navController.handleDeepLink(intent)"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException missing argument",
+    "NullPointerException deep link processing"
+  ]
+}

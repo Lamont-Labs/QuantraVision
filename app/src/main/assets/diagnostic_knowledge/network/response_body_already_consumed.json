@@ -1,0 +1,43 @@
+{
+  "errorName": "ResponseBodyAlreadyConsumed",
+  "category": "network",
+  "description": "Attempting to read OkHttp ResponseBody multiple times. ResponseBody can only be consumed once.",
+  "commonCauses": [
+    "Calling body.string() twice",
+    "Reading body multiple times",
+    "Body consumed in interceptor then in app",
+    "Logging body then trying to parse",
+    "Not buffering body for multiple reads",
+    "Response shared across scopes",
+    "Body not cloned for retry"
+  ],
+  "solutions": [
+    "Read body only once and store result",
+    "Use response.peekBody() for inspection",
+    "Buffer body for multiple reads",
+    "Clone response if needed multiple times",
+    "Use logging interceptor instead",
+    "Cache body content after first read",
+    "Use appropriate interceptor order"
+  ],
+  "prevention": [
+    "Never read ResponseBody twice",
+    "Use peekBody() for logging/inspection",
+    "Buffer body if multiple reads needed",
+    "Use HttpLoggingInterceptor for logging",
+    "Test body consumption scenarios",
+    "Document body lifecycle",
+    "Close responses properly"
+  ],
+  "examples": [
+    "// Bad: val body = response.body?.string(); val body2 = response.body?.string() // ERROR",
+    "// Good: val bodyString = response.body?.string(); use(bodyString)",
+    "val peek = response.peekBody(1024); Log.d(TAG, peek.string()); val actual = response.body?.string()",
+    "val logging = HttpLoggingInterceptor().apply { level = BODY }; client.addInterceptor(logging)"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "IOException",
+    "BufferClosedException"
+  ]
+}

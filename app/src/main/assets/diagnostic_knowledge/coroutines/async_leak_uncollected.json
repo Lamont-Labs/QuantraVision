@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_AsyncLeakUncollected",
+  "category": "coroutines",
+  "description": "Async Deferred never awaited, leaking resources. Fire-and-forget async pattern misuse.",
+  "commonCauses": [
+    "async created but await() never called",
+    "Deferred stored but not consumed",
+    "Exception in async surfacing on await() and ignored",
+    "Multiple async without awaitAll()",
+    "Async used when launch is appropriate",
+    "Deferred result lost or discarded",
+    "Concurrent async operations not properly managed"
+  ],
+  "solutions": [
+    "Always await() Deferred results",
+    "Use launch instead of async for fire-and-forget",
+    "Use awaitAll() for multiple async operations",
+    "Wrap await() in try-catch for exception handling",
+    "Cancel Deferred if result not needed",
+    "Use async only when result is needed",
+    "Test Deferred lifecycle"
+  ],
+  "prevention": [
+    "Use async only when result is immediately consumed",
+    "Prefer launch for fire-and-forget operations",
+    "Use awaitAll() for parallel async operations",
+    "Handle exceptions from await() properly",
+    "Test async completion scenarios",
+    "Monitor uncompleted Deferred in debug builds",
+    "Document async usage patterns"
+  ],
+  "examples": [
+    "val result = async { computation() }.await() // Immediately await",
+    "val results = listOf(async { task1() }, async { task2() }).awaitAll()",
+    "// WRONG: async { work() } // Never awaited, use launch instead"
+  ],
+  "relatedErrors": [
+    "Resources not released from async",
+    "Exception lost in async"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_SupervisorJobChildFailure",
+  "category": "coroutines",
+  "description": "SupervisorJob child failure still cancels siblings or parent. SupervisorJob misuse or misunderstanding.",
+  "commonCauses": [
+    "Using Job instead of SupervisorJob",
+    "SupervisorJob at wrong level in hierarchy",
+    "supervisorScope not used where needed",
+    "Exception propagating despite SupervisorJob",
+    "Mixing Job and SupervisorJob incorrectly",
+    "Child coroutine not direct child of SupervisorJob",
+    "Structured concurrency violation"
+  ],
+  "solutions": [
+    "Use SupervisorJob for scope when children should fail independently",
+    "Use supervisorScope for structured concurrency with independent children",
+    "Ensure children are direct descendants of SupervisorJob",
+    "Don't mix Job() with SupervisorJob expectations",
+    "Test child failure scenarios",
+    "Use proper scope hierarchy",
+    "Combine SupervisorJob with CoroutineExceptionHandler"
+  ],
+  "prevention": [
+    "Use SupervisorJob when child failures should be isolated",
+    "Use supervisorScope for local supervision",
+    "Understand Job vs SupervisorJob behavior difference",
+    "Test child coroutine failure scenarios",
+    "Document supervision strategy",
+    "Use viewModelScope (has SupervisorJob) in ViewModels",
+    "Monitor coroutine cancellation patterns"
+  ],
+  "examples": [
+    "val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)",
+    "supervisorScope { launch { childWork1() }; launch { childWork2() } }",
+    "// Child1 failure doesn't cancel Child2 with SupervisorJob"
+  ],
+  "relatedErrors": [
+    "Sibling coroutines cancelled on child failure",
+    "Entire scope cancelled from single child"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "ViewBinding_InflationError",
+  "category": "framework",
+  "description": "ViewBinding fails to inflate layout, causing crashes. Layout binding generation or usage issue.",
+  "commonCauses": [
+    "ViewBinding not enabled in build.gradle",
+    "Accessing binding after onDestroyView in Fragment",
+    "Layout XML contains errors preventing binding generation",
+    "Using wrong binding class for layout",
+    "Binding not nullified in Fragment onDestroyView",
+    "Multiple layouts with same name in different modules",
+    "Merge tag or include causing binding generation issues"
+  ],
+  "solutions": [
+    "Enable ViewBinding: buildFeatures { viewBinding = true }",
+    "Use private var _binding and nullable public binding in Fragments",
+    "Fix XML errors preventing binding generation",
+    "Use correct binding class: ActivityMainBinding.inflate()",
+    "Nullify binding in onDestroyView: _binding = null",
+    "Use unique layout names across modules",
+    "Clean and rebuild after layout changes"
+  ],
+  "prevention": [
+    "Always enable ViewBinding in build.gradle",
+    "Use Fragment binding pattern: private var _binding with null in onDestroyView",
+    "Validate XML before expecting binding generation",
+    "Use consistent binding naming convention",
+    "Test binding lifecycle in Fragments",
+    "Monitor binding null access in debug builds",
+    "Document binding lifecycle in code comments"
+  ],
+  "examples": [
+    "private var _binding: FragmentScanBinding? = null; private val binding get() = _binding!!",
+    "override fun onCreateView(...): View { _binding = FragmentScanBinding.inflate(inflater, container, false); return binding.root }",
+    "override fun onDestroyView() { _binding = null; super.onDestroyView() }"
+  ],
+  "relatedErrors": [
+    "NullPointerException binding null",
+    "InflateException layout error"
+  ]
+}

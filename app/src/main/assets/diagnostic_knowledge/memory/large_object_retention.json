@@ -1,0 +1,43 @@
+{
+  "errorName": "LargeObjectRetention",
+  "category": "memory",
+  "description": "Large objects retained in memory unnecessarily, consuming heap space and causing memory pressure.",
+  "commonCauses": [
+    "Static collections growing unbounded",
+    "Cache without size limits",
+    "Large arrays never released",
+    "Bitmap cache without LRU eviction",
+    "Keeping entire file content in memory",
+    "Unbounded list in singleton",
+    "Large response bodies not streamed"
+  ],
+  "solutions": [
+    "Implement LruCache for bounded caches",
+    "Release large objects when no longer needed",
+    "Use streaming for large data processing",
+    "Implement proper cache eviction policies",
+    "Clear collections when activity/fragment destroyed",
+    "Use paging for large datasets",
+    "Monitor object retention with Profiler"
+  ],
+  "prevention": [
+    "Use LruCache for all caches",
+    "Set maximum size limits on collections",
+    "Stream large files instead of loading entirely",
+    "Implement memory pressure callbacks",
+    "Clear caches on low memory",
+    "Use paging/pagination for large lists",
+    "Profile memory usage regularly"
+  ],
+  "examples": [
+    "val cache = LruCache<String, Bitmap>(maxMemory / 8)",
+    "override fun onTrimMemory(level: Int) { if (level >= TRIM_MEMORY_MODERATE) cache.evictAll() }",
+    "val pager = Pager(PagingConfig(pageSize = 20)) { /* load pages */ }",
+    "// Stream large files: FileInputStream(file).use { stream.copyTo(output) }"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "GC_Thrashing",
+    "Performance degradation"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_TransactionDeadlock",
+  "category": "database",
+  "description": "Two or more transactions waiting for each other to release locks, causing complete database freeze.",
+  "commonCauses": [
+    "Transaction A waits for lock held by Transaction B, and vice versa",
+    "Acquiring locks in different order across transactions",
+    "Long-running read transaction blocking writes",
+    "Exclusive locks not released properly",
+    "Nested transactions creating circular dependencies",
+    "Multiple database instances accessing same file",
+    "Foreign key constraint checks causing lock ordering issues"
+  ],
+  "solutions": [
+    "Ensure consistent lock acquisition order",
+    "Use Room's @Transaction annotation for atomicity",
+    "Implement transaction timeout with timeout parameter",
+    "Break large transactions into smaller chunks",
+    "Use WAL mode to reduce lock contention",
+    "Implement deadlock detection and retry logic",
+    "Ensure single RoomDatabase instance per database file"
+  ],
+  "prevention": [
+    "Design transactions to acquire locks in consistent order",
+    "Keep transaction duration minimal (<100ms)",
+    "Enable WAL mode for better concurrency",
+    "Use Room singleton pattern correctly",
+    "Avoid long-running transactions during busy periods",
+    "Test concurrent transaction scenarios",
+    "Monitor transaction duration and lock wait times"
+  ],
+  "examples": [
+    "@Transaction suspend fun transfer() { debit(); credit() }",
+    "Room.databaseBuilder(...).setJournalMode(WRITE_AHEAD_LOGGING)",
+    "db.queryExecutor.execute { /* short transaction */ }"
+  ],
+  "relatedErrors": [
+    "SQLiteDatabaseLockedException",
+    "TimeoutException in database transaction"
+  ]
+}

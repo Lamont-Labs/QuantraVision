@@ -1,0 +1,43 @@
+{
+  "errorName": "AnonymousInnerClassLeak",
+  "category": "memory",
+  "description": "Anonymous inner class holds implicit reference to outer class, preventing garbage collection. Classic Java/Kotlin leak pattern.",
+  "commonCauses": [
+    "Non-static inner class in Activity/Fragment",
+    "Anonymous Runnable with outer class reference",
+    "Anonymous listener holding activity",
+    "Thread created as anonymous inner class",
+    "Timer task as anonymous class",
+    "Callback implemented as inner class",
+    "AsyncTask as non-static inner class"
+  ],
+  "solutions": [
+    "Make inner class static with WeakReference",
+    "Use lambda with careful capture analysis",
+    "Extract class to separate file",
+    "Use companion object for static classes",
+    "Pass context explicitly to avoid implicit reference",
+    "Convert to top-level function where possible",
+    "Use sealed interface instead of inner class"
+  ],
+  "prevention": [
+    "Avoid non-static inner classes in Activity/Fragment",
+    "Use static inner classes with WeakReference",
+    "Extract callbacks to separate classes",
+    "Be careful with lambda capture in long-lived objects",
+    "Use Kotlin's object expression carefully",
+    "Test with LeakCanary",
+    "Enable Android Studio leak warnings"
+  ],
+  "examples": [
+    "// Bad: inner class MyTask : AsyncTask<>() { }",
+    "// Good: class MyTask(activity: Activity) : AsyncTask<>() { private val weakActivity = WeakReference(activity) }",
+    "// Bad: object : Runnable { override fun run() { this@Activity.doSomething() } }",
+    "// Good: companion object { class MyRunnable(activity: Activity) : Runnable { val weak = WeakReference(activity) } }"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "OutOfMemoryError",
+    "Handler leak"
+  ]
+}

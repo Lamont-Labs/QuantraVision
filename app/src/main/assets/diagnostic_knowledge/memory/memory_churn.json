@@ -1,0 +1,43 @@
+{
+  "errorName": "MemoryChurn",
+  "category": "memory",
+  "description": "Rapid allocation and deallocation of objects creating garbage collection pressure. Impacts performance and battery.",
+  "commonCauses": [
+    "Allocations in onDraw or render loops",
+    "Creating new objects for each list item in RecyclerView",
+    "Temporary objects in tight loops",
+    "Lambda allocations in hot paths",
+    "String operations in performance-critical code",
+    "Autoboxing in frequently called methods",
+    "New collection instances each iteration"
+  ],
+  "solutions": [
+    "Move allocations outside loops",
+    "Reuse objects instead of creating new ones",
+    "Use object pools for frequently created objects",
+    "Cache objects at class level",
+    "Use inline functions to avoid lambda allocations",
+    "Pre-allocate collections with known size",
+    "Use DiffUtil in RecyclerView to minimize recreations"
+  ],
+  "prevention": [
+    "Never allocate in onDraw, onMeasure, or onLayout",
+    "Use Android Profiler's Memory view to detect churn",
+    "Implement ViewHolder pattern properly",
+    "Use inline modifier for lambdas in hot paths",
+    "Pre-allocate and reuse where possible",
+    "Test with strict mode and profiler",
+    "Monitor allocation rate in Profiler"
+  ],
+  "examples": [
+    "// Bad: override fun onDraw(canvas: Canvas) { val paint = Paint() }",
+    "// Good: private val paint = Paint(); override fun onDraw(canvas: Canvas) { canvas.drawLine(..., paint) }",
+    "inline fun <T> measureTime(block: () -> T): T { /* inline prevents allocation */ }",
+    "val list = ArrayList<String>(expectedSize) // Pre-allocate capacity"
+  ],
+  "relatedErrors": [
+    "GC_Thrashing",
+    "Frame drops",
+    "Battery drain"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_StructuredConcurrencyViolation",
+  "category": "coroutines",
+  "description": "Violating structured concurrency principles causing leaks or orphaned coroutines. Improper coroutine hierarchy.",
+  "commonCauses": [
+    "Launching coroutine without parent scope",
+    "Using GlobalScope breaking structure",
+    "Passing Job to unrelated scope",
+    "Not waiting for child coroutines to complete",
+    "Creating CoroutineScope without proper lifecycle",
+    "Detaching coroutines from intended hierarchy",
+    "Fire-and-forget pattern without scope management"
+  ],
+  "solutions": [
+    "Always launch coroutines within proper scope",
+    "Use coroutineScope or supervisorScope for structured children",
+    "Ensure parent waits for children with coroutineScope",
+    "Attach all coroutines to lifecycle-aware scopes",
+    "Use viewModelScope or lifecycleScope",
+    "Implement proper scope hierarchy",
+    "Test coroutine cancellation propagation"
+  ],
+  "prevention": [
+    "Follow structured concurrency principles strictly",
+    "Use lifecycle-aware scopes for all UI work",
+    "Avoid GlobalScope except for app-level work",
+    "Use coroutineScope for suspending operations with children",
+    "Test parent-child cancellation scenarios",
+    "Document coroutine scope hierarchy",
+    "Review coroutine launches for proper scoping"
+  ],
+  "examples": [
+    "suspend fun processItems() = coroutineScope { items.forEach { launch { process(it) } } }",
+    "viewModelScope.launch { val result = withContext(Dispatchers.IO) { loadData() } }",
+    "// GOOD: Parent waits for children due to coroutineScope"
+  ],
+  "relatedErrors": [
+    "Coroutines not cancelled with parent",
+    "Memory leaks from orphaned coroutines"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_ThreadingViolation",
+  "category": "database",
+  "description": "Database accessed on wrong thread, typically main thread blocking UI or concurrent access causing corruption.",
+  "commonCauses": [
+    "Synchronous database query on main thread",
+    "Room query called without suspend or Flow",
+    "Blocking call in UI thread event handler",
+    "Database initialization on main thread",
+    "StrictMode detecting disk read on main thread",
+    "Multiple threads accessing non-thread-safe cursor",
+    "Transaction started on main thread"
+  ],
+  "solutions": [
+    "Use suspend functions for all database operations",
+    "Return Flow or LiveData from DAO methods",
+    "Execute queries in Dispatchers.IO coroutine",
+    "Enable Room's allowMainThreadQueries() only for debugging",
+    "Move database init to background thread",
+    "Use Room's built-in threading support",
+    "Wrap synchronous calls in withContext(Dispatchers.IO)"
+  ],
+  "prevention": [
+    "Always use suspend or Flow for DAO methods",
+    "Never enable allowMainThreadQueries() in production",
+    "Enable StrictMode in debug builds",
+    "Use viewModelScope.launch for database operations",
+    "Design DAOs with asynchronous APIs only",
+    "Test with StrictMode to catch violations early",
+    "Use Dispatchers.IO for all database work"
+  ],
+  "examples": [
+    "@Query(\"SELECT * FROM scans\") suspend fun getAll(): List<Scan>",
+    "@Query(\"SELECT * FROM scans\") fun getAllFlow(): Flow<List<Scan>>",
+    "viewModelScope.launch(Dispatchers.IO) { dao.insert(item) }"
+  ],
+  "relatedErrors": [
+    "NetworkOnMainThreadException",
+    "StrictMode violation disk read"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_PatternLearningProfileReset",
+  "category": "quantravision",
+  "description": "Pattern learning profiles unexpectedly reset, losing user's personalized detection improvements.",
+  "commonCauses": [
+    "Database clear during app update",
+    "Migration missing learning profile data",
+    "Profile corruption forcing reset",
+    "User clearing app data",
+    "Profile expiration logic error",
+    "Concurrent profile updates causing conflicts",
+    "Serialization error during profile save"
+  ],
+  "solutions": [
+    "Implement profile versioning and migration",
+    "Backup profiles before updates",
+    "Validate profile data before reset",
+    "Implement profile recovery from backup",
+    "Add user confirmation for profile resets",
+    "Use atomic writes for profile updates",
+    "Log profile reset events with reasons"
+  ],
+  "prevention": [
+    "Never reset profiles without user consent",
+    "Implement robust profile migration strategy",
+    "Backup profiles to cloud or secure storage",
+    "Validate profile integrity before load",
+    "Test profile persistence across app updates",
+    "Monitor profile reset frequency in analytics",
+    "Document profile lifecycle in code"
+  ],
+  "examples": [
+    "if (profileVersion < CURRENT_VERSION) { migrateProfile() } else { loadProfile() }",
+    "backupProfile().then { updateApp() }.catch { restoreProfile() }",
+    "@Entity data class LearningProfile(@PrimaryKey val version: Int, ...)"
+  ],
+  "relatedErrors": [
+    "Profile deserialization failed",
+    "Learning data lost after update"
+  ]
+}

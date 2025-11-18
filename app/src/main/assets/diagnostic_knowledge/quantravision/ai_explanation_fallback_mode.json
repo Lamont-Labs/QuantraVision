@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_AIExplanationFallbackMode",
+  "category": "quantravision",
+  "description": "AI explanation system in permanent fallback mode, providing static instead of dynamic explanations. Quality degraded.",
+  "commonCauses": [
+    "Model loading failed and not retried",
+    "Persistent inference errors forcing fallback",
+    "User preference disabled AI explanations",
+    "Device incompatibility flagged permanently",
+    "Fallback flag not reset after issue resolved",
+    "Memory pressure preventing model reload",
+    "License tier doesn't include AI features"
+  ],
+  "solutions": [
+    "Implement periodic retry for model loading",
+    "Reset fallback state after app restart",
+    "Check device compatibility before permanent fallback",
+    "Provide user control to retry AI initialization",
+    "Clear fallback flag when conditions improve",
+    "Implement smart retry with exponential backoff",
+    "Notify user about fallback mode with recovery options"
+  ],
+  "prevention": [
+    "Don't permanently disable AI after single failure",
+    "Implement health check to exit fallback mode",
+    "Monitor fallback mode usage in analytics",
+    "Test AI recovery scenarios thoroughly",
+    "Provide manual AI re-enable option in settings",
+    "Document conditions for AI fallback",
+    "Implement gradual retry strategy"
+  ],
+  "examples": [
+    "if (shouldRetryAI()) { tryLoadModel() }",
+    "val canUseAI = !inFallbackMode && modelLoaded && hasSufficientMemory",
+    "schedule { retryInterval -> attemptModelLoad() }"
+  ],
+  "relatedErrors": [
+    "AI permanently disabled",
+    "Static explanations only"
+  ]
+}

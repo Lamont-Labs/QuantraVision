@@ -1,0 +1,41 @@
+{
+  "errorName": "Compose_LaunchedEffectLeak",
+  "category": "framework",
+  "description": "LaunchedEffect coroutine leaks when Composable leaves composition. Memory leak and continued execution after exit.",
+  "commonCauses": [
+    "LaunchedEffect with Unit key never cancelling",
+    "Key doesn't change when Composable removed",
+    "Infinite loop in LaunchedEffect without cancellation checks",
+    "Callback captured in LaunchedEffect outliving composition",
+    "External resource not cleaned up in finally block",
+    "Flow collection not respecting cancellation",
+    "Long-running operation without isActive checks"
+  ],
+  "solutions": [
+    "Use proper keys so LaunchedEffect restarts when needed",
+    "Use awaitDispose for cleanup in DisposableEffect",
+    "Check isActive in long-running loops",
+    "Use cancellable coroutine operations",
+    "Move long operations to ViewModel instead",
+    "Use DisposableEffect for resources needing cleanup",
+    "Avoid LaunchedEffect(Unit) for non-trivial work"
+  ],
+  "prevention": [
+    "Use DisposableEffect for cleanup instead of LaunchedEffect",
+    "Prefer ViewModel for long-running operations",
+    "Test Composable removal scenarios",
+    "Use rememberCoroutineScope for user-triggered actions",
+    "Avoid infinite loops in LaunchedEffect",
+    "Check for leaks with LeakCanary",
+    "Use proper keys to control LaunchedEffect lifecycle"
+  ],
+  "examples": [
+    "LaunchedEffect(key) { while(isActive) { work() } }",
+    "DisposableEffect(key) { val job = launch { }; onDispose { job.cancel() } }",
+    "val scope = rememberCoroutineScope() // For manual launch"
+  ],
+  "relatedErrors": [
+    "Memory leak from LaunchedEffect",
+    "Coroutine continues after Composable removed"
+  ]
+}

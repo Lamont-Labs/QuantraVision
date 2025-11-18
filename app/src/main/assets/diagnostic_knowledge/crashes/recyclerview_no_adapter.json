@@ -1,0 +1,42 @@
+{
+  "errorName": "RecyclerView_NoAdapter",
+  "category": "crashes",
+  "description": "RecyclerView has no adapter attached. Occurs when RecyclerView displayed before adapter is set.",
+  "commonCauses": [
+    "Adapter not set before RecyclerView visible",
+    "Adapter set to null inadvertently",
+    "Delayed adapter initialization",
+    "Fragment view recreated without resetting adapter",
+    "Conditional adapter setting logic error",
+    "Async data loading delaying adapter creation",
+    "RecyclerView in included layout without adapter"
+  ],
+  "solutions": [
+    "Set adapter in onCreate/onViewCreated before visibility",
+    "Initialize adapter with empty list, then update",
+    "Use lateinit var adapter with immediate initialization",
+    "Set adapter in XML with app:adapter if using DataBinding",
+    "Ensure adapter set in all code paths",
+    "Check adapter != null before operations",
+    "Use ViewBinding to ensure proper initialization"
+  ],
+  "prevention": [
+    "Always initialize adapter before RecyclerView visible",
+    "Set adapter in onCreate/onViewCreated consistently",
+    "Use by lazy initialization for adapters",
+    "Test with slow network to catch timing issues",
+    "Initialize with empty adapter, populate later",
+    "Use sealed classes for loading states",
+    "Document adapter initialization requirements"
+  ],
+  "examples": [
+    "private val adapter by lazy { MyAdapter() }; override fun onViewCreated(...) { binding.recyclerView.adapter = adapter }",
+    "binding.recyclerView.adapter = MyAdapter(emptyList()) // Then update later",
+    "val adapter = MyAdapter(); recyclerView.adapter = adapter; adapter.submitList(data)"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "NullPointerException",
+    "IllegalArgumentException"
+  ]
+}

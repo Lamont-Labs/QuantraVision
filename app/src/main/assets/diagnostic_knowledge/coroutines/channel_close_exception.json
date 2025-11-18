@@ -1,0 +1,42 @@
+{
+  "errorName": "Coroutine_ChannelCloseException",
+  "category": "coroutines",
+  "description": "Operating on closed channel causing exceptions. Channel lifecycle management issue.",
+  "commonCauses": [
+    "Sending to already closed channel",
+    "Closing channel multiple times",
+    "Race condition between send and close",
+    "Not checking isClosedForSend before send",
+    "Exception in consumer causing premature close",
+    "Channel closed but producer continues",
+    "ReceiveChannel.cancel() vs SendChannel.close() confusion"
+  ],
+  "solutions": [
+    "Check isClosedForSend before sending",
+    "Use try-catch around send operations",
+    "Close channel only once (idempotent close)",
+    "Handle ClosedSendChannelException gracefully",
+    "Use channel.close() in finally block",
+    "Coordinate producer-consumer lifecycle",
+    "Use consumeEach for safe iteration"
+  ],
+  "prevention": [
+    "Check channel state before operations",
+    "Use single close call in producer cleanup",
+    "Handle channel exceptions gracefully",
+    "Test channel close scenarios",
+    "Use channel.consumeEach {} for safe consumption",
+    "Document channel lifecycle clearly",
+    "Avoid concurrent close calls"
+  ],
+  "examples": [
+    "if (!channel.isClosedForSend) { channel.send(event) }",
+    "try { channel.send(event) } catch (e: ClosedSendChannelException) { /* Channel closed */ }",
+    "channel.consumeEach { processEvent(it) } // Safe iteration",
+    "try { produceData() } finally { channel.close() } // Ensure close"
+  ],
+  "relatedErrors": [
+    "ClosedSendChannelException",
+    "ClosedReceiveChannelException"
+  ]
+}

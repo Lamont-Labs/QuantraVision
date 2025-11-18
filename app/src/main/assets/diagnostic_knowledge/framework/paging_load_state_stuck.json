@@ -1,0 +1,41 @@
+{
+  "errorName": "Paging_LoadStateStuck",
+  "category": "framework",
+  "description": "Paging LoadState stuck in Loading, preventing UI from showing data or error. Infinite loading indicator.",
+  "commonCauses": [
+    "Exception in load() not returning LoadResult.Error",
+    "Suspending function in load() never completing",
+    "Network request hanging without timeout",
+    "LoadResult.Page with wrong nextKey causing no progress",
+    "Database query hanging",
+    "Load function deadlocked",
+    "Missing error handling in load()"
+  ],
+  "solutions": [
+    "Wrap load() body in try-catch returning LoadResult.Error",
+    "Add timeout to network requests in load()",
+    "Ensure load() always returns LoadResult",
+    "Validate nextKey and prevKey correctness",
+    "Implement proper error handling for all code paths",
+    "Use withTimeout for load operations",
+    "Test load() with network failures"
+  ],
+  "prevention": [
+    "Always wrap load() in try-catch",
+    "Add timeouts to all network operations",
+    "Test paging with network errors",
+    "Validate LoadResult.Page keys are correct",
+    "Implement load timeout (10-30 seconds)",
+    "Monitor LoadState in UI to detect stuck states",
+    "Test edge cases: empty data, network error, database error"
+  ],
+  "examples": [
+    "override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> = try { withTimeout(30000) { loadData() } } catch (e: Exception) { LoadResult.Error(e) }",
+    "LoadResult.Page(data = items, prevKey = if (page == 0) null else page - 1, nextKey = if (items.isEmpty()) null else page + 1)",
+    "pagingDataFlow.collectLatest { adapter.submitData(it) }"
+  ],
+  "relatedErrors": [
+    "Loading indicator never disappears",
+    "Data never loads"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "errorName": "FileNotFoundException",
+  "category": "crashes",
+  "description": "Attempting to access file that doesn't exist. Common with file I/O operations and external storage access.",
+  "commonCauses": [
+    "File path constructed incorrectly",
+    "External storage not mounted",
+    "File deleted by another process",
+    "Scoped storage restrictions (Android 10+)",
+    "Missing storage permissions",
+    "Incorrect file URI vs file path usage",
+    "Case-sensitive filesystem on some devices"
+  ],
+  "solutions": [
+    "Check if file exists before accessing: file.exists()",
+    "Use getExternalFilesDir() for app-specific storage",
+    "Handle scoped storage with MediaStore API",
+    "Use ContentResolver for shared files",
+    "Check storage state: Environment.getExternalStorageState()",
+    "Use proper file URIs with FileProvider",
+    "Implement proper error handling for file operations"
+  ],
+  "prevention": [
+    "Always check file.exists() before operations",
+    "Use app-specific directories (getExternalFilesDir)",
+    "Handle scoped storage properly on Android 10+",
+    "Test file operations on multiple devices",
+    "Use SAF (Storage Access Framework) for user files",
+    "Validate file paths before using",
+    "Handle external storage unmounting gracefully"
+  ],
+  "examples": [
+    "if (file.exists()) { FileInputStream(file) } else { handleMissingFile() }",
+    "val appDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)",
+    "val uri = FileProvider.getUriForFile(context, \"${packageName}.provider\", file)"
+  ],
+  "relatedErrors": [
+    "IOException",
+    "SecurityException",
+    "IllegalArgumentException"
+  ]
+}

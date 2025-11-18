@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_CursorLeak",
+  "category": "database",
+  "description": "Cursor objects not properly closed, causing memory leaks and database connection exhaustion. Critical for Room and SQLite operations.",
+  "commonCauses": [
+    "Cursor not closed in finally block",
+    "Exception thrown before cursor.close() call",
+    "Cursor stored in long-lived object",
+    "Forgetting to close in early return paths",
+    "Room queries returning Cursor instead of Flow/LiveData",
+    "Multiple cursors opened without tracking",
+    "Cursor used across thread boundaries without proper lifecycle"
+  ],
+  "solutions": [
+    "Use try-finally: cursor.use { /* work */ }",
+    "Let Room manage cursors with LiveData/Flow",
+    "Close cursors in all code paths including exceptions",
+    "Use Kotlin's use extension for automatic cleanup",
+    "Migrate raw Cursor queries to Room DAOs",
+    "Implement cursor tracking in debug builds",
+    "Use StrictMode to detect unclosed cursors"
+  ],
+  "prevention": [
+    "Always use cursor.use { } for automatic closing",
+    "Prefer Room's LiveData<List<T>> over Cursor returns",
+    "Enable StrictMode.VmPolicy.detectLeakedClosableObjects()",
+    "Use lint checks for cursor usage patterns",
+    "Avoid returning Cursor from DAO methods",
+    "Close cursors in onDestroy or lifecycle callbacks",
+    "Test with LeakCanary to catch cursor leaks"
+  ],
+  "examples": [
+    "cursor.use { while (it.moveToNext()) { /* process */ } }",
+    "@Query(\"SELECT * FROM table\") fun getItems(): Flow<List<Item>>",
+    "StrictMode.setVmPolicy(VmPolicy.Builder().detectLeakedClosableObjects().build())"
+  ],
+  "relatedErrors": [
+    "StrictMode unclosed Cursor",
+    "OutOfMemoryError from cursors"
+  ]
+}

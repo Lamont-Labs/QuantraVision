@@ -1,0 +1,43 @@
+{
+  "errorName": "IllegalAccessException",
+  "category": "crashes",
+  "description": "Attempting to access private/protected member via reflection or from unauthorized location.",
+  "commonCauses": [
+    "Reflection accessing private fields/methods",
+    "Accessing package-private members from another package",
+    "Instantiating class without accessible constructor",
+    "Android 9+ restrictions on private APIs",
+    "Reflection on sealed/final classes",
+    "Security restrictions preventing access",
+    "Hidden API usage blocked"
+  ],
+  "solutions": [
+    "Make fields/methods public or provide accessor methods",
+    "Use proper visibility modifiers (internal, public)",
+    "Avoid reflection when possible - use interfaces",
+    "Check accessibility before reflection: field.isAccessible",
+    "Use field.setAccessible(true) carefully",
+    "Avoid using hidden Android APIs",
+    "Refactor to use public APIs instead of reflection"
+  ],
+  "prevention": [
+    "Minimize reflection usage",
+    "Design with proper encapsulation and public APIs",
+    "Test on multiple Android versions (especially 9+)",
+    "Use dependency injection instead of reflection",
+    "Document reflection usage and requirements",
+    "Avoid accessing hidden framework APIs",
+    "Use Android Lint to detect hidden API usage"
+  ],
+  "examples": [
+    "val field = clazz.getDeclaredField(\"name\").apply { isAccessible = true }",
+    "interface MyInterface { fun doWork() } // Better than reflection",
+    "// Instead of reflection: @Inject constructor(private val dep: Dependency)",
+    "-keep class com.example.** { *; } // ProGuard rule if reflection needed"
+  ],
+  "relatedErrors": [
+    "NoSuchFieldException",
+    "SecurityException",
+    "IllegalArgumentException"
+  ]
+}

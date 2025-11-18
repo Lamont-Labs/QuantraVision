@@ -1,0 +1,43 @@
+{
+  "errorName": "TimerTaskLeak",
+  "category": "ui_threading",
+  "description": "Timer/TimerTask not cancelled, continuing to run and holding references. Legacy scheduling causing leaks.",
+  "commonCauses": [
+    "Timer created but never cancelled",
+    "TimerTask holding activity reference",
+    "Timer in activity without cleanup",
+    "Scheduled tasks after activity destroyed",
+    "Timer.schedule without timer.cancel",
+    "TimerTask as inner class",
+    "Configuration change losing timer reference"
+  ],
+  "solutions": [
+    "Call timer.cancel() in onDestroy/onPause",
+    "Use ScheduledExecutorService instead",
+    "Migrate to WorkManager for periodic tasks",
+    "Use coroutines with delay in loop",
+    "Implement proper timer lifecycle",
+    "Use static TimerTask with WeakReference",
+    "Store timer reference for cancellation"
+  ],
+  "prevention": [
+    "Always cancel Timer in lifecycle methods",
+    "Prefer ScheduledExecutorService over Timer",
+    "Use WorkManager for periodic background work",
+    "Use coroutines for repeating tasks",
+    "Test timer cleanup scenarios",
+    "Document timer lifecycle requirements",
+    "Avoid Timer in favor of modern alternatives"
+  ],
+  "examples": [
+    "private var timer: Timer? = null; override fun onDestroy() { super.onDestroy(); timer?.cancel(); timer = null }",
+    "// Better: val executor = Executors.newScheduledThreadPool(1); executor.scheduleAtFixedRate({ }, 0, 1, SECONDS)",
+    "// Best: lifecycleScope.launch { while (isActive) { doWork(); delay(1000) } }",
+    "// Periodic work: WorkManager.getInstance(context).enqueueUniquePeriodicWork(...)"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "Timer leak",
+    "OutOfMemoryError"
+  ]
+}

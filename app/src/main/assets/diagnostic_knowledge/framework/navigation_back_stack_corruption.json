@@ -1,0 +1,41 @@
+{
+  "errorName": "Navigation_BackStackCorruption",
+  "category": "framework",
+  "description": "Navigation back stack corrupted, causing unexpected navigation behavior or crashes on back press.",
+  "commonCauses": [
+    "popBackStack to non-existent destination",
+    "navigate() called during state save (after onPause)",
+    "Multiple NavHosts with conflicting back stacks",
+    "Fragment transaction conflicting with Navigation",
+    "Back stack manually modified incorrectly",
+    "Pop action with wrong destination ID",
+    "Navigate during Fragment lifecycle transition"
+  ],
+  "solutions": [
+    "Use popBackStack with inclusive=true carefully",
+    "Avoid navigation during onPause/onStop",
+    "Use single NavHost per activity",
+    "Let Navigation component manage back stack",
+    "Handle back press with OnBackPressedDispatcher",
+    "Validate destination exists before popBackStack",
+    "Use Navigation for all fragment transactions"
+  ],
+  "prevention": [
+    "Never mix Navigation component with manual FragmentTransactions",
+    "Use OnBackPressedCallback for custom back handling",
+    "Validate back stack state in debug builds",
+    "Test navigation flows thoroughly",
+    "Avoid navigate() calls after onPause",
+    "Use navController.currentDestination to verify state",
+    "Test complex navigation scenarios with multiple back presses"
+  ],
+  "examples": [
+    "navController.popBackStack(R.id.homeFragment, inclusive = false)",
+    "onBackPressedDispatcher.addCallback { navController.popBackStack() }",
+    "if (navController.currentDestination?.id == R.id.target) { navigate() }"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException destination not found",
+    "IllegalStateException state already saved"
+  ]
+}

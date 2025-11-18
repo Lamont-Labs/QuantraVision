@@ -1,0 +1,43 @@
+{
+  "errorName": "RunBlockingMainThread",
+  "category": "ui_threading",
+  "description": "Using runBlocking on main thread blocking UI. Coroutine anti-pattern causing ANR and poor responsiveness.",
+  "commonCauses": [
+    "runBlocking called from UI thread",
+    "Lifecycle method using runBlocking",
+    "Event handler with runBlocking",
+    "onCreate using runBlocking for initialization",
+    "Button click handler with runBlocking",
+    "Fragment onViewCreated with runBlocking",
+    "Synchronous API wrapper using runBlocking"
+  ],
+  "solutions": [
+    "Replace runBlocking with launch or async",
+    "Use lifecycleScope.launch for lifecycle-aware work",
+    "Use viewModelScope for ViewModel operations",
+    "Convert to properly suspended functions",
+    "Use withContext for dispatcher switching",
+    "Implement async initialization properly",
+    "Use LiveData or StateFlow for reactive updates"
+  ],
+  "prevention": [
+    "Never use runBlocking on main thread",
+    "Use lifecycleScope or viewModelScope instead",
+    "Design async APIs with suspend functions",
+    "Use launch { } for fire-and-forget operations",
+    "Test coroutine usage patterns",
+    "Enable coroutine debugging",
+    "Use lint rules to detect runBlocking on main"
+  ],
+  "examples": [
+    "// Bad: runBlocking { repository.getData() }",
+    "// Good: lifecycleScope.launch { val data = repository.getData(); updateUI(data) }",
+    "// ViewModel: viewModelScope.launch { _state.value = repository.getData() }",
+    "// runBlocking only in tests or main() function"
+  ],
+  "relatedErrors": [
+    "ANR",
+    "Blocking UI thread",
+    "Performance issues"
+  ]
+}

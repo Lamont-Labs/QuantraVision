@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_SchemaExportError",
+  "category": "database",
+  "description": "Room fails to export database schema for migration testing. Schema JSON files not generated or invalid.",
+  "commonCauses": [
+    "Schema location not configured in kapt arguments",
+    "Export directory not created or not writable",
+    "kapt plugin not applied properly",
+    "Conflicting Room versions",
+    "Incremental annotation processing interfering",
+    "Entity class changes not detected",
+    "Output directory in .gitignore causing cleanup"
+  ],
+  "solutions": [
+    "Configure schema export: kapt { arguments { arg(\"room.schemaLocation\", ...) } }",
+    "Create schema directory: mkdir -p app/schemas",
+    "Disable incremental kapt if causing issues",
+    "Clean and rebuild project",
+    "Verify kapt plugin version matches Room version",
+    "Check directory permissions",
+    "Add schema directory to version control"
+  ],
+  "prevention": [
+    "Always configure room.schemaLocation in build.gradle",
+    "Commit schema files to version control",
+    "Use consistent schema directory across team",
+    "Automate schema validation in CI/CD",
+    "Document schema export setup in README",
+    "Test migration with exported schemas",
+    "Keep Room and kapt versions in sync"
+  ],
+  "examples": [
+    "kapt { arguments { arg(\"room.schemaLocation\", \"$projectDir/schemas\") } }",
+    "@Database(version = 2, exportSchema = true)",
+    "new MigrationTestHelper(instrumentation, Database::class.java, schemas)"
+  ],
+  "relatedErrors": [
+    "Schema export failed",
+    "Cannot find schema file"
+  ]
+}

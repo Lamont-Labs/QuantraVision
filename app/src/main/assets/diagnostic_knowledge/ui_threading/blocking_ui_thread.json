@@ -1,0 +1,43 @@
+{
+  "errorName": "BlockingUIThread",
+  "category": "ui_threading",
+  "description": "Performing blocking operations on UI thread causing jank, frame drops, or ANR. Responsiveness critical issue.",
+  "commonCauses": [
+    "Thread.sleep() on main thread",
+    "Blocking I/O on UI thread",
+    "CountDownLatch.await() on main thread",
+    "Object.wait() blocking UI",
+    "Semaphore.acquire() on main thread",
+    "Blocking queue operations on UI",
+    "Synchronous network calls"
+  ],
+  "solutions": [
+    "Move blocking operations to background thread",
+    "Use coroutines with appropriate dispatcher",
+    "Replace await() with async operations",
+    "Use non-blocking alternatives",
+    "Implement timeout for blocking operations",
+    "Use callbacks or LiveData for results",
+    "Profile with Systrace to identify blocks"
+  ],
+  "prevention": [
+    "Never block UI thread intentionally",
+    "Use StrictMode to detect blocking calls",
+    "Replace Thread.sleep with postDelayed",
+    "Use suspending functions instead of blocking",
+    "Test with strict mode enabled",
+    "Monitor frame rendering time",
+    "Profile regularly with Android Profiler"
+  ],
+  "examples": [
+    "// Bad: Thread.sleep(1000) on UI thread",
+    "// Good: handler.postDelayed({ /* work */ }, 1000)",
+    "// Better: lifecycleScope.launch { delay(1000); work() }",
+    "// Bad: latch.await() // Good: launch(Dispatchers.IO) { latch.await(); withContext(Main) { update() } }"
+  ],
+  "relatedErrors": [
+    "ANR",
+    "Frame drops",
+    "Jank"
+  ]
+}

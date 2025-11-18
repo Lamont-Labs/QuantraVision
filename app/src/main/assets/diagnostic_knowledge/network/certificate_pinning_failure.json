@@ -1,0 +1,42 @@
+{
+  "errorName": "CertificatePinningFailure",
+  "category": "network",
+  "description": "Certificate pinning validation failed - server certificate doesn't match pinned hash. Security protection mechanism triggered.",
+  "commonCauses": [
+    "Server certificate rotated",
+    "Incorrect pin hash configured",
+    "Testing with mitmproxy/Charles",
+    "Pin expired",
+    "Multiple pins but all invalid",
+    "Corporate proxy intercepting",
+    "Backup pins not configured"
+  ],
+  "solutions": [
+    "Update pin hashes for new certificate",
+    "Include backup pins for rotation",
+    "Disable pinning in debug builds",
+    "Add certificate transparency checking",
+    "Handle pinning failure gracefully",
+    "Plan certificate rotation strategy",
+    "Monitor certificate changes"
+  ],
+  "prevention": [
+    "Always include backup pins",
+    "Monitor certificate expiration and rotation",
+    "Disable pinning in debug/QA environments",
+    "Plan pin rotation before certificate change",
+    "Test pinning with certificate rotation",
+    "Document pin update process",
+    "Use certificate transparency logs"
+  ],
+  "examples": [
+    "val pinner = CertificatePinner.Builder().add(\"example.com\", \"sha256/AAAA...\").add(\"example.com\", \"sha256/BBBB...\") // backup.build()",
+    "if (BuildConfig.DEBUG) { client.certificatePinner(CertificatePinner.DEFAULT) } else { client.certificatePinner(productionPinner) }",
+    "try { client.newCall(request).execute() } catch (e: SSLPeerUnverifiedException) { if (e.message?.contains(\"pin\") == true) handlePinningFailure() }"
+  ],
+  "relatedErrors": [
+    "SSLPeerUnverifiedException",
+    "SSLHandshakeException",
+    "CertificateException"
+  ]
+}

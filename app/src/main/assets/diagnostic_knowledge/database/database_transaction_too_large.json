@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_TransactionTooLarge",
+  "category": "database",
+  "description": "Database transaction exceeds SQLite's transaction size limit, causing TransactionTooLargeException or OOM errors.",
+  "commonCauses": [
+    "Bulk insert of thousands of records in single transaction",
+    "Large BLOB data in transaction",
+    "WAL file growing too large",
+    "Unbounded batch operation",
+    "Transaction spanning multiple large queries",
+    "Accumulating too many changes before commit",
+    "Memory-intensive operations within transaction"
+  ],
+  "solutions": [
+    "Batch large operations into smaller transactions",
+    "Use chunked inserts: insertAll(items.chunked(100))",
+    "Commit transaction periodically during bulk operations",
+    "Stream large data instead of loading all at once",
+    "Checkpoint WAL file between batches",
+    "Use pagination for bulk updates",
+    "Process data in background with progress tracking"
+  ],
+  "prevention": [
+    "Limit transaction batch size to 500-1000 items max",
+    "Use Flow with chunked processing",
+    "Implement progress-based chunking for large datasets",
+    "Store large BLOBs in files, not database",
+    "Test with realistic data volumes",
+    "Monitor transaction size in production",
+    "Use efficient bulk insert APIs"
+  ],
+  "examples": [
+    "items.chunked(500).forEach { batch -> dao.insertAll(batch) }",
+    "@Transaction suspend fun bulkInsert(items: List<Item>) { items.chunked(1000).forEach { insert(it) } }",
+    "flow { items.chunked(100).forEach { emit(dao.insertAll(it)) } }"
+  ],
+  "relatedErrors": [
+    "TransactionTooLargeException",
+    "OutOfMemoryError during transaction"
+  ]
+}

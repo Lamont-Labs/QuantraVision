@@ -1,0 +1,41 @@
+{
+  "errorName": "Compose_DerivedStateOfRecomputation",
+  "category": "framework",
+  "description": "derivedStateOf recalculates unnecessarily or causes recomposition loops. Performance degradation in Compose UI.",
+  "commonCauses": [
+    "derivedStateOf reading unstable state",
+    "Calculation inside derivedStateOf is expensive",
+    "derivedStateOf modifying state it reads",
+    "Keys unstable causing recalculation on every composition",
+    "Multiple derivedStateOf with circular dependencies",
+    "Reading derived state triggers unnecessary recompositions",
+    "derivedStateOf used where remember would suffice"
+  ],
+  "solutions": [
+    "Use derivedStateOf only for combining multiple states",
+    "Keep calculation inside derivedStateOf lightweight",
+    "Never modify state inside derivedStateOf calculation",
+    "Use @Stable or @Immutable for state classes",
+    "Cache expensive calculations with remember instead",
+    "Avoid circular dependencies between derived states",
+    "Profile derivedStateOf recalculation frequency"
+  ],
+  "prevention": [
+    "Use derivedStateOf only when necessary (multiple state inputs)",
+    "Prefer remember for single-state calculations",
+    "Mark state classes as @Stable or @Immutable",
+    "Test with Compose recomposition profiler",
+    "Keep derivedStateOf calculations pure",
+    "Document why derivedStateOf chosen over remember",
+    "Monitor derived state recalculation in debug builds"
+  ],
+  "examples": [
+    "val filtered = remember { derivedStateOf { list.filter { it.selected } } }.value",
+    "@Stable data class FilterState(val query: String, val type: String)",
+    "// Avoid: derivedStateOf { setState(...); calculate() } // Never mutate!"
+  ],
+  "relatedErrors": [
+    "Excessive derivedStateOf recalculations",
+    "Recomposition storm from derived state"
+  ]
+}

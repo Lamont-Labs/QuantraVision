@@ -1,0 +1,43 @@
+{
+  "errorName": "HandlerLeak",
+  "category": "memory",
+  "description": "Handler holds reference to destroyed Activity/Fragment, preventing garbage collection. Very common memory leak.",
+  "commonCauses": [
+    "Non-static inner Handler class",
+    "Handler messages pending when activity destroyed",
+    "Anonymous Handler subclass",
+    "Handler callbacks not removed",
+    "Delayed messages keeping activity alive",
+    "Handler in activity/fragment without cleanup",
+    "Looper messages referencing destroyed objects"
+  ],
+  "solutions": [
+    "Use static Handler with WeakReference to activity",
+    "Remove all callbacks in onDestroy: handler.removeCallbacksAndMessages(null)",
+    "Use Handler(Looper.getMainLooper()) for global handlers",
+    "Clear pending messages before destroying",
+    "Use coroutines with lifecycle scope instead",
+    "Implement proper cleanup in onDestroy",
+    "Use WeakReference for target objects"
+  ],
+  "prevention": [
+    "Always use static Handler class with WeakReference",
+    "Remove callbacks in onPause/onDestroy",
+    "Prefer coroutines over Handlers for lifecycle-aware operations",
+    "Use Handler.Callback interface pattern",
+    "Clear messages: removeCallbacksAndMessages(null)",
+    "Test with LeakCanary",
+    "Document handler cleanup requirements"
+  ],
+  "examples": [
+    "class MyHandler(activity: MyActivity) : Handler(Looper.getMainLooper()) { private val weakActivity = WeakReference(activity) }",
+    "override fun onDestroy() { super.onDestroy(); handler.removeCallbacksAndMessages(null) }",
+    "// Better: viewLifecycleOwner.lifecycleScope.launch { delay(1000); doWork() }",
+    "private val handler = Handler(Looper.getMainLooper())"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "Context leak",
+    "OutOfMemoryError"
+  ]
+}

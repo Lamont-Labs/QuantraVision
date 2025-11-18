@@ -1,0 +1,41 @@
+{
+  "errorName": "Activity_ResultNotReceived",
+  "category": "framework",
+  "description": "Activity result callback not triggered after startActivityForResult. Modern Activity Result API issues.",
+  "commonCauses": [
+    "ActivityResultLauncher registered after onCreate",
+    "Using deprecated startActivityForResult without registerForActivityResult",
+    "Result callback lambda captured in wrong scope",
+    "ActivityResultContract not returning correct type",
+    "Target activity not calling setResult",
+    "Process death between launch and result",
+    "Multiple launchers with conflicting request codes"
+  ],
+  "solutions": [
+    "Register launcher in onCreate or as class field",
+    "Use registerForActivityResult instead of deprecated API",
+    "Ensure target activity calls setResult before finish",
+    "Use correct ActivityResultContract for your use case",
+    "Handle process death with SavedStateHandle",
+    "Test result delivery with different scenarios",
+    "Use ActivityResultContract.StartActivityForResult for custom intents"
+  ],
+  "prevention": [
+    "Always register launchers early (onCreate or field initialization)",
+    "Migrate to Activity Result API (registerForActivityResult)",
+    "Test result delivery including process death",
+    "Ensure target activities call setResult properly",
+    "Use standard contracts when available",
+    "Document expected result data format",
+    "Test with 'Don't keep activities' enabled"
+  ],
+  "examples": [
+    "val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result -> handleResult(result) }",
+    "launcher.launch(Intent(this, TargetActivity::class.java))",
+    "setResult(RESULT_OK, Intent().putExtra(\"data\", value)); finish()"
+  ],
+  "relatedErrors": [
+    "Result callback never called",
+    "onActivityResult deprecated"
+  ]
+}

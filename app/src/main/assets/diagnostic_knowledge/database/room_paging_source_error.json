@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_PagingSourceError",
+  "category": "database",
+  "description": "Room PagingSource integration fails, causing pagination errors or incorrect data loading in Paging 3 library.",
+  "commonCauses": [
+    "PagingSource query doesn't support LIMIT/OFFSET",
+    "Key type mismatch in PagingSource<Key, Value>",
+    "Database changes not invalidating PagingSource",
+    "Room invalidation tracker not configured",
+    "Query returns inconsistent page sizes",
+    "Initial load size configuration incorrect",
+    "Concurrent modifications during paging"
+  ],
+  "solutions": [
+    "Return PagingSource from DAO: fun getPagedItems(): PagingSource<Int, Item>",
+    "Use Int key for offset-based paging",
+    "Ensure query supports LIMIT :limit OFFSET :offset",
+    "Let Room auto-invalidate PagingSource on data changes",
+    "Configure PagingConfig with appropriate page size",
+    "Use @Transaction for complex paging queries",
+    "Test pagination with various page sizes"
+  ],
+  "prevention": [
+    "Use Room's built-in PagingSource support",
+    "Write queries compatible with LIMIT/OFFSET",
+    "Configure reasonable page sizes (20-50 items)",
+    "Test pagination with large datasets",
+    "Enable Room's invalidation tracker",
+    "Handle empty states in paging UI",
+    "Monitor paging performance in production"
+  ],
+  "examples": [
+    "@Query(\"SELECT * FROM scans ORDER BY timestamp DESC\") fun getPagedScans(): PagingSource<Int, Scan>",
+    "Pager(PagingConfig(pageSize = 20)) { dao.getPagedScans() }.flow",
+    "@Transaction @Query(\"SELECT * FROM patterns\") fun getPagedPatterns(): PagingSource<Int, PatternWithDetails>"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException PagingSource",
+    "InvalidationTracker error"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_DiskFullError",
+  "category": "database",
+  "description": "Database write operations fail because device storage is full. Critical error requiring user intervention.",
+  "commonCauses": [
+    "No available storage space on device",
+    "Database file growing unbounded",
+    "WAL file not checkpointed (accumulating)",
+    "Temp files not cleaned up",
+    "Large BLOB data stored in database",
+    "Insufficient space for database transaction",
+    "Excessive logging or cache data"
+  ],
+  "solutions": [
+    "Check storage before write: StorageStatsManager",
+    "Implement database size limits",
+    "Checkpoint WAL file regularly: PRAGMA wal_checkpoint",
+    "Clean up old data periodically",
+    "Store large files externally, not in database",
+    "Implement graceful degradation mode",
+    "Notify user to free storage space"
+  ],
+  "prevention": [
+    "Monitor database file size growth",
+    "Implement automatic data retention policy",
+    "Checkpoint WAL file on app background",
+    "Store BLOBs in files, references in database",
+    "Set maximum database size limit",
+    "Implement old data cleanup strategy",
+    "Alert user when storage is low (<100MB)"
+  ],
+  "examples": [
+    "val stats = storageManager.queryStatsForUid(uuid, UserHandle.myUserId())",
+    "db.openHelper.writableDatabase.rawQuery(\"PRAGMA wal_checkpoint(FULL)\")",
+    "if (availableBytes < 100_000_000) { showStorageWarning() }"
+  ],
+  "relatedErrors": [
+    "SQLiteFullException",
+    "SQLiteDiskIOException"
+  ]
+}

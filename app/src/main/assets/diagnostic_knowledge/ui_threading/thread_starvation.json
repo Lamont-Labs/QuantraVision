@@ -1,0 +1,43 @@
+{
+  "errorName": "ThreadStarvation",
+  "category": "ui_threading",
+  "description": "Thread unable to gain access to shared resources, continuously delayed. Scheduling and priority issue.",
+  "commonCauses": [
+    "Low-priority thread never scheduled",
+    "High-priority threads monopolizing CPU",
+    "Unfair lock implementation",
+    "Thread pool with priority queue",
+    "I/O thread blocked by CPU threads",
+    "Background work starving foreground",
+    "Non-fair synchronization"
+  ],
+  "solutions": [
+    "Use fair locks: ReentrantLock(true)",
+    "Implement priority aging mechanism",
+    "Use separate thread pools for different priorities",
+    "Balance thread priorities appropriately",
+    "Monitor thread scheduling metrics",
+    "Use Work Stealing pools for balance",
+    "Implement admission control"
+  ],
+  "prevention": [
+    "Use fair locking when needed",
+    "Avoid extreme priority differences",
+    "Monitor thread execution times",
+    "Use appropriate thread pool sizing",
+    "Test under high load scenarios",
+    "Implement resource quotas",
+    "Use coroutines with fair dispatchers"
+  ],
+  "examples": [
+    "val fairLock = ReentrantLock(true) // Fair lock",
+    "thread.priority = Thread.NORM_PRIORITY // Avoid extreme priorities",
+    "val executor = Executors.newWorkStealingPool() // Better load balancing",
+    "// Coroutines handle fairness automatically with Dispatchers"
+  ],
+  "relatedErrors": [
+    "Timeout",
+    "Performance degradation",
+    "ANR"
+  ]
+}

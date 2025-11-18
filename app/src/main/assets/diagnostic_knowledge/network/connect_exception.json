@@ -1,0 +1,42 @@
+{
+  "errorName": "ConnectException",
+  "category": "network",
+  "description": "Failed to establish connection to server. Server unreachable or refusing connections.",
+  "commonCauses": [
+    "Server is down",
+    "Incorrect port number",
+    "Firewall blocking connection",
+    "Server not listening on port",
+    "Network routing issues",
+    "VPN or proxy blocking",
+    "Wrong IP address/hostname"
+  ],
+  "solutions": [
+    "Verify server is running",
+    "Check port number is correct",
+    "Test with different network (WiFi vs mobile)",
+    "Retry with exponential backoff",
+    "Verify firewall settings",
+    "Check VPN/proxy configuration",
+    "Show connection error to user"
+  ],
+  "prevention": [
+    "Implement automatic retry logic",
+    "Monitor server availability",
+    "Use health check endpoints",
+    "Test on different networks",
+    "Implement circuit breaker",
+    "Show clear error messages",
+    "Have offline fallback"
+  ],
+  "examples": [
+    "try { socket.connect(address, timeout) } catch (e: ConnectException) { retry() }",
+    "val client = OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(true).build()",
+    "if (isServerReachable()) connect() else showOfflineMode()"
+  ],
+  "relatedErrors": [
+    "SocketTimeoutException",
+    "UnknownHostException",
+    "NoRouteToHostException"
+  ]
+}

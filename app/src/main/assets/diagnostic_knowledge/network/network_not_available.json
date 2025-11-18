@@ -1,0 +1,43 @@
+{
+  "errorName": "NetworkNotAvailable",
+  "category": "network",
+  "description": "Network connectivity not available - device offline or no network access. Connectivity state issue.",
+  "commonCauses": [
+    "Airplane mode enabled",
+    "WiFi and mobile data both off",
+    "No signal or out of range",
+    "Network adapter disabled",
+    "VPN blocking all traffic",
+    "Firewall blocking connections",
+    "SIM card issues"
+  ],
+  "solutions": [
+    "Check network connectivity before requests",
+    "Show offline mode UI",
+    "Queue requests for later",
+    "Use cached data when offline",
+    "Listen for connectivity changes",
+    "Implement ConnectivityManager.NetworkCallback",
+    "Provide offline functionality"
+  ],
+  "prevention": [
+    "Always check connectivity before network calls",
+    "Implement connectivity monitoring",
+    "Cache data for offline access",
+    "Show network status in UI",
+    "Test offline scenarios",
+    "Use WorkManager for deferred requests",
+    "Implement proper offline mode"
+  ],
+  "examples": [
+    "val cm = getSystemService(ConnectivityManager::class.java); val network = cm.activeNetwork; val capabilities = cm.getNetworkCapabilities(network); val hasInternet = capabilities?.hasCapability(NET_CAPABILITY_INTERNET) == true",
+    "cm.registerDefaultNetworkCallback(object : NetworkCallback() { override fun onAvailable(network: Network) { onConnected() }; override fun onLost(network: Network) { onDisconnected() } })",
+    "if (!isNetworkAvailable()) { showOfflineMode(); useC achedData() } else { makeNetworkRequest() }",
+    "// WorkManager queues work until connected: val constraints = Constraints.Builder().setRequiredNetworkType(CONNECTED).build()"
+  ],
+  "relatedErrors": [
+    "UnknownHostException",
+    "ConnectException",
+    "NoConnectivityException"
+  ]
+}

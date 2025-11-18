@@ -1,0 +1,42 @@
+{
+  "errorName": "OkHttpInterceptorChainError",
+  "category": "network",
+  "description": "OkHttp interceptor chain error - interceptor not calling chain.proceed() or calling multiple times.",
+  "commonCauses": [
+    "Interceptor not calling chain.proceed()",
+    "Calling proceed() multiple times",
+    "Not returning response from intercept()",
+    "Exception in interceptor breaking chain",
+    "Infinite loop in interceptor",
+    "Wrong request passed to proceed()",
+    "Interceptor order issues"
+  ],
+  "solutions": [
+    "Always call chain.proceed() exactly once",
+    "Return response from intercept()",
+    "Handle exceptions in interceptors properly",
+    "Pass modified request to proceed()",
+    "Test interceptor chain thoroughly",
+    "Log interceptor execution",
+    "Follow OkHttp interceptor patterns"
+  ],
+  "prevention": [
+    "Call chain.proceed() exactly once per request",
+    "Return Response from intercept()",
+    "Test interceptors in isolation",
+    "Use logging interceptor for debugging",
+    "Follow interceptor best practices",
+    "Document interceptor behavior",
+    "Order interceptors correctly"
+  ],
+  "examples": [
+    "class MyInterceptor : Interceptor { override fun intercept(chain: Chain): Response { val request = chain.request().newBuilder().addHeader(\"X-Custom\", \"value\").build(); return chain.proceed(request) } }",
+    "// Logging: class LoggingInterceptor : Interceptor { override fun intercept(chain: Chain) = chain.proceed(chain.request()).also { Log.d(TAG, \"Response: ${it.code}\") } }",
+    "// Order matters: client.addInterceptor(auth).addInterceptor(logging).addNetworkInterceptor(caching)"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "IOException",
+    "StackOverflowError"
+  ]
+}

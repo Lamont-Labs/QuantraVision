@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_LearningPhaseStuck",
+  "category": "quantravision",
+  "description": "Pattern learning engine stuck in calibration phase, never graduating to active learning. User experience degraded.",
+  "commonCauses": [
+    "Insufficient scan volume to complete calibration",
+    "Phase transition threshold never reached",
+    "Phase state machine logic error",
+    "Scan quality too low for calibration",
+    "Phase progress not persisted properly",
+    "Calibration timeout not implemented",
+    "Conflicting phase transition conditions"
+  ],
+  "solutions": [
+    "Implement phase timeout to force progression",
+    "Reduce calibration requirements for inactive users",
+    "Add manual phase override for debugging",
+    "Log phase transition attempts and failures",
+    "Implement gradual requirement relaxation",
+    "Provide phase progress feedback to user",
+    "Reset phase state if stuck for extended period"
+  ],
+  "prevention": [
+    "Test phase transitions with various usage patterns",
+    "Implement reasonable phase timeout (7-14 days)",
+    "Monitor phase distribution in user base",
+    "Provide clear progress indicators to users",
+    "Document phase requirements clearly",
+    "Implement phase health checks",
+    "A/B test phase transition thresholds"
+  ],
+  "examples": [
+    "if (daysSincePhaseStart > 14 && scans.size > MIN_SCANS) { advancePhase() }",
+    "val progress = scans.size.toFloat() / CALIBRATION_REQUIRED_SCANS",
+    "enum class LearningPhase { CALIBRATION, ACTIVE, EXPERT }"
+  ],
+  "relatedErrors": [
+    "Phase stuck in CALIBRATION",
+    "Learning never activates"
+  ]
+}

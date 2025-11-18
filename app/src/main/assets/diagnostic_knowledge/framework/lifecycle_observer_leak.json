@@ -1,0 +1,41 @@
+{
+  "errorName": "Lifecycle_ObserverLeak",
+  "category": "framework",
+  "description": "Lifecycle observer not removed, causing memory leak. Activity/Fragment cannot be garbage collected.",
+  "commonCauses": [
+    "Observer added but never removed",
+    "Using observeForever without removeObserver",
+    "LifecycleObserver registered but not unregistered",
+    "Lambda observer capturing Activity/Fragment reference",
+    "Observer registered to wrong lifecycle owner",
+    "Application lifecycle observer never removed",
+    "Custom observer not implementing DefaultLifecycleObserver"
+  ],
+  "solutions": [
+    "Use observe() with LifecycleOwner, not observeForever",
+    "Remove observers in onDestroy if using observeForever",
+    "Use lifecycle-aware observers that auto-remove",
+    "Use viewLifecycleOwner for Fragment views",
+    "Implement removeObserver in cleanup",
+    "Use WeakReference if manual observer needed",
+    "Prefer lifecycle-aware components over manual observers"
+  ],
+  "prevention": [
+    "Always use observe(lifecycleOwner) instead of observeForever",
+    "Use viewLifecycleOwner in Fragments for view-related observers",
+    "Test with LeakCanary to detect observer leaks",
+    "Avoid observeForever unless absolutely necessary",
+    "Use lifecycle-aware components (ViewModel, LiveData)",
+    "Review observer registration in code reviews",
+    "Test Activity/Fragment destruction scenarios"
+  ],
+  "examples": [
+    "viewModel.data.observe(viewLifecycleOwner) { updateUI(it) }",
+    "// Avoid: liveData.observeForever { } // Must removeObserver!",
+    "lifecycle.addObserver(object : DefaultLifecycleObserver { })"
+  ],
+  "relatedErrors": [
+    "Memory leak from LiveData observer",
+    "Activity/Fragment not garbage collected"
+  ]
+}

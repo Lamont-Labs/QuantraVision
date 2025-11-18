@@ -1,0 +1,41 @@
+{
+  "errorName": "WorkManager_ChainingFailure",
+  "category": "framework",
+  "description": "WorkManager chain breaks when one work fails, preventing subsequent work execution.",
+  "commonCauses": [
+    "Worker returning Result.failure() stopping chain",
+    "Exception in doWork() not caught",
+    "Dependent work never starts after prerequisite fails",
+    "Chain not configured with proper failure policy",
+    "Input data not passed between chained workers",
+    "Unique work policy causing chain replacement",
+    "Retry policy exhausted before chain completion"
+  ],
+  "solutions": [
+    "Return Result.success() or Result.retry() to continue chain",
+    "Use try-catch in doWork() to handle errors gracefully",
+    "Pass data between workers with Data.Builder",
+    "Configure appropriate retry policy",
+    "Monitor chain state with WorkInfo",
+    "Use beginWith() and then() correctly",
+    "Implement fallback logic for failed chain steps"
+  ],
+  "prevention": [
+    "Handle all exceptions in doWork()",
+    "Return Result.retry() for transient failures",
+    "Test worker chains end-to-end",
+    "Monitor chain completion rate in production",
+    "Implement logging for each chain step",
+    "Use unique work names to track chains",
+    "Validate input/output data between workers"
+  ],
+  "examples": [
+    "WorkManager.beginWith(work1).then(work2).then(work3).enqueue()",
+    "override fun doWork(): Result = try { process(); Result.success(outputData) } catch (e: Exception) { Result.retry() }",
+    "val outputData = Data.Builder().putString(\"key\", value).build()"
+  ],
+  "relatedErrors": [
+    "Chain stops at failed worker",
+    "Subsequent workers never execute"
+  ]
+}

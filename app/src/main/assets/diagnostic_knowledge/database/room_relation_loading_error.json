@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_RelationLoadingError",
+  "category": "database",
+  "description": "Room @Relation annotation fails to load related entities, returning null or incomplete data.",
+  "commonCauses": [
+    "@Relation parentColumn doesn't match entity column",
+    "entityColumn doesn't match child table column",
+    "Foreign key values don't exist in child table",
+    "Missing @Transaction on query method",
+    "Type mismatch between parent and child columns",
+    "Circular relationship causing infinite loop",
+    "Projection excluding required columns"
+  ],
+  "solutions": [
+    "Verify parentColumn and entityColumn names exactly match",
+    "Add @Transaction to method loading relations",
+    "Ensure foreign key data integrity",
+    "Use correct data types for key columns",
+    "Break circular relationships with separate queries",
+    "Include all required columns in query projection",
+    "Test relation loading with sample data"
+  ],
+  "prevention": [
+    "Always use @Transaction for @Relation queries",
+    "Define foreign keys explicitly in @Entity",
+    "Use consistent naming for related columns",
+    "Test relationship loading in unit tests",
+    "Validate foreign key constraints",
+    "Document relationship structure in entity classes",
+    "Use Room's schema validation tools"
+  ],
+  "examples": [
+    "@Relation(parentColumn = \"id\", entityColumn = \"userId\") val scans: List<Scan>",
+    "@Transaction @Query(\"SELECT * FROM users\") fun getUsersWithScans(): Flow<List<UserWithScans>>",
+    "@Entity(foreignKeys = [ForeignKey(entity = User::class, parentColumns = [\"id\"], childColumns = [\"userId\"])])"
+  ],
+  "relatedErrors": [
+    "NullPointerException accessing relation",
+    "Empty list for existing relations"
+  ]
+}

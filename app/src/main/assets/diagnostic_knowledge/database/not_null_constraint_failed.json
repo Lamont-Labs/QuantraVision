@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_NotNullConstraintFailed",
+  "category": "database",
+  "description": "NOT NULL constraint violation when attempting to insert or update NULL value into non-nullable column.",
+  "commonCauses": [
+    "Required field not provided in insert",
+    "Nullable Kotlin property for non-null database column",
+    "Partial update setting field to null",
+    "Missing default value for non-null column",
+    "Migration adding non-null column without default",
+    "Type converter returning null for non-null type",
+    "Incomplete object initialization"
+  ],
+  "solutions": [
+    "Provide value for all non-null columns",
+    "Add default value to column definition",
+    "Make Kotlin property non-nullable to match database",
+    "Use lateinit or by lazy for delayed initialization",
+    "Provide DEFAULT value in migration for new columns",
+    "Validate object completeness before insert",
+    "Use data class with non-null parameters"
+  ],
+  "prevention": [
+    "Match Kotlin nullability with database schema",
+    "Use non-nullable types in data classes for required fields",
+    "Provide default values in entity definitions",
+    "Validate required fields at UI layer",
+    "Use Room's @NonNull annotation explicitly",
+    "Test insertions with missing fields",
+    "Add defaults when adding new non-null columns in migrations"
+  ],
+  "examples": [
+    "@Entity data class Scan(@PrimaryKey val id: Int, @ColumnInfo(defaultValue = \"0\") val confidence: Float)",
+    "ALTER TABLE scans ADD COLUMN newField TEXT NOT NULL DEFAULT ''",
+    "data class User(val id: Int, val name: String) // Non-nullable by default"
+  ],
+  "relatedErrors": [
+    "SQLiteConstraintException NOT NULL",
+    "NOT NULL constraint failed"
+  ]
+}

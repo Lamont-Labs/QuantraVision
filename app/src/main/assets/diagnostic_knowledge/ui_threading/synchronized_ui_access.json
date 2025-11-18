@@ -1,0 +1,43 @@
+{
+  "errorName": "SynchronizedUIAccess",
+  "category": "ui_threading",
+  "description": "UI access wrapped in synchronized block causing ANR or deadlock. Improper threading pattern for UI updates.",
+  "commonCauses": [
+    "synchronized block around UI updates",
+    "Holding lock while updating views",
+    "Background thread waiting for UI lock",
+    "Synchronized method calling runOnUiThread",
+    "Lock held during view invalidation",
+    "Synchronized onClick handler",
+    "Monitor contention on UI operations"
+  ],
+  "solutions": [
+    "Never synchronize UI updates",
+    "Use runOnUiThread without holding locks",
+    "Move synchronization to data layer only",
+    "Use atomic operations for simple flags",
+    "Update UI on main thread without locks",
+    "Use handler.post instead of synchronized",
+    "Separate data synchronization from UI updates"
+  ],
+  "prevention": [
+    "Never wrap UI code in synchronized blocks",
+    "Synchronize data access, not UI updates",
+    "Use StateFlow for thread-safe state + UI updates",
+    "Post UI updates to main thread",
+    "Test for deadlocks with different threading scenarios",
+    "Use coroutines for coordinated state + UI updates",
+    "Document threading requirements clearly"
+  ],
+  "examples": [
+    "// Bad: synchronized(lock) { textView.text = newText }",
+    "// Good: runOnUiThread { textView.text = newText }",
+    "// Better: lifecycleScope.launch { withContext(Dispatchers.Main) { textView.text = newText } }",
+    "// Best: StateFlow updates UI automatically on main thread"
+  ],
+  "relatedErrors": [
+    "Deadlock",
+    "ANR",
+    "CalledFromWrongThreadException"
+  ]
+}

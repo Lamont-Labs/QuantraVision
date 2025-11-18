@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_QuantraBotChatStateCorruption",
+  "category": "quantravision",
+  "description": "QuantraBot chat state corrupted, causing conversation context loss or UI inconsistencies.",
+  "commonCauses": [
+    "State serialization error during save",
+    "Concurrent state updates from multiple threads",
+    "Process death without state persistence",
+    "ViewModel cleared without save",
+    "StateFlow emission during state reconstruction",
+    "Message list modification during iteration",
+    "Deserialization failure on restore"
+  ],
+  "solutions": [
+    "Use synchronized access for chat state mutations",
+    "Persist state to SavedStateHandle",
+    "Implement state versioning for migration",
+    "Use immutable data structures for state",
+    "Validate state before save and after load",
+    "Implement state recovery from partial data",
+    "Clear corrupted state and restart chat"
+  ],
+  "prevention": [
+    "Use StateFlow with immutable state classes",
+    "Persist chat state in ViewModel's SavedStateHandle",
+    "Test state persistence across process death",
+    "Implement state validation on every update",
+    "Use data classes with copy for state updates",
+    "Test concurrent state access scenarios",
+    "Monitor state corruption rate in production"
+  ],
+  "examples": [
+    "private val _chatState = savedStateHandle.getStateFlow(\"chat\", ChatState())",
+    "fun updateState(update: ChatState.() -> ChatState) { _chatState.update(update) }",
+    "data class ChatState(val messages: List<Message> = emptyList())"
+  ],
+  "relatedErrors": [
+    "ConcurrentModificationException chat state",
+    "State deserialization failed"
+  ]
+}

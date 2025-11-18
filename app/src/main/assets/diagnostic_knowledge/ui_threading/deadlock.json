@@ -1,0 +1,43 @@
+{
+  "errorName": "Deadlock",
+  "category": "ui_threading",
+  "description": "Two or more threads waiting for each other to release locks, causing complete freeze. Critical threading issue requiring careful analysis.",
+  "commonCauses": [
+    "Thread A locks resource 1, waits for 2; Thread B locks 2, waits for 1",
+    "Synchronized methods calling each other recursively",
+    "Multiple locks acquired in different order",
+    "UI thread waiting for background thread holding UI lock",
+    "Database transaction holding lock while waiting for UI",
+    "Handler waiting for thread that's waiting for handler",
+    "Nested synchronized blocks with inconsistent ordering"
+  ],
+  "solutions": [
+    "Acquire locks in consistent global order",
+    "Use tryLock() with timeout instead of lock()",
+    "Avoid holding locks while calling external code",
+    "Use ReentrantLock with fair ordering",
+    "Implement timeout mechanisms for lock acquisition",
+    "Use coroutines with structured concurrency instead",
+    "Profile with Android Studio's thread inspector"
+  ],
+  "prevention": [
+    "Define and document lock ordering hierarchy",
+    "Minimize lock scope and duration",
+    "Avoid nested locking when possible",
+    "Use higher-level concurrency primitives (coroutines, Executors)",
+    "Test with ThreadSanitizer",
+    "Implement deadlock detection in debug builds",
+    "Use StrictMode to detect potential deadlocks"
+  ],
+  "examples": [
+    "private val lock1 = ReentrantLock(); private val lock2 = ReentrantLock(); // Always acquire in same order: lock1 then lock2",
+    "if (lock.tryLock(5, TimeUnit.SECONDS)) { try { /* work */ } finally { lock.unlock() } } else { handleTimeout() }",
+    "// Better: use coroutines with Mutex: val mutex = Mutex(); mutex.withLock { /* work */ }",
+    "synchronized(locks.sortedBy { it.hashCode() }) { /* Consistent ordering */ }"
+  ],
+  "relatedErrors": [
+    "ANR",
+    "Application freeze",
+    "Thread timeout"
+  ]
+}

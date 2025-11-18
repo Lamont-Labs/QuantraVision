@@ -1,0 +1,44 @@
+{
+  "errorName": "NativeMemoryLeak",
+  "category": "memory",
+  "description": "Memory allocated via JNI/NDK not properly released. Not visible in Java heap but causes OOM and device issues.",
+  "commonCauses": [
+    "JNI global references not deleted",
+    "Native buffers not freed",
+    "OpenGL resources not released",
+    "MediaCodec not properly released",
+    "DirectByteBuffer not collected",
+    "Native library leaks",
+    "Camera/Audio resources not closed"
+  ],
+  "solutions": [
+    "Always delete JNI global references: env->DeleteGlobalRef()",
+    "Call release() on native objects (MediaCodec, Camera, etc.)",
+    "Implement proper cleanup in native code",
+    "Use RAII pattern in C++ for automatic cleanup",
+    "Profile with native memory tracking tools",
+    "Monitor /proc/meminfo for native memory usage",
+    "Implement finalizers for native resources"
+  ],
+  "prevention": [
+    "Always pair native allocations with deallocations",
+    "Use smart pointers in C++ (unique_ptr, shared_ptr)",
+    "Implement proper lifecycle for native resources",
+    "Test with Debug.getNativeHeapSize()",
+    "Use LeakCanary for detecting native leaks",
+    "Document native memory ownership clearly",
+    "Implement proper error handling in JNI"
+  ],
+  "examples": [
+    "// JNI: jni GlobalRef cleanup",
+    "env->DeleteGlobalRef(globalRef);",
+    "// Kotlin: mediaCodec?.release(); mediaCodec = null",
+    "// C++: std::unique_ptr<NativeResource> resource(new NativeResource());",
+    "override fun finalize() { nativeCleanup(); super.finalize() }"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "SIGSEGV",
+    "Process killed by LMK"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "errorName": "ConnectionReset",
+  "category": "network",
+  "description": "Connection reset by peer - existing connection forcibly closed by remote host. Socket-level communication failure.",
+  "commonCauses": [
+    "Server abruptly closed connection",
+    "Network interrupted during transfer",
+    "Firewall dropping connection",
+    "Server crash during request",
+    "Idle connection timeout",
+    "Load balancer health check failure",
+    "Protocol mismatch"
+  ],
+  "solutions": [
+    "Implement automatic retry with exponential backoff",
+    "Use connection pooling with keep-alive",
+    "Handle IOException gracefully",
+    "Retry with new connection",
+    "Check network stability",
+    "Reduce idle timeout settings",
+    "Monitor connection pool health"
+  ],
+  "prevention": [
+    "Implement robust retry logic",
+    "Use connection pooling effectively",
+    "Set appropriate keep-alive intervals",
+    "Monitor network quality",
+    "Test on unreliable networks",
+    "Implement circuit breaker pattern",
+    "Log connection reset events"
+  ],
+  "examples": [
+    "try { response = client.execute(request) } catch (e: IOException) { if (e.message?.contains(\"Connection reset\") == true) retry() }",
+    "val pool = ConnectionPool(maxIdleConnections = 5, keepAliveDuration = 5, TimeUnit.MINUTES)",
+    "suspend fun <T> retryOnReset(times: Int = 3, block: suspend () -> T): T { repeat(times - 1) { try { return block() } catch (e: IOException) { if (\"reset\" in e.message.orEmpty()) delay(1000) else throw e } }; return block() }"
+  ],
+  "relatedErrors": [
+    "SocketException",
+    "IOException",
+    "ConnectionException"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "HeapFragmentation",
+  "category": "memory",
+  "description": "Memory fragmented into small unusable chunks despite available total memory. Prevents allocation of large contiguous blocks.",
+  "commonCauses": [
+    "Many small allocations and deallocations",
+    "Long-lived objects mixed with short-lived objects",
+    "Large object allocation patterns",
+    "Inefficient object pooling",
+    "Native memory fragmentation from JNI",
+    "Bitmap allocations and releases",
+    "Frequent garbage collection cycles"
+  ],
+  "solutions": [
+    "Implement object pooling for frequently allocated objects",
+    "Use contiguous memory allocations where possible",
+    "Allocate large objects early in lifecycle",
+    "Use ByteBuffer.allocateDirect() for large native buffers",
+    "Implement memory compaction strategies",
+    "Reduce object churn - reuse objects",
+    "Monitor heap with Android Profiler"
+  ],
+  "prevention": [
+    "Design allocation patterns to minimize fragmentation",
+    "Use object pools for high-frequency allocations",
+    "Allocate long-lived objects at startup",
+    "Group allocations by lifetime",
+    "Monitor GC patterns with Profiler",
+    "Use primitive types instead of objects where possible",
+    "Test with memory stress scenarios"
+  ],
+  "examples": [
+    "val pool = object : Pools.SimplePool<MyObject>(10) {}",
+    "val buffer = ByteBuffer.allocateDirect(size) // Native memory",
+    "private val objectPool = ArrayDeque<MyObject>(capacity)",
+    "fun getObject() = pool.acquire() ?: MyObject()"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "GC overhead limit exceeded",
+    "AllocationTooLarge"
+  ]
+}

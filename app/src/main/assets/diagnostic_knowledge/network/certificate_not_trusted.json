@@ -1,0 +1,43 @@
+{
+  "errorName": "CertificateNotTrusted",
+  "category": "network",
+  "description": "SSL certificate not trusted by system - certificate chain validation failed. Security and trust issue.",
+  "commonCauses": [
+    "Self-signed certificate",
+    "Expired certificate",
+    "Certificate from untrusted CA",
+    "Incomplete certificate chain",
+    "System date/time incorrect",
+    "Missing intermediate certificates",
+    "Certificate revoked"
+  ],
+  "solutions": [
+    "Install proper CA-signed certificate on server",
+    "Add custom CA to trust store (debug only)",
+    "Check device date/time settings",
+    "Provide complete certificate chain",
+    "Use Charles/mitmproxy certificate for debugging",
+    "Handle SSLException with user message",
+    "Never bypass certificate validation in production"
+  ],
+  "prevention": [
+    "Use certificates from trusted CAs",
+    "Include full certificate chain",
+    "Monitor certificate expiration",
+    "Test SSL connections thoroughly",
+    "Never disable certificate validation",
+    "Use network security config properly",
+    "Test on multiple devices and Android versions"
+  ],
+  "examples": [
+    "// Network Security Config for debug: <certificates src=\"user\" />",
+    "try { connection.connect() } catch (e: SSLHandshakeException) { if (e.message?.contains(\"not trusted\") == true) showCertificateError() }",
+    "// NEVER in production: trustManager.checkServerTrusted(chain, authType) // Bypass",
+    "<network-security-config><base-config><trust-anchors><certificates src=\"system\" /></trust-anchors></base-config></network-security-config>"
+  ],
+  "relatedErrors": [
+    "SSLHandshakeException",
+    "CertPathValidatorException",
+    "CertificateException"
+  ]
+}

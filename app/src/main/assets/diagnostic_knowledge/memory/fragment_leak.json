@@ -1,0 +1,43 @@
+{
+  "errorName": "FragmentLeak",
+  "category": "memory",
+  "description": "Fragment instances retained in memory after destruction, preventing garbage collection. Common source of memory leaks.",
+  "commonCauses": [
+    "Fragment referenced by activity or singleton",
+    "Handler with fragment as callback",
+    "Anonymous inner classes holding fragment reference",
+    "LiveData/ViewModel observing fragment directly",
+    "Background thread referencing fragment",
+    "View binding not cleared in onDestroyView",
+    "Event listeners not unregistered"
+  ],
+  "solutions": [
+    "Null view binding in onDestroyView: _binding = null",
+    "Use viewLifecycleOwner for observations",
+    "Use WeakReference for fragment in callbacks",
+    "Remove callbacks in onDestroyView: handler.removeCallbacksAndMessages(null)",
+    "Cancel coroutines in viewLifecycleOwner scope",
+    "Unregister listeners in lifecycle methods",
+    "Use LeakCanary to detect fragment leaks"
+  ],
+  "prevention": [
+    "Always clear view binding: _binding = null in onDestroyView",
+    "Use viewLifecycleOwner, never lifecycleOwner for view observations",
+    "Avoid storing fragment references in long-lived objects",
+    "Use static inner classes with WeakReference",
+    "Cancel all async operations in onDestroyView",
+    "Test with LeakCanary enabled",
+    "Review all fragment lifecycle callbacks"
+  ],
+  "examples": [
+    "private var _binding: FragmentBinding? = null; override fun onDestroyView() { super.onDestroyView(); _binding = null }",
+    "viewModel.data.observe(viewLifecycleOwner) { /* Use viewLifecycleOwner */ }",
+    "class MyHandler(fragment: MyFragment) : Handler() { private val weakFragment = WeakReference(fragment) }",
+    "override fun onDestroyView() { super.onDestroyView(); handler.removeCallbacksAndMessages(null); job.cancel() }"
+  ],
+  "relatedErrors": [
+    "Memory leak",
+    "OutOfMemoryError",
+    "Activity leak"
+  ]
+}

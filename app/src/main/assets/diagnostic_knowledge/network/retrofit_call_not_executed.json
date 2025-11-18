@@ -1,0 +1,43 @@
+{
+  "errorName": "RetrofitCallNotExecuted",
+  "category": "network",
+  "description": "Retrofit Call already executed or cancelled. Attempting to reuse Call instance incorrectly.",
+  "commonCauses": [
+    "Calling execute() twice on same Call",
+    "Reusing Call after cancellation",
+    "Not cloning Call for retry",
+    "Call kept in wrong scope",
+    "Retry logic without clone",
+    "Call shared across threads",
+    "Attempting to enqueue after execute"
+  ],
+  "solutions": [
+    "Use call.clone() for retry attempts",
+    "Create new Call for each request",
+    "Use suspend functions instead of Call",
+    "Implement proper Call lifecycle",
+    "Don't store Call references long-term",
+    "Use Flow/LiveData for reactive calls",
+    "Migrate to coroutines from Call"
+  ],
+  "prevention": [
+    "Use suspend functions with Retrofit",
+    "Don't reuse Call instances",
+    "Clone calls before retry",
+    "Use Flow for streaming responses",
+    "Test retry logic thoroughly",
+    "Prefer coroutines over Call API",
+    "Document Call lifecycle clearly"
+  ],
+  "examples": [
+    "// Bad: call.execute(); call.execute() // ERROR",
+    "// Good: suspend fun getData() = api.getData() // Retrofit handles",
+    "// Retry with clone: try { call.execute() } catch (e: IOException) { call.clone().execute() }",
+    "// Better: use Flow: @GET(\"/data\") fun getDataFlow(): Flow<Response<Data>>"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "IOException",
+    "CancellationException"
+  ]
+}

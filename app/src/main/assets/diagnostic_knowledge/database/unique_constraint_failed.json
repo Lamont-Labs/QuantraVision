@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_UniqueConstraintFailed",
+  "category": "database",
+  "description": "Unique constraint violation when inserting duplicate values into column with UNIQUE constraint or PRIMARY KEY.",
+  "commonCauses": [
+    "Inserting duplicate primary key value",
+    "Inserting duplicate value in UNIQUE column",
+    "Upsert logic not handling conflicts",
+    "Race condition in concurrent inserts",
+    "Auto-increment primary key collision",
+    "Case-insensitive uniqueness expected but not enforced",
+    "Composite unique constraint violation"
+  ],
+  "solutions": [
+    "Use INSERT OR REPLACE for upsert behavior",
+    "Check for existing record before insert",
+    "Use @Insert(onConflict = REPLACE) in Room",
+    "Query existing record and update if found",
+    "Let Room auto-generate primary keys",
+    "Use IGNORE strategy to skip duplicates",
+    "Implement retry logic with different values"
+  ],
+  "prevention": [
+    "Use Room's onConflict strategies appropriately",
+    "Let Room handle primary key generation",
+    "Define unique constraints explicitly in schema",
+    "Use composite keys when single column insufficient",
+    "Test concurrent insert scenarios",
+    "Validate uniqueness before insert in business logic",
+    "Use upsert patterns for idempotent operations"
+  ],
+  "examples": [
+    "@Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(item: Item)",
+    "@Entity(indices = [Index(value = [\"userId\", \"timestamp\"], unique = true)])",
+    "INSERT OR IGNORE INTO table (id, name) VALUES (?, ?)"
+  ],
+  "relatedErrors": [
+    "SQLiteConstraintException UNIQUE",
+    "Primary key constraint failed"
+  ]
+}

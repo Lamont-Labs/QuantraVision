@@ -1,0 +1,41 @@
+{
+  "errorName": "Compose_RememberKeyMissing",
+  "category": "framework",
+  "description": "remember() called without proper keys, causing stale values or unnecessary recreations. Compose state management issue.",
+  "commonCauses": [
+    "remember() without keys for dynamic values",
+    "Using wrong variable as key",
+    "Missing key when value depends on state",
+    "Key doesn't change when value should update",
+    "Multiple dependencies but single key",
+    "Primitive value as key when object identity needed",
+    "Key is unstable class causing recreations"
+  ],
+  "solutions": [
+    "Add keys for all dependencies: remember(dep1, dep2) { }",
+    "Use proper identity for keys (not always same instance)",
+    "Include all state dependencies in key list",
+    "Use rememberSaveable for configuration changes",
+    "Mark key classes as @Stable or use primitives",
+    "Validate key stability in Compose tests",
+    "Use remember without keys only for truly static values"
+  ],
+  "prevention": [
+    "Always specify keys for remember with dependencies",
+    "Use Lint to detect missing keys (compose compiler metrics)",
+    "Test with different state combinations",
+    "Use rememberSaveable for persisted state",
+    "Document why keys are chosen for complex remember blocks",
+    "Profile remember cache hits/misses in debug",
+    "Review remember usage in code reviews"
+  ],
+  "examples": [
+    "val processor = remember(patternId, config) { PatternProcessor(patternId, config) }",
+    "val list = remember(items.size) { items.toList() } // Stable key",
+    "val callback = rememberUpdatedState(onClick) // Latest callback"
+  ],
+  "relatedErrors": [
+    "Stale values in Compose",
+    "Unnecessary object recreations"
+  ]
+}

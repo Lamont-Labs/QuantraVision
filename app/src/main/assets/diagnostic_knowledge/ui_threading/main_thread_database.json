@@ -1,0 +1,43 @@
+{
+  "errorName": "MainThreadDatabase",
+  "category": "ui_threading",
+  "description": "Database operations performed on main thread causing ANR. Critical performance and responsiveness issue.",
+  "commonCauses": [
+    "Direct database queries on UI thread",
+    "Room query without suspend or LiveData",
+    "SQLite operations in onCreate/onResume",
+    "ContentProvider query on main thread",
+    "Database migration on main thread",
+    "Cursor iteration blocking UI",
+    "Large transaction on main thread"
+  ],
+  "solutions": [
+    "Use Room with suspend functions or Flow",
+    "Move database operations to background thread",
+    "Use LiveData for automatic background execution",
+    "Implement proper coroutine-based database access",
+    "Use Room's allowMainThreadQueries() only for debugging",
+    "Use AsyncTask or Executors for legacy code",
+    "Enable StrictMode to detect violations"
+  ],
+  "prevention": [
+    "Always use suspend functions with Room",
+    "Use Flow or LiveData for reactive queries",
+    "Never call dao.query() directly from UI code",
+    "Enable StrictMode detectDiskReads() in debug",
+    "Use viewModelScope.launch for database operations",
+    "Test database operations with StrictMode",
+    "Remove allowMainThreadQueries() from production"
+  ],
+  "examples": [
+    "@Dao interface UserDao { @Query(\"SELECT * FROM users\") suspend fun getAll(): List<User> }",
+    "viewModelScope.launch(Dispatchers.IO) { val users = database.userDao().getAll() }",
+    "@Query(\"SELECT * FROM users\") fun getAllFlow(): Flow<List<User>>",
+    "// Emergency debug only: database.allowMainThreadQueries() // REMOVE IN PRODUCTION"
+  ],
+  "relatedErrors": [
+    "ANR_ApplicationNotResponding",
+    "NetworkOnMainThreadException",
+    "StrictMode violation"
+  ]
+}

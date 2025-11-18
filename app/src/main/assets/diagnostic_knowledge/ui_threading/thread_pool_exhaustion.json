@@ -1,0 +1,43 @@
+{
+  "errorName": "ThreadPoolExhaustion",
+  "category": "ui_threading",
+  "description": "Thread pool queue full or all threads busy, causing tasks to be rejected or delayed. Resource exhaustion in concurrent execution.",
+  "commonCauses": [
+    "Too many concurrent tasks submitted",
+    "Long-running tasks blocking thread pool",
+    "Tasks waiting for each other in same pool",
+    "Fixed-size pool with unbounded work queue",
+    "No task timeout or cancellation",
+    "Recursive task submission to same pool",
+    "Thread pool size too small for workload"
+  ],
+  "solutions": [
+    "Increase thread pool size appropriately",
+    "Use separate pools for different task types",
+    "Implement task timeout and cancellation",
+    "Use unbounded vs bounded pools appropriately",
+    "Monitor thread pool metrics",
+    "Use cached thread pool for short tasks",
+    "Implement backpressure for task submission"
+  ],
+  "prevention": [
+    "Size thread pools based on workload characteristics",
+    "Use Dispatchers.IO for I/O-bound tasks (unlimited threads)",
+    "Monitor thread pool utilization",
+    "Implement proper task timeout",
+    "Use different pools for CPU vs I/O bound tasks",
+    "Test with realistic concurrent load",
+    "Use coroutines for better resource management"
+  ],
+  "examples": [
+    "val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())",
+    "// Kotlin coroutines handle this better: launch(Dispatchers.IO) { /* I/O work */ }",
+    "val executor = ThreadPoolExecutor(core, max, keepAlive, TimeUnit, queue, RejectedExecutionHandler { r, e -> handleRejection() })",
+    "// Monitor: val activeCount = executor.activeCount; val queueSize = executor.queue.size"
+  ],
+  "relatedErrors": [
+    "RejectedExecutionException",
+    "OutOfMemoryError",
+    "Timeout exceptions"
+  ]
+}

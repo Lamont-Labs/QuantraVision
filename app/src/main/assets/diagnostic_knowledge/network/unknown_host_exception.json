@@ -1,0 +1,42 @@
+{
+  "errorName": "UnknownHostException",
+  "category": "network",
+  "description": "DNS resolution failed - hostname could not be resolved to IP address. Network or DNS configuration issue.",
+  "commonCauses": [
+    "No internet connection",
+    "DNS server unreachable",
+    "Incorrect hostname/domain",
+    "DNS cache issues",
+    "Firewall blocking DNS",
+    "VPN or proxy interference",
+    "Typo in base URL"
+  ],
+  "solutions": [
+    "Check internet connectivity first",
+    "Verify hostname is correct",
+    "Retry with exponential backoff",
+    "Show no internet connection message",
+    "Test with different DNS (8.8.8.8, 1.1.1.1)",
+    "Clear DNS cache if possible",
+    "Implement connectivity checking"
+  ],
+  "prevention": [
+    "Check network connectivity before requests",
+    "Use constants for hostnames",
+    "Implement connectivity monitoring",
+    "Show offline mode when no connection",
+    "Cache data for offline access",
+    "Test with airplane mode",
+    "Validate URLs at compile time"
+  ],
+  "examples": [
+    "try { api.call() } catch (e: UnknownHostException) { if (!isNetworkAvailable()) showNoInternetError() else showDNSError() }",
+    "val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager; val isConnected = cm.activeNetwork != null",
+    "if (isNetworkAvailable()) makeRequest() else showOfflineMode()"
+  ],
+  "relatedErrors": [
+    "SocketException",
+    "ConnectException",
+    "NoRouteToHostException"
+  ]
+}

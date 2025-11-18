@@ -1,0 +1,43 @@
+{
+  "errorName": "ConcurrentModificationException",
+  "category": "crashes",
+  "description": "Collection modified while being iterated, violating iterator's fail-fast behavior. Common in multi-threaded scenarios or during iteration.",
+  "commonCauses": [
+    "Modifying list while iterating with for-each loop",
+    "Multiple threads accessing same collection",
+    "Removing items during iteration without iterator",
+    "Adapter dataset changed during layout pass",
+    "Modifying collection in event handler during iteration",
+    "Adding/removing during forEach lambda",
+    "RecyclerView data changed during diff calculation"
+  ],
+  "solutions": [
+    "Use iterator.remove() instead of list.remove() during iteration",
+    "Create copy of collection before iterating if modifications needed",
+    "Use CopyOnWriteArrayList for concurrent scenarios",
+    "Synchronize collection access with locks",
+    "Use removeIf() or filter() instead of manual iteration",
+    "For RecyclerView, use DiffUtil and submitList()",
+    "Use immutable collections where possible"
+  ],
+  "prevention": [
+    "Never modify collection during iteration unless using iterator",
+    "Use thread-safe collections for multi-threaded access",
+    "Prefer immutable collections and functional transformations",
+    "Use synchronized blocks for shared mutable collections",
+    "For RecyclerView, always use DiffUtil for updates",
+    "Consider using Flow or LiveData for reactive collections",
+    "Document thread-safety requirements clearly"
+  ],
+  "examples": [
+    "val iterator = list.iterator(); while (iterator.hasNext()) { if (condition) iterator.remove() }",
+    "val copy = ArrayList(original); copy.removeIf { condition }",
+    "val concurrent = CopyOnWriteArrayList<String>()",
+    "synchronized(list) { list.removeAll { it.isInvalid } }"
+  ],
+  "relatedErrors": [
+    "IndexOutOfBoundsException",
+    "IllegalStateException",
+    "ConcurrentModificationException"
+  ]
+}

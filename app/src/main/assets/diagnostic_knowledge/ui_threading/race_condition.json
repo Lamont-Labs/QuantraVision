@@ -1,0 +1,44 @@
+{
+  "errorName": "RaceCondition",
+  "category": "ui_threading",
+  "description": "Multiple threads accessing shared data without proper synchronization, causing unpredictable behavior and data corruption.",
+  "commonCauses": [
+    "Multiple threads modifying shared variable",
+    "Check-then-act pattern without synchronization",
+    "Non-atomic operations on shared state",
+    "Unsynchronized access to collections",
+    "Multiple threads updating UI",
+    "Shared mutable state without locks",
+    "Cache invalidation race with updates"
+  ],
+  "solutions": [
+    "Use AtomicInteger, AtomicBoolean for simple counters/flags",
+    "Synchronize access to shared mutable state",
+    "Use ConcurrentHashMap for concurrent collections",
+    "Use volatile for visibility guarantees",
+    "Implement proper locking strategy",
+    "Use thread-safe data structures",
+    "Prefer immutable data structures"
+  ],
+  "prevention": [
+    "Minimize shared mutable state",
+    "Use immutable data classes",
+    "Synchronize all access to mutable shared state",
+    "Use concurrent collections for multi-threaded access",
+    "Use @Volatile annotation for visibility",
+    "Test with ThreadSanitizer",
+    "Use Kotlin's atomic operations (atomicfu library)"
+  ],
+  "examples": [
+    "private val counter = AtomicInteger(0); fun increment() = counter.incrementAndGet()",
+    "@Volatile private var isRunning = false",
+    "private val map = ConcurrentHashMap<String, Data>()",
+    "synchronized(lock) { if (!initialized) { initialize(); initialized = true } }",
+    "// Better: Use StateFlow for thread-safe state: val state = MutableStateFlow(initial)"
+  ],
+  "relatedErrors": [
+    "ConcurrentModificationException",
+    "Data corruption",
+    "Inconsistent state"
+  ]
+}

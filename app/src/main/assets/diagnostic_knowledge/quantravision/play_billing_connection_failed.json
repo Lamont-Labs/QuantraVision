@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_PlayBillingConnectionFailed",
+  "category": "quantravision",
+  "description": "Google Play Billing connection fails, preventing subscription and tier management. In-app purchases unavailable.",
+  "commonCauses": [
+    "Google Play Services not available or outdated",
+    "Network connectivity issues",
+    "Device not signed into Google account",
+    "Billing API version incompatibility",
+    "Connection timeout",
+    "BillingClient setup not called",
+    "App not published or in testing mode"
+  ],
+  "solutions": [
+    "Check Google Play Services availability first",
+    "Implement connection retry with exponential backoff",
+    "Handle BillingResult.responseCode for specific errors",
+    "Verify device has active Google account",
+    "Use latest Billing Library version",
+    "Implement offline mode for cached entitlements",
+    "Show user-friendly error for unavailable billing"
+  ],
+  "prevention": [
+    "Always check isReady before billing operations",
+    "Implement robust connection state management",
+    "Cache entitlements for offline access",
+    "Test on devices without Play Services",
+    "Monitor billing connection success rate",
+    "Implement graceful degradation without billing",
+    "Test in production, sandbox, and testing modes"
+  ],
+  "examples": [
+    "billingClient.startConnection(object : BillingClientStateListener { ... })",
+    "if (billingClient.isReady) { queryPurchases() } else { reconnect() }",
+    "when (billingResult.responseCode) { BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> retry() }"
+  ],
+  "relatedErrors": [
+    "BillingResult.SERVICE_UNAVAILABLE",
+    "BillingResult.BILLING_UNAVAILABLE"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "NetworkSecurityConfigError",
+  "category": "network",
+  "description": "Network Security Configuration blocking connection. Android security policy preventing network access.",
+  "commonCauses": [
+    "Cleartext HTTP blocked on Android 9+",
+    "Domain not in cleartext traffic permitted list",
+    "Certificate not in trust anchors",
+    "User certificates not trusted",
+    "Incorrect XML configuration",
+    "Missing network_security_config.xml",
+    "Debug certificates not allowed in production"
+  ],
+  "solutions": [
+    "Use HTTPS instead of HTTP",
+    "Add domain to cleartextTrafficPermitted",
+    "Configure proper trust anchors",
+    "Fix network_security_config.xml syntax",
+    "Enable user certificates for debug",
+    "Test configuration on target API levels",
+    "Never permit cleartext in production"
+  ],
+  "prevention": [
+    "Use HTTPS for all network traffic",
+    "Configure network security config properly",
+    "Test on Android 9+ devices",
+    "Use different configs for debug/release",
+    "Validate XML configuration",
+    "Document security requirements",
+    "Never bypass security in production"
+  ],
+  "examples": [
+    "<network-security-config><domain-config cleartextTrafficPermitted=\"true\"><domain includeSubdomains=\"true\">localhost</domain></domain-config></network-security-config>",
+    "// AndroidManifest.xml: <application android:networkSecurityConfig=\"@xml/network_security_config\">",
+    "<base-config cleartextTrafficPermitted=\"false\"><trust-anchors><certificates src=\"system\" /></trust-anchors></base-config>",
+    "// Debug only: <debug-overrides><trust-anchors><certificates src=\"user\" /></trust-anchors></debug-overrides>"
+  ],
+  "relatedErrors": [
+    "CleartextNotPermittedException",
+    "SSLHandshakeException",
+    "SecurityException"
+  ]
+}

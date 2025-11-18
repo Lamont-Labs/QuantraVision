@@ -1,0 +1,43 @@
+{
+  "errorName": "GC_Thrashing",
+  "category": "memory",
+  "description": "Excessive garbage collection causing performance degradation. App spends more time in GC than executing code.",
+  "commonCauses": [
+    "Creating too many temporary objects",
+    "High object allocation rate",
+    "Memory pressure near heap limit",
+    "Large collections being recreated frequently",
+    "String concatenation in loops",
+    "Boxing/unboxing primitive types",
+    "Frequent bitmap operations"
+  ],
+  "solutions": [
+    "Reduce object allocation rate",
+    "Use StringBuilder instead of string concatenation",
+    "Implement object pooling",
+    "Use primitive arrays instead of collections",
+    "Cache frequently used objects",
+    "Optimize allocation patterns with Profiler",
+    "Increase heap size only if absolutely necessary"
+  ],
+  "prevention": [
+    "Monitor GC frequency with Android Profiler",
+    "Minimize allocations in performance-critical code",
+    "Use primitive types instead of wrapper classes",
+    "Avoid allocations in loops and draw methods",
+    "Implement lazy initialization",
+    "Use SparseArray instead of HashMap<Integer, *>",
+    "Profile and optimize hot paths"
+  ],
+  "examples": [
+    "val builder = StringBuilder(); for (s in strings) builder.append(s)",
+    "val array = IntArray(size) // Instead of Array<Int>",
+    "val cache = LruCache<String, Data>(maxSize)",
+    "// Avoid: for (i in 0..1000) { val obj = TempObject() } // Creates 1000 objects"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "ANR from excessive GC",
+    "Frame drops from GC pauses"
+  ]
+}

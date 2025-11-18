@@ -1,0 +1,41 @@
+{
+  "errorName": "Database_CheckConstraintFailed",
+  "category": "database",
+  "description": "CHECK constraint violation when inserted or updated value doesn't satisfy the constraint condition.",
+  "commonCauses": [
+    "Value outside allowed range (e.g., age < 0)",
+    "Enum value not in allowed set",
+    "Business rule violation (e.g., endDate < startDate)",
+    "Conditional constraint failed",
+    "Value format doesn't match pattern",
+    "Null value when CHECK requires non-null",
+    "Type mismatch in CHECK expression"
+  ],
+  "solutions": [
+    "Validate data before database insert",
+    "Update CHECK constraint to match requirements",
+    "Use proper data types to enforce constraints",
+    "Implement validation in entity class",
+    "Add business logic validation layer",
+    "Use Room type converters for complex validation",
+    "Provide user-friendly error messages"
+  ],
+  "prevention": [
+    "Define CHECK constraints that match business rules",
+    "Validate data in ViewModel before database operations",
+    "Use sealed classes for type-safe enums",
+    "Document CHECK constraints in entity comments",
+    "Test constraint violations in unit tests",
+    "Use data classes with init blocks for validation",
+    "Implement validation at UI layer as well"
+  ],
+  "examples": [
+    "CHECK (confidence >= 0.0 AND confidence <= 1.0)",
+    "CHECK (status IN ('PENDING', 'ACTIVE', 'COMPLETED'))",
+    "data class Scan(val confidence: Float) { init { require(confidence in 0.0..1.0) } }"
+  ],
+  "relatedErrors": [
+    "SQLiteConstraintException CHECK",
+    "Check constraint failed"
+  ]
+}

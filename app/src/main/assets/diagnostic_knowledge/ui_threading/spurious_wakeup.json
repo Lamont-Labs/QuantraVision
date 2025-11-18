@@ -1,0 +1,43 @@
+{
+  "errorName": "SpuriousWakeup",
+  "category": "ui_threading",
+  "description": "Thread wakes from wait() without notify/notifyAll being called. JVM threading behavior requiring defensive programming.",
+  "commonCauses": [
+    "Object.wait() waking without notify",
+    "Condition not rechecked after wakeup",
+    "Using if instead of while for wait condition",
+    "Assuming wait() only wakes on notification",
+    "Thread spuriously waking from park()",
+    "Lost notification due to race",
+    "Timeout causing apparent spurious wakeup"
+  ],
+  "solutions": [
+    "Always use while loop not if for wait condition",
+    "Recheck condition after every wakeup",
+    "Use modern concurrency utilities (CountDownLatch)",
+    "Implement proper wait/notify pattern",
+    "Use coroutines channels instead",
+    "Handle spurious wakeups gracefully",
+    "Use java.util.concurrent primitives"
+  ],
+  "prevention": [
+    "Always use while loop with wait(): while (!condition) wait()",
+    "Recheck condition after wakeup",
+    "Use higher-level concurrency primitives",
+    "Prefer coroutines for coordination",
+    "Test concurrent scenarios thoroughly",
+    "Document wait/notify usage patterns",
+    "Use Semaphore or CountDownLatch instead"
+  ],
+  "examples": [
+    "// Correct pattern: synchronized(lock) { while (!condition) { lock.wait() }; doWork() }",
+    "// Wrong: if (!condition) lock.wait() // Spurious wakeup not handled",
+    "// Better: Use CountDownLatch: latch.await(); doWork()",
+    "// Best: Use coroutines: channel.receive(); doWork()"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "Race condition",
+    "Lost notification"
+  ]
+}

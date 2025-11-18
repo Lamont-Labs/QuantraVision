@@ -1,0 +1,43 @@
+{
+  "errorName": "WorkManagerLeak",
+  "category": "memory",
+  "description": "WorkManager Worker holding Activity/Context references, causing leak when work runs after activity destroyed.",
+  "commonCauses": [
+    "Worker storing Activity reference",
+    "Worker created with Activity context",
+    "Worker holding UI-specific objects",
+    "Long-running work with context reference",
+    "Worker callback referencing Activity",
+    "Worker storing Views or Fragments",
+    "Context passed to Worker retained"
+  ],
+  "solutions": [
+    "Use applicationContext in Workers",
+    "Never store Activity reference in Worker",
+    "Pass only data needed via Data.Builder",
+    "Use WorkManager constraints instead of context",
+    "Communicate results via WorkInfo/Data output",
+    "Return Result and let UI observe WorkInfo",
+    "Use dependency injection with ApplicationContext"
+  ],
+  "prevention": [
+    "Workers must only use applicationContext",
+    "Pass data through Data.Builder, not context",
+    "Never inject Activity into Worker",
+    "Use @ApplicationContext for DI in Workers",
+    "Test Worker isolation from UI",
+    "Document Worker context requirements",
+    "Use setProgress() for worker state updates"
+  ],
+  "examples": [
+    "class MyWorker(context: Context, params: WorkerParameters) : Worker(context, params) { private val appContext = context.applicationContext }",
+    "// Pass data: val data = Data.Builder().putString(\"key\", value).build()",
+    "// Observe: WorkManager.getInstance(context).getWorkInfoByIdLiveData(workId).observe(lifecycleOwner) { }",
+    "@HiltWorker class MyWorker @AssistedInject constructor(@Assisted context: Context, @ApplicationContext appContext: Context)"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "Context leak",
+    "OutOfMemoryError"
+  ]
+}

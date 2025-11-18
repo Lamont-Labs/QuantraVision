@@ -1,0 +1,43 @@
+{
+  "errorName": "ViewModelLeak",
+  "category": "memory",
+  "description": "ViewModel holding references to Activity/Fragment/View, causing memory leak. Violates ViewModel architecture principle.",
+  "commonCauses": [
+    "ViewModel storing Activity/Fragment reference",
+    "ViewModel holding View reference",
+    "ViewModel storing Context (not Application)",
+    "ViewModel with UI-specific objects",
+    "Lambda in ViewModel capturing Activity",
+    "Callback holding Activity reference",
+    "Repository injected with Activity context"
+  ],
+  "solutions": [
+    "Never store Activity/Fragment/View in ViewModel",
+    "Use Application context only if context needed",
+    "Pass activity context as method parameter when needed",
+    "Use AndroidViewModel for Application context",
+    "Communicate with UI via LiveData/Flow only",
+    "Use WeakReference if absolutely necessary",
+    "Refactor to separate UI and business logic"
+  ],
+  "prevention": [
+    "ViewModels must never reference Activity/Fragment/View",
+    "Use AndroidViewModel(application) for context needs",
+    "Communicate with UI through LiveData/StateFlow",
+    "Test ViewModels with LeakCanary",
+    "Code review for ViewModel architecture violations",
+    "Use dependency injection with proper scoping",
+    "Document ViewModel lifecycle and responsibilities"
+  ],
+  "examples": [
+    "// Bad: class MyViewModel : ViewModel() { private val activity: Activity }",
+    "// Good: class MyViewModel(private val repository: Repository) : ViewModel()",
+    "class MyViewModel(app: Application) : AndroidViewModel(app) { private val appContext = getApplication<Application>() }",
+    "// Communicate via: val uiState = MutableLiveData<UiState>(); // UI observes this"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "OutOfMemoryError",
+    "Context leak"
+  ]
+}

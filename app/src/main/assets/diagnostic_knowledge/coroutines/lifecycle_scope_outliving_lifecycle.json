@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_LifecycleScopeOutlivingLifecycle",
+  "category": "coroutines",
+  "description": "LifecycleScope coroutine outlives lifecycle owner, causing crashes or memory leaks. Lifecycle-coroutine binding broken.",
+  "commonCauses": [
+    "Using Activity lifecycleScope in Service or Application",
+    "Fragment using Activity lifecycle instead of viewLifecycle",
+    "Lifecycle owner leaked preventing scope cancellation",
+    "Custom lifecycle implementation not cancelling scope",
+    "Using wrong lifecycle owner for operation",
+    "Lifecycle.State not reaching DESTROYED",
+    "Lifecycle observer not properly attached"
+  ],
+  "solutions": [
+    "Use correct lifecycle owner for scope",
+    "Use viewLifecycleOwner.lifecycleScope in Fragments",
+    "Ensure lifecycle reaches DESTROYED state",
+    "Don't leak lifecycle owners",
+    "Use lifecycle-appropriate scope for work duration",
+    "Test lifecycle transitions thoroughly",
+    "Verify scope cancellation on lifecycle destroy"
+  ],
+  "prevention": [
+    "Use viewLifecycleOwner in Fragments for view work",
+    "Use Activity/Fragment lifecycle only for component work",
+    "Test with LeakCanary for lifecycle leaks",
+    "Verify lifecycle state transitions",
+    "Use proper lifecycle scope for each component type",
+    "Test configuration changes and back navigation",
+    "Monitor lifecycle state in debug builds"
+  ],
+  "examples": [
+    "// Fragment: viewLifecycleOwner.lifecycleScope.launch { }",
+    "// Activity: lifecycleScope.launch { }",
+    "lifecycle.addObserver(LifecycleEventObserver { _, event -> if (event == ON_DESTROY) cancel() })"
+  ],
+  "relatedErrors": [
+    "IllegalStateException lifecycle destroyed",
+    "Memory leak from lifecycle scope"
+  ]
+}

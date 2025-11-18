@@ -1,0 +1,43 @@
+{
+  "errorName": "VolatileArrayIssue",
+  "category": "ui_threading",
+  "description": "Volatile on array reference doesn't make array elements volatile. Memory visibility issue with arrays.",
+  "commonCauses": [
+    "@Volatile on array but modifying elements",
+    "Assuming volatile array means volatile elements",
+    "Array element updates not visible across threads",
+    "Race condition on array element modification",
+    "Shared array without proper synchronization",
+    "Volatile reference but non-volatile contents",
+    "Memory visibility issues with array updates"
+  ],
+  "solutions": [
+    "Use AtomicIntegerArray, AtomicReferenceArray",
+    "Synchronize access to array elements",
+    "Use volatile + defensive copy pattern",
+    "Replace array with concurrent collection",
+    "Use proper memory barriers",
+    "Implement custom synchronization",
+    "Consider immutable arrays"
+  ],
+  "prevention": [
+    "Use AtomicArray types for concurrent access",
+    "Synchronize all array element access",
+    "Understand volatile reference vs contents",
+    "Use concurrent collections instead of arrays",
+    "Test concurrent array access thoroughly",
+    "Document synchronization requirements",
+    "Prefer immutable collections"
+  ],
+  "examples": [
+    "// Bad: @Volatile private var array = IntArray(10); array[0] = 1 // NOT thread-safe",
+    "// Good: private val array = AtomicIntegerArray(10); array.set(0, 1)",
+    "// Or: synchronized(lock) { array[0] = 1 }",
+    "// Best: Use CopyOnWriteArrayList for reference arrays"
+  ],
+  "relatedErrors": [
+    "Race condition",
+    "Data corruption",
+    "Visibility issues"
+  ]
+}

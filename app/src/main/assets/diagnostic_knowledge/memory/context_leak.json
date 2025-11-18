@@ -1,0 +1,43 @@
+{
+  "errorName": "ContextLeak",
+  "category": "memory",
+  "description": "Activity or Context reference retained by long-lived object, preventing activity from being garbage collected.",
+  "commonCauses": [
+    "Singleton holding activity reference",
+    "Static field holding context",
+    "Application context when activity needed",
+    "Anonymous inner class with context",
+    "Listener holding activity reference",
+    "ViewModel holding activity reference",
+    "Background thread with context reference"
+  ],
+  "solutions": [
+    "Use application context for long-lived objects",
+    "Use WeakReference for activity in singletons",
+    "Pass applicationContext to singletons",
+    "Make inner classes static with WeakReference",
+    "Don't store activity in ViewModel",
+    "Use dependency injection with proper scoping",
+    "Clear context references in lifecycle methods"
+  ],
+  "prevention": [
+    "Never store activity context in static fields or singletons",
+    "Use application context for non-UI operations",
+    "Scope objects properly with Hilt/Dagger",
+    "Use WeakReference for activity in long-lived objects",
+    "ViewModels must never reference Activity/Fragment/View",
+    "Test with LeakCanary",
+    "Use appropriate context for each use case"
+  ],
+  "examples": [
+    "class MySingleton private constructor(context: Context) { private val appContext = context.applicationContext }",
+    "class MyViewModel : ViewModel() { /* Never hold Activity reference */ }",
+    "class MyCallback(activity: Activity) { private val weakActivity = WeakReference(activity) }",
+    "// Use: val context = applicationContext for long-lived operations"
+  ],
+  "relatedErrors": [
+    "Activity leak",
+    "OutOfMemoryError",
+    "WindowLeakedException"
+  ]
+}

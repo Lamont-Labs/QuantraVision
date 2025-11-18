@@ -1,0 +1,42 @@
+{
+  "errorName": "Coroutine_DispatcherMainImmediateCrash",
+  "category": "coroutines",
+  "description": "Dispatchers.Main.immediate causes crashes when not on main thread. Dispatcher optimization misuse.",
+  "commonCauses": [
+    "Using Dispatchers.Main.immediate from background thread",
+    "withContext(Dispatchers.Main.immediate) from IO dispatcher",
+    "Assuming immediate always safe regardless of caller context",
+    "Misunderstanding immediate dispatcher behavior",
+    "Race condition with thread switching",
+    "Using immediate without understanding current thread",
+    "Flow collection dispatcher mismatch"
+  ],
+  "solutions": [
+    "Use Dispatchers.Main.immediate only when already on main thread",
+    "Use Dispatchers.Main for general main thread dispatch",
+    "Check current thread before using immediate",
+    "Understand immediate optimization: skips dispatch if already on main",
+    "Use withContext(Dispatchers.Main) for safety",
+    "Test dispatcher usage from various contexts",
+    "Document when immediate is appropriate"
+  ],
+  "prevention": [
+    "Use Dispatchers.Main unless optimization proven necessary",
+    "Only use immediate when caller guarantees main thread",
+    "Test coroutine dispatching from background threads",
+    "Understand immediate vs regular Main dispatcher",
+    "Document dispatcher choice rationale",
+    "Use StrictMode to detect threading issues",
+    "Profile before optimizing with immediate"
+  ],
+  "examples": [
+    "// SAFE: Already on main thread",
+    "withContext(Dispatchers.Main.immediate) { updateUI() }",
+    "// PREFER: Use regular Main for safety",
+    "withContext(Dispatchers.Main) { updateUI() }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException wrong thread",
+    "CalledFromWrongThreadException"
+  ]
+}

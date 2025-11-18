@@ -1,0 +1,42 @@
+{
+  "errorName": "WindowLeakedException",
+  "category": "crashes",
+  "description": "Activity destroyed while Dialog/Popup window still showing, causing window leak. Memory leak and crash combined.",
+  "commonCauses": [
+    "Dialog shown but not dismissed in onPause/onDestroy",
+    "AlertDialog not dismissed on activity finish",
+    "PopupWindow kept alive after activity destroyed",
+    "Toast shown after activity destroyed",
+    "ProgressDialog not dismissed in lifecycle",
+    "Custom dialogs not lifecycle-aware",
+    "Async operation showing dialog after activity gone"
+  ],
+  "solutions": [
+    "Dismiss all dialogs in onPause() or onStop()",
+    "Use lifecycle-aware dialogs with lifecycleOwner",
+    "Cancel async operations that show dialogs",
+    "Check if activity isFinishing before showing dialog",
+    "Use DialogFragment instead of Dialog",
+    "Store dialog reference and dismiss in onDestroy()",
+    "Use WeakReference for dialog callbacks"
+  ],
+  "prevention": [
+    "Always use DialogFragment instead of Dialog",
+    "Dismiss dialogs in onPause() or onStop()",
+    "Make dialogs lifecycle-aware",
+    "Cancel pending operations showing dialogs on destroy",
+    "Use viewLifecycleOwner for fragment dialogs",
+    "Avoid showing dialogs from async callbacks",
+    "Use Compose dialogs tied to composition lifecycle"
+  ],
+  "examples": [
+    "private var dialog: AlertDialog? = null; override fun onPause() { super.onPause(); dialog?.dismiss() }",
+    "class MyDialogFragment : DialogFragment() { /* auto lifecycle-aware */ }",
+    "if (!isFinishing) { AlertDialog.Builder(this).show() }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "BadTokenException",
+    "NullPointerException"
+  ]
+}

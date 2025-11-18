@@ -1,0 +1,43 @@
+{
+  "errorName": "ComposeRememberLeak",
+  "category": "memory",
+  "description": "Jetpack Compose remember holding expensive objects across recompositions, causing memory pressure. Compose-specific memory management issue.",
+  "commonCauses": [
+    "remember { } caching large objects indefinitely",
+    "Bitmap stored in remember without disposal",
+    "Heavy computation result remembered without key",
+    "remember without proper keys causing stale retention",
+    "DisposableEffect not disposing resources",
+    "rememberCoroutineScope with long-running jobs",
+    "Remembering ViewModel or context incorrectly"
+  ],
+  "solutions": [
+    "Use remember with proper keys for invalidation",
+    "Implement DisposableEffect for resource cleanup",
+    "Use rememberUpdatedState for callbacks",
+    "Clear heavy objects in DisposableEffect onDispose",
+    "Use derivedStateOf for computed values",
+    "Don't remember ViewModels - use viewModel() function",
+    "Use LaunchedEffect with proper keys"
+  ],
+  "prevention": [
+    "Use remember keys to control cache invalidation",
+    "Implement DisposableEffect for all managed resources",
+    "Don't remember large objects without disposal strategy",
+    "Use appropriate remember variants (rememberSaveable, etc.)",
+    "Test composition/recomposition behavior",
+    "Monitor Compose memory with Profiler",
+    "Use Compose Layout Inspector to debug"
+  ],
+  "examples": [
+    "val bitmap = remember(key) { loadBitmap() }; DisposableEffect(key) { onDispose { bitmap?.recycle() } }",
+    "val callback = rememberUpdatedState(onClick); LaunchedEffect(key) { /* use callback.value */ }",
+    "val viewModel: MyViewModel = viewModel() // Don't remember ViewModels",
+    "DisposableEffect(Unit) { val job = scope.launch { }; onDispose { job.cancel() } }"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "Recomposition performance issues",
+    "Memory leak"
+  ]
+}

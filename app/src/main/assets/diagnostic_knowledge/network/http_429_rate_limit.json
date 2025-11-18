@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_429_TooManyRequests",
+  "category": "network",
+  "description": "HTTP 429 indicates client sent too many requests in given time. Rate limiting protection triggered.",
+  "commonCauses": [
+    "Exceeding API rate limits",
+    "Too many concurrent requests",
+    "Request bursting without throttling",
+    "Retry logic without backoff",
+    "Polling too frequently",
+    "Multiple app instances hitting same endpoint",
+    "Missing rate limit handling"
+  ],
+  "solutions": [
+    "Implement exponential backoff",
+    "Read Retry-After header for delay",
+    "Throttle request frequency",
+    "Cache responses to reduce requests",
+    "Implement request queuing",
+    "Use batch APIs where available",
+    "Monitor rate limit headers"
+  ],
+  "prevention": [
+    "Implement exponential backoff from start",
+    "Respect Retry-After and rate limit headers",
+    "Cache aggressively to minimize requests",
+    "Use request debouncing/throttling",
+    "Monitor rate limit usage",
+    "Implement request queuing system",
+    "Test rate limiting scenarios"
+  ],
+  "examples": [
+    "val retryAfter = response.header(\"Retry-After\")?.toLongOrNull() ?: (backoffSeconds * 1000); delay(retryAfter)",
+    "class RateLimitInterceptor : Interceptor { override fun intercept(chain: Chain): Response { val response = chain.proceed(chain.request()); if (response.code == 429) { delay(parseRetryAfter(response)); return intercept(chain) }; return response } }",
+    "// Exponential backoff: delay = min(maxDelay, baseDelay * 2^attempt)"
+  ],
+  "relatedErrors": [
+    "HTTP_503_ServiceUnavailable",
+    "TooManyRequestsException",
+    "QuotaExceededException"
+  ]
+}

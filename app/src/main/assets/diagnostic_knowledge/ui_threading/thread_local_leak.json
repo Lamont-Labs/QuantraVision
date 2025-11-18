@@ -1,0 +1,43 @@
+{
+  "errorName": "ThreadLocalLeak",
+  "category": "ui_threading",
+  "description": "ThreadLocal variables not cleaned up, causing memory leak in thread pools. Thread pooling memory issue.",
+  "commonCauses": [
+    "ThreadLocal not removed after use",
+    "Thread pool reusing threads with ThreadLocal",
+    "Large objects stored in ThreadLocal",
+    "ThreadLocal in library affecting all threads",
+    "Web frameworks with ThreadLocal in Android",
+    "Context stored in ThreadLocal",
+    "ThreadLocal not cleared in finally block"
+  ],
+  "solutions": [
+    "Always call threadLocal.remove() after use",
+    "Use try-finally to ensure cleanup",
+    "Implement custom thread factory with cleanup",
+    "Use WeakReference in ThreadLocal",
+    "Minimize ThreadLocal usage",
+    "Clear ThreadLocal in thread shutdown",
+    "Use coroutine context instead"
+  ],
+  "prevention": [
+    "Always remove ThreadLocal in finally block",
+    "Avoid ThreadLocal with thread pools",
+    "Use try-finally pattern consistently",
+    "Prefer coroutine context over ThreadLocal",
+    "Test with LeakCanary",
+    "Document ThreadLocal cleanup requirements",
+    "Monitor ThreadLocal memory usage"
+  ],
+  "examples": [
+    "private val threadLocal = ThreadLocal<Context>(); try { threadLocal.set(context); /* work */ } finally { threadLocal.remove() }",
+    "// Custom thread factory: override fun newThread(r: Runnable) = Thread { try { r.run() } finally { cleanup() } }",
+    "// Better: use coroutine context: launch(CoroutineName(\"MyContext\")) { /* context available */ }",
+    "override fun onTerminate() { super.onTerminate(); threadLocal.remove() }"
+  ],
+  "relatedErrors": [
+    "Memory leak",
+    "OutOfMemoryError",
+    "Context leak"
+  ]
+}

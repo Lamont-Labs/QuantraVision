@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_FTSSearchError",
+  "category": "database",
+  "description": "Full-Text Search (FTS) queries failing or returning incorrect results. FTS tables require special handling in Room.",
+  "commonCauses": [
+    "@Fts4 or @Fts3 entity not configured properly",
+    "Content table not synced with FTS table",
+    "FTS query syntax error (MATCH clause)",
+    "Missing content synchronization triggers",
+    "Language analyzer not specified",
+    "Tokenizer configuration incorrect",
+    "Index not updated after content changes"
+  ],
+  "solutions": [
+    "Use @Fts4 with contentEntity parameter",
+    "Create FTS table with correct tokenizer: tokenizer=porter",
+    "Use MATCH syntax: WHERE table MATCH 'query'",
+    "Implement content sync triggers or use contentEntity",
+    "Rebuild FTS index: INSERT INTO fts_table(fts_table) VALUES('rebuild')",
+    "Use Room's FTS entity generation",
+    "Test FTS queries with various search terms"
+  ],
+  "prevention": [
+    "Use @Fts4(contentEntity = Entity::class) for auto-sync",
+    "Configure appropriate tokenizer for language",
+    "Test FTS with special characters and phrases",
+    "Document FTS query syntax for team",
+    "Validate MATCH query format before execution",
+    "Use Room's FTS testing utilities",
+    "Monitor FTS index size and rebuild periodically"
+  ],
+  "examples": [
+    "@Fts4(contentEntity = Pattern::class) @Entity data class PatternFts(...)",
+    "@Query(\"SELECT * FROM pattern_fts WHERE pattern_fts MATCH :query\") fun search(query: String)",
+    "SELECT * FROM patterns WHERE rowid IN (SELECT docid FROM pattern_fts WHERE pattern_fts MATCH 'flag')"
+  ],
+  "relatedErrors": [
+    "SQLiteException FTS syntax error",
+    "Unable to use FTS table"
+  ]
+}

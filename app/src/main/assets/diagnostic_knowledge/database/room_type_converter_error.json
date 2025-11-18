@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_TypeConverterError",
+  "category": "database",
+  "description": "Room TypeConverter fails to convert between custom types and database types, causing runtime crashes or data corruption.",
+  "commonCauses": [
+    "TypeConverter not registered in @Database",
+    "Conversion throws exception on invalid data",
+    "Nullable vs non-null type mismatch",
+    "Circular type conversion logic",
+    "Complex object serialization failure",
+    "Date/Time format inconsistency",
+    "Enum conversion missing case"
+  ],
+  "solutions": [
+    "Register TypeConverters: @TypeConverters(Converters::class)",
+    "Handle null values explicitly in converter",
+    "Add try-catch in converter with fallback",
+    "Use JSON for complex objects with Gson/Moshi",
+    "Standardize Date format (ISO-8601 recommended)",
+    "Include all enum values in converter",
+    "Validate data before conversion"
+  ],
+  "prevention": [
+    "Always register TypeConverters in @Database annotation",
+    "Test converters with null, empty, and invalid data",
+    "Use standard formats: ISO-8601 for dates, JSON for objects",
+    "Document converter behavior in code comments",
+    "Avoid storing complex objects; normalize instead",
+    "Use sealed classes for type-safe conversions",
+    "Validate converter roundtrip in unit tests"
+  ],
+  "examples": [
+    "@TypeConverter fun fromTimestamp(value: Long?): Date? = value?.let { Date(it) }",
+    "@TypeConverter fun toJson(list: List<String>): String = Gson().toJson(list)",
+    "@Database(entities = [...], typeConverters = [Converters::class])"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException in TypeConverter",
+    "Room cannot convert custom type"
+  ]
+}

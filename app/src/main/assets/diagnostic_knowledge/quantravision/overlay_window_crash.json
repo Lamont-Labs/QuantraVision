@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_OverlayWindowCrash",
+  "category": "quantravision",
+  "description": "Overlay window crashes when adding view to WindowManager. Critical for QuantraVision's real-time pattern detection overlay.",
+  "commonCauses": [
+    "SYSTEM_ALERT_WINDOW permission not granted",
+    "WindowManager.LayoutParams type incorrect for Android version",
+    "Adding view to WindowManager when service destroyed",
+    "Parent context released before view removal",
+    "Multiple overlay windows with same token",
+    "View already added to WindowManager",
+    "Invalid LayoutParams causing BadTokenException"
+  ],
+  "solutions": [
+    "Check permission: Settings.canDrawOverlays(context)",
+    "Use TYPE_APPLICATION_OVERLAY on Android O+",
+    "Remove view in onDestroy: windowManager.removeView(overlay)",
+    "Track view added state before removal attempts",
+    "Use single overlay instance per service",
+    "Catch WindowManager.BadTokenException gracefully",
+    "Request overlay permission before service start"
+  ],
+  "prevention": [
+    "Always check overlay permission before WindowManager operations",
+    "Use proper window type for target Android version",
+    "Implement robust view lifecycle management",
+    "Track overlay state (added, removed) carefully",
+    "Test overlay on Android 8+ devices (TYPE_APPLICATION_OVERLAY required)",
+    "Handle service lifecycle properly with overlay cleanup",
+    "Validate context availability before view operations"
+  ],
+  "examples": [
+    "if (Settings.canDrawOverlays(context)) { windowManager.addView(overlay, params) }",
+    "val params = WindowManager.LayoutParams(TYPE_APPLICATION_OVERLAY)",
+    "override fun onDestroy() { if (isViewAdded) windowManager.removeView(overlay) }"
+  ],
+  "relatedErrors": [
+    "BadTokenException unable to add window",
+    "SecurityException SYSTEM_ALERT_WINDOW"
+  ]
+}

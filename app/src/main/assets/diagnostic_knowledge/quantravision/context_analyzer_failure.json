@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_ContextAnalyzerFailure",
+  "category": "quantravision",
+  "description": "ContextAnalyzer fails to analyze market context from indicators. QuantraScore accuracy degraded without context.",
+  "commonCauses": [
+    "Indicator extraction failed (OCR returned empty)",
+    "IndicatorExtractor returned null values",
+    "Invalid indicator ranges breaking analysis logic",
+    "Context rules configuration corrupted",
+    "Unsupported indicator combination",
+    "Market regime not recognized",
+    "Context calculation timeout"
+  ],
+  "solutions": [
+    "Implement fallback to basic context without indicators",
+    "Validate indicator values before analysis",
+    "Provide default context for missing indicators",
+    "Use partial context when some indicators missing",
+    "Cache last valid context as fallback",
+    "Implement timeout handling with default context",
+    "Log context analysis failures for debugging"
+  ],
+  "prevention": [
+    "Test ContextAnalyzer with missing/invalid indicators",
+    "Implement comprehensive error handling",
+    "Validate context rules configuration at startup",
+    "Support partial indicator sets gracefully",
+    "Monitor context analysis success rate",
+    "Provide sensible defaults for all context components",
+    "Test with various indicator combinations"
+  ],
+  "examples": [
+    "val context = contextAnalyzer.analyze(indicators) ?: IndicatorContext.DEFAULT",
+    "val partialContext = buildPartialContext(availableIndicators)",
+    "if (indicators.isEmpty()) { return getDefaultContext() }"
+  ],
+  "relatedErrors": [
+    "NullPointerException in context analysis",
+    "IllegalStateException invalid indicator set"
+  ]
+}

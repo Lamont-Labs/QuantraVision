@@ -1,0 +1,42 @@
+{
+  "errorName": "HTTP_403_Forbidden",
+  "category": "network",
+  "description": "HTTP 403 indicates server understood request but refuses to authorize it. Different from 401 - authentication won't help.",
+  "commonCauses": [
+    "Insufficient permissions for resource",
+    "IP address blocked or rate limited",
+    "API key lacks required permissions",
+    "CORS policy blocking request",
+    "Resource access restricted by policy",
+    "User account suspended or restricted",
+    "Geographic restrictions"
+  ],
+  "solutions": [
+    "Verify user permissions and roles",
+    "Check API key permissions and scopes",
+    "Review rate limiting and backoff",
+    "Configure CORS properly on server",
+    "Handle permission denied gracefully",
+    "Implement proper error messaging",
+    "Contact API provider for access"
+  ],
+  "prevention": [
+    "Request appropriate permissions upfront",
+    "Implement permission checking before requests",
+    "Handle rate limiting with exponential backoff",
+    "Test with different permission levels",
+    "Monitor for 403 responses in production",
+    "Document required permissions clearly",
+    "Implement user-friendly error messages"
+  ],
+  "examples": [
+    "if (response.code == 403) { when (response.headers[\"X-RateLimit-Remaining\"]) { \"0\" -> handleRateLimit(); else -> showPermissionDenied() } }",
+    "try { api.call() } catch (e: HttpException) { if (e.code() == 403) showInsufficientPermissions() }",
+    "// Implement exponential backoff for rate limiting"
+  ],
+  "relatedErrors": [
+    "HTTP_401_Unauthorized",
+    "HTTP_429_TooManyRequests",
+    "PermissionDeniedException"
+  ]
+}

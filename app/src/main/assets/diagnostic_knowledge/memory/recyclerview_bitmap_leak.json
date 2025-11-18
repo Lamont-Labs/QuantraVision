@@ -1,0 +1,43 @@
+{
+  "errorName": "RecyclerViewBitmapLeak",
+  "category": "memory",
+  "description": "RecyclerView items holding large bitmaps causing memory issues. Combination of bitmap management and view recycling problems.",
+  "commonCauses": [
+    "Loading full-resolution images for list items",
+    "Not clearing ImageView in onViewRecycled",
+    "Bitmap cache without size limits",
+    "Loading images synchronously in bind",
+    "Not using image loading libraries",
+    "ViewHolder holding bitmap references",
+    "Large thumbnails loaded unnecessarily"
+  ],
+  "solutions": [
+    "Use Glide/Coil for automatic bitmap management",
+    "Clear ImageViews in onViewRecycled",
+    "Load appropriately sized thumbnails",
+    "Implement proper image caching",
+    "Use RecycledViewPool for bitmap reuse",
+    "Set ImageView to null or placeholder in recycle",
+    "Use DiffUtil to minimize rebinding"
+  ],
+  "prevention": [
+    "Always use Glide/Coil for RecyclerView images",
+    "Override onViewRecycled to clear resources",
+    "Load images sized for display dimensions",
+    "Implement proper pagination for large lists",
+    "Use setRecycledViewPool for shared pools",
+    "Test with long lists and scrolling",
+    "Monitor memory during list operations"
+  ],
+  "examples": [
+    "override fun onBindViewHolder(holder: ViewHolder, position: Int) { Glide.with(holder.itemView).load(item.imageUrl).into(holder.imageView) }",
+    "override fun onViewRecycled(holder: ViewHolder) { super.onViewRecycled(holder); Glide.with(holder.itemView).clear(holder.imageView) }",
+    "Glide.with(context).load(url).override(thumbnailWidth, thumbnailHeight).into(imageView)",
+    "recyclerView.setRecycledViewPool(sharedPool)"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError_Bitmap",
+    "GC_Thrashing",
+    "Scroll jank"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_ImageReaderBufferOverflow",
+  "category": "quantravision",
+  "description": "ImageReader buffer overflows when images not consumed fast enough. Causes frame drops in pattern detection.",
+  "commonCauses": [
+    "maxImages parameter too small for capture rate",
+    "Processing images slower than capture rate",
+    "Not closing acquired images promptly",
+    "Image.close() not called in finally block",
+    "Heavy processing on capture thread",
+    "Memory leak from unclosed Image instances",
+    "Synchronous processing blocking image acquisition"
+  ],
+  "solutions": [
+    "Increase maxImages: ImageReader.newInstance(..., maxImages = 5)",
+    "Close images immediately after use: image.use { process(it) }",
+    "Process images asynchronously on background thread",
+    "Skip frames if processing can't keep up",
+    "Use coroutines for non-blocking image processing",
+    "Implement image acquisition rate limiting",
+    "Monitor buffer usage and adjust maxImages"
+  ],
+  "prevention": [
+    "Set maxImages to at least 3-5 for smooth capture",
+    "Always use image.use {} for automatic closing",
+    "Process images on Dispatchers.Default or custom executor",
+    "Implement frame skipping strategy for heavy processing",
+    "Profile image processing time vs capture rate",
+    "Test with continuous scanning scenarios",
+    "Monitor ImageReader queue depth in debug builds"
+  ],
+  "examples": [
+    "ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, maxImages = 5)",
+    "imageReader.acquireLatestImage()?.use { image -> processImage(image) }",
+    "coroutineScope.launch(Dispatchers.Default) { processImageAsync(image) }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException maxImages too small",
+    "OutOfMemoryError from unclosed images"
+  ]
+}

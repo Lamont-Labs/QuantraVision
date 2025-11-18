@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_ScreenCaptureAndroid14Failure",
+  "category": "quantravision",
+  "description": "Screen capture fails on Android 14+ due to stricter MediaProjection policies. Single VirtualDisplay per instance limitation.",
+  "commonCauses": [
+    "Creating multiple VirtualDisplay instances from one MediaProjection (Android 14+)",
+    "MediaProjection token expired after first use",
+    "Not reusing existing VirtualDisplay instance",
+    "Service restart attempting to create new VirtualDisplay",
+    "Calling createVirtualDisplay after previous not released",
+    "MediaProjection callback not handling stop event",
+    "Foreground service requirement not met on Android 14"
+  ],
+  "solutions": [
+    "Reuse single VirtualDisplay per MediaProjection instance",
+    "Cache VirtualDisplay and only create once",
+    "Release VirtualDisplay before creating new one",
+    "Request new MediaProjection permission on service restart",
+    "Implement proper VirtualDisplay lifecycle management",
+    "Handle onStop callback to clean up resources",
+    "Ensure foreground service running on Android 14+"
+  ],
+  "prevention": [
+    "Follow Android 14 MediaProjection guidelines strictly",
+    "Create VirtualDisplay ONCE per permission grant",
+    "Track VirtualDisplay state to prevent recreate attempts",
+    "Test thoroughly on Android 14+ devices",
+    "Implement MediaProjection.Callback for lifecycle events",
+    "Document Android 14 limitations in code comments",
+    "Use foreground service for capture on Android 14+"
+  ],
+  "examples": [
+    "if (virtualDisplay == null) { virtualDisplay = mediaProjection.createVirtualDisplay(...) }",
+    "mediaProjection.registerCallback(object : Callback() { override fun onStop() { cleanup() } })",
+    "// Android 14+: Only ONE createVirtualDisplay call per MediaProjection!"
+  ],
+  "relatedErrors": [
+    "IllegalStateException MediaProjection",
+    "SecurityException virtual display creation failed"
+  ]
+}

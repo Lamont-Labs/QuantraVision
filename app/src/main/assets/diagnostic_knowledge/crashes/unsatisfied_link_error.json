@@ -1,0 +1,43 @@
+{
+  "errorName": "UnsatisfiedLinkError",
+  "category": "crashes",
+  "description": "Native library or method not found. Occurs when JNI/NDK libraries fail to load or specific native methods missing.",
+  "commonCauses": [
+    "Native library (.so) not included for device ABI",
+    "Incorrect library name in System.loadLibrary()",
+    "Missing native method implementation",
+    "Library compiled for wrong architecture",
+    "Dependencies not packaged with library",
+    "JNI method signature mismatch",
+    "Library not in correct APK directory"
+  ],
+  "solutions": [
+    "Include native libraries for all target ABIs",
+    "Verify library name matches System.loadLibrary() call",
+    "Check native method signatures match exactly",
+    "Build libraries for all required architectures",
+    "Use abiFilters to specify supported ABIs",
+    "Verify .so files are in lib/<abi>/ in APK",
+    "Check for missing native dependencies"
+  ],
+  "prevention": [
+    "Build native libraries for all common ABIs (arm64-v8a, armeabi-v7a, x86_64)",
+    "Test on devices with different architectures",
+    "Use CMake or ndk-build for consistent builds",
+    "Document native library dependencies",
+    "Include fallback for unsupported architectures",
+    "Use App Bundle to optimize ABI delivery",
+    "Verify APK contents include .so files"
+  ],
+  "examples": [
+    "android { defaultConfig { ndk { abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64' } } }",
+    "System.loadLibrary(\"native-lib\") // Loads libnative-lib.so",
+    "external fun nativeMethod(): String // Must match JNI implementation",
+    "// CMakeLists.txt: add_library(native-lib SHARED native-lib.cpp)"
+  ],
+  "relatedErrors": [
+    "LinkageError",
+    "NoClassDefFoundError",
+    "ExceptionInInitializerError"
+  ]
+}

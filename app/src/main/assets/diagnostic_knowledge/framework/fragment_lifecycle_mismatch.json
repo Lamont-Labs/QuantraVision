@@ -1,0 +1,41 @@
+{
+  "errorName": "Fragment_LifecycleMismatch",
+  "category": "framework",
+  "description": "Using Fragment lifecycle instead of view lifecycle, causing crashes after view destroyed. Critical Fragment pattern.",
+  "commonCauses": [
+    "Using 'this' instead of viewLifecycleOwner for observers",
+    "Observing LiveData with Fragment lifecycle in onCreateView",
+    "Accessing view after onDestroyView",
+    "Background work not cancelled on view destruction",
+    "Using Fragment lifecycle for view-related coroutines",
+    "ViewBinding accessed after onDestroyView",
+    "Animation running after view removed"
+  ],
+  "solutions": [
+    "Use viewLifecycleOwner for all view-related observations",
+    "Use viewLifecycleOwner.lifecycleScope for view coroutines",
+    "Nullify ViewBinding in onDestroyView",
+    "Cancel view-related work in onDestroyView",
+    "Check view != null before accessing",
+    "Use requireView() only when view guaranteed to exist",
+    "Use Fragment lifecycle only for Fragment-scoped work"
+  ],
+  "prevention": [
+    "Always use viewLifecycleOwner for view observations",
+    "Set ViewBinding to null in onDestroyView",
+    "Use viewLifecycleOwner.lifecycleScope for view coroutines",
+    "Test Fragment replacement scenarios",
+    "Use view?.let { } for safe view access",
+    "Document lifecycle owner choice in code",
+    "Lint check for Fragment vs view lifecycle usage"
+  ],
+  "examples": [
+    "viewModel.data.observe(viewLifecycleOwner) { binding.text.text = it }",
+    "viewLifecycleOwner.lifecycleScope.launch { updateView() }",
+    "override fun onDestroyView() { _binding = null; super.onDestroyView() }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException Fragment not attached",
+    "NullPointerException view destroyed"
+  ]
+}

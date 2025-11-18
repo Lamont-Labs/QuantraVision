@@ -1,0 +1,43 @@
+{
+  "errorName": "SoftReferenceCleared",
+  "category": "memory",
+  "description": "SoftReference cleared by GC under memory pressure, requiring recreation of expensive objects. Performance vs memory trade-off issue.",
+  "commonCauses": [
+    "Using SoftReference for critical cached data",
+    "Memory pressure causing premature clearing",
+    "Aggressive GC on low-memory devices",
+    "Expensive object recreation after clearing",
+    "SoftReference for UI-critical resources",
+    "Not handling cleared reference properly",
+    "Using SoftReference when strong reference needed"
+  ],
+  "solutions": [
+    "Check if SoftReference cleared and recreate object",
+    "Use LruCache for predictable cache behavior",
+    "Implement fallback when SoftReference cleared",
+    "Use strong references for critical objects",
+    "Combine SoftReference with LruCache strategy",
+    "Monitor cache hit rate and adjust strategy",
+    "Use DiskLruCache for persistence"
+  ],
+  "prevention": [
+    "Use SoftReference only for memory-sensitive caches",
+    "Always have fallback for cleared references",
+    "Prefer LruCache for predictable behavior",
+    "Test on low-memory devices",
+    "Monitor cache effectiveness",
+    "Use hybrid caching strategy (strong + soft)",
+    "Document cache clearing behavior"
+  ],
+  "examples": [
+    "private var cache: SoftReference<Bitmap>? = null; fun getBitmap(): Bitmap = cache?.get() ?: loadBitmap().also { cache = SoftReference(it) }",
+    "val cached = softRef.get() ?: recreateExpensiveObject().also { softRef = SoftReference(it) }",
+    "// Better for most cases: val cache = LruCache<String, Bitmap>(maxSize)",
+    "class CacheManager { private val strongCache = LruCache<>(10); private val softCache = mutableMapOf<Key, SoftReference<Value>>() }"
+  ],
+  "relatedErrors": [
+    "NullPointerException",
+    "Performance degradation",
+    "Excessive object recreation"
+  ]
+}

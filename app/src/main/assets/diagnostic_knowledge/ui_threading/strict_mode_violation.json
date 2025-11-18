@@ -1,0 +1,44 @@
+{
+  "errorName": "StrictModeViolation",
+  "category": "ui_threading",
+  "description": "StrictMode detected policy violation - disk read, network, or custom violation on main thread. Development-time threading issue detection.",
+  "commonCauses": [
+    "Disk I/O on main thread",
+    "Network operation on UI thread",
+    "Database query on main thread",
+    "SharedPreferences on main thread (commit vs apply)",
+    "File access from UI thread",
+    "Custom slow call detected",
+    "Resource loading blocking UI"
+  ],
+  "solutions": [
+    "Move disk I/O to background thread",
+    "Use apply() instead of commit() for SharedPreferences",
+    "Perform network calls on Dispatchers.IO",
+    "Use Room with suspend functions",
+    "Read files on background thread",
+    "Use withContext(Dispatchers.IO) for I/O",
+    "Profile and fix detected violations"
+  ],
+  "prevention": [
+    "Enable StrictMode in debug builds always",
+    "Use apply() not commit() for preferences",
+    "All I/O must be on background threads",
+    "Test with StrictMode enabled",
+    "Fix all violations before release",
+    "Use coroutines for async operations",
+    "Review StrictMode policies regularly"
+  ],
+  "examples": [
+    "StrictMode.setThreadPolicy(ThreadPolicy.Builder().detectAll().penaltyLog().build())",
+    "prefs.edit().putString(\"key\", value).apply() // Not commit()",
+    "lifecycleScope.launch(Dispatchers.IO) { val data = File(path).readText() }",
+    "// Room automatically handles: @Query suspend fun getAll(): List<User>",
+    "StrictMode.noteSlowCall(\"expensive operation\")"
+  ],
+  "relatedErrors": [
+    "ANR",
+    "NetworkOnMainThreadException",
+    "Performance issues"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_GemmaModelLoadFailure",
+  "category": "quantravision",
+  "description": "Gemma AI model fails to load for pattern explanations. On-device AI feature unavailable, falling back to static explanations.",
+  "commonCauses": [
+    "Model file missing from assets directory",
+    "Insufficient memory to load model (>100MB heap needed)",
+    "TFLite interpreter initialization failed",
+    "Model file corrupted during APK build",
+    "Incompatible TFLite version with model",
+    "Device doesn't support required ops",
+    "Model loading timeout"
+  ],
+  "solutions": [
+    "Verify model exists in assets: context.assets.open(\"gemma_model.tflite\")",
+    "Check available heap before loading: Runtime.getRuntime().maxMemory()",
+    "Use fallback to static explanations on load failure",
+    "Implement lazy loading with timeout",
+    "Validate model file integrity at app startup",
+    "Use GPU delegate if available for better performance",
+    "Provide user feedback on AI availability"
+  ],
+  "prevention": [
+    "Include model validation in CI/CD pipeline",
+    "Test model loading on low-memory devices (2GB RAM)",
+    "Implement graceful fallback to rule-based explanations",
+    "Monitor model load success rate in production",
+    "Document minimum device requirements for AI",
+    "Compress model or use quantized variant",
+    "Test on various Android versions and devices"
+  ],
+  "examples": [
+    "val interpreter = Interpreter(loadModelFile(\"gemma_model.tflite\"), options)",
+    "if (availableMemory < MIN_MEMORY_FOR_AI) { useFallbackExplanations() }",
+    "try { loadModel() } catch (e: Exception) { aiAvailable = false }"
+  ],
+  "relatedErrors": [
+    "TFLiteException model loading failed",
+    "OutOfMemoryError loading model"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "ViewModel_SavedStateLoss",
+  "category": "framework",
+  "description": "ViewModel state lost on process death despite SavedStateHandle. User loses work on app background kill.",
+  "commonCauses": [
+    "State not persisted to SavedStateHandle",
+    "SavedStateHandle not injected in ViewModel constructor",
+    "State stored in regular fields instead of SavedStateHandle",
+    "Complex objects not serializable for SavedState",
+    "SavedStateHandle updated too late (after process death)",
+    "Using non-SavedStateHandle ViewModel factory",
+    "State exceeds SavedState size limit (1MB)"
+  ],
+  "solutions": [
+    "Use SavedStateHandle for all restorable state",
+    "Save state immediately on user input: handle.set(key, value)",
+    "Use SavedStateHandle.getStateFlow for reactive state",
+    "Serialize complex objects to JSON for SavedState",
+    "Keep SavedState size under 1MB",
+    "Use AbstractSavedStateViewModelFactory",
+    "Test with 'Don't keep activities' developer option"
+  ],
+  "prevention": [
+    "Always inject SavedStateHandle in ViewModel",
+    "Persist user input immediately to SavedStateHandle",
+    "Use primitive types and Parcelables for SavedState",
+    "Test process death scenarios regularly",
+    "Monitor SavedState bundle size",
+    "Use SavedStateHandle.getLiveData() for observable state",
+    "Enable 'Don't keep activities' during development"
+  ],
+  "examples": [
+    "class VM @Inject constructor(private val handle: SavedStateHandle) : ViewModel()",
+    "val query = handle.getStateFlow(\"query\", \"\")",
+    "fun setQuery(q: String) { handle[\"query\"] = q }"
+  ],
+  "relatedErrors": [
+    "State lost on process death",
+    "TransactionTooLargeException SavedState"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "StreamNotClosed",
+  "category": "memory",
+  "description": "InputStream/OutputStream or Reader/Writer not closed, causing file descriptor leak and resource exhaustion.",
+  "commonCauses": [
+    "Stream not closed after exception",
+    "Missing finally block",
+    "Not using try-with-resources",
+    "Stream leaked from method",
+    "Multiple return paths missing close",
+    "BufferedReader/Writer not closed",
+    "FileOutputStream left open"
+  ],
+  "solutions": [
+    "Use .use { } extension for automatic closing",
+    "Always close in finally block",
+    "Use try-with-resources pattern",
+    "Implement AutoCloseable for custom streams",
+    "Use bufferedReader().use { } for files",
+    "Enable StrictMode to detect unclosed resources",
+    "Wrap all stream operations in try-finally"
+  ],
+  "prevention": [
+    "Always use stream.use { } in Kotlin",
+    "Never return unclosed stream from methods",
+    "Enable StrictMode detectLeakedClosableObjects()",
+    "Use higher-level APIs (readText(), readBytes())",
+    "Test file operations thoroughly",
+    "Review all I/O code for proper cleanup",
+    "Use static analysis tools to detect leaks"
+  ],
+  "examples": [
+    "FileInputStream(file).use { stream -> /* auto closes */ }",
+    "file.bufferedReader().use { reader -> reader.readText() }",
+    "val text = file.readText() // Handles closing automatically",
+    "try { stream = FileInputStream(file) } finally { stream?.close() }"
+  ],
+  "relatedErrors": [
+    "FileNotFoundException",
+    "IOException",
+    "Too many open files"
+  ]
+}

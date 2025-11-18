@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_SmartFilterRejection",
+  "category": "quantravision",
+  "description": "SmartFilter incorrectly rejects valid patterns or passes false positives. Affects pattern detection quality.",
+  "commonCauses": [
+    "Filter thresholds too aggressive",
+    "Insufficient training data for filter calibration",
+    "Context mismatch between filter and current market",
+    "Conflicting filter rules creating logic errors",
+    "Filter not updated with pattern learning feedback",
+    "False positive suppression too strict",
+    "Filter configuration deserialization error"
+  ],
+  "solutions": [
+    "Calibrate filter thresholds with production data",
+    "Implement adaptive filtering based on success rate",
+    "Add filter bypass for high-confidence patterns",
+    "Separate filter logic for different pattern types",
+    "Update filter rules from learning feedback",
+    "Provide user override for filter decisions",
+    "Log filter rejections with reasons for tuning"
+  ],
+  "prevention": [
+    "A/B test filter configurations before deployment",
+    "Monitor filter pass/reject rates in production",
+    "Implement filter rule validation on load",
+    "Test filters with diverse pattern scenarios",
+    "Collect user feedback on filter decisions",
+    "Implement gradual filter rule updates",
+    "Document filter logic and threshold rationale"
+  ],
+  "examples": [
+    "if (pattern.confidence > BYPASS_THRESHOLD) { return true } // Skip filter",
+    "val filterResult = smartFilter.evaluate(pattern, context)",
+    "if (filterResult.rejected) { logRejection(pattern, filterResult.reason) }"
+  ],
+  "relatedErrors": [
+    "False positive rate too high",
+    "Valid patterns filtered incorrectly"
+  ]
+}

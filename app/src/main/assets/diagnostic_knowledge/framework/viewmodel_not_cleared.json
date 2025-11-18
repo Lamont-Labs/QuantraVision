@@ -1,0 +1,41 @@
+{
+  "errorName": "ViewModel_NotCleared",
+  "category": "framework",
+  "description": "ViewModel.onCleared() never called, causing resource leaks. ViewModel lifecycle not properly tied to owner.",
+  "commonCauses": [
+    "ViewModel created without ViewModelProvider",
+    "Using ViewModelProvider with wrong owner scope",
+    "Activity/Fragment leaked preventing ViewModel clear",
+    "ViewModel stored in static/singleton reference",
+    "ViewModelStore not cleared properly",
+    "Custom ViewModel implementation not registered correctly",
+    "Application scope ViewModel never cleared by design"
+  ],
+  "solutions": [
+    "Always use ViewModelProvider to create ViewModels",
+    "Use viewModels() or activityViewModels() delegates",
+    "Ensure Activity/Fragment properly destroyed",
+    "Don't store ViewModel references outside lifecycle owners",
+    "Clear ViewModelStore when custom owner destroyed",
+    "Implement onCleared for critical cleanup",
+    "Test ViewModel cleanup with LeakCanary"
+  ],
+  "prevention": [
+    "Always use ViewModelProvider.get() or delegates",
+    "Never store ViewModel in static fields",
+    "Implement onCleared for all resource cleanup",
+    "Test ViewModel lifecycle with Fragment/Activity recreation",
+    "Use hiltViewModel() for Hilt integration",
+    "Monitor ViewModel instances with debug logging",
+    "Verify cleanup in unit tests"
+  ],
+  "examples": [
+    "val viewModel: ScanViewModel by viewModels()",
+    "override fun onCleared() { super.onCleared(); cleanup() }",
+    "// Avoid: companion object { var viewModel: VM? = null }"
+  ],
+  "relatedErrors": [
+    "Memory leak from ViewModel",
+    "Resources not released on navigation"
+  ]
+}

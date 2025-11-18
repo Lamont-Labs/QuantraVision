@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_QuantraBotPromptBuilderError",
+  "category": "quantravision",
+  "description": "PromptBuilder fails to construct valid prompts for QuantraBot, causing empty or malformed AI responses.",
+  "commonCauses": [
+    "Pattern details missing required fields",
+    "Template string interpolation error",
+    "Context data null or incomplete",
+    "Prompt exceeding model token limit",
+    "Template file not found",
+    "Variable substitution failure",
+    "Circular reference in template variables"
+  ],
+  "solutions": [
+    "Validate pattern data completeness before prompt building",
+    "Implement template validation at load time",
+    "Provide default values for missing context",
+    "Truncate prompt to fit token limits",
+    "Use safe string interpolation with null checks",
+    "Log prompt construction steps for debugging",
+    "Implement prompt validation before AI call"
+  ],
+  "prevention": [
+    "Test prompt builder with diverse pattern scenarios",
+    "Validate all template variables exist",
+    "Implement comprehensive null safety",
+    "Monitor prompt length distribution",
+    "Document prompt template requirements",
+    "Test with missing or partial pattern data",
+    "Implement prompt quality metrics"
+  ],
+  "examples": [
+    "val prompt = template.replace(\"{pattern}\", pattern.name ?: \"unknown\")",
+    "buildPrompt { pattern?.let { p -> addPatternDetails(p) } ?: addDefaults() }",
+    "require(prompt.length <= MAX_TOKENS) { \"Prompt too long: ${prompt.length}\" }"
+  ],
+  "relatedErrors": [
+    "NullPointerException in prompt builder",
+    "IllegalArgumentException invalid template"
+  ]
+}

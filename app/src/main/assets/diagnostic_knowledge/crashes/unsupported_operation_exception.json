@@ -1,0 +1,42 @@
+{
+  "errorName": "UnsupportedOperationException",
+  "category": "crashes",
+  "description": "Attempted operation not supported by the object. Common with unmodifiable collections or unimplemented abstract methods.",
+  "commonCauses": [
+    "Modifying Arrays.asList() result",
+    "Adding to Collections.unmodifiableList()",
+    "Calling unimplemented abstract methods",
+    "Modifying read-only Kotlin collections",
+    "Operating on immutable data structures",
+    "Calling deprecated APIs marked as unsupported",
+    "Using legacy Collection methods on modern types"
+  ],
+  "solutions": [
+    "Create mutable copy: ArrayList(Arrays.asList(...))",
+    "Use mutableListOf() instead of listOf() when mutations needed",
+    "Check if collection supports operation before calling",
+    "Implement all required abstract methods",
+    "Use appropriate collection type for use case",
+    "Convert to mutable collection explicitly",
+    "Read API documentation for supported operations"
+  ],
+  "prevention": [
+    "Prefer Kotlin's collection type system (List vs MutableList)",
+    "Use appropriate collection factory methods",
+    "Document mutability requirements in APIs",
+    "Implement all abstract methods in subclasses",
+    "Use sealed classes instead of throwing UnsupportedOperationException",
+    "Test with both mutable and immutable collections",
+    "Follow Kotlin conventions for collection mutability"
+  ],
+  "examples": [
+    "val mutable = ArrayList(Arrays.asList(1, 2, 3)); mutable.add(4)",
+    "val list: MutableList<String> = mutableListOf(); list.add(\"item\")",
+    "if (collection is MutableCollection) { collection.add(item) }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "ClassCastException",
+    "NotImplementedError"
+  ]
+}

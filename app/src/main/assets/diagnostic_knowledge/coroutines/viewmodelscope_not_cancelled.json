@@ -1,0 +1,41 @@
+{
+  "errorName": "Coroutine_ViewModelScopeNotCancelled",
+  "category": "coroutines",
+  "description": "ViewModelScope coroutines continue running despite expecting automatic cancellation. ViewModel lifecycle issue.",
+  "commonCauses": [
+    "ViewModel not properly cleared (leak preventing onCleared)",
+    "ViewModel stored in static reference",
+    "Using custom scope instead of viewModelScope",
+    "ViewModelStore not cleared",
+    "ViewModel created without ViewModelProvider",
+    "Application-scoped ViewModel never cleared",
+    "Infinite loop without cancellation check"
+  ],
+  "solutions": [
+    "Ensure ViewModel created with ViewModelProvider",
+    "Don't store ViewModel in static fields",
+    "Use viewModelScope.launch, not custom scope",
+    "Verify ViewModelStore cleared on Activity/Fragment destroy",
+    "Test ViewModel clearing with LeakCanary",
+    "Add isActive checks in long-running operations",
+    "Use proper lifecycle-aware ViewModel delegates"
+  ],
+  "prevention": [
+    "Always create ViewModels with ViewModelProvider or delegates",
+    "Use viewModelScope for all ViewModel coroutines",
+    "Never store ViewModel references in statics or singletons",
+    "Test ViewModel lifecycle with configuration changes",
+    "Monitor ViewModel.onCleared() calls in debug",
+    "Use hiltViewModel() or viewModels() delegates",
+    "Verify ViewModelStore lifecycle"
+  ],
+  "examples": [
+    "class ScanViewModel : ViewModel() { init { viewModelScope.launch { } } }",
+    "val viewModel: ScanViewModel by viewModels()",
+    "override fun onCleared() { Log.d(TAG, \"ViewModel cleared\"); super.onCleared() }"
+  ],
+  "relatedErrors": [
+    "Coroutines not cancelled in ViewModel",
+    "ViewModel.onCleared() not called"
+  ]
+}

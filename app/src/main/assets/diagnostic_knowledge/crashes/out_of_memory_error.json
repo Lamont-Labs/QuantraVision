@@ -1,0 +1,43 @@
+{
+  "errorName": "OutOfMemoryError",
+  "category": "crashes",
+  "description": "Heap memory exhausted. Critical error indicating app exceeded available memory limits.",
+  "commonCauses": [
+    "Memory leaks accumulating over time",
+    "Loading too many large objects simultaneously",
+    "Infinite loops creating objects",
+    "Large array or collection allocations",
+    "Bitmap/image operations without proper management",
+    "Recursive calls without bounds",
+    "Native memory exhaustion"
+  ],
+  "solutions": [
+    "Profile with Android Profiler to find memory leaks",
+    "Use LeakCanary to detect leaks automatically",
+    "Reduce object creation in loops",
+    "Implement proper object pooling",
+    "Use pagination for large datasets",
+    "Request larger heap: android:largeHeap=\"true\" (last resort)",
+    "Optimize bitmap loading and caching"
+  ],
+  "prevention": [
+    "Monitor memory usage with Profiler regularly",
+    "Implement proper lifecycle management",
+    "Avoid storing Activity/Context references",
+    "Use WeakReference for callbacks",
+    "Release resources in onDestroy/onPause",
+    "Implement LRU caching strategies",
+    "Test on low-memory devices (1-2GB RAM)"
+  ],
+  "examples": [
+    "debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'",
+    "val cache = LruCache<String, Bitmap>(maxSize)",
+    "class MyListener(context: Context) : Listener { private val weakContext = WeakReference(context) }",
+    "<application android:largeHeap=\"true\" /> <!-- Use sparingly -->"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError_Bitmap",
+    "MemoryLeakException",
+    "StackOverflowError"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "errorName": "LooperNotPrepared",
+  "category": "ui_threading",
+  "description": "Attempting to create Handler on thread without Looper. Looper.prepare() must be called before Handler creation on non-main threads.",
+  "commonCauses": [
+    "Creating Handler in background thread without Looper",
+    "Thread created without Looper.prepare()",
+    "HandlerThread not properly initialized",
+    "Creating Toast from background thread",
+    "Handler created in wrong thread context",
+    "Custom thread without Looper setup",
+    "AsyncTask creating Handler incorrectly"
+  ],
+  "solutions": [
+    "Call Looper.prepare() before creating Handler",
+    "Use HandlerThread instead of regular Thread",
+    "Create Handler on main thread: Handler(Looper.getMainLooper())",
+    "Use post() to main thread instead of background Handler",
+    "Use coroutines instead of Handlers",
+    "Implement proper HandlerThread lifecycle",
+    "Use Executors for background work instead"
+  ],
+  "prevention": [
+    "Use HandlerThread for threads needing Looper",
+    "Create UI-related Handlers on main thread",
+    "Prefer coroutines over manual thread + Handler",
+    "Use Handler(Looper.getMainLooper()) for main thread access",
+    "Use viewModelScope.launch instead of background handlers",
+    "Document thread requirements clearly",
+    "Test threading patterns thoroughly"
+  ],
+  "examples": [
+    "val handlerThread = HandlerThread(\"MyThread\").apply { start() }; val handler = Handler(handlerThread.looper)",
+    "val mainHandler = Handler(Looper.getMainLooper()); mainHandler.post { updateUI() }",
+    "// Better: use coroutines: withContext(Dispatchers.Main) { updateUI() }",
+    "class MyThread : Thread() { override fun run() { Looper.prepare(); val handler = Handler(); Looper.loop() } }"
+  ],
+  "relatedErrors": [
+    "RuntimeException",
+    "IllegalStateException",
+    "Handler creation failed"
+  ]
+}

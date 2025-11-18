@@ -1,0 +1,43 @@
+{
+  "errorName": "JSONParseError",
+  "category": "network",
+  "description": "Failed to parse JSON response from network. Data format mismatch or corrupted response.",
+  "commonCauses": [
+    "Server returned invalid JSON",
+    "API response format changed",
+    "HTML error page returned as JSON",
+    "Charset encoding mismatch",
+    "Partial response received",
+    "Server error embedded in JSON",
+    "Gson/Moshi parsing error"
+  ],
+  "solutions": [
+    "Validate JSON structure before parsing",
+    "Check response Content-Type header",
+    "Log raw response for debugging",
+    "Handle parsing exceptions gracefully",
+    "Use lenient JSON parsing for flexibility",
+    "Implement fallback for parse errors",
+    "Verify API version compatibility"
+  ],
+  "prevention": [
+    "Use strong typing with data classes",
+    "Validate response Content-Type",
+    "Implement error response handling",
+    "Use generated API clients (Retrofit)",
+    "Test with malformed JSON",
+    "Log responses in debug builds",
+    "Version APIs properly"
+  ],
+  "examples": [
+    "try { val data = gson.fromJson(json, MyData::class.java) } catch (e: JsonSyntaxException) { Log.e(TAG, \"Invalid JSON: $json\"); showParseError() }",
+    "val gson = GsonBuilder().setLenient().create() // Lenient parsing",
+    "if (response.header(\"Content-Type\")?.contains(\"json\") != true) handleNonJSONResponse()",
+    "// Retrofit auto-handles: @GET(\"/data\") suspend fun getData(): Response<MyData>"
+  ],
+  "relatedErrors": [
+    "JsonSyntaxException",
+    "JsonParseException",
+    "MalformedJsonException"
+  ]
+}

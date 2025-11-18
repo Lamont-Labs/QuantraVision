@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_FloatingLogoButtonCrash",
+  "category": "quantravision",
+  "description": "Floating logo button crashes when touched or moved. Quick access to QuantraVision features unavailable.",
+  "commonCauses": [
+    "Touch event handling exception",
+    "WindowManager update during invalid state",
+    "View hierarchy modified during touch",
+    "Context released before view removal",
+    "Concurrent touch and position update",
+    "LayoutParams update without valid window",
+    "Service stopped during button interaction"
+  ],
+  "solutions": [
+    "Wrap touch handling in try-catch",
+    "Validate view attached before WindowManager update",
+    "Synchronize touch and position updates",
+    "Check service running before view operations",
+    "Use safe WindowManager.updateViewLayout",
+    "Debounce rapid touch events",
+    "Track view state before operations"
+  ],
+  "prevention": [
+    "Implement robust touch event handling",
+    "Validate view and window state before updates",
+    "Test rapid tapping and dragging scenarios",
+    "Handle service lifecycle properly with view cleanup",
+    "Use isAttachedToWindow before view operations",
+    "Test on various devices and Android versions",
+    "Implement defensive programming for UI operations"
+  ],
+  "examples": [
+    "try { windowManager.updateViewLayout(logo, params) } catch (e: Exception) { Log.e(TAG, \"Update failed\", e) }",
+    "if (logo.isAttachedToWindow && service.isRunning) { handleTouch() }",
+    "override fun onTouch(v: View, event: MotionEvent): Boolean { return try { processTouch(event); true } catch (e: Exception) { false } }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException view not attached",
+    "BadTokenException window manager"
+  ]
+}

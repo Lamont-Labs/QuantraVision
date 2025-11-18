@@ -1,0 +1,43 @@
+{
+  "errorName": "ConnectionPoolExhausted",
+  "category": "network",
+  "description": "HTTP connection pool exhausted - no available connections. Resource management issue with connection reuse.",
+  "commonCauses": [
+    "Too many concurrent requests",
+    "Connections not released properly",
+    "Pool size too small",
+    "Slow responses blocking pool",
+    "Connection leaks",
+    "Timeout too long",
+    "Not reusing OkHttpClient instance"
+  ],
+  "solutions": [
+    "Increase connection pool size",
+    "Ensure responses are properly closed",
+    "Use single OkHttpClient instance",
+    "Reduce concurrent request count",
+    "Implement request queuing",
+    "Decrease connection timeout",
+    "Use response.close() in finally"
+  ],
+  "prevention": [
+    "Configure appropriate pool size",
+    "Always close response bodies",
+    "Reuse OkHttpClient singleton",
+    "Implement connection pool monitoring",
+    "Use try-with-resources for responses",
+    "Test under high concurrency",
+    "Set reasonable pool parameters"
+  ],
+  "examples": [
+    "val pool = ConnectionPool(maxIdleConnections = 10, keepAliveDuration = 5, TimeUnit.MINUTES); val client = OkHttpClient.Builder().connectionPool(pool).build()",
+    "try { val response = client.newCall(request).execute(); response.body?.string() } finally { response.close() }",
+    "// Singleton: object HttpClient { val instance = OkHttpClient.Builder().connectionPool(pool).build() }",
+    "response.use { it.body?.string() } // Auto-closes"
+  ],
+  "relatedErrors": [
+    "IOException",
+    "PoolExhaustedException",
+    "TooManyConcurrentRequests"
+  ]
+}

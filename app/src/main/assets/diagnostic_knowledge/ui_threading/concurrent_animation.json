@@ -1,0 +1,43 @@
+{
+  "errorName": "ConcurrentAnimationIssue",
+  "category": "ui_threading",
+  "description": "Multiple animations conflicting or animator not cancelled causing issues. Animation lifecycle and threading problem.",
+  "commonCauses": [
+    "Starting animation while previous running",
+    "Animator not cancelled in lifecycle",
+    "ValueAnimator running after view destroyed",
+    "Concurrent property animations",
+    "Animation holding view reference",
+    "Animator update callback with activity reference",
+    "Recycled view with running animation"
+  ],
+  "solutions": [
+    "Cancel animations in onPause/onStop",
+    "Check if animation running before starting new one",
+    "Use animator.removeAllListeners() in lifecycle",
+    "Store animator reference for cancellation",
+    "Use ViewPropertyAnimator for auto-cancellation",
+    "Implement animation state management",
+    "Use Compose animations for better lifecycle handling"
+  ],
+  "prevention": [
+    "Always cancel animations in onPause/onDestroyView",
+    "Use ViewPropertyAnimator when possible",
+    "Override onDetachedFromWindow for view animations",
+    "Check isAttachedToWindow before animating",
+    "Use Jetpack Compose for declarative animations",
+    "Test animation during lifecycle changes",
+    "Document animation cleanup requirements"
+  ],
+  "examples": [
+    "private var animator: ValueAnimator? = null; override fun onPause() { super.onPause(); animator?.cancel() }",
+    "view.animate().alpha(0f).withEndAction { view.visibility = GONE } // Auto-managed",
+    "override fun onDetachedFromWindow() { super.onDetachedFromWindow(); animator?.cancel(); animator?.removeAllListeners() }",
+    "if (view.isAttachedToWindow && animator?.isRunning != true) { startAnimation() }"
+  ],
+  "relatedErrors": [
+    "View leak",
+    "IllegalStateException",
+    "Animation glitches"
+  ]
+}

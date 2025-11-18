@@ -1,0 +1,43 @@
+{
+  "errorName": "NativeCrash_SIGSEGV",
+  "category": "crashes",
+  "description": "Segmentation fault in native code. Critical crash in JNI/NDK layer, often from invalid memory access.",
+  "commonCauses": [
+    "Null pointer dereference in C/C++ code",
+    "Use-after-free memory access",
+    "Buffer overflow in native code",
+    "Stack corruption",
+    "Invalid JNI object reference",
+    "Thread safety issues in native code",
+    "Incorrect native memory management"
+  ],
+  "solutions": [
+    "Use AddressSanitizer for debugging: -fsanitize=address",
+    "Validate all pointers before dereferencing",
+    "Use smart pointers (unique_ptr, shared_ptr)",
+    "Check array bounds in native code",
+    "Properly manage JNI local/global references",
+    "Use NDK debugging tools",
+    "Review native code for memory safety"
+  ],
+  "prevention": [
+    "Use modern C++ with RAII and smart pointers",
+    "Enable sanitizers during development",
+    "Review all JNI code carefully",
+    "Implement proper error checking in native code",
+    "Use static analysis tools (clang-tidy)",
+    "Test with Valgrind or similar tools",
+    "Document native memory ownership clearly"
+  ],
+  "examples": [
+    "// C++: std::unique_ptr<MyClass> ptr(new MyClass());",
+    "// JNI: jclass clazz = env->FindClass(\"MyClass\"); if (!clazz) return; // Check validity",
+    "// CMakeLists.txt: target_compile_options(native-lib PRIVATE -fsanitize=address)",
+    "// Always check: if (ptr != nullptr) { ptr->method(); }"
+  ],
+  "relatedErrors": [
+    "SIGABRT",
+    "SIGBUS",
+    "StackOverflowError"
+  ]
+}

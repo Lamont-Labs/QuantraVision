@@ -1,0 +1,43 @@
+{
+  "errorName": "CompositionLocalThreading",
+  "category": "ui_threading",
+  "description": "Accessing CompositionLocal from wrong thread in Jetpack Compose. Compose threading and state access issue.",
+  "commonCauses": [
+    "Reading CompositionLocal from coroutine on IO dispatcher",
+    "Accessing LocalContext from background thread",
+    "CompositionLocal read outside composition",
+    "Side effect accessing composition local incorrectly",
+    "LaunchedEffect reading local from wrong dispatcher",
+    "Snapshot state accessed without snapshot",
+    "Composition context lost in coroutine"
+  ],
+  "solutions": [
+    "Read CompositionLocal within composition scope only",
+    "Use rememberUpdatedState to capture values",
+    "Switch to Dispatchers.Main for composition local access",
+    "Pass values as parameters instead of reading local",
+    "Use withContext(Dispatchers.Main) when needed",
+    "Capture local values before coroutine",
+    "Use Snapshot.withMutableSnapshot properly"
+  ],
+  "prevention": [
+    "Read CompositionLocals at composition time",
+    "Capture values before launching coroutines",
+    "Use rememberUpdatedState for callback values",
+    "Don't access composition from background threads",
+    "Test Compose threading scenarios",
+    "Use Compose preview to catch issues",
+    "Follow Compose state guidelines"
+  ],
+  "examples": [
+    "@Composable fun MyComposable() { val context = LocalContext.current; LaunchedEffect(Unit) { withContext(Dispatchers.IO) { /* Use captured context */ } } }",
+    "val context = rememberUpdatedState(LocalContext.current); LaunchedEffect(key) { /* Use context.value */ }",
+    "// Capture before coroutine: @Composable fun F() { val ctx = LocalContext.current; LaunchedEffect(Unit) { use(ctx) } }",
+    "// Wrong: LaunchedEffect(Unit) { launch(Dispatchers.IO) { LocalContext.current } } // ERROR"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "Compose runtime error",
+    "Threading violation"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "SQLite_BusyException",
+  "category": "database",
+  "description": "Database is busy and cannot process request within timeout period. Related to database locking but more transient.",
+  "commonCauses": [
+    "High concurrent database load",
+    "Long-running read query blocking writes",
+    "Insufficient busy timeout setting",
+    "WAL checkpoint blocking operations",
+    "Multiple apps accessing shared database",
+    "Background sync conflicting with foreground operations",
+    "Slow storage causing operation delays"
+  ],
+  "solutions": [
+    "Increase busy timeout: PRAGMA busy_timeout = 5000",
+    "Enable WAL mode for better concurrency",
+    "Retry operation with exponential backoff",
+    "Defer non-critical operations to off-peak times",
+    "Use single database instance across app",
+    "Optimize slow queries causing contention",
+    "Implement queue for write operations"
+  ],
+  "prevention": [
+    "Always enable WAL mode for multi-threaded access",
+    "Set reasonable busy timeout (3-5 seconds)",
+    "Profile and optimize slow queries",
+    "Use appropriate query executors in Room",
+    "Avoid simultaneous heavy database operations",
+    "Test under high concurrency scenarios",
+    "Monitor database lock wait times"
+  ],
+  "examples": [
+    "db.openHelper.writableDatabase.rawQuery(\"PRAGMA busy_timeout = 5000\")",
+    ".setQueryExecutor(Executors.newFixedThreadPool(4))",
+    "retry(times = 3, delay = 100) { dao.insert(item) }"
+  ],
+  "relatedErrors": [
+    "SQLiteDatabaseLockedException",
+    "SQLiteException database is locked"
+  ]
+}

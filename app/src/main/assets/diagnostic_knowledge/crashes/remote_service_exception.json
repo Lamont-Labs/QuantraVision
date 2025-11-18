@@ -1,0 +1,42 @@
+{
+  "errorName": "RemoteServiceException",
+  "category": "crashes",
+  "description": "Exception occurred in remote service (different process). System-level error from background services.",
+  "commonCauses": [
+    "Notification malformed or invalid",
+    "Service crashed in system_server process",
+    "Invalid PendingIntent configuration",
+    "Bad notification channel setup",
+    "Exceeding notification size limits",
+    "Service timing out in background",
+    "Invalid RemoteViews in notification"
+  ],
+  "solutions": [
+    "Validate all notification parameters",
+    "Create proper NotificationChannel before use",
+    "Use valid PendingIntent with correct flags",
+    "Keep notification content minimal",
+    "Handle notification exceptions gracefully",
+    "Test notifications on multiple Android versions",
+    "Verify RemoteViews compatibility"
+  ],
+  "prevention": [
+    "Create notification channels at app startup",
+    "Validate notification builder parameters",
+    "Keep notification content size reasonable",
+    "Test on Android 8+ for channel requirements",
+    "Use NotificationCompat for compatibility",
+    "Handle notification permission (Android 13+)",
+    "Test with strict mode enabled"
+  ],
+  "examples": [
+    "val channel = NotificationChannel(CHANNEL_ID, name, importance).apply { description = desc }; manager.createNotificationChannel(channel)",
+    "val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)",
+    "NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.icon).setContentTitle(title).build()"
+  ],
+  "relatedErrors": [
+    "IllegalStateException",
+    "SecurityException",
+    "RuntimeException"
+  ]
+}

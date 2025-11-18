@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraVision_EntitlementUnlockFailure",
+  "category": "quantravision",
+  "description": "Tier-gated features fail to unlock after successful purchase. User subscribed but features remain locked.",
+  "commonCauses": [
+    "Purchase acknowledgment not completed",
+    "Entitlement cache not refreshed after purchase",
+    "Local entitlement state not updated",
+    "Purchase verification failed",
+    "Race condition between purchase and entitlement check",
+    "Entitlement database update failed",
+    "Purchase consumed instead of acknowledged"
+  ],
+  "solutions": [
+    "Acknowledge purchase immediately: acknowledgePurchase()",
+    "Refresh entitlements after successful purchase",
+    "Update local entitlement cache synchronously",
+    "Verify purchase with backend if using server",
+    "Force UI refresh after entitlement update",
+    "Implement purchase recovery flow",
+    "Log entitlement unlock steps for debugging"
+  ],
+  "prevention": [
+    "Always acknowledge purchases within 3 days",
+    "Implement robust purchase flow state machine",
+    "Test purchase-to-unlock flow end-to-end",
+    "Cache entitlements with immediate update on purchase",
+    "Monitor unlock success rate after purchase",
+    "Implement purchase restoration for edge cases",
+    "Test with real purchases in testing environment"
+  ],
+  "examples": [
+    "billingClient.acknowledgePurchase(params) { result -> if (result.responseCode == OK) updateEntitlements() }",
+    "after purchase { entitlementCache.refresh(); notifyFeatureUnlocked() }",
+    "suspend fun unlockFeature(purchase: Purchase) { acknowledge(); updateDB(); refreshUI() }"
+  ],
+  "relatedErrors": [
+    "Purchase acknowledged but features locked",
+    "BillingResult.ITEM_ALREADY_OWNED"
+  ]
+}

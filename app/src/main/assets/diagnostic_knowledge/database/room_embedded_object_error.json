@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_EmbeddedObjectError",
+  "category": "database",
+  "description": "Room @Embedded annotation causing compilation errors or column naming conflicts in entity definitions.",
+  "commonCauses": [
+    "Column name conflicts between embedded objects",
+    "Nested @Embedded objects with same column names",
+    "Missing prefix for embedded object columns",
+    "Circular embedding causing infinite loop",
+    "Type converter needed for embedded field",
+    "Primary key in embedded object conflicting",
+    "Embedded object contains @Relation"
+  ],
+  "solutions": [
+    "Use prefix parameter: @Embedded(prefix = \"user_\")",
+    "Rename conflicting columns in embedded class",
+    "Flatten deeply nested structures",
+    "Use separate tables for complex relationships",
+    "Add @ColumnInfo to resolve conflicts",
+    "Remove @PrimaryKey from embedded objects",
+    "Move @Relation to outer class only"
+  ],
+  "prevention": [
+    "Always use prefix for @Embedded objects",
+    "Keep embedded objects simple and flat",
+    "Avoid multiple levels of embedding",
+    "Use consistent naming conventions",
+    "Test entity compilation after adding embeddings",
+    "Document embedded object column mappings",
+    "Use @Relation for complex relationships instead"
+  ],
+  "examples": [
+    "@Embedded(prefix = \"address_\") val address: Address",
+    "data class Address(@ColumnInfo(name = \"street\") val street: String)",
+    "// Results in columns: address_street, address_city, etc."
+  ],
+  "relatedErrors": [
+    "Room compilation error duplicate columns",
+    "Multiple fields have the same columnName"
+  ]
+}
