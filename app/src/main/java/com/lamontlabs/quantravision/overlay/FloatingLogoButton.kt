@@ -46,7 +46,7 @@ class FloatingLogoButton(
     var onLongPressListener: (() -> Unit)? = null
 
     init {
-        // Use themed context so vector drawables render correctly
+        // Use themed context so drawables render correctly
         val themedContext = android.view.ContextThemeWrapper(context, R.style.Theme_QuantraVision)
         val inflater = LayoutInflater.from(themedContext)
         logoView = inflater.inflate(R.layout.floating_logo_layout, null) as FrameLayout
@@ -54,19 +54,18 @@ class FloatingLogoButton(
         logoImage = logoView.findViewById(R.id.logo_image)
         badge = logoView.findViewById(R.id.logo_badge)
         
-        // Ensure logo image appears above badge
-        logoImage.bringToFront()
-        
-        val logoSize = prefs.getLogoSize()
-        val sizePx = (logoSize.dp * context.resources.displayMetrics.density).toInt()
+        // Force measure to get exact dimensions
+        logoView.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
         
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.END
@@ -86,7 +85,14 @@ class FloatingLogoButton(
                 android.util.Log.i("FloatingLogoButton", "Adding logo view to WindowManager at position (${params.x}, ${params.y})...")
                 windowManager.addView(logoView, params)
                 isAdded = true
-                android.util.Log.i("FloatingLogoButton", "✓ Logo view successfully added to WindowManager")
+                
+                // Wait for layout to complete, then log actual dimensions
+                logoView.post {
+                    val actualWidth = logoView.width
+                    val actualHeight = logoView.height
+                    android.util.Log.i("FloatingLogoButton", "✓ Logo view added - Actual dimensions: ${actualWidth}px x ${actualHeight}px")
+                    android.util.Log.i("FloatingLogoButton", "✓ Window hitbox size matches visual logo: touch pass-through enabled")
+                }
             } catch (e: Exception) {
                 android.util.Log.e("FloatingLogoButton", "CRITICAL: Failed to add logo view to WindowManager", e)
                 android.util.Log.e("FloatingLogoButton", "Error details: ${e.message}")

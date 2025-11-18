@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="60dp"
-    android:layout_height="60dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="0dp"
     android:background="@android:color/transparent">
-
-    <com.lamontlabs.quantravision.overlay.LogoBadge
-        android:id="@+id/logo_badge"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="false"
-        android:focusable="false" />
 
     <ImageView
         android:id="@+id/logo_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_q_logo"
-        android:scaleType="fitCenter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_q_logo_glow"
+        android:scaleType="fitXY"
         android:clickable="false"
         android:focusable="false"
         android:contentDescription="@string/floating_logo_description" />
+
+    <com.lamontlabs.quantravision.overlay.LogoBadge
+        android:id="@+id/logo_badge"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:clickable="false"
+        android:focusable="false" />
 
 </FrameLayout>
