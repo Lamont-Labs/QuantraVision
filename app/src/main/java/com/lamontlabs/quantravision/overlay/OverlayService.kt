@@ -155,8 +155,15 @@ class OverlayService : Service() {
         super.onStartCommand(intent, flags, startId)
         Log.i(TAG, "=== OverlayService.onStartCommand() START ===")
         Log.i(TAG, "Intent action: ${intent?.action}")
+        Log.i(TAG, "Current state - MediaProjection: ${if (mediaProjection != null) "✓ EXISTS" else "❌ NULL"}, ImageReader: ${if (imageReader != null) "✓ EXISTS" else "❌ NULL"}")
         
         if (intent?.action == "ACTION_START_WITH_PROJECTION") {
+            // Only initialize if MediaProjection doesn't already exist
+            if (mediaProjection != null) {
+                Log.w(TAG, "MediaProjection already initialized, skipping re-initialization")
+                return START_STICKY
+            }
+            
             Log.i(TAG, "Consuming MediaProjection result from companion object...")
             val result = consumeMediaProjectionResult()
             
@@ -165,8 +172,15 @@ class OverlayService : Service() {
                 Log.i(TAG, "✓ MediaProjection result found (resultCode=$resultCode)")
                 initializeMediaProjection(resultCode, data)
             } else {
-                Log.e(TAG, "CRITICAL: MediaProjection data is NULL - permission result not stored")
-                Toast.makeText(this, "Failed to start screen capture", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "CRITICAL: MediaProjection data is NULL - permission result not stored or already consumed")
+                Toast.makeText(this, "Failed to start screen capture. Please restart scanner.", Toast.LENGTH_SHORT).show()
+                stopSelf()
+            }
+        } else if (intent == null) {
+            Log.w(TAG, "Service restarted by system (START_STICKY) but no MediaProjection data available")
+            Log.w(TAG, "Current MediaProjection state: ${if (mediaProjection != null) "exists (will continue)" else "null (stopping service)"}")
+            if (mediaProjection == null) {
+                Toast.makeText(this, "Screen capture stopped. Please restart scanner.", Toast.LENGTH_SHORT).show()
                 stopSelf()
             }
         }
@@ -240,12 +254,15 @@ class OverlayService : Service() {
             try {
                 val reader = imageReader
                 if (reader == null) {
-                    Timber.e("ImageReader is null, cannot capture")
+                    Timber.e("❌ CRITICAL: ImageReader is null, cannot capture")
+                    Timber.e("MediaProjection state: ${if (mediaProjection != null) "exists" else "null"}")
+                    Timber.e("VirtualDisplay state: ${if (virtualDisplay != null) "exists" else "null"}")
+                    Timber.e("This indicates MediaProjection was not initialized properly")
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             applicationContext,
-                            "Screen capture not initialized",
-                            Toast.LENGTH_SHORT
+                            "Screen capture not initialized. Please restart scanner.",
+                            Toast.LENGTH_LONG
                         ).show()
                     }
                     stateMachine.transitionToIdle()
@@ -448,11 +465,14 @@ class OverlayService : Service() {
             )
             
             if (virtualDisplay == null) {
-                Log.e(TAG, "Failed to create VirtualDisplay")
+                Log.e(TAG, "❌ Failed to create VirtualDisplay")
+                Log.e(TAG, "MediaProjection state: ${if (mediaProjection != null) "exists" else "null"}")
+                Log.e(TAG, "ImageReader state: ${if (imageReader != null) "exists" else "null"}")
                 Toast.makeText(this, "Failed to create screen capture display", Toast.LENGTH_SHORT).show()
                 stopSelf()
             } else {
-                Log.i(TAG, "✓ VirtualDisplay created successfully - will be reused for all scans")
+                Log.i(TAG, "✅ VirtualDisplay created successfully - will be reused for all scans")
+                Log.i(TAG, "✅ ImageReader ready: ${imageReader != null}")
             }
             
         } catch (e: Exception) {

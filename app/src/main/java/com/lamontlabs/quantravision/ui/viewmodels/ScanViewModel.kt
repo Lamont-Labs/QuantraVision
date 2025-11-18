@@ -50,12 +50,15 @@ class ScanViewModel(private val context: Context) : ViewModel() {
         observeTierChanges()
     }
     
-    private fun checkIfServiceRunning() {
+    private fun checkIfServiceRunning(): Boolean {
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        @Suppress("DEPRECATION")
         val isRunning = activityManager.getRunningServices(Int.MAX_VALUE).any { service ->
             service.service.className == OverlayService::class.java.name
         }
         _uiState.update { it.copy(isOverlayActive = isRunning) }
+        android.util.Log.d("ScanViewModel", "Service running check: $isRunning")
+        return isRunning
     }
     
     private fun checkOverlayPermission() {
@@ -110,12 +113,24 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     }
     
     fun requestMediaProjectionPermission() {
-        // Don't request if service is already running
-        if (_uiState.value.isOverlayActive) {
-            android.util.Log.w("ScanViewModel", "Service already running, skipping permission request")
+        // Check if service is actually running (not just local state)
+        val isRunning = checkIfServiceRunning()
+        
+        if (isRunning) {
+            android.util.Log.w("ScanViewModel", "⚠️ OverlayService is already running, skipping permission request")
+            android.util.Log.w("ScanViewModel", "User should minimize app to see the floating Q logo")
+            android.widget.Toast.makeText(
+                context,
+                "Scanner already running! Minimize app to see overlay.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+            
+            // Minimize app so user can see the overlay
+            (context as? android.app.Activity)?.moveTaskToBack(true)
             return
         }
         
+        android.util.Log.i("ScanViewModel", "Service not running, requesting MediaProjection permission")
         val intent = mediaProjectionManager.createScreenCaptureIntent()
         _uiState.update { it.copy(mediaProjectionIntent = intent) }
     }
