@@ -1,12 +1,15 @@
 package com.lamontlabs.quantravision.overlay
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.R
@@ -95,11 +98,31 @@ class PatternNotificationManager(private val context: Context) {
     }
     
     /**
+     * Checks if notification permission is granted (Android 13+).
+     */
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true // Permission not required on older Android versions
+        }
+    }
+    
+    /**
      * Displays pattern detection results in an expandable notification.
      * 
      * @param patterns List of detected patterns to display
      */
     fun showPatterns(patterns: List<PatternMatch>) {
+        if (!hasNotificationPermission()) {
+            Timber.w("Notification permission not granted - notifications will not appear")
+            Timber.w("User needs to grant notification permission in app settings or on first launch")
+            return
+        }
+        
         if (patterns.isEmpty()) {
             Timber.d("No patterns detected, showing feedback notification")
             showNoPatternsFeedback()
