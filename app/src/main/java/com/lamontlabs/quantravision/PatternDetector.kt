@@ -93,6 +93,14 @@ class PatternDetector(private val context: Context) {
     }
     
     /**
+     * Get the number of loaded templates (for diagnostics/verification).
+     * Triggers lazy loading if not already loaded.
+     */
+    fun getTemplateCount(): Int {
+        return getTemplates().size
+    }
+    
+    /**
      * Check if GPU acceleration is available on this device.
      * 
      * Note: Android OpenCV doesn't expose UMat API directly,

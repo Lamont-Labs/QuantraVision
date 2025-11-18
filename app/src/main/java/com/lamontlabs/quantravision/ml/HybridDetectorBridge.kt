@@ -79,6 +79,14 @@ class HybridDetectorBridge(private val context: Context) {
     private var optimizationEnabled = true
     
     /**
+     * Get the number of loaded templates (for diagnostics/verification).
+     * Expected: 109 patterns
+     */
+    fun getTemplateCount(): Int {
+        return existingDetector.getTemplateCount()
+    }
+    
+    /**
      * Detect patterns with all available optimizations
      * 
      * This method wraps the existing detector with optimization layers:

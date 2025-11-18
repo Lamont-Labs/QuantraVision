@@ -25,6 +25,13 @@ class HybridPatternDetector(private val context: Context) {
     
     private var templateDetectionEnabled = true
     
+    /**
+     * Get the number of loaded templates (for diagnostics/verification).
+     */
+    fun getTemplateCount(): Int {
+        return templateDetector.getTemplateCount()
+    }
+    
     enum class DetectionMethod {
         @Deprecated("ML_YOLO removed for AGPL-3.0 licensing compliance")
         ML_YOLO,          // Machine learning based (chart-agnostic) - DEPRECATED/UNUSED

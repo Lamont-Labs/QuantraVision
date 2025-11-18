@@ -71,6 +71,13 @@ class OverlayService : Service() {
     @Volatile
     private var isMediaProjectionReady: Boolean = false
     
+    // CRITICAL: Reuse detector bridge to avoid repeated template loading
+    // Templates are cached inside detector, loading once saves ~200ms and memory on each scan
+    private var detectorBridge: HybridDetectorBridge? = null
+    
+    // Cache template count to avoid repeated verification
+    private var templateCount: Int = 0
+    
     private val stateMachine = OverlayStateMachine()
     private val singleFrameCapture = SingleFrameCapture()
     private lateinit var resultController: PatternResultController
@@ -319,9 +326,36 @@ class OverlayService : Service() {
                 val captureTime = System.currentTimeMillis() - captureStartTime
                 Timber.i("✅ Frame captured in ${captureTime}ms - size: ${bitmap.width}x${bitmap.height}")
                 
-                Timber.i("🔬 Starting pattern detection...")
+                // Update UI: capture complete, starting detection
+                withContext(Dispatchers.Main) {
+                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
+                }
+                
+                Timber.i("🔬 Starting pattern detection (5s timeout)...")
                 val detectionStartTime = System.currentTimeMillis()
-                processFrameForPatterns(bitmap)
+                
+                try {
+                    // CRITICAL: Separate timeout for detection phase (5s)
+                    // Frame capture has 2.5s timeout, detection needs more time for 109 patterns
+                    withTimeout(5000L) {
+                        processFrameForPatterns(bitmap)
+                    }
+                } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+                    Timber.e("❌ TIMEOUT: Pattern detection took longer than 5s")
+                    Timber.e("This may indicate a performance issue or template loading problem")
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            applicationContext,
+                            "❌ Pattern detection timed out after 5 seconds.\nPlease try again or restart the scanner.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                    }
+                    stateMachine.transitionToIdle()
+                    bitmap.recycle()
+                    return@launch
+                }
+                
                 val detectionTime = System.currentTimeMillis() - detectionStartTime
                 
                 val totalTime = System.currentTimeMillis() - scanStartTime
@@ -352,13 +386,26 @@ class OverlayService : Service() {
     
     private suspend fun processFrameForPatterns(bitmap: android.graphics.Bitmap) {
         try {
-            Timber.i("🔬 Initializing pattern detection engine...")
-            val detectorBridge = HybridDetectorBridge(applicationContext)
+            // Use cached detector bridge (initialized once on service start)
+            val detector = detectorBridge
+            if (detector == null) {
+                Timber.e("❌ CRITICAL: Detector bridge is null - templates not loaded")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        applicationContext,
+                        "❌ Pattern detector not initialized. Please restart scanner.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                return
+            }
+            
+            Timber.i("🔬 Running pattern detection using cached detector ($templateCount templates)...")
             val patternToPlanEngine = PatternToPlanEngine(applicationContext)
             val isProActive = ProFeatureGate.isActive(applicationContext)
             
             Timber.i("🔍 Running optimized pattern detection (1-2.5s expected)...")
-            val results = detectorBridge.detectPatternsOptimized(bitmap)
+            val results = detector.detectPatternsOptimized(bitmap)
             Timber.i("✅ Pattern detection complete - found ${results.size} raw patterns")
             
             val allDetectedPatterns = mutableListOf<PatternMatch>()
@@ -561,13 +608,46 @@ class OverlayService : Service() {
                 
                 // Mark as ready and enable the floating button
                 isMediaProjectionReady = true
-                scope.launch(Dispatchers.Main) {
-                    floatingLogo?.setEnabled(true)
-                    Toast.makeText(
-                        applicationContext,
-                        "✓ Screen capture ready! Tap Q to scan charts.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                
+                // CRITICAL: Initialize detector bridge ONCE and verify templates loaded
+                // This caches templates for all future scans, avoiding repeated loading
+                scope.launch {
+                    try {
+                        Timber.i("🔍 Initializing pattern detector and loading templates...")
+                        detectorBridge = HybridDetectorBridge(applicationContext)
+                        templateCount = detectorBridge?.getTemplateCount() ?: 0
+                        
+                        if (templateCount == 0) {
+                            throw Exception("No templates loaded - pattern detection will not work")
+                        }
+                        
+                        Timber.i("✅ Pattern detector ready: $templateCount templates loaded and cached")
+                        
+                        withContext(Dispatchers.Main) {
+                            floatingLogo?.setEnabled(true)
+                            Toast.makeText(
+                                applicationContext,
+                                "✓ Ready! Loaded $templateCount patterns. Tap Q to scan charts.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "❌ CRITICAL: Failed to initialize pattern detector")
+                        detectorBridge = null
+                        templateCount = 0
+                        
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                applicationContext,
+                                "❌ Pattern detector failed to initialize.\nPlease restart the scanner.\n\nError: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            floatingLogo?.setEnabled(false)
+                        }
+                        isMediaProjectionReady = false
+                        // Stop service on initialization failure - forces user to restart
+                        stopSelf()
+                    }
                 }
                 Log.i(TAG, "✅ MediaProjection fully initialized and ready for scans")
             }
@@ -610,6 +690,11 @@ class OverlayService : Service() {
         scope.launch(Dispatchers.Main) {
             floatingLogo?.setEnabled(false)
         }
+        
+        // Release detector bridge (frees cached templates)
+        detectorBridge = null
+        templateCount = 0
+        Log.d(TAG, "Detector bridge released")
         
         // Clean up VirtualDisplay and ImageReader first
         try {
