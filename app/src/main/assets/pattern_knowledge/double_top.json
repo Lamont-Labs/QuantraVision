@@ -1,0 +1,55 @@
+{
+  "pattern_id": "double_top",
+  "pattern_name": "Double Top",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "A bearish reversal pattern forming after an uptrend, featuring two distinct peaks at similar price levels separated by a moderate low. Signals potential trend reversal from bullish to bearish.",
+  "validation_rules": {
+    "structure": [
+      "Two distinct peaks at approximately equal price levels (within 3-5% variance)",
+      "Peaks separated by clear valley (the 'middle low')",
+      "Pattern forms after sustained uptrend",
+      "Time between peaks: ideally 4 weeks to 3 months on daily charts",
+      "Neckline drawn through the middle low support",
+      "Second peak should not significantly exceed first (creates 'M' shape)"
+    ],
+    "volume": [
+      "Volume typically higher on first peak",
+      "Volume should be lower on second peak (buying exhaustion)",
+      "Strong volume spike on neckline breakdown confirms pattern",
+      "Declining volume between peaks shows weakening momentum"
+    ],
+    "indicators": [
+      "RSI showing bearish divergence strongly validates (lower high while price makes equal high)",
+      "MACD bearish divergence (lower high on histogram)",
+      "Both peaks should occur in overbought territory (RSI >70)",
+      "Momentum decreasing on second peak compared to first"
+    ],
+    "timeframe": [
+      "Most reliable on weekly and daily charts",
+      "Can work on 4H for swing trades",
+      "Requires weeks/months to develop properly"
+    ]
+  },
+  "invalidation_signals": [
+    "Second peak significantly higher than first (>5% above) = new high, not reversal",
+    "Peaks too close together (<2 weeks on daily) = not true double top",
+    "Volume increasing on second peak = strong buying, pattern invalid",
+    "No bearish divergence on RSI/MACD = weak signal",
+    "Price breaks above second peak before neckline break",
+    "Forms in downtrend or sideways (needs prior uptrend)"
+  ],
+  "common_mistakes": [
+    "Calling any two peaks a double top without checking time separation",
+    "Ignoring volume - declining volume on second peak is critical",
+    "Not waiting for neckline break confirmation",
+    "Missing divergence requirement (greatly increases success)",
+    "Confusing with 'triple top' or 'head and shoulders'",
+    "Expecting perfect symmetry - peaks can vary slightly"
+  ],
+  "trade_setup": {
+    "entry": "Enter short on break and close below neckline support",
+    "stop_loss": "Place above second peak with small buffer (2-3%)",
+    "target": "Measure peak-to-neckline distance, project same distance below neckline"
+  }
+}

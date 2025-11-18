@@ -1,0 +1,55 @@
+{
+  "pattern_id": "descending_triangle",
+  "pattern_name": "Descending Triangle",
+  "category": "continuation",
+  "bias": "bearish",
+  "description": "A bearish continuation pattern with flat horizontal support at bottom and descending resistance at top. Shows distribution as sellers become more aggressive while support holds, typically resolves with downside breakdown.",
+  "validation_rules": {
+    "structure": [
+      "Flat horizontal support at bottom (at least 2 touches)",
+      "Descending trendline resistance at top (at least 2 touches, each lower high)",
+      "Minimum 4 touches total",
+      "Forms within downtrend for continuation (can reverse uptrend)",
+      "Duration: 1-3 months on daily",
+      "Breakdown typically occurs in lower 2/3 of triangle"
+    ],
+    "volume": [
+      "Volume decreases during triangle formation",
+      "Volume on declines should exceed rallies (selling dominance)",
+      "Strong volume spike on breakdown below support confirms",
+      "Low volume during consolidation = distribution phase"
+    ],
+    "indicators": [
+      "Price should be below key MAs (20/50-day)",
+      "RSI staying below 50-60 during rallies shows weakness",
+      "MACD staying bearish or weakly bullish",
+      "Each rally making lower high = bearish structure"
+    ],
+    "timeframe": [
+      "Highly reliable on daily charts",
+      "Works on 4H and 1H",
+      "Needs proper confirmation on all timeframes"
+    ]
+  },
+  "invalidation_signals": [
+    "Price breaks above descending resistance (bullish reversal)",
+    "Volume increasing on rallies vs declines (accumulation)",
+    "Triangle lasts >4 months",
+    "Support not horizontal",
+    "No volume on breakdown (weak breakdown may fail)",
+    "Forms in strong uptrend without prior distribution"
+  ],
+  "common_mistakes": [
+    "Confusing with symmetrical triangle (rising support)",
+    "Shorting before breakdown confirmation",
+    "Ignoring volume requirements",
+    "Drawing sloped support when should be flat",
+    "Not waiting for close below support",
+    "Missing volume pattern on declines"
+  ],
+  "trade_setup": {
+    "entry": "Short on break and close below horizontal support with volume",
+    "stop_loss": "Above most recent lower high on descending resistance",
+    "target": "Measure triangle height, subtract from breakdown point"
+  }
+}

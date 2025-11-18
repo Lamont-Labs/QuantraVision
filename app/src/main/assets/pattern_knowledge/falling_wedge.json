@@ -1,0 +1,56 @@
+{
+  "pattern_id": "falling_wedge",
+  "pattern_name": "Falling Wedge",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "A bullish reversal pattern with lower highs and lower lows converging into a narrowing wedge sloping downward. Despite falling prices, selling pressure weakens, leading to eventual upside breakout.",
+  "validation_rules": {
+    "structure": [
+      "Both upper and lower trendlines slope downward",
+      "Trendlines must converge (wedge narrows)",
+      "Requires at least 5 touches (2-3 on each trendline)",
+      "Pattern duration: 3-6 months on daily, 1-4 weeks on 4H",
+      "Slope of upper trendline steeper than lower (creates narrowing)",
+      "Forms after downtrend or near lows"
+    ],
+    "volume": [
+      "Volume must decline progressively (key characteristic)",
+      "Each decline should show weaker volume than previous",
+      "Decreasing volume indicates weakening selling despite lower prices",
+      "Strong volume spike on upside breakout confirms validity"
+    ],
+    "indicators": [
+      "RSI showing bullish divergence critical (higher lows while price makes lower lows)",
+      "MACD histogram showing rising peaks (momentum improving)",
+      "Stochastic making higher lows while price makes lower lows",
+      "Momentum turning up while still inside wedge"
+    ],
+    "timeframe": [
+      "Very reliable on daily and weekly charts",
+      "Works on 4H for swing trades",
+      "Less reliable on short timeframes"
+    ]
+  },
+  "invalidation_signals": [
+    "Volume increasing during declines (strong selling = bearish)",
+    "Price breaks downward through bottom trendline",
+    "No bullish divergence (reduces probability significantly)",
+    "Trendlines not converging (parallel = channel, not wedge)",
+    "Fewer than 5 touchpoints = incomplete formation",
+    "Forms in uptrend (falling wedges need downtrend to reverse)",
+    "Too short duration (<3 weeks on daily)"
+  ],
+  "common_mistakes": [
+    "Confusing with descending triangle (flat bottom, not sloping down)",
+    "Ignoring volume - declining volume is essential",
+    "Missing bullish divergence requirement",
+    "Trying to buy inside wedge before breakout",
+    "Drawing trendlines incorrectly",
+    "Expecting immediate breakout - can extend for months"
+  ],
+  "trade_setup": {
+    "entry": "Enter long on break and close above upper trendline with volume",
+    "stop_loss": "Place below recent swing low or below lower wedge trendline",
+    "target": "Measure wedge base (widest part), project upward from breakout"
+  }
+}

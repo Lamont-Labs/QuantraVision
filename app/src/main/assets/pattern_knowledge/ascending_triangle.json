@@ -1,0 +1,55 @@
+{
+  "pattern_id": "ascending_triangle",
+  "pattern_name": "Ascending Triangle",
+  "category": "continuation",
+  "bias": "bullish",
+  "description": "A bullish continuation pattern with horizontal resistance at the top and rising support at the bottom. Shows accumulation as buyers become more aggressive while resistance holds, typically resolves with upside breakout.",
+  "validation_rules": {
+    "structure": [
+      "Flat horizontal resistance line at top (at least 2 touches)",
+      "Rising trendline support at bottom (at least 2 touches, each higher low)",
+      "Minimum 4 touches total between both lines",
+      "Forms within uptrend for continuation (can reverse downtrend too)",
+      "Pattern duration: 1-3 months on daily, shorter on intraday",
+      "Breakout typically occurs in upper 2/3 of triangle"
+    ],
+    "volume": [
+      "Volume generally decreases during triangle formation",
+      "Volume on rallies should exceed volume on pullbacks (buying dominance)",
+      "Strong volume spike on breakout above resistance critical",
+      "Low volume during consolidation = healthy accumulation"
+    ],
+    "indicators": [
+      "Price should remain above key moving averages (20/50-day)",
+      "RSI staying above 40-50 during pullbacks shows underlying strength",
+      "MACD may consolidate but shouldn't cross deeply bearish",
+      "Each pullback finding support higher = bullish structure"
+    ],
+    "timeframe": [
+      "Highly reliable on daily charts",
+      "Works on 4H and 1H",
+      "Can appear on any timeframe but needs proper confirmation"
+    ]
+  },
+  "invalidation_signals": [
+    "Price breaks below rising support line (bearish reversal)",
+    "Volume increasing during pullbacks vs rallies (distribution)",
+    "Triangle lasts too long (>4 months loses validity)",
+    "Resistance not horizontal (sloping = different pattern)",
+    "No volume confirmation on breakout (weak breakout often fails)",
+    "Forms in strong downtrend with no prior base"
+  ],
+  "common_mistakes": [
+    "Confusing with symmetrical triangle (which has descending resistance)",
+    "Entering before breakout confirmation",
+    "Ignoring volume on breakout (no volume = false breakout risk)",
+    "Drawing sloped resistance when should be horizontal",
+    "Not waiting for close above resistance",
+    "Missing the volume pattern (rallies need higher volume)"
+  ],
+  "trade_setup": {
+    "entry": "Enter on break and close above horizontal resistance with volume",
+    "stop_loss": "Place below most recent higher low on rising support",
+    "target": "Measure triangle height at widest point, add to breakout level"
+  }
+}

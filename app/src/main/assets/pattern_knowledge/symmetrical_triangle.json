@@ -1,0 +1,54 @@
+{
+  "pattern_id": "symmetrical_triangle",
+  "pattern_name": "Symmetrical Triangle",
+  "category": "continuation",
+  "bias": "neutral",
+  "description": "A neutral continuation pattern with converging trendlines - lower highs and higher lows. Represents indecision between buyers and sellers. Breakout direction typically continues prior trend, but can reverse.",
+  "validation_rules": {
+    "structure": [
+      "Upper trendline slopes downward (lower highs)",
+      "Lower trendline slopes upward (higher lows)",
+      "Lines converge toward apex",
+      "Minimum 4 touches (2 on each line)",
+      "Duration: 1-4 months on daily",
+      "Breakout ideally occurs 1/2 to 3/4 way to apex"
+    ],
+    "volume": [
+      "Volume should contract as triangle develops",
+      "Declining volume shows consolidation, not distribution",
+      "Strong volume spike on breakout critical for direction",
+      "Volume pattern less directional than other triangles"
+    ],
+    "indicators": [
+      "Indicators typically consolidate during formation",
+      "RSI around 40-60 range showing balance",
+      "MACD may oscillate around zero line",
+      "Prior trend context matters for breakout prediction"
+    ],
+    "timeframe": [
+      "Reliable on daily and weekly charts",
+      "Works on 4H",
+      "Common on all timeframes"
+    ]
+  },
+  "invalidation_signals": [
+    "Triangle extends beyond apex (loses validity)",
+    "No volume on breakout (false break risk very high)",
+    "Fewer than 4 clear touches",
+    "Trendlines don't converge (parallel = channel)",
+    "Breakout occurs too early (<1/3 way through pattern)"
+  ],
+  "common_mistakes": [
+    "Assuming breakout direction without confirmation",
+    "Entering before clear breakout",
+    "Ignoring prior trend (continuation more likely)",
+    "Trading without volume confirmation",
+    "Expecting symmetrical triangles to resolve quickly",
+    "Not having plan for both directions"
+  ],
+  "trade_setup": {
+    "entry": "Enter in breakout direction with strong volume confirmation",
+    "stop_loss": "Below support for long, above resistance for short",
+    "target": "Measure triangle height at base, project from breakout"
+  }
+}

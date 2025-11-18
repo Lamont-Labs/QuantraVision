@@ -100,7 +100,7 @@ private fun AppNavigationHost(
     }
     
     // Define main tab routes that should show the bottom bar
-    val mainTabRoutes = setOf("home", "markets", "scan", "learn", "settings")
+    val mainTabRoutes = setOf("home", "markets", "scan", "quantrabot", "settings")
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showBottomBar = currentRoute in mainTabRoutes
@@ -154,6 +154,12 @@ private fun AppNavigationHost(
                 onNavigateToTutorials = { navController.navigate("tutorials") },
                 onNavigateToBook = { navController.navigate("book") },
                 onNavigateToPaywall = { navController.navigate("paywall") }
+            )
+        }
+        
+        composable("quantrabot") {
+            com.lamontlabs.quantravision.ui.screens.QuantraBotScreen(
+                paddingValues = PaddingValues()
             )
         }
         

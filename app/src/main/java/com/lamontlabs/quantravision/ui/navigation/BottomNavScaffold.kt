@@ -14,7 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 /**
  * Bottom Navigation Items
- * Following Material Design 3 guidelines with 5 primary destinations
+ * Following Material Design 3 guidelines with primary destinations
  */
 sealed class BottomNavItem(
     val route: String,
@@ -24,7 +24,7 @@ sealed class BottomNavItem(
     object Home : BottomNavItem("home", "Home", Icons.Default.Home)
     object Markets : BottomNavItem("markets", "Market", Icons.Default.TrendingUp)
     object Scan : BottomNavItem("scan", "Scan", Icons.Default.PlayArrow)
-    object Learn : BottomNavItem("learn", "Learn", Icons.Default.School)
+    object QuantraBot : BottomNavItem("quantrabot", "Bot", Icons.Default.SmartToy)
     object Settings : BottomNavItem("settings", "Config", Icons.Default.Settings)
 }
 
@@ -39,7 +39,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.Home,
         BottomNavItem.Markets,
         BottomNavItem.Scan,
-        BottomNavItem.Learn,
+        BottomNavItem.QuantraBot,
         BottomNavItem.Settings
     )
     
