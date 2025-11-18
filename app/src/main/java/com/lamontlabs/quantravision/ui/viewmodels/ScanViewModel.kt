@@ -45,8 +45,17 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     
     init {
         checkOverlayPermission()
+        checkIfServiceRunning()
         loadScanStats()
         observeTierChanges()
+    }
+    
+    private fun checkIfServiceRunning() {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        val isRunning = activityManager.getRunningServices(Int.MAX_VALUE).any { service ->
+            service.service.className == OverlayService::class.java.name
+        }
+        _uiState.update { it.copy(isOverlayActive = isRunning) }
     }
     
     private fun checkOverlayPermission() {
@@ -101,6 +110,12 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     }
     
     fun requestMediaProjectionPermission() {
+        // Don't request if service is already running
+        if (_uiState.value.isOverlayActive) {
+            android.util.Log.w("ScanViewModel", "Service already running, skipping permission request")
+            return
+        }
+        
         val intent = mediaProjectionManager.createScreenCaptureIntent()
         _uiState.update { it.copy(mediaProjectionIntent = intent) }
     }
@@ -151,6 +166,7 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     
     fun refreshStats() {
         checkOverlayPermission()
+        checkIfServiceRunning()
         loadScanStats()
     }
 }

@@ -137,7 +137,15 @@ fun ScanScreen(
                     if (uiState.isOverlayActive) {
                         viewModel.stopOverlay()
                     } else if (uiState.hasOverlayPermission) {
-                        viewModel.requestMediaProjectionPermission()
+                        // Show hint dialog before permission
+                        android.app.AlertDialog.Builder(context)
+                            .setTitle("Screen Capture Permission")
+                            .setMessage("On the next screen, select 'Share entire screen' for full chart pattern detection.\n\nNote: QuantraVision only captures chart images - no personal data is collected.")
+                            .setPositiveButton("Continue") { _, _ ->
+                                viewModel.requestMediaProjectionPermission()
+                            }
+                            .setNegativeButton("Cancel", null)
+                            .show()
                     } else {
                         val intent = android.content.Intent(
                             android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
