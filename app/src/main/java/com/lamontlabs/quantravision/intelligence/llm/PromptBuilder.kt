@@ -53,9 +53,11 @@ Focus on:
                 it.rsi?.let { rsi -> appendLine("- RSI: ${rsi.toInt()}") }
                 it.macd?.let { macd -> appendLine("- MACD: $macd") }
                 it.volume?.let { vol -> appendLine("- Volume: $vol") }
-                if (it.customIndicators.isNotEmpty()) {
-                    it.customIndicators.take(3).forEach { custom ->
-                        appendLine("- ${custom.name}: ${custom.value}")
+                it.otherIndicators?.let { other ->
+                    if (other.isNotEmpty()) {
+                        other.entries.take(3).forEach { (name, value) ->
+                            appendLine("- $name: $value")
+                        }
                     }
                 }
             }

@@ -93,6 +93,7 @@ class ContextAnalyzer {
                         rsi < RSI_OVERSOLD -> supporting.add("RSI oversold (${"%.0f".format(rsi)})")
                         rsi < RSI_NEUTRAL_LOW -> supporting.add("RSI below neutral (${"%.0f".format(rsi)})")
                         rsi > RSI_OVERBOUGHT -> conflicting.add("RSI overbought on bullish pattern")
+                        else -> {}
                     }
                 }
                 ConfluenceType.BEARISH -> {
@@ -100,6 +101,7 @@ class ContextAnalyzer {
                         rsi > RSI_OVERBOUGHT -> supporting.add("RSI overbought (${"%.0f".format(rsi)})")
                         rsi > RSI_NEUTRAL_HIGH -> supporting.add("RSI above neutral (${"%.0f".format(rsi)})")
                         rsi < RSI_OVERSOLD -> conflicting.add("RSI oversold on bearish pattern")
+                        else -> {}
                     }
                 }
                 else -> {}
