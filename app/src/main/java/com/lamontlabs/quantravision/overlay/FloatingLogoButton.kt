@@ -145,6 +145,7 @@ class FloatingLogoButton(
         logoView.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    android.util.Log.d("FloatingLogoButton", "👆 ACTION_DOWN detected")
                     initialX = params.x
                     initialY = params.y
                     initialTouchX = event.rawX
@@ -158,6 +159,7 @@ class FloatingLogoButton(
                     val deltaY = event.rawY - initialTouchY
                     
                     if (!isDragging && (abs(deltaX) > 10 || abs(deltaY) > 10)) {
+                        android.util.Log.d("FloatingLogoButton", "🔄 Drag started (delta: $deltaX, $deltaY)")
                         isDragging = true
                     }
                     
@@ -171,14 +173,19 @@ class FloatingLogoButton(
                     true
                 }
                 MotionEvent.ACTION_UP -> {
+                    android.util.Log.d("FloatingLogoButton", "👆 ACTION_UP detected, isDragging=$isDragging")
                     if (isDragging) {
+                        android.util.Log.d("FloatingLogoButton", "📍 Snapping to edge and saving position")
                         snapToEdge()
                         prefs.savePosition(params.x, params.y)
                     } else {
                         val pressDuration = System.currentTimeMillis() - dragStartTime
+                        android.util.Log.d("FloatingLogoButton", "⏱️ Press duration: ${pressDuration}ms")
                         if (pressDuration >= longPressThreshold) {
+                            android.util.Log.i("FloatingLogoButton", "🔴 LONG PRESS detected - invoking onLongPressListener")
                             onLongPressListener?.invoke()
                         } else {
+                            android.util.Log.i("FloatingLogoButton", "✅ TAP detected - invoking onClickListener")
                             onClickListener?.invoke()
                         }
                     }

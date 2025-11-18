@@ -174,29 +174,33 @@ class OverlayService : Service() {
     
     
     private fun handleTap() {
-        Timber.d("Tap detected, current state: ${stateMachine.getCurrentState()}")
+        Log.i(TAG, "🎯 TAP DETECTED in OverlayService.handleTap()")
+        val currentState = stateMachine.getCurrentState()
+        Log.i(TAG, "Current state: $currentState")
         
-        when (stateMachine.getCurrentState()) {
+        when (currentState) {
             is OverlayState.Idle -> {
-                Timber.d("Idle → Triggering capture")
+                Log.i(TAG, "✅ Idle state → Triggering capture")
                 triggerCapture()
             }
             is OverlayState.ShowingResult -> {
-                Timber.d("ShowingResult → Manually clearing highlights")
+                Log.i(TAG, "📋 ShowingResult state → Clearing highlights")
                 resultController.manualClear()
             }
             is OverlayState.Capturing -> {
-                Timber.d("Already capturing, ignoring tap")
+                Log.w(TAG, "⚠️ Already capturing, ignoring tap")
             }
         }
     }
     
     private fun handleLongPress() {
-        Timber.d("Long press detected → Returning to main UI")
+        Log.i(TAG, "🔴 LONG PRESS DETECTED in OverlayService.handleLongPress()")
+        Log.i(TAG, "Returning to main UI...")
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         }
         startActivity(intent)
+        Log.i(TAG, "✅ MainActivity started")
     }
     
     private fun triggerCapture() {
