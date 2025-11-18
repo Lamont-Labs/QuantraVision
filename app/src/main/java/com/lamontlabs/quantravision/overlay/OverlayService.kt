@@ -261,6 +261,8 @@ class OverlayService : Service() {
     
     private fun triggerCapture() {
         currentScanJob = scope.launch {
+            val scanStartTime = System.currentTimeMillis()
+            
             val transitioned = stateMachine.transitionToCapturing()
             if (!transitioned) {
                 Timber.w("Failed to transition to Capturing state")
@@ -269,6 +271,11 @@ class OverlayService : Service() {
             
             withContext(Dispatchers.Main) {
                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
+                Toast.makeText(
+                    applicationContext,
+                    "🔍 Scanning chart...",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             
             try {
@@ -281,7 +288,7 @@ class OverlayService : Service() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             applicationContext,
-                            "Screen capture not initialized. Please restart scanner.",
+                            "❌ Screen capture not initialized. Please restart scanner.",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -289,11 +296,19 @@ class OverlayService : Service() {
                     return@launch
                 }
                 
-                Timber.d("Capturing single frame from persistent VirtualDisplay...")
+                Timber.i("📸 Starting frame capture from VirtualDisplay...")
+                val captureStartTime = System.currentTimeMillis()
                 val bitmap = singleFrameCapture.captureFrame(reader)
+                val captureTime = System.currentTimeMillis() - captureStartTime
+                Timber.i("✅ Frame captured in ${captureTime}ms - size: ${bitmap.width}x${bitmap.height}")
                 
-                Timber.d("Frame captured, processing patterns...")
+                Timber.i("🔬 Starting pattern detection...")
+                val detectionStartTime = System.currentTimeMillis()
                 processFrameForPatterns(bitmap)
+                val detectionTime = System.currentTimeMillis() - detectionStartTime
+                
+                val totalTime = System.currentTimeMillis() - scanStartTime
+                Timber.i("✅ Scan complete in ${totalTime}ms (capture: ${captureTime}ms, detection: ${detectionTime}ms)")
                 
                 bitmap.recycle()
                 
@@ -302,12 +317,12 @@ class OverlayService : Service() {
                 Timber.d("Scan canceled by user")
                 throw e // Re-throw to properly cancel coroutine
             } catch (e: Exception) {
-                Timber.e(e, "Error during frame capture")
+                Timber.e(e, "❌ Error during scan")
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         applicationContext,
-                        "Capture failed: ${e.message}",
-                        Toast.LENGTH_SHORT
+                        "❌ Scan failed: ${e.message}",
+                        Toast.LENGTH_LONG
                     ).show()
                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                 }
@@ -320,11 +335,15 @@ class OverlayService : Service() {
     
     private suspend fun processFrameForPatterns(bitmap: android.graphics.Bitmap) {
         try {
+            Timber.i("🔬 Initializing pattern detection engine...")
             val detectorBridge = HybridDetectorBridge(applicationContext)
             val patternToPlanEngine = PatternToPlanEngine(applicationContext)
             val isProActive = ProFeatureGate.isActive(applicationContext)
             
+            Timber.i("🔍 Running optimized pattern detection (1-2.5s expected)...")
             val results = detectorBridge.detectPatternsOptimized(bitmap)
+            Timber.i("✅ Pattern detection complete - found ${results.size} raw patterns")
+            
             val allDetectedPatterns = mutableListOf<PatternMatch>()
                 
                 for (pattern in results) {
@@ -358,7 +377,7 @@ class OverlayService : Service() {
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             applicationContext,
-                                            w.message,
+                                            "⚠️ ${w.message}",
                                             Toast.LENGTH_LONG
                                         ).show()
                                     }
@@ -369,22 +388,45 @@ class OverlayService : Service() {
                         }
                     }
                 }
-                
+            
+            Timber.i("📊 Processed ${allDetectedPatterns.size} final patterns")
+            
             withContext(Dispatchers.Main) {
-                // Always call showPatterns - it handles empty list by showing "no patterns" notification
-                patternNotificationManager.showPatterns(allDetectedPatterns)
-                
-                floatingLogo?.updatePatternCount(allDetectedPatterns.size)
-                
-                if (allDetectedPatterns.isNotEmpty()) {
-                    val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
-                    if (highConfidencePattern) {
-                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                try {
+                    Timber.i("📲 Showing notification for ${allDetectedPatterns.size} patterns...")
+                    
+                    // CRITICAL: Always call showPatterns - it handles empty list
+                    patternNotificationManager.showPatterns(allDetectedPatterns)
+                    Timber.i("✅ Notification displayed successfully")
+                    
+                    // Show user feedback toast
+                    val message = if (allDetectedPatterns.isEmpty()) {
+                        "No patterns detected"
                     } else {
-                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                        "✅ Found ${allDetectedPatterns.size} pattern${if (allDetectedPatterns.size == 1) "" else "s"}!"
                     }
-                } else {
-                    floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                    Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                    
+                    floatingLogo?.updatePatternCount(allDetectedPatterns.size)
+                    
+                    if (allDetectedPatterns.isNotEmpty()) {
+                        val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
+                        if (highConfidencePattern) {
+                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                        } else {
+                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                        }
+                    } else {
+                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                    }
+                    
+                } catch (e: Exception) {
+                    Timber.e(e, "❌ CRITICAL: Failed to show notification")
+                    Toast.makeText(
+                        applicationContext,
+                        "❌ Failed to show notification: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
             
@@ -396,8 +438,13 @@ class OverlayService : Service() {
             }
             
         } catch (e: Exception) {
-            Timber.e(e, "Error processing frame for pattern detection")
+            Timber.e(e, "❌ CRITICAL: Error processing frame for pattern detection")
             withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    applicationContext,
+                    "❌ Detection failed: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
                 floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
             }
             stateMachine.transitionToIdle()

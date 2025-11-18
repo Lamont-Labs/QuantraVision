@@ -1,49 +1,26 @@
 package com.lamontlabs.quantravision
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.lamontlabs.quantravision.onboarding.OnboardingManager
+import com.lamontlabs.quantravision.permissions.PermissionOrchestrator
 import com.lamontlabs.quantravision.ui.*
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-  private val notificationPermissionLauncher = registerForActivityResult(
-    ActivityResultContracts.RequestPermission()
-  ) { isGranted ->
-    if (isGranted) {
-      Log.d("MainActivity", "Notification permission granted")
-    } else {
-      Log.w("MainActivity", "Notification permission denied")
-    }
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    
-    // Request notification permission for Android 13+ (API 33+)
-    requestNotificationPermission()
     
     // Enable immersive mode - hide navigation bar throughout entire app
     // Navigation bar only appears when user swipes up from bottom
@@ -55,7 +32,19 @@ class MainActivity : ComponentActivity() {
     
     try {
       setContent {
-        QuantraVisionApp(context = this)
+        var permissionsGranted by remember { mutableStateOf(false) }
+        
+        if (!permissionsGranted) {
+          // Show permission flow first
+          PermissionOrchestrator(
+            onAllPermissionsGranted = {
+              permissionsGranted = true
+            }
+          )
+        } else {
+          // All permissions granted - show main app
+          QuantraVisionApp(context = this)
+        }
       }
     } catch (e: Exception) {
       Log.e("MainActivity", "Fatal error initializing Compose UI", e)
@@ -99,25 +88,6 @@ class MainActivity : ComponentActivity() {
         Log.e("MainActivity", "Fatal error in fallback UI", fallbackError)
         finish()
       }
-    }
-  }
-  
-  private fun requestNotificationPermission() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      when {
-        ContextCompat.checkSelfPermission(
-          this,
-          Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED -> {
-          Log.d("MainActivity", "Notification permission already granted")
-        }
-        else -> {
-          Log.d("MainActivity", "Requesting notification permission")
-          notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-      }
-    } else {
-      Log.d("MainActivity", "Notification permission not required on API < 33")
     }
   }
 }
