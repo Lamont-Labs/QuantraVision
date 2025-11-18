@@ -3,10 +3,13 @@ package com.lamontlabs.quantravision.devbot.monitors
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Debug
+import android.os.Handler
 import android.os.Looper
+import android.view.Choreographer
 import com.lamontlabs.quantravision.devbot.data.PerformanceMetric
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import java.util.concurrent.atomic.AtomicLong
 
 data class PerformanceIssue(
     val description: String,
@@ -16,9 +19,21 @@ data class PerformanceIssue(
     val timestamp: Long = System.currentTimeMillis()
 )
 
-class PerformanceMonitor(private val context: Context) {
+data class PerformanceThresholds(
+    val memoryThresholdMB: Long = 300L,
+    val memoryPercentageThreshold: Int = 85,
+    val frameDropThreshold: Int = 3,
+    val frameTimeThresholdMs: Long = 16L,
+    val jankThresholdMs: Long = 100L
+)
+
+class PerformanceMonitor(
+    private val context: Context,
+    private val thresholds: PerformanceThresholds = PerformanceThresholds()
+) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var monitoringJob: Job? = null
+    private var frameCallbackActive = false
     
     private val _issues = MutableSharedFlow<PerformanceIssue>(
         replay = 20,
@@ -28,13 +43,66 @@ class PerformanceMonitor(private val context: Context) {
     
     private val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     private val runtime = Runtime.getRuntime()
+    private val mainHandler = Handler(Looper.getMainLooper())
     
-    private val MEMORY_THRESHOLD_MB = 300L
-    private val UI_BLOCK_THRESHOLD_MS = 100L
-    private val GC_PAUSE_THRESHOLD_MS = 50L
+    private var lastFrameTimeNanos = AtomicLong(0L)
+    private var droppedFrameCount = 0
+    private var consecutiveJankyFrames = 0
     
-    private var lastGcTime = 0L
-    private var lastMemoryCheck = 0L
+    private val frameCallback = object : Choreographer.FrameCallback {
+        override fun doFrame(frameTimeNanos: Long) {
+            if (!frameCallbackActive) return
+            
+            val lastTime = lastFrameTimeNanos.get()
+            if (lastTime != 0L) {
+                val frameTimeMs = (frameTimeNanos - lastTime) / 1_000_000
+                
+                if (frameTimeMs > thresholds.frameTimeThresholdMs) {
+                    val droppedFrames = (frameTimeMs / thresholds.frameTimeThresholdMs).toInt() - 1
+                    if (droppedFrames > 0) {
+                        droppedFrameCount += droppedFrames
+                        
+                        if (droppedFrames >= thresholds.frameDropThreshold) {
+                            scope.launch {
+                                _issues.emit(
+                                    PerformanceIssue(
+                                        description = "Frame drop detected: $droppedFrames frames dropped (${frameTimeMs}ms frame time)",
+                                        type = PerformanceMetric.FRAME_DROP,
+                                        value = droppedFrames.toLong(),
+                                        threshold = thresholds.frameDropThreshold.toLong()
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                if (frameTimeMs > thresholds.jankThresholdMs) {
+                    consecutiveJankyFrames++
+                    if (consecutiveJankyFrames >= 2) {
+                        scope.launch {
+                            _issues.emit(
+                                PerformanceIssue(
+                                    description = "UI jank detected: ${frameTimeMs}ms frame time (threshold: ${thresholds.jankThresholdMs}ms)",
+                                    type = PerformanceMetric.UI_THREAD_BLOCK,
+                                    value = frameTimeMs,
+                                    threshold = thresholds.jankThresholdMs
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    consecutiveJankyFrames = 0
+                }
+            }
+            
+            lastFrameTimeNanos.set(frameTimeNanos)
+            
+            if (frameCallbackActive) {
+                Choreographer.getInstance().postFrameCallback(this)
+            }
+        }
+    }
     
     fun startMonitoring() {
         if (monitoringJob?.isActive == true) return
@@ -42,14 +110,36 @@ class PerformanceMonitor(private val context: Context) {
         monitoringJob = scope.launch {
             while (isActive) {
                 checkMemoryUsage()
-                checkUIThread()
                 delay(1000)
             }
         }
+        
+        startFrameMonitoring()
     }
     
     fun stopMonitoring() {
         monitoringJob?.cancel()
+        stopFrameMonitoring()
+    }
+    
+    private fun startFrameMonitoring() {
+        if (frameCallbackActive) return
+        
+        frameCallbackActive = true
+        lastFrameTimeNanos.set(0L)
+        droppedFrameCount = 0
+        consecutiveJankyFrames = 0
+        
+        mainHandler.post {
+            Choreographer.getInstance().postFrameCallback(frameCallback)
+        }
+    }
+    
+    private fun stopFrameMonitoring() {
+        frameCallbackActive = false
+        mainHandler.post {
+            Choreographer.getInstance().removeFrameCallback(frameCallback)
+        }
     }
     
     private suspend fun checkMemoryUsage() {
@@ -58,13 +148,13 @@ class PerformanceMonitor(private val context: Context) {
         
         val totalMemoryMB = memInfo.totalPss / 1024L
         
-        if (totalMemoryMB > MEMORY_THRESHOLD_MB) {
+        if (totalMemoryMB > thresholds.memoryThresholdMB) {
             _issues.emit(
                 PerformanceIssue(
-                    description = "High memory usage detected: ${totalMemoryMB}MB (threshold: ${MEMORY_THRESHOLD_MB}MB)",
+                    description = "High memory usage detected: ${totalMemoryMB}MB (threshold: ${thresholds.memoryThresholdMB}MB)",
                     type = PerformanceMetric.MEMORY_USAGE,
                     value = totalMemoryMB,
-                    threshold = MEMORY_THRESHOLD_MB
+                    threshold = thresholds.memoryThresholdMB
                 )
             )
         }
@@ -73,30 +163,13 @@ class PerformanceMonitor(private val context: Context) {
         val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
         val memoryPercentage = (usedMemory * 100 / maxMemory)
         
-        if (memoryPercentage > 85) {
+        if (memoryPercentage > thresholds.memoryPercentageThreshold) {
             _issues.emit(
                 PerformanceIssue(
                     description = "Memory pressure: ${memoryPercentage}% used (${usedMemory}MB / ${maxMemory}MB)",
                     type = PerformanceMetric.MEMORY_USAGE,
                     value = memoryPercentage,
-                    threshold = 85
-                )
-            )
-        }
-    }
-    
-    private suspend fun checkUIThread() {
-        val mainLooper = Looper.getMainLooper()
-        
-        if (mainLooper.thread.state == Thread.State.BLOCKED ||
-            mainLooper.thread.state == Thread.State.WAITING) {
-            
-            _issues.emit(
-                PerformanceIssue(
-                    description = "Main thread blocked - potential ANR risk",
-                    type = PerformanceMetric.UI_THREAD_BLOCK,
-                    value = 1,
-                    threshold = 0
+                    threshold = thresholds.memoryPercentageThreshold.toLong()
                 )
             )
         }

@@ -11,6 +11,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.lamontlabs.quantravision.BuildConfig
 
 /**
  * Bottom Navigation Items
@@ -25,6 +26,7 @@ sealed class BottomNavItem(
     object Markets : BottomNavItem("markets", "Market", Icons.Default.TrendingUp)
     object Scan : BottomNavItem("scan", "Scan", Icons.Default.PlayArrow)
     object QuantraBot : BottomNavItem("quantrabot", "Bot", Icons.Default.SmartToy)
+    object DevBot : BottomNavItem("devbot", "DevBot", Icons.Default.BugReport)
     object Settings : BottomNavItem("settings", "Config", Icons.Default.Settings)
 }
 
@@ -35,13 +37,16 @@ sealed class BottomNavItem(
  */
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Markets,
-        BottomNavItem.Scan,
-        BottomNavItem.QuantraBot,
-        BottomNavItem.Settings
-    )
+    val items = buildList {
+        add(BottomNavItem.Home)
+        add(BottomNavItem.Markets)
+        add(BottomNavItem.Scan)
+        add(BottomNavItem.QuantraBot)
+        if (BuildConfig.DEBUG) {
+            add(BottomNavItem.DevBot)
+        }
+        add(BottomNavItem.Settings)
+    }
     
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

@@ -84,6 +84,7 @@ object DiagnosticEngine {
             }
         }
         
+        logcatMonitor.startMonitoring()
         crashAnalyzer.installHandler()
         performanceMonitor.startMonitoring()
     }
@@ -173,6 +174,7 @@ object DiagnosticEngine {
         if (!isInitialized) return
         
         scope.cancel()
+        logcatMonitor.stop()
         performanceMonitor.stopMonitoring()
         crashAnalyzer.uninstallHandler()
         isInitialized = false

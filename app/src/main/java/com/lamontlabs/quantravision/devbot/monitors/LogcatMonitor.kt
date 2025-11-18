@@ -1,11 +1,13 @@
 package com.lamontlabs.quantravision.devbot.monitors
 
 import android.content.Context
+import android.os.Process
 import com.lamontlabs.quantravision.devbot.data.ErrorSeverity
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlin.math.min
 
 data class LogcatError(
     val message: String,
@@ -15,9 +17,13 @@ data class LogcatError(
     val timestamp: Long = System.currentTimeMillis()
 )
 
-class LogcatMonitor(private val context: Context) {
+class LogcatMonitor(
+    private val context: Context,
+    private val maxLinesPerSecond: Int = 100
+) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val packageName = context.packageName
+    private val pid = Process.myPid()
     
     private val _errors = MutableSharedFlow<LogcatError>(
         replay = 50,
@@ -25,55 +31,81 @@ class LogcatMonitor(private val context: Context) {
     )
     val errors: SharedFlow<LogcatError> = _errors.asSharedFlow()
     
+    @Volatile
     private var logcatProcess: Process? = null
+    
+    @Volatile
     private var monitoringJob: Job? = null
     
-    init {
-        startMonitoring()
-    }
+    @Volatile
+    private var isMonitoring = false
     
-    private fun startMonitoring() {
+    fun startMonitoring() {
+        if (isMonitoring) return
+        
+        isMonitoring = true
         monitoringJob = scope.launch {
+            var reader: BufferedReader? = null
             try {
                 logcatProcess = Runtime.getRuntime().exec(
-                    arrayOf("logcat", "-v", "time", "*:W")
+                    arrayOf(
+                        "logcat",
+                        "-v", "time",
+                        "--pid=$pid",
+                        "*:W"
+                    )
                 )
                 
-                val reader = BufferedReader(
-                    InputStreamReader(logcatProcess!!.inputStream)
+                reader = BufferedReader(
+                    InputStreamReader(logcatProcess!!.inputStream),
+                    8192
                 )
                 
                 var currentError: StringBuilder? = null
                 var currentTag = ""
                 var currentSeverity = ErrorSeverity.MEDIUM
                 
-                reader.useLines { lines ->
-                    lines.forEach { line ->
-                        if (!isActive) return@forEach
-                        
-                        if (line.contains(packageName)) {
-                            when {
-                                line.contains("E/") -> {
-                                    emitCurrentError(currentError, currentTag, currentSeverity)
-                                    currentError = StringBuilder(line)
-                                    currentTag = extractTag(line)
-                                    currentSeverity = ErrorSeverity.HIGH
-                                }
-                                line.contains("W/") -> {
-                                    emitCurrentError(currentError, currentTag, currentSeverity)
-                                    currentError = StringBuilder(line)
-                                    currentTag = extractTag(line)
-                                    currentSeverity = ErrorSeverity.MEDIUM
-                                }
-                                line.contains("F/") || line.contains("A/") -> {
-                                    emitCurrentError(currentError, currentTag, currentSeverity)
-                                    currentError = StringBuilder(line)
-                                    currentTag = extractTag(line)
-                                    currentSeverity = ErrorSeverity.CRITICAL
-                                }
-                                currentError != null -> {
-                                    currentError.append("\n").append(line)
-                                }
+                var linesProcessed = 0
+                var windowStartTime = System.currentTimeMillis()
+                
+                while (isActive && isMonitoring) {
+                    val line = reader.readLine() ?: break
+                    
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - windowStartTime >= 1000) {
+                        linesProcessed = 0
+                        windowStartTime = currentTime
+                    }
+                    
+                    if (linesProcessed >= maxLinesPerSecond) {
+                        delay(min(50, 1000 - (currentTime - windowStartTime)))
+                        continue
+                    }
+                    
+                    linesProcessed++
+                    
+                    when {
+                        line.contains("E/") -> {
+                            emitCurrentError(currentError, currentTag, currentSeverity)
+                            currentError = StringBuilder(line)
+                            currentTag = extractTag(line)
+                            currentSeverity = ErrorSeverity.HIGH
+                        }
+                        line.contains("W/") -> {
+                            emitCurrentError(currentError, currentTag, currentSeverity)
+                            currentError = StringBuilder(line)
+                            currentTag = extractTag(line)
+                            currentSeverity = ErrorSeverity.MEDIUM
+                        }
+                        line.contains("F/") || line.contains("A/") -> {
+                            emitCurrentError(currentError, currentTag, currentSeverity)
+                            currentError = StringBuilder(line)
+                            currentTag = extractTag(line)
+                            currentSeverity = ErrorSeverity.CRITICAL
+                        }
+                        currentError != null -> {
+                            if (currentError.length < 10000) {
+                                currentError.append("\n").append(line)
                             }
                         }
                     }
@@ -82,8 +114,27 @@ class LogcatMonitor(private val context: Context) {
                 emitCurrentError(currentError, currentTag, currentSeverity)
                 
             } catch (e: Exception) {
-                e.printStackTrace()
+                if (isMonitoring) {
+                    e.printStackTrace()
+                }
+            } finally {
+                try {
+                    reader?.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                cleanupProcess()
             }
+        }
+    }
+    
+    private fun cleanupProcess() {
+        try {
+            logcatProcess?.destroy()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            logcatProcess = null
         }
     }
     
@@ -133,7 +184,13 @@ class LogcatMonitor(private val context: Context) {
     }
     
     fun stop() {
+        if (!isMonitoring) return
+        
+        isMonitoring = false
+        
         monitoringJob?.cancel()
-        logcatProcess?.destroy()
+        monitoringJob = null
+        
+        cleanupProcess()
     }
 }
