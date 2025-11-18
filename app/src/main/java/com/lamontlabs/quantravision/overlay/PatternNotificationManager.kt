@@ -101,7 +101,8 @@ class PatternNotificationManager(private val context: Context) {
      */
     fun showPatterns(patterns: List<PatternMatch>) {
         if (patterns.isEmpty()) {
-            Timber.w("showPatterns called with empty list, ignoring")
+            Timber.d("No patterns detected, showing feedback notification")
+            showNoPatternsFeedback()
             return
         }
         
@@ -230,6 +231,55 @@ class PatternNotificationManager(private val context: Context) {
             Timber.e(e, "SecurityException showing notification - notification permission not granted")
         } catch (e: Exception) {
             Timber.e(e, "Failed to show pattern notification")
+        }
+    }
+    
+    /**
+     * Shows feedback notification when no patterns are detected.
+     */
+    private fun showNoPatternsFeedback() {
+        try {
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            
+            val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                pendingIntentFlags
+            )
+            
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID_NORMAL)
+                .setSmallIcon(R.drawable.ic_quantravision_logo)
+                .setContentTitle("No Patterns Detected")
+                .setContentText("Chart scanned successfully — no recognizable patterns found")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .build()
+            
+            notificationManager.notify(NOTIFICATION_ID, notification)
+            Timber.d("No-patterns feedback notification shown")
+            
+            // Cancel any existing auto-dismiss job and schedule new one for 5 seconds
+            autoDismissJob?.cancel()
+            autoDismissJob = scope.launch {
+                delay(5000L)
+                dismiss()
+                Timber.d("No-patterns notification auto-dismissed after 5s")
+            }
+            
+        } catch (e: SecurityException) {
+            Timber.e(e, "SecurityException showing notification - notification permission not granted")
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to show no-patterns notification")
         }
     }
     

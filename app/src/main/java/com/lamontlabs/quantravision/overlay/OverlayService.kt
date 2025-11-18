@@ -64,6 +64,9 @@ class OverlayService : Service() {
     private var virtualDisplay: android.hardware.display.VirtualDisplay? = null
     private var imageReader: android.media.ImageReader? = null
     
+    // Track current scan job for cancellation
+    private var currentScanJob: kotlinx.coroutines.Job? = null
+    
     private val stateMachine = OverlayStateMachine()
     private val singleFrameCapture = SingleFrameCapture()
     private lateinit var resultController: PatternResultController
@@ -188,7 +191,8 @@ class OverlayService : Service() {
                 resultController.manualClear()
             }
             is OverlayState.Capturing -> {
-                Log.w(TAG, "⚠️ Already capturing, ignoring tap")
+                Log.i(TAG, "🛑 Capturing state → Canceling scan")
+                cancelScan()
             }
         }
     }
@@ -203,8 +207,26 @@ class OverlayService : Service() {
         Log.i(TAG, "✅ MainActivity started")
     }
     
+    private fun cancelScan() {
+        Log.i(TAG, "Canceling current scan...")
+        currentScanJob?.cancel()
+        currentScanJob = null
+        
+        scope.launch(Dispatchers.Main) {
+            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+            Toast.makeText(
+                applicationContext,
+                "Scan canceled",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        
+        stateMachine.transitionToIdle()
+        Log.i(TAG, "✓ Scan canceled successfully")
+    }
+    
     private fun triggerCapture() {
-        scope.launch {
+        currentScanJob = scope.launch {
             val transitioned = stateMachine.transitionToCapturing()
             if (!transitioned) {
                 Timber.w("Failed to transition to Capturing state")
@@ -238,6 +260,10 @@ class OverlayService : Service() {
                 
                 bitmap.recycle()
                 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Scan was canceled by user - already showed toast in cancelScan()
+                Timber.d("Scan canceled by user")
+                throw e // Re-throw to properly cancel coroutine
             } catch (e: Exception) {
                 Timber.e(e, "Error during frame capture")
                 withContext(Dispatchers.Main) {
@@ -249,6 +275,8 @@ class OverlayService : Service() {
                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                 }
                 stateMachine.transitionToIdle()
+            } finally {
+                currentScanJob = null
             }
         }
     }
@@ -306,11 +334,8 @@ class OverlayService : Service() {
                 }
                 
             withContext(Dispatchers.Main) {
-                if (allDetectedPatterns.isNotEmpty()) {
-                    patternNotificationManager.showPatterns(allDetectedPatterns)
-                } else {
-                    patternNotificationManager.dismiss()
-                }
+                // Always call showPatterns - it handles empty list by showing "no patterns" notification
+                patternNotificationManager.showPatterns(allDetectedPatterns)
                 
                 floatingLogo?.updatePatternCount(allDetectedPatterns.size)
                 
