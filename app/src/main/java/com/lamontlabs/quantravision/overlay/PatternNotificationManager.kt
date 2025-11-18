@@ -53,37 +53,41 @@ class PatternNotificationManager(private val context: Context) {
      * NORMAL: IMPORTANCE_DEFAULT for other patterns
      */
     private fun createNotificationChannels() {
-        try {
-            // High confidence channel (IMPORTANCE_HIGH)
-            val highConfidenceChannel = NotificationChannel(
-                CHANNEL_ID_HIGH_CONFIDENCE,
-                "High Confidence Patterns",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Notifications for high confidence pattern detections (>85%)"
-                enableVibration(true)
-                enableLights(true)
-                setShowBadge(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                // High confidence channel (IMPORTANCE_HIGH)
+                val highConfidenceChannel = NotificationChannel(
+                    CHANNEL_ID_HIGH_CONFIDENCE,
+                    "High Confidence Patterns",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "Notifications for high confidence pattern detections (>85%)"
+                    enableVibration(true)
+                    enableLights(true)
+                    setShowBadge(true)
+                }
+                
+                // Normal channel (IMPORTANCE_DEFAULT)
+                val normalChannel = NotificationChannel(
+                    CHANNEL_ID_NORMAL,
+                    "Pattern Detections",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = "Notifications for pattern detections"
+                    enableVibration(false)
+                    enableLights(false)
+                    setShowBadge(true)
+                }
+                
+                notificationManager.createNotificationChannel(highConfidenceChannel)
+                notificationManager.createNotificationChannel(normalChannel)
+                
+                Timber.d("Notification channels created successfully")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to create notification channels")
             }
-            
-            // Normal channel (IMPORTANCE_DEFAULT)
-            val normalChannel = NotificationChannel(
-                CHANNEL_ID_NORMAL,
-                "Pattern Detections",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Notifications for pattern detections"
-                enableVibration(false)
-                enableLights(false)
-                setShowBadge(true)
-            }
-            
-            notificationManager.createNotificationChannel(highConfidenceChannel)
-            notificationManager.createNotificationChannel(normalChannel)
-            
-            Timber.d("Notification channels created successfully")
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to create notification channels")
+        } else {
+            Timber.d("Notification channels not supported on API < 26, using legacy notifications")
         }
     }
     
