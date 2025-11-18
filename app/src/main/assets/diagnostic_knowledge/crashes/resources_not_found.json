@@ -1,0 +1,41 @@
+{
+  "errorName": "ResourcesNotFoundException",
+  "category": "crashes",
+  "description": "Attempting to access a resource (drawable, string, layout) that doesn't exist or is incorrectly referenced.",
+  "commonCauses": [
+    "Typo in resource ID",
+    "Resource in wrong density/configuration folder",
+    "Resource deleted but reference not removed",
+    "Dynamic resource ID incorrect",
+    "Resource not generated yet (build issue)",
+    "Conditional resource missing for configuration",
+    "Vector drawable not backward compatible"
+  ],
+  "solutions": [
+    "Clean and rebuild project",
+    "Check resource exists in res folder",
+    "Use @DrawableRes, @StringRes annotations",
+    "Provide default resources",
+    "Use AppCompatResources for vectors",
+    "Validate resource IDs before use",
+    "Check build logs for resource generation errors"
+  ],
+  "prevention": [
+    "Use resource type annotations",
+    "Provide resources for all configurations",
+    "Run lint to catch missing resources",
+    "Use vector drawables with compat library",
+    "Test on different configurations",
+    "Version control all resource files",
+    "Document resource requirements"
+  ],
+  "examples": [
+    "fun loadImage(@DrawableRes resId: Int) { ... }",
+    "AppCompatResources.getDrawable(context, R.drawable.icon)",
+    "try { getDrawable(resId) } catch (e: NotFoundException) { useDefault() }"
+  ],
+  "relatedErrors": [
+    "NotFoundException",
+    "InflateException"
+  ]
+}

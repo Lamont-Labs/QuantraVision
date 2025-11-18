@@ -1,0 +1,41 @@
+{
+  "errorName": "Fragment_NotAttachedException",
+  "category": "framework",
+  "description": "Attempting to access Fragment context, resources, or activity when Fragment is not attached. Common lifecycle issue.",
+  "commonCauses": [
+    "Accessing requireContext() after onDetach",
+    "Calling getActivity() in background thread callback",
+    "Fragment view accessed after onDestroyView",
+    "Resources accessed when Fragment not attached",
+    "requireActivity() called before onAttach",
+    "Async operations completing after Fragment destroyed",
+    "Observing LiveData without lifecycle awareness"
+  ],
+  "solutions": [
+    "Use viewLifecycleOwner for view-related observations",
+    "Check isAdded before accessing context",
+    "Use context ?: return to safely handle null context",
+    "Cancel coroutines in onDestroyView",
+    "Use lifecycle-aware components",
+    "Store context reference carefully with lifecycle checks",
+    "Use Fragment.viewLifecycleOwner.lifecycleScope"
+  ],
+  "prevention": [
+    "Always use viewLifecycleOwner for view observations",
+    "Check isAdded before context access in callbacks",
+    "Cancel background work in appropriate lifecycle methods",
+    "Use Kotlin's context?.let { } for safe access",
+    "Avoid storing Fragment/Activity references long-term",
+    "Use WorkManager for work that outlives Fragment",
+    "Structure code to respect Fragment lifecycle"
+  ],
+  "examples": [
+    "viewLifecycleOwner.lifecycleScope.launch { /* ... */ }",
+    "if (isAdded) { requireContext().getString(R.string.title) }",
+    "context?.let { showToast(it, message) }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException Fragment not attached",
+    "NullPointerException getActivity"
+  ]
+}

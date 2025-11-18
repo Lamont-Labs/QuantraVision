@@ -1,0 +1,41 @@
+{
+  "errorName": "Room_MigrationFailure",
+  "category": "database",
+  "description": "Room database migration fails, causing data loss or app crashes. Common when schema changes.",
+  "commonCauses": [
+    "Missing migration path between versions",
+    "Incorrect SQL in migration",
+    "Column type mismatch in migration",
+    "Foreign key constraint violations",
+    "Index not created properly",
+    "Migration not registered in database builder",
+    "Fallback to destructive migration in production"
+  ],
+  "solutions": [
+    "Add proper migration: Migration(X, Y) { db.execSQL(...) }",
+    "Test migrations with MigrationTestHelper",
+    "Use Room's auto-migration when possible",
+    "Add .fallbackToDestructiveMigration() only in debug",
+    "Export schema to validate migrations",
+    "Handle data migration separately if complex",
+    "Use ALTER TABLE instead of DROP/CREATE when possible"
+  ],
+  "prevention": [
+    "Export schema: kapt { arguments { arg(\"room.schemaLocation\", \"...\") } }",
+    "Write migration tests for every version change",
+    "Use @AutoMigration when schema change is simple",
+    "Document all migrations in code comments",
+    "Never use fallbackToDestructiveMigration in production",
+    "Test migrations on real user data",
+    "Keep migration history in version control"
+  ],
+  "examples": [
+    "val MIGRATION_1_2 = object : Migration(1, 2) { ... }",
+    "Room.databaseBuilder(...).addMigrations(MIGRATION_1_2)",
+    "@Database(version = 2, autoMigrations = [AutoMigration(from = 1, to = 2)])"
+  ],
+  "relatedErrors": [
+    "IllegalStateException Room migration",
+    "SQLiteException"
+  ]
+}

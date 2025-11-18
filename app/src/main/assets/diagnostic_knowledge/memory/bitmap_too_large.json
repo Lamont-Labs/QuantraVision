@@ -1,0 +1,41 @@
+{
+  "errorName": "RuntimeException_BitmapTooLarge",
+  "category": "memory",
+  "description": "Bitmap dimensions exceed maximum texture size supported by device GPU. Common with ultra-high resolution images.",
+  "commonCauses": [
+    "Loading full-resolution camera photos",
+    "Device texture size limit exceeded (usually 4096x4096)",
+    "Creating bitmap larger than screen needs",
+    "No downsampling before display",
+    "GPU memory constraints",
+    "Multiple large bitmaps loaded simultaneously",
+    "Chart screenshots at extremely high DPI"
+  ],
+  "solutions": [
+    "Calculate required size before loading",
+    "Use BitmapFactory.Options.inSampleSize",
+    "Scale down to screen dimensions",
+    "Use Glide/Coil with size constraints",
+    "Check Canvas.getMaximumBitmapWidth/Height",
+    "Tile very large images instead of loading whole",
+    "Compress before creating bitmap"
+  ],
+  "prevention": [
+    "Always downsample to display size",
+    "Query device max texture size on startup",
+    "Use image loading libraries (handle automatically)",
+    "Limit bitmap dimensions to 2048x2048 safe maximum",
+    "Test on devices with lower GPU limits",
+    "Monitor bitmap dimensions in logs",
+    "Use efficient image formats (WebP)"
+  ],
+  "examples": [
+    "val maxSize = Canvas().maximumBitmapWidth",
+    "val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }",
+    "Glide.with(context).load(url).override(1080, 1920)"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError_Bitmap",
+    "IllegalArgumentException bitmap size"
+  ]
+}

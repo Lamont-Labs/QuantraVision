@@ -1,0 +1,41 @@
+{
+  "errorName": "CancellationException",
+  "category": "coroutines",
+  "description": "Coroutine was cancelled before completion. This is normal but needs proper handling to avoid unexpected behavior.",
+  "commonCauses": [
+    "Scope cancelled (Activity destroyed, ViewModel cleared)",
+    "Timeout exceeded with withTimeout",
+    "Manual cancellation via job.cancel()",
+    "Parent coroutine cancelled",
+    "Exception in sibling coroutine",
+    "User navigation cancelling background work",
+    "Lifecycle-aware scope destroyed"
+  ],
+  "solutions": [
+    "Use try-finally for cleanup even when cancelled",
+    "Check isActive before continuing long operations",
+    "Use NonCancellable for critical cleanup",
+    "Catch CancellationException separately if needed",
+    "Use ensureActive() to check cancellation state",
+    "Properly structure coroutine hierarchies",
+    "Use Job.join() to wait for completion"
+  ],
+  "prevention": [
+    "Use appropriate scopes: viewModelScope, lifecycleScope",
+    "Don't catch CancellationException - let it propagate",
+    "Structure coroutines to be cancellation-safe",
+    "Use yield() in long-running loops to check cancellation",
+    "Avoid catching all exceptions - preserve cancellation",
+    "Use SupervisorJob when children should be independent",
+    "Test cancellation scenarios in unit tests"
+  ],
+  "examples": [
+    "try { doWork() } finally { withContext(NonCancellable) { cleanup() } }",
+    "while (isActive) { /* work */ yield() }",
+    "viewModelScope.launch { /* auto-cancelled on clear */ }"
+  ],
+  "relatedErrors": [
+    "JobCancellationException",
+    "TimeoutCancellationException"
+  ]
+}

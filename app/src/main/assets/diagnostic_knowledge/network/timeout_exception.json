@@ -1,0 +1,41 @@
+{
+  "errorName": "SocketTimeoutException",
+  "category": "network",
+  "description": "Network request exceeded the timeout limit. Common with slow connections or unresponsive servers.",
+  "commonCauses": [
+    "Server taking too long to respond",
+    "Poor network connectivity",
+    "Timeout values set too low",
+    "Large file downloads without chunking",
+    "Server under heavy load",
+    "DNS resolution delays",
+    "Firewall or proxy blocking requests"
+  ],
+  "solutions": [
+    "Increase timeout values appropriately (connect vs read timeout)",
+    "Implement retry logic with exponential backoff",
+    "Show loading indicators to user",
+    "Use timeout coroutines: withTimeout { }",
+    "Cancel long-running requests when user navigates away",
+    "Implement offline-first architecture",
+    "Use OkHttp with proper timeout configuration"
+  ],
+  "prevention": [
+    "Set reasonable timeouts: connectTimeout=30s, readTimeout=60s",
+    "Implement connection quality detection",
+    "Use WorkManager for critical background requests",
+    "Cache responses for offline access",
+    "Implement request cancellation on lifecycle events",
+    "Monitor network state before making requests",
+    "Use retry policies for non-critical requests"
+  ],
+  "examples": [
+    "OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)",
+    "withTimeout(5000) { apiCall() }",
+    "retrofit.create<ApiService>().withRetry()"
+  ],
+  "relatedErrors": [
+    "ConnectException",
+    "UnknownHostException"
+  ]
+}

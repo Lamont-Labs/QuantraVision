@@ -1,0 +1,41 @@
+{
+  "errorName": "IllegalStateException",
+  "category": "crashes",
+  "description": "Method called at inappropriate time or object is in invalid state. Common lifecycle and state management issue.",
+  "commonCauses": [
+    "Committing Fragment transaction after onSaveInstanceState",
+    "Calling requireActivity/requireContext when not attached",
+    "Accessing View after Fragment onDestroyView",
+    "ViewModel accessed before initialization",
+    "LiveData setValue called from background thread",
+    "Dialog shown after Activity destroyed",
+    "State modification during iteration"
+  ],
+  "solutions": [
+    "Use commitAllowingStateLoss() only when safe",
+    "Check lifecycle state before operations",
+    "Use viewLifecycleOwner for Fragment views",
+    "Use postValue() for LiveData from background threads",
+    "Check isAdded, isDetached before Fragment operations",
+    "Use lifecycle-aware components",
+    "Validate state before state-dependent operations"
+  ],
+  "prevention": [
+    "Respect Activity/Fragment lifecycle states",
+    "Use lifecycle-aware components (ViewModel, LiveData)",
+    "Avoid state changes in wrong lifecycle phases",
+    "Use coroutines with proper scopes",
+    "Validate prerequisites before operations",
+    "Document state requirements in functions",
+    "Test lifecycle edge cases"
+  ],
+  "examples": [
+    "if (lifecycle.currentState.isAtLeast(STARTED)) { /* safe */ }",
+    "viewModel.data.postValue(newValue) // Background thread safe",
+    "childFragmentManager.commitNow() // Synchronous, state-aware"
+  ],
+  "relatedErrors": [
+    "IllegalArgumentException",
+    "RuntimeException"
+  ]
+}

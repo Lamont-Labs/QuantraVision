@@ -1,0 +1,41 @@
+{
+  "errorName": "OutOfMemoryError_Bitmap",
+  "category": "memory",
+  "description": "Running out of memory when loading or processing large bitmaps. Common in apps that handle images, especially high-resolution photos.",
+  "commonCauses": [
+    "Loading full-resolution images without downsampling",
+    "Not recycling bitmaps after use",
+    "Loading multiple large bitmaps simultaneously",
+    "Memory leaks keeping bitmap references alive",
+    "Not using inSampleSize when decoding",
+    "Caching too many bitmaps in memory",
+    "Creating bitmaps on every recomposition in Compose"
+  ],
+  "solutions": [
+    "Use BitmapFactory.Options with inSampleSize to downsample",
+    "Calculate required dimensions before loading",
+    "Use Glide or Coil for automatic memory management",
+    "Recycle bitmaps: bitmap.recycle() when done",
+    "Use RGB_565 instead of ARGB_8888 when alpha not needed",
+    "Implement LRU cache for bitmap caching",
+    "Load scaled-down versions for thumbnails"
+  ],
+  "prevention": [
+    "Always downsample images to required display size",
+    "Use image loading libraries (Glide, Coil, Picasso)",
+    "Implement proper bitmap caching strategy",
+    "Monitor memory usage during image operations",
+    "Use inBitmap for bitmap reuse when possible",
+    "Avoid loading images on main thread",
+    "Clear bitmap caches when memory is low"
+  ],
+  "examples": [
+    "val options = BitmapFactory.Options().apply { inSampleSize = 4 }",
+    "Glide.with(context).load(url).override(width, height)",
+    "bitmap.recycle(); bitmap = null"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "RuntimeException bitmap size exceeds"
+  ]
+}

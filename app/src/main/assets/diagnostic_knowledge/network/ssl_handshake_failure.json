@@ -1,0 +1,41 @@
+{
+  "errorName": "SSLHandshakeException",
+  "category": "network",
+  "description": "SSL/TLS handshake failed during HTTPS connection. Security-critical error preventing secure communication.",
+  "commonCauses": [
+    "Certificate validation failed",
+    "Expired or self-signed certificate",
+    "Hostname mismatch",
+    "Outdated TLS version on server",
+    "Certificate pinning mismatch",
+    "Missing intermediate certificates",
+    "Device date/time incorrect"
+  ],
+  "solutions": [
+    "Validate server certificate is up to date",
+    "Check device date/time settings",
+    "Update TLS configuration on server",
+    "Remove certificate pinning if testing",
+    "Add intermediate certificates to server",
+    "Use modern TLS 1.2+ protocols",
+    "Handle SSLException gracefully with fallback"
+  ],
+  "prevention": [
+    "Keep server certificates up to date",
+    "Use reputable CA for certificates",
+    "Test on various Android versions",
+    "Monitor certificate expiration dates",
+    "Implement proper error handling for SSL",
+    "Use certificate pinning carefully",
+    "Test with strict security settings"
+  ],
+  "examples": [
+    "try { connection.connect() } catch (e: SSLHandshakeException) { logError() }",
+    "OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory)",
+    "CertificatePinner.Builder().add(hostname, pins).build()"
+  ],
+  "relatedErrors": [
+    "CertificateException",
+    "SSLPeerUnverifiedException"
+  ]
+}

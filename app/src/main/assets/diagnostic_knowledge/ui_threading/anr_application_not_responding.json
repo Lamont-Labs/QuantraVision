@@ -1,0 +1,41 @@
+{
+  "errorName": "ANR_ApplicationNotResponding",
+  "category": "ui_threading",
+  "description": "App becomes unresponsive for more than 5 seconds, triggering Android's Application Not Responding dialog. Critical user experience issue.",
+  "commonCauses": [
+    "Network operations on main thread",
+    "Database queries on main thread",
+    "Large file I/O on main thread",
+    "Heavy computations blocking UI thread",
+    "Infinite loops or deadlocks",
+    "BroadcastReceiver taking too long (>10 seconds)",
+    "Service operations blocking main thread"
+  ],
+  "solutions": [
+    "Move all blocking operations to background threads",
+    "Use Kotlin coroutines with Dispatchers.IO or Dispatchers.Default",
+    "Use WorkManager for background tasks",
+    "Implement async operations with proper threading",
+    "Break large operations into smaller chunks",
+    "Use withContext to switch dispatchers",
+    "Profile with Android Profiler to find bottlenecks"
+  ],
+  "prevention": [
+    "Never do network calls on main thread - use Retrofit with coroutines",
+    "All database operations must be async (Room handles this)",
+    "Use Dispatchers.IO for file operations",
+    "Limit work in onCreate/onStart to UI setup only",
+    "Use StrictMode during development to catch violations",
+    "Implement proper lifecycle-aware coroutines",
+    "Set timeouts on all blocking operations"
+  ],
+  "examples": [
+    "viewModelScope.launch(Dispatchers.IO) { /* heavy work */ }",
+    "withContext(Dispatchers.Main) { updateUI() }",
+    "suspend fun loadData() = withContext(Dispatchers.IO) { /* ... */ }"
+  ],
+  "relatedErrors": [
+    "NetworkOnMainThreadException",
+    "StrictMode violation"
+  ]
+}

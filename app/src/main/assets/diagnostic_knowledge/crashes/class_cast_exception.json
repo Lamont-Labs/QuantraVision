@@ -1,0 +1,41 @@
+{
+  "errorName": "ClassCastException",
+  "category": "crashes",
+  "description": "Attempting to cast an object to an incompatible type. Common when working with generic types, Intent extras, or Fragment arguments.",
+  "commonCauses": [
+    "Casting Intent extras to wrong type",
+    "Fragment arguments retrieved as wrong type",
+    "RecyclerView ViewHolder cast to wrong type",
+    "Unsafe type casting without instanceof check",
+    "Generic type erasure causing runtime cast failures",
+    "Casting Activity context to specific Activity incorrectly",
+    "Parcelable/Serializable retrieved as wrong class"
+  ],
+  "solutions": [
+    "Use is operator before casting: if (obj is MyClass) { obj.method() }",
+    "Use safe cast: obj as? MyClass ?: defaultValue",
+    "Use proper generic types in collections",
+    "Validate Intent extras with correct getters (getStringExtra, getIntExtra)",
+    "Use when expression with smart casts",
+    "Avoid casting - use proper types from the start",
+    "Use sealed classes for type-safe state management"
+  ],
+  "prevention": [
+    "Prefer Kotlin's smart casts over manual casting",
+    "Use sealed classes for exhaustive type handling",
+    "Validate types before casting with is operator",
+    "Use generic type parameters correctly",
+    "Avoid Any type - use specific types",
+    "Use type-safe builders for complex objects",
+    "Document expected types in function parameters"
+  ],
+  "examples": [
+    "val myClass = obj as? MyClass ?: return",
+    "when (view) { is TextView -> view.text = \"...\" }",
+    "if (context is MainActivity) { context.specificMethod() }"
+  ],
+  "relatedErrors": [
+    "TypeCastException",
+    "IllegalArgumentException"
+  ]
+}

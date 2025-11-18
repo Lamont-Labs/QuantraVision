@@ -1,0 +1,41 @@
+{
+  "errorName": "QuantraScore_CalculationFailure",
+  "category": "quantravision",
+  "description": "QuantraScore calculation fails due to missing indicators, invalid data, or mathematical errors. Core intelligence system failure.",
+  "commonCauses": [
+    "Missing required indicators (RSI, MACD, volume)",
+    "OCR extraction returned null values",
+    "Division by zero in score calculation",
+    "Invalid indicator ranges (RSI > 100)",
+    "ContextAnalyzer confluence detection failed",
+    "BayesianFusionEngine priors invalid",
+    "Learning profile data corrupted"
+  ],
+  "solutions": [
+    "Validate all indicator values before calculation",
+    "Provide default scores when indicators missing",
+    "Add null checks for OCR-extracted values",
+    "Use safe math operators (divideOrNull)",
+    "Clamp indicator values to valid ranges",
+    "Fallback to pattern-only score if indicators fail",
+    "Log detailed calculation steps for debugging"
+  ],
+  "prevention": [
+    "Validate indicator extraction success before scoring",
+    "Use sealed class for indicator states (Present/Missing/Invalid)",
+    "Add comprehensive unit tests for edge cases",
+    "Implement graceful degradation strategy",
+    "Monitor score calculation failures in production",
+    "Cache successfully calculated scores",
+    "Document score calculation algorithm thoroughly"
+  ],
+  "examples": [
+    "val score = when { rsi != null && macd != null -> calculateFull() else -> fallbackScore }",
+    "fun safeDivide(a: Float, b: Float) = if (b != 0f) a / b else null",
+    "val clampedRSI = rsi?.coerceIn(0f, 100f)"
+  ],
+  "relatedErrors": [
+    "ArithmeticException division by zero",
+    "NullPointerException indicator access"
+  ]
+}

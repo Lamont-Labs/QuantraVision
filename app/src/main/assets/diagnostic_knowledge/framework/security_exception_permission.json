@@ -1,0 +1,41 @@
+{
+  "errorName": "SecurityException_Permission",
+  "category": "framework",
+  "description": "App attempted operation requiring permission that wasn't granted. Critical runtime permission issue.",
+  "commonCauses": [
+    "Using permission without requesting it",
+    "Assuming permission granted without checking",
+    "Runtime permission not requested (Android 6+)",
+    "Permission revoked while app running",
+    "Using dangerous permission without user approval",
+    "Incorrect permission declared in manifest",
+    "Background location without foreground permission"
+  ],
+  "solutions": [
+    "Check permission before use: checkSelfPermission",
+    "Request permission with requestPermissions",
+    "Handle permission denial gracefully",
+    "Explain permission rationale to user",
+    "Check shouldShowRequestPermissionRationale",
+    "Use accompanist permissions library for Compose",
+    "Fallback to alternative if permission denied"
+  ],
+  "prevention": [
+    "Always check permissions before sensitive operations",
+    "Request permissions at appropriate time",
+    "Declare all permissions in manifest",
+    "Handle all permission results",
+    "Test with permissions denied",
+    "Provide clear permission rationale",
+    "Use permission result contracts"
+  ],
+  "examples": [
+    "if (checkSelfPermission(CAMERA) == GRANTED) { useCamera() }",
+    "val launcher = registerForActivityResult(RequestPermission()) { granted -> }",
+    "if (shouldShowRequestPermissionRationale(CAMERA)) { showRationale() }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException permission",
+    "RuntimeException permission denied"
+  ]
+}

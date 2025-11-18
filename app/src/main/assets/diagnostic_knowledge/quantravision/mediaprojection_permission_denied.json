@@ -1,0 +1,41 @@
+{
+  "errorName": "MediaProjection_PermissionDenied",
+  "category": "quantravision",
+  "description": "Screen capture permission denied or MediaProjection API fails. Critical for QuantraVision's overlay scan feature.",
+  "commonCauses": [
+    "User denied screen capture permission",
+    "MediaProjection token expired (Android 14+)",
+    "Multiple createVirtualDisplay calls (Android 14 limitation)",
+    "Service started before permission granted",
+    "Permission result not handled properly",
+    "App in background when requesting permission",
+    "Device policy prevents screen recording"
+  ],
+  "solutions": [
+    "Request permission before starting overlay service",
+    "Reuse single VirtualDisplay per MediaProjection (Android 14)",
+    "Check permission result before service start",
+    "Handle RESULT_CANCELED properly",
+    "Show explanation dialog before permission request",
+    "Implement permission check before showing overlay",
+    "Cache MediaProjection instance correctly"
+  ],
+  "prevention": [
+    "Follow Android 14 MediaProjection best practices",
+    "Create VirtualDisplay ONCE per MediaProjection instance",
+    "Check if service already running before permission request",
+    "Add pre-permission explanation dialog",
+    "Log permission flow for debugging",
+    "Test on Android 14+ devices thoroughly",
+    "Handle service restart properly after permission grant"
+  ],
+  "examples": [
+    "if (!isServiceRunning) { requestMediaProjectionPermission() }",
+    "virtualDisplay = mediaProjection.createVirtualDisplay(...) // Only once!",
+    "onActivityResult { if (resultCode == RESULT_OK) startService() }"
+  ],
+  "relatedErrors": [
+    "SecurityException screen capture",
+    "IllegalStateException MediaProjection"
+  ]
+}

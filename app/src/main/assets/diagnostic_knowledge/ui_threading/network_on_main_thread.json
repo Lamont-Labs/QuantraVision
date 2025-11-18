@@ -1,0 +1,41 @@
+{
+  "errorName": "NetworkOnMainThreadException",
+  "category": "ui_threading",
+  "description": "Attempting network operations on the main UI thread. Android explicitly blocks this to prevent ANR.",
+  "commonCauses": [
+    "HTTP request without async wrapper",
+    "Retrofit call without enqueue or suspend",
+    "OkHttp execute() on main thread",
+    "Direct Socket operations",
+    "URL.openConnection() synchronously",
+    "WebSocket operations without threading",
+    "API calls in onCreate or Activity lifecycle methods"
+  ],
+  "solutions": [
+    "Use Kotlin coroutines with Dispatchers.IO",
+    "Use Retrofit with suspend functions",
+    "Use OkHttp with enqueue() for async",
+    "Wrap network calls in viewModelScope.launch",
+    "Use WorkManager for background network tasks",
+    "Enable StrictMode to catch violations early",
+    "Use AsyncTask (deprecated) or coroutines"
+  ],
+  "prevention": [
+    "Always use Dispatchers.IO for network operations",
+    "Configure Retrofit with coroutine support",
+    "Enable StrictMode in debug builds",
+    "Use suspend functions for all network calls",
+    "Test on real devices (emulator may not catch this)",
+    "Code review for synchronous network calls",
+    "Use lint checks to catch violations"
+  ],
+  "examples": [
+    "suspend fun fetchData() = withContext(Dispatchers.IO) { api.getData() }",
+    "viewModelScope.launch(Dispatchers.IO) { networkCall() }",
+    "StrictMode.setThreadPolicy(ThreadPolicy.Builder().detectNetwork().build())"
+  ],
+  "relatedErrors": [
+    "ANR_ApplicationNotResponding",
+    "StrictMode violation"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "SQLite_ConstraintViolation",
+  "category": "database",
+  "description": "Database constraint violated during insert/update. Common with unique constraints, foreign keys, or NOT NULL.",
+  "commonCauses": [
+    "Duplicate primary key insertion",
+    "Unique constraint violation",
+    "Foreign key reference to non-existent row",
+    "NULL value in NOT NULL column",
+    "Check constraint failed",
+    "Inserting without required fields",
+    "Bulk insert violating constraints"
+  ],
+  "solutions": [
+    "Use INSERT OR REPLACE for upsert operations",
+    "Check for existing records before insert",
+    "Validate foreign keys exist before insert",
+    "Provide default values for NOT NULL columns",
+    "Use Room's @Insert(onConflict = REPLACE)",
+    "Wrap operations in transactions for rollback",
+    "Query constraints before operations"
+  ],
+  "prevention": [
+    "Define clear database constraints in schema",
+    "Validate data before database operations",
+    "Use Room entity validation",
+    "Handle OnConflictStrategy in @Insert",
+    "Test constraint scenarios in unit tests",
+    "Log constraint violations for debugging",
+    "Use transactions to ensure data consistency"
+  ],
+  "examples": [
+    "@Insert(onConflict = OnConflictStrategy.REPLACE)",
+    "INSERT OR REPLACE INTO table VALUES (...)",
+    "db.runInTransaction { /* atomic operations */ }"
+  ],
+  "relatedErrors": [
+    "SQLiteException",
+    "Room database error"
+  ]
+}

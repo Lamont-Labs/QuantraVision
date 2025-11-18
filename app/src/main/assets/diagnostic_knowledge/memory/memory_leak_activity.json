@@ -1,0 +1,41 @@
+{
+  "errorName": "MemoryLeak_Activity",
+  "category": "memory",
+  "description": "Activity instance kept in memory after destruction, preventing garbage collection. Major cause of OutOfMemoryError.",
+  "commonCauses": [
+    "Static reference to Activity or Context",
+    "Inner classes holding Activity reference",
+    "Listeners not unregistered",
+    "Handlers with non-static inner class",
+    "Singleton holding Activity context",
+    "Background threads referencing Activity",
+    "Non-cancelled coroutines with Activity scope"
+  ],
+  "solutions": [
+    "Use WeakReference for Activity in long-lived objects",
+    "Convert inner classes to static + WeakReference",
+    "Unregister all listeners in onDestroy",
+    "Use static Handler with WeakReference",
+    "Use ApplicationContext for singletons",
+    "Cancel coroutines in onDestroy",
+    "Use lifecycle-aware components"
+  ],
+  "prevention": [
+    "Never store Activity in static fields",
+    "Use ApplicationContext for app-scoped objects",
+    "Make inner classes static when possible",
+    "Unregister callbacks in lifecycle methods",
+    "Use viewModelScope, lifecycleScope for coroutines",
+    "Detect leaks with LeakCanary during development",
+    "Review static fields for Context references"
+  ],
+  "examples": [
+    "class MyHandler(activity: Activity) { val ref = WeakReference(activity) }",
+    "override fun onDestroy() { unregisterReceiver(receiver); super.onDestroy() }",
+    "val appContext = context.applicationContext // Safe for singletons"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "MemoryLeak_Fragment"
+  ]
+}

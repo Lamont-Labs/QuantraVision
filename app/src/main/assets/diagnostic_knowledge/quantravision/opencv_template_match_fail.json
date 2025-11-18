@@ -1,0 +1,41 @@
+{
+  "errorName": "OpenCV_TemplateMatchingFailure",
+  "category": "quantravision",
+  "description": "OpenCV template matching returns no results or incorrect matches. Specific to QuantraVision's pattern detection system.",
+  "commonCauses": [
+    "Template and source image have different color spaces (BGR vs RGB)",
+    "Image preprocessing not applied consistently",
+    "Template size larger than source image",
+    "Extreme scale differences between template and source",
+    "Incorrect threshold values for matching",
+    "Image rotation causing misalignment",
+    "Template not loaded properly from assets"
+  ],
+  "solutions": [
+    "Ensure consistent color space: cvtColor(src, dst, COLOR_BGR2GRAY)",
+    "Apply same preprocessing to both template and source",
+    "Validate template dimensions < source dimensions",
+    "Use multi-scale template matching for scale invariance",
+    "Adjust TM_CCOEFF_NORMED threshold (0.7-0.9 range)",
+    "Implement rotation-invariant matching if needed",
+    "Verify template loading with error checking"
+  ],
+  "prevention": [
+    "Standardize image pipeline: always convert to grayscale first",
+    "Log template dimensions before matching",
+    "Use consistent image scaling across app",
+    "Validate template files exist in assets during startup",
+    "Implement confidence score logging",
+    "Test matching with various chart screenshots",
+    "Add fallback templates for common patterns"
+  ],
+  "examples": [
+    "val result = Imgproc.matchTemplate(src, template, dst, Imgproc.TM_CCOEFF_NORMED)",
+    "if (maxVal >= 0.8) { // High confidence match }",
+    "Imgproc.resize(template, resized, targetSize, 0.0, 0.0, Imgproc.INTER_AREA)"
+  ],
+  "relatedErrors": [
+    "CvException",
+    "IllegalArgumentException OpenCV"
+  ]
+}

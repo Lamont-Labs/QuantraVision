@@ -1,0 +1,41 @@
+{
+  "errorName": "OCR_IndicatorExtractionFailure",
+  "category": "quantravision",
+  "description": "ML Kit Text Recognition fails to extract technical indicators from chart screenshots. Critical for QuantraScore calculation.",
+  "commonCauses": [
+    "Low image quality or resolution",
+    "Text too small to recognize",
+    "Poor contrast between text and background",
+    "Unusual fonts or styling",
+    "Image preprocessing removed text",
+    "ML Kit not initialized properly",
+    "Insufficient lighting in screenshot"
+  ],
+  "solutions": [
+    "Enhance image quality before OCR",
+    "Apply contrast enhancement: CLAHE algorithm",
+    "Use adaptive thresholding for better text extraction",
+    "Crop to indicator region before OCR",
+    "Try multiple preprocessing pipelines",
+    "Fallback to pattern-only detection if OCR fails",
+    "Log recognition confidence scores"
+  ],
+  "prevention": [
+    "Validate screenshot quality before OCR",
+    "Use multiple preprocessing strategies",
+    "Test with various charting apps",
+    "Implement confidence threshold (>0.7)",
+    "Cache successfully recognized layouts",
+    "Provide user feedback on image quality",
+    "Fallback gracefully when indicators missing"
+  ],
+  "examples": [
+    "val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)",
+    "Imgproc.adaptiveThreshold(src, dst, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2)",
+    "if (confidence > 0.7) { extractedIndicators.add(text) }"
+  ],
+  "relatedErrors": [
+    "ML Kit recognition failure",
+    "Image preprocessing error"
+  ]
+}

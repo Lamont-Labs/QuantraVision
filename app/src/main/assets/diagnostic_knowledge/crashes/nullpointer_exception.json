@@ -1,0 +1,41 @@
+{
+  "errorName": "NullPointerException",
+  "category": "crashes",
+  "description": "Attempting to access a method or property on a null object reference. This is the most common crash in Android development.",
+  "commonCauses": [
+    "Accessing findViewById result before checking if it's null",
+    "Calling methods on nullable variables without null check",
+    "Lateinit property accessed before initialization",
+    "ViewModel/LiveData observed before being created",
+    "Intent extras retrieved without checking for null",
+    "Fragment view accessed after onDestroyView",
+    "Recycler ViewHolder accessing views after recycling"
+  ],
+  "solutions": [
+    "Use Kotlin's null-safety: ?. and ?: operators",
+    "Check if (variable != null) before accessing",
+    "Use lateinit carefully - ensure initialization before access",
+    "Use ViewBinding instead of findViewById",
+    "Validate Intent extras with getStringExtra() ?: default",
+    "In Fragments, use viewLifecycleOwner for view observations",
+    "Use Elvis operator for safe defaults: value ?: defaultValue"
+  ],
+  "prevention": [
+    "Enable strict null checks in Kotlin",
+    "Use non-null types by default",
+    "Initialize variables at declaration when possible",
+    "Use requireContext(), requireActivity() in Fragments",
+    "Validate all external data (Intent, Bundle, Network)",
+    "Use sealed classes for state management",
+    "Add null assertions only when 100% certain"
+  ],
+  "examples": [
+    "val name = user?.name ?: \"Unknown\"",
+    "binding?.textView?.text = \"Safe access\"",
+    "if (data != null) { processData(data) }"
+  ],
+  "relatedErrors": [
+    "UninitializedPropertyAccessException",
+    "IllegalStateException"
+  ]
+}

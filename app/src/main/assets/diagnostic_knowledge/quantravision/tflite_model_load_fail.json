@@ -1,0 +1,41 @@
+{
+  "errorName": "TFLite_ModelLoadFailure",
+  "category": "quantravision",
+  "description": "TensorFlow Lite model fails to load or initialize. Critical for Gemma AI features in QuantraVision.",
+  "commonCauses": [
+    "Model file missing from assets",
+    "Insufficient memory to load model (Gemma 2B is 1.5GB)",
+    "Corrupted model file",
+    "Incompatible TFLite version",
+    "GPU delegate not available on device",
+    "Model not optimized for mobile",
+    "NNAPI acceleration conflicts"
+  ],
+  "solutions": [
+    "Check model file exists: context.assets.open(\"gemma_2b.tflite\")",
+    "Free memory before loading: System.gc() and close other models",
+    "Validate model file size and hash",
+    "Use CPU fallback if GPU delegate fails",
+    "Load model on background thread to avoid ANR",
+    "Implement lazy loading - only when needed",
+    "Add model download feature if too large for APK"
+  ],
+  "prevention": [
+    "Validate model presence during app initialization",
+    "Implement graceful fallback when model unavailable",
+    "Show download progress for large models",
+    "Check available memory before loading",
+    "Use model quantization to reduce size",
+    "Test on low-memory devices (2GB RAM)",
+    "Log detailed error messages for debugging"
+  ],
+  "examples": [
+    "val model = Model.createModel(context) ?: fallbackMode()",
+    "if (availableMemory > 500_000_000) { loadModel() }",
+    "Result.runCatching { loadTFLiteModel() }.getOrElse { useFallback() }"
+  ],
+  "relatedErrors": [
+    "OutOfMemoryError",
+    "IOException model not found"
+  ]
+}

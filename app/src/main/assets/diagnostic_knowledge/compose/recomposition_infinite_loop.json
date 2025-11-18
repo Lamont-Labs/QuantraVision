@@ -1,0 +1,41 @@
+{
+  "errorName": "Compose_InfiniteRecomposition",
+  "category": "ui_threading",
+  "description": "Jetpack Compose enters infinite recomposition loop, freezing UI and draining battery. Performance killer.",
+  "commonCauses": [
+    "State modification in composition body",
+    "remember block modifying state",
+    "LaunchedEffect without proper dependencies",
+    "Unstable class causing recompositions",
+    "State update in every composition",
+    "SideEffect modifying state read in composition",
+    "Derived state calculation in composition body"
+  ],
+  "solutions": [
+    "Move state updates to event handlers only",
+    "Use derivedStateOf for computed values",
+    "Ensure LaunchedEffect dependencies are correct",
+    "Mark data classes with @Stable or @Immutable",
+    "Use rememberUpdatedState for latest values",
+    "Profile with Compose Layout Inspector",
+    "Avoid state changes in composition body"
+  ],
+  "prevention": [
+    "Never modify state directly in @Composable body",
+    "Use remember for expensive calculations",
+    "Add keys to LaunchedEffect dependencies",
+    "Mark stable data classes appropriately",
+    "Use Compose compiler metrics to find issues",
+    "Test with Compose Layout Inspector",
+    "Follow Compose state guidelines strictly"
+  ],
+  "examples": [
+    "val computed = remember(key) { derivedStateOf { expensive() } }",
+    "LaunchedEffect(key1, key2) { /* side effect */ }",
+    "@Immutable data class UiState(...)"
+  ],
+  "relatedErrors": [
+    "ANR_ApplicationNotResponding",
+    "Performance degradation"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "errorName": "Flow_CollectionException",
+  "category": "coroutines",
+  "description": "Exception thrown during Flow collection. Common with network/database flows when errors occur in emission.",
+  "commonCauses": [
+    "Exception in flow builder block",
+    "Uncaught exception during collection",
+    "Network error in flow emission",
+    "Database query failure in flow",
+    "Null value in non-nullable flow",
+    "Transformation operator throwing exception",
+    "SharedFlow buffer overflow"
+  ],
+  "solutions": [
+    "Use catch operator for error handling",
+    "Wrap emissions in try-catch",
+    "Use onEach for side effects",
+    "Retry with retryWhen operator",
+    "Handle errors in collector",
+    "Use StateFlow for state management",
+    "Add proper error states to flow"
+  ],
+  "prevention": [
+    "Always add catch operator to flows",
+    "Design error handling strategy upfront",
+    "Use sealed classes for flow states (Loading/Success/Error)",
+    "Test error scenarios in flows",
+    "Document what exceptions flows can emit",
+    "Use supervisorScope for independent flows",
+    "Add timeout to potentially infinite flows"
+  ],
+  "examples": [
+    "flow.catch { e -> emit(ErrorState(e)) }.collect { }",
+    "flow.retryWhen { cause, attempt -> attempt < 3 && cause is IOException }",
+    "sealed class UiState { object Loading, data class Success, data class Error }"
+  ],
+  "relatedErrors": [
+    "IllegalStateException Flow",
+    "CancellationException"
+  ]
+}

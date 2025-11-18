@@ -1,0 +1,41 @@
+{
+  "errorName": "IndexOutOfBoundsException",
+  "category": "crashes",
+  "description": "Attempting to access an array or list index that doesn't exist. Common when iterating or accessing elements without bounds checking.",
+  "commonCauses": [
+    "Accessing list[i] without checking list.size",
+    "Off-by-one errors in loops (using <= instead of <)",
+    "Removing items while iterating",
+    "Concurrent modification of collections",
+    "Assuming list has elements without checking isEmpty()",
+    "Array access with hardcoded indices",
+    "RecyclerView position out of bounds after data change"
+  ],
+  "solutions": [
+    "Use list.getOrNull(index) for safe access",
+    "Check if (index < list.size) before accessing",
+    "Use list.indices for safe iteration",
+    "Use for (item in list) instead of index-based loops",
+    "Use list.elementAtOrNull(index) for nullable access",
+    "Use list.firstOrNull() instead of list[0]",
+    "In RecyclerView, use notifyDataSetChanged() properly"
+  ],
+  "prevention": [
+    "Prefer forEach, map, filter over manual indexing",
+    "Use collection safe accessors: first(), last(), getOrNull()",
+    "Validate indices before array access",
+    "Use .indices property for index ranges",
+    "Avoid removing items during iteration - use removeIf()",
+    "Use concurrent collections if modifying from multiple threads",
+    "Always check isEmpty() before accessing first/last"
+  ],
+  "examples": [
+    "val item = list.getOrNull(5) ?: defaultItem",
+    "if (index in list.indices) { list[index] }",
+    "list.firstOrNull() ?: defaultValue"
+  ],
+  "relatedErrors": [
+    "ArrayIndexOutOfBoundsException",
+    "ConcurrentModificationException"
+  ]
+}
