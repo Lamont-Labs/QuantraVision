@@ -55,7 +55,6 @@ class OverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private lateinit var patternNotificationManager: PatternNotificationManager
     private var floatingLogo: FloatingLogoButton? = null
-    private var floatingMenu: FloatingMenu? = null
     private var scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var behavioralGuardrails: BehavioralGuardrails? = null
     private var mediaProjection: MediaProjection? = null
@@ -116,12 +115,6 @@ class OverlayService : Service() {
             behavioralGuardrails = BehavioralGuardrails(this)
             Log.i(TAG, "✓ Behavioral guardrails initialized")
         }
-        
-        Log.i(TAG, "Creating FloatingMenu...")
-        floatingMenu = FloatingMenu(this, windowManager) {
-            stopSelf()
-        }
-        Log.i(TAG, "✓ FloatingMenu created")
         
         Log.i(TAG, "Creating FloatingLogoButton...")
         try {
@@ -468,12 +461,6 @@ class OverlayService : Service() {
             floatingLogo?.cleanup()
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning up floating logo", e)
-        }
-        
-        try {
-            floatingMenu?.cleanup()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error cleaning up floating menu", e)
         }
         
         try {

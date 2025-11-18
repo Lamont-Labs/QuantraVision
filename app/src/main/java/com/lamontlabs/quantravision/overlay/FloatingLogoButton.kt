@@ -60,10 +60,6 @@ class FloatingLogoButton(
         val logoSize = prefs.getLogoSize()
         val sizePx = (logoSize.dp * context.resources.displayMetrics.density).toInt()
         
-        val displayMetrics = context.resources.displayMetrics
-        val defaultX = displayMetrics.widthPixels - sizePx - 20
-        val defaultY = displayMetrics.heightPixels - sizePx - 100
-        
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -73,9 +69,9 @@ class FloatingLogoButton(
                     WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = prefs.getPositionX(defaultX)
-            y = prefs.getPositionY(defaultY)
+            gravity = Gravity.BOTTOM or Gravity.END
+            x = prefs.getPositionX(20)
+            y = prefs.getPositionY(100)
         }
         
         logoView.alpha = prefs.getLogoOpacity()
@@ -160,8 +156,10 @@ class FloatingLogoButton(
                     }
                     
                     if (isDragging) {
-                        params.x = initialX + deltaX.toInt()
-                        params.y = initialY + deltaY.toInt()
+                        // With BOTTOM|END gravity, x/y are offsets from bottom-right corner
+                        // Moving right decreases x, moving down decreases y
+                        params.x = initialX - deltaX.toInt()
+                        params.y = initialY - deltaY.toInt()
                         windowManager.updateViewLayout(logoView, params)
                     }
                     true
@@ -187,6 +185,7 @@ class FloatingLogoButton(
     }
 
     private fun snapToEdge() {
+        // With BOTTOM|END gravity, x/y are offsets from bottom-right corner
         val displayMetrics = context.resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
@@ -194,17 +193,21 @@ class FloatingLogoButton(
         val logoWidth = logoView.width
         val logoHeight = logoView.height
         
-        val centerX = params.x + logoWidth / 2
-        
         val snapMargin = 20
         
+        // Calculate absolute position from screen edges
+        val absoluteX = screenWidth - params.x - logoWidth
+        
         // Snap to left or right edge based on current position
-        val targetX = if (centerX < screenWidth / 2) {
-            snapMargin
-        } else {
+        val targetX = if (absoluteX < screenWidth / 2) {
+            // Closer to left edge - snap to left
             screenWidth - logoWidth - snapMargin
+        } else {
+            // Closer to right edge - snap to right
+            snapMargin
         }
         
+        // Keep y position within screen bounds (offset from bottom)
         val targetY = params.y.coerceIn(snapMargin, screenHeight - logoHeight - snapMargin)
         
         // Update position immediately without animation
