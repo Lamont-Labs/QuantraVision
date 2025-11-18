@@ -60,6 +60,10 @@ class OverlayService : Service() {
     private var mediaProjection: MediaProjection? = null
     private var mediaProjectionCallback: MediaProjection.Callback? = null
     
+    // Android 14 fix: Create VirtualDisplay ONCE and reuse for all scans
+    private var virtualDisplay: android.hardware.display.VirtualDisplay? = null
+    private var imageReader: android.media.ImageReader? = null
+    
     private val stateMachine = OverlayStateMachine()
     private val singleFrameCapture = SingleFrameCapture()
     private lateinit var resultController: PatternResultController
@@ -208,9 +212,9 @@ class OverlayService : Service() {
             }
             
             try {
-                val projection = mediaProjection
-                if (projection == null) {
-                    Timber.e("MediaProjection is null, cannot capture")
+                val reader = imageReader
+                if (reader == null) {
+                    Timber.e("ImageReader is null, cannot capture")
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             applicationContext,
@@ -222,13 +226,8 @@ class OverlayService : Service() {
                     return@launch
                 }
                 
-                val displayMetrics = resources.displayMetrics
-                val width = 720
-                val height = 1280
-                val densityDpi = displayMetrics.densityDpi
-                
-                Timber.d("Capturing single frame...")
-                val bitmap = singleFrameCapture.captureFrame(projection, width, height, densityDpi)
+                Timber.d("Capturing single frame from persistent VirtualDisplay...")
+                val bitmap = singleFrameCapture.captureFrame(reader)
                 
                 Timber.d("Frame captured, processing patterns...")
                 processFrameForPatterns(bitmap)
@@ -376,6 +375,9 @@ class OverlayService : Service() {
             
             mediaProjection?.registerCallback(callback, null)
             
+            // Android 14 fix: Create VirtualDisplay ONCE here, reuse for all scans
+            createPersistentVirtualDisplay()
+            
             Log.i(TAG, "MediaProjection initialized successfully - ready for tap-to-scan")
             
         } catch (e: SecurityException) {
@@ -385,6 +387,48 @@ class OverlayService : Service() {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize MediaProjection", e)
             Toast.makeText(this, "Failed to start screen capture: ${e.message}", Toast.LENGTH_SHORT).show()
+            stopSelf()
+        }
+    }
+    
+    private fun createPersistentVirtualDisplay() {
+        try {
+            val displayMetrics = resources.displayMetrics
+            val width = 720
+            val height = 1280
+            val densityDpi = displayMetrics.densityDpi
+            
+            // Create ImageReader that will be reused for all frame captures
+            imageReader = android.media.ImageReader.newInstance(
+                width,
+                height,
+                android.graphics.PixelFormat.RGBA_8888,
+                2
+            )
+            
+            // Create VirtualDisplay ONCE - Android 14 requirement
+            virtualDisplay = mediaProjection?.createVirtualDisplay(
+                "QuantraVision_Persistent",
+                width,
+                height,
+                densityDpi,
+                android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                imageReader?.surface,
+                null,
+                null
+            )
+            
+            if (virtualDisplay == null) {
+                Log.e(TAG, "Failed to create VirtualDisplay")
+                Toast.makeText(this, "Failed to create screen capture display", Toast.LENGTH_SHORT).show()
+                stopSelf()
+            } else {
+                Log.i(TAG, "✓ VirtualDisplay created successfully - will be reused for all scans")
+            }
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create VirtualDisplay", e)
+            Toast.makeText(this, "Failed to setup screen capture: ${e.message}", Toast.LENGTH_SHORT).show()
             stopSelf()
         }
     }
@@ -414,6 +458,24 @@ class OverlayService : Service() {
     }
 
     private fun cleanupMediaProjectionResources() {
+        // Clean up VirtualDisplay and ImageReader first
+        try {
+            virtualDisplay?.release()
+            virtualDisplay = null
+            Log.d(TAG, "VirtualDisplay released")
+        } catch (e: Exception) {
+            Log.w(TAG, "Error releasing VirtualDisplay", e)
+        }
+        
+        try {
+            imageReader?.close()
+            imageReader = null
+            Log.d(TAG, "ImageReader closed")
+        } catch (e: Exception) {
+            Log.w(TAG, "Error closing ImageReader", e)
+        }
+        
+        // Then clean up MediaProjection
         try {
             val callback = mediaProjectionCallback
             if (callback != null) {
