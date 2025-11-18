@@ -1,0 +1,58 @@
+{
+  "pattern_id": "cup_and_handle",
+  "pattern_name": "Cup and Handle",
+  "category": "continuation",
+  "bias": "bullish",
+  "description": "A bullish continuation pattern resembling a teacup with a handle. The 'cup' is a rounded bottom showing gradual accumulation, followed by a small downward drift (the 'handle') before breakout to new highs.",
+  "validation_rules": {
+    "structure": [
+      "Cup should be U-shaped with rounded bottom (not V-shaped)",
+      "Cup depth: ideally 12-33% retracement from prior high",
+      "Cup duration: typically 1-6 months on daily charts, several weeks on weekly",
+      "Handle forms in upper third of cup after price recovers to near prior highs",
+      "Handle should drift down or sideways 10-15% from cup high",
+      "Handle duration: 1-4 weeks, significantly shorter than cup",
+      "Breakout occurs above handle resistance and cup rim"
+    ],
+    "volume": [
+      "Volume high on left side of cup (selling climax)",
+      "Volume decreases significantly at cup bottom (selling exhaustion)",
+      "Volume increases as price rises on right side of cup (accumulation)",
+      "Volume decreases during handle formation (pullback on light volume = bullish)",
+      "Strong volume spike on breakout above handle confirms pattern"
+    ],
+    "indicators": [
+      "RSI should drop to 30-40 at cup bottom then recover to 50-60 range",
+      "No bearish divergence on handle - RSI should stay above 40",
+      "MACD crosses bullish during right side of cup formation",
+      "Price should stay above 50-day or 200-day MA during handle (depends on cup depth)"
+    ],
+    "timeframe": [
+      "Classic pattern on daily and weekly charts",
+      "Can work on 4H for shorter-term setups",
+      "Requires patience - takes months to fully develop"
+    ]
+  },
+  "invalidation_signals": [
+    "Cup has V-shaped bottom instead of rounded (different pattern - not cup and handle)",
+    "Handle drifts down more than 50% of cup depth (too deep = weakness)",
+    "Handle lasts longer than half the cup duration (losing validity)",
+    "Volume increasing during handle formation (distribution, not healthy pullback)",
+    "Price breaks below handle low before breakout (invalidates pattern)",
+    "No clear prior uptrend before cup formation",
+    "Cup depth too shallow (<10%) or too deep (>50%) - outside typical range"
+  ],
+  "common_mistakes": [
+    "Accepting V-shaped bottoms - cup must be rounded showing gradual accumulation",
+    "Ignoring handle depth - handles that retrace >33% often fail",
+    "Not waiting for volume confirmation on breakout",
+    "Confusing with rounding bottom (which has no handle)",
+    "Missing the volume pattern - declining volume at bottom and during handle is critical",
+    "Entering during handle formation before breakout (premature entry)"
+  ],
+  "trade_setup": {
+    "entry": "Enter on breakout above handle resistance with strong volume",
+    "stop_loss": "Place below handle low or below cup bottom for wider stop",
+    "target": "Measure cup depth, add to breakout point for minimum target (often exceeds this)"
+  }
+}

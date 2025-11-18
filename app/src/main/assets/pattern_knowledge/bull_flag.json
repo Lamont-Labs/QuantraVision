@@ -1,0 +1,54 @@
+{
+  "pattern_id": "bull_flag",
+  "pattern_name": "Bull Flag",
+  "category": "continuation",
+  "bias": "bullish",
+  "description": "A bullish continuation pattern that appears during strong uptrends. The 'flagpole' is a sharp price advance, followed by a rectangular consolidation (the 'flag') before continuation higher. Signals trend will likely resume.",
+  "validation_rules": {
+    "structure": [
+      "Must have a strong, nearly vertical prior uptrend (the flagpole)",
+      "Flagpole should be at least 20-30% price move in short time (ideally 1-5 days)",
+      "Consolidation forms a rectangular or slightly downward-sloping channel",
+      "Flag portion should be relatively small compared to flagpole (1/3 to 1/2 retracement max)",
+      "Flag should last 1-4 weeks on daily charts (shorter on intraday)",
+      "Breakout occurs upward through top of flag channel"
+    ],
+    "volume": [
+      "Very high volume during flagpole formation (aggressive buying)",
+      "Volume must decline significantly during flag consolidation (profit-taking phase)",
+      "Strong volume spike on breakout above flag confirms continuation",
+      "Low volume during flag is critical - high volume suggests distribution, not consolidation"
+    ],
+    "indicators": [
+      "RSI should pullback to 40-60 range during flag (healthy correction from overbought)",
+      "MACD may show slight bearish crossover during flag but histogram should stay relatively flat",
+      "Price should stay above key moving averages (20-day, 50-day) during flag",
+      "Support/resistance: flag should respect its channel boundaries cleanly"
+    ],
+    "timeframe": [
+      "Highly reliable on daily charts",
+      "Works well on 4H and 1H for swing trading",
+      "Less reliable on very short timeframes (<15min) due to noise"
+    ]
+  },
+  "invalidation_signals": [
+    "Volume increasing during flag consolidation (distribution, not accumulation)",
+    "Flag portion retraces more than 50% of flagpole (too deep = trend exhaustion)",
+    "Price breaks below bottom of flag channel",
+    "Flag lasts more than 4-5 weeks (pattern loses validity)",
+    "No clear prior uptrend (flagpole missing or weak)",
+    "RSI remains overbought (>70) throughout flag (suggests unsustainable rally)"
+  ],
+  "common_mistakes": [
+    "Confusing with bear pennant (which has converging trendlines, not parallel)",
+    "Ignoring flagpole strength - weak flagpole = unreliable pattern",
+    "Calling pattern valid when volume is high during flag (distribution signal)",
+    "Entering before breakout confirmation (premature entry)",
+    "Missing the volume requirement on breakout (weak breakouts often fail)"
+  ],
+  "trade_setup": {
+    "entry": "Enter on breakout above flag's upper boundary with volume confirmation",
+    "stop_loss": "Place below flag's lower boundary or below midpoint of flag for tighter risk",
+    "target": "Measure flagpole height, add to breakout point for price target"
+  }
+}

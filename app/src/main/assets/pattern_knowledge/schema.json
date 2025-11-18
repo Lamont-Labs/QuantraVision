@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pattern Knowledge Entry",
+  "description": "Expert knowledge about a technical analysis pattern for AI validation",
+  "type": "object",
+  "required": ["pattern_id", "pattern_name", "category", "description", "validation_rules"],
+  "properties": {
+    "pattern_id": {
+      "type": "string",
+      "description": "Unique identifier (snake_case)",
+      "example": "head_and_shoulders"
+    },
+    "pattern_name": {
+      "type": "string",
+      "description": "Human-readable name",
+      "example": "Head and Shoulders"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["reversal", "continuation", "breakout", "candlestick"],
+      "description": "Pattern category"
+    },
+    "bias": {
+      "type": "string",
+      "enum": ["bearish", "bullish", "neutral"],
+      "description": "Directional bias of the pattern"
+    },
+    "description": {
+      "type": "string",
+      "description": "Plain English explanation of the pattern"
+    },
+    "validation_rules": {
+      "type": "object",
+      "description": "Technical criteria for pattern validity",
+      "properties": {
+        "structure": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required structural elements"
+        },
+        "volume": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Volume behavior requirements"
+        },
+        "indicators": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Supporting indicator conditions"
+        },
+        "timeframe": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Preferred timeframes"
+        }
+      }
+    },
+    "invalidation_signals": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Conditions that invalidate the pattern"
+    },
+    "common_mistakes": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Common false positive scenarios"
+    },
+    "trade_setup": {
+      "type": "object",
+      "properties": {
+        "entry": {"type": "string"},
+        "stop_loss": {"type": "string"},
+        "target": {"type": "string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "pattern_id": "head_and_shoulders",
+  "pattern_name": "Head and Shoulders",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "A bearish reversal pattern that forms after an uptrend, characterized by three peaks with the middle peak (head) being the highest. Signals potential trend reversal from bullish to bearish.",
+  "validation_rules": {
+    "structure": [
+      "Must have exactly three peaks: left shoulder, head (highest), and right shoulder",
+      "Head must be significantly higher than both shoulders (typically 10%+ higher)",
+      "Shoulders should be at approximately equal price levels (within 5-10% variance)",
+      "Clear neckline connecting the lows between peaks",
+      "Pattern should form after a sustained uptrend (not in consolidation or downtrend)"
+    ],
+    "volume": [
+      "Volume should decrease progressively: highest at left shoulder, lower at head, lowest at right shoulder",
+      "Strong volume spike on neckline break confirms the pattern",
+      "Declining volume during formation is a key validation signal"
+    ],
+    "indicators": [
+      "RSI showing bearish divergence (lower highs while price makes higher highs) strongly validates",
+      "MACD histogram decreasing or crossing below signal line supports",
+      "Momentum indicators (Stochastic, RSI) should be overbought (>70) during head formation"
+    ],
+    "timeframe": [
+      "Most reliable on daily and 4H charts",
+      "Can appear on any timeframe but requires more confirmation on lower timeframes",
+      "Pattern should develop over weeks or months, not hours"
+    ]
+  },
+  "invalidation_signals": [
+    "Volume increasing through formation (suggests continuation, not reversal)",
+    "Shoulders at significantly different price levels (>15% variance)",
+    "Head not clearly higher than shoulders",
+    "No clear neckline can be drawn",
+    "Price breaks above right shoulder before neckline break",
+    "Pattern forms in downtrend or sideways market (not after uptrend)",
+    "RSI shows bullish divergence instead of bearish"
+  ],
+  "common_mistakes": [
+    "Mistaking any three peaks for Head and Shoulders without checking shoulder symmetry",
+    "Ignoring volume - valid patterns need declining volume",
+    "Calling the pattern too early before neckline break",
+    "Finding pattern in wrong market context (needs prior uptrend)",
+    "Confusing with triple top (which has all three peaks at similar levels)"
+  ],
+  "trade_setup": {
+    "entry": "Enter short on neckline break with close below neckline",
+    "stop_loss": "Place above right shoulder or above head for more conservative approach",
+    "target": "Measure head-to-neckline distance, project same distance below neckline break"
+  }
+}

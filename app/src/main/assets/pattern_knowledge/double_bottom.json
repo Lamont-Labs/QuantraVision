@@ -1,0 +1,56 @@
+{
+  "pattern_id": "double_bottom",
+  "pattern_name": "Double Bottom",
+  "category": "reversal",
+  "bias": "bullish",
+  "description": "A bullish reversal pattern that forms at the end of a downtrend. Creates two distinct lows at approximately the same price level, separated by a moderate peak. Signals potential trend reversal from bearish to bullish.",
+  "validation_rules": {
+    "structure": [
+      "Must have two distinct lows at approximately equal price levels (within 3-5% variance)",
+      "The two bottoms should be separated by a clear peak (the 'middle high')",
+      "Pattern should form after a sustained downtrend",
+      "Time between the two bottoms: ideally 4 weeks to 3 months on daily charts",
+      "Neckline drawn through the middle high resistance",
+      "Second bottom should not significantly undercut the first (creates 'W' shape, not 'V')"
+    ],
+    "volume": [
+      "Volume typically higher on first bottom (panic selling)",
+      "Volume should be lower on second bottom (selling pressure exhausted)",
+      "Strong volume spike on neckline breakout is critical for confirmation",
+      "Declining volume between bottoms suggests buyers are stepping in"
+    ],
+    "indicators": [
+      "RSI showing bullish divergence strongly validates (higher low on RSI while price makes equal low)",
+      "MACD bullish divergence (higher low on MACD histogram)",
+      "Both bottoms should occur in oversold territory (RSI <30)",
+      "Momentum should be increasing on second bottom compared to first"
+    ],
+    "timeframe": [
+      "Most reliable on weekly and daily charts",
+      "Can appear on 4H charts for swing trades",
+      "Requires patience - takes weeks/months to develop properly"
+    ]
+  },
+  "invalidation_signals": [
+    "Second bottom significantly lower than first (>5% below) = continuation, not reversal",
+    "Bottoms too close together in time (<2 weeks on daily) = not a true double bottom",
+    "Volume increasing on second bottom = more selling pressure, pattern invalid",
+    "No bullish divergence on RSI or MACD = weak reversal signal",
+    "Price breaks below second bottom before neckline break",
+    "Pattern forms in uptrend or consolidation (needs prior downtrend)",
+    "Neckline resistance not clearly defined"
+  ],
+  "common_mistakes": [
+    "Calling any two lows a double bottom without checking time separation",
+    "Ignoring volume - valid patterns need decreasing volume on second bottom",
+    "Not waiting for neckline break confirmation before entry",
+    "Missing bullish divergence requirement (divergence greatly increases success rate)",
+    "Confusing with 'W bottom' or 'Adam & Eve' variations which have different characteristics",
+    "Expecting perfect symmetry - bottoms can vary slightly in price and time"
+  ],
+  "trade_setup": {
+    "entry": "Enter on break and close above neckline resistance with volume",
+    "stop_loss": "Place below second bottom with small buffer (2-3%)",
+    "target": "Measure bottom-to-neckline distance, project same distance above neckline"
+  }
+}

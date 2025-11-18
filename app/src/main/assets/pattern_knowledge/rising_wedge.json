@@ -1,0 +1,56 @@
+{
+  "pattern_id": "rising_wedge",
+  "pattern_name": "Rising Wedge",
+  "category": "reversal",
+  "bias": "bearish",
+  "description": "A bearish reversal pattern characterized by higher highs and higher lows that converge into a narrowing wedge sloping upward. Despite rising prices, momentum is weakening, leading to eventual downside break.",
+  "validation_rules": {
+    "structure": [
+      "Both upper and lower trendlines must slope upward",
+      "Trendlines must converge (wedge narrows)",
+      "Requires at least 5 touches total (2-3 touches on each trendline)",
+      "Pattern duration: typically 3-6 months on daily charts, 1-4 weeks on 4H",
+      "Slope of lower trendline must be steeper than upper trendline (creates narrowing)",
+      "Forms after extended uptrend or near end of rally"
+    ],
+    "volume": [
+      "Volume must decline progressively as pattern develops (key characteristic)",
+      "Each rally within wedge should show weaker volume than previous",
+      "Decreasing volume indicates weakening buying pressure despite higher prices",
+      "Strong volume spike on downside break confirms pattern validity"
+    ],
+    "indicators": [
+      "RSI showing bearish divergence is critical (lower highs on RSI while price makes higher highs)",
+      "MACD histogram should show declining peaks (momentum weakening)",
+      "Stochastic making lower highs while price makes higher highs",
+      "Momentum indicators turning down while still inside wedge warns of breakdown"
+    ],
+    "timeframe": [
+      "Very reliable on daily and weekly charts",
+      "Works on 4H for intermediate-term trades",
+      "Less reliable on short timeframes due to frequent false wedges"
+    ]
+  },
+  "invalidation_signals": [
+    "Volume increasing during rallies (strong buying = bullish, not bearish)",
+    "Price breaks upward through top trendline (becomes ascending triangle or continuation)",
+    "No bearish divergence on RSI/MACD (reduces probability significantly)",
+    "Trendlines not converging (parallel lines = channel, not wedge)",
+    "Fewer than 5 touchpoints = insufficient pattern formation",
+    "Pattern forms in downtrend (rising wedges need prior uptrend to reverse)",
+    "Wedge too short in duration (<3 weeks on daily) = likely just consolidation"
+  ],
+  "common_mistakes": [
+    "Confusing with ascending triangle (which has flat top resistance, not sloping upward)",
+    "Ignoring volume requirement - declining volume is essential for wedge validity",
+    "Missing bearish divergence - this is the key warning signal",
+    "Trying to short inside the wedge before breakdown (premature entry)",
+    "Drawing trendlines incorrectly - need clear convergence",
+    "Expecting immediate breakdown - wedges can extend for months"
+  ],
+  "trade_setup": {
+    "entry": "Enter short on break and close below lower wedge trendline with volume",
+    "stop_loss": "Place above recent swing high or above upper wedge trendline",
+    "target": "Measure wedge base (widest part), project that distance downward from breakdown point"
+  }
+}
