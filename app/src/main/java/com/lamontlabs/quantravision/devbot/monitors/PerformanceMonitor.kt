@@ -33,6 +33,8 @@ class PerformanceMonitor(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var monitoringJob: Job? = null
+    
+    @Volatile
     private var frameCallbackActive = false
     
     private val _issues = MutableSharedFlow<PerformanceIssue>(
@@ -45,8 +47,12 @@ class PerformanceMonitor(
     private val runtime = Runtime.getRuntime()
     private val mainHandler = Handler(Looper.getMainLooper())
     
-    private var lastFrameTimeNanos = AtomicLong(0L)
+    private val lastFrameTimeNanos = AtomicLong(0L)
+    
+    @Volatile
     private var droppedFrameCount = 0
+    
+    @Volatile
     private var consecutiveJankyFrames = 0
     
     private val frameCallback = object : Choreographer.FrameCallback {
@@ -136,9 +142,16 @@ class PerformanceMonitor(
     }
     
     private fun stopFrameMonitoring() {
+        if (!frameCallbackActive) return
+        
         frameCallbackActive = false
-        mainHandler.post {
+        
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             Choreographer.getInstance().removeFrameCallback(frameCallback)
+        } else {
+            mainHandler.post {
+                Choreographer.getInstance().removeFrameCallback(frameCallback)
+            }
         }
     }
     

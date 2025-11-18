@@ -13,17 +13,59 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lamontlabs.quantravision.BuildConfig
 import com.lamontlabs.quantravision.devbot.ai.DiagnosticChatMessage
 import com.lamontlabs.quantravision.ui.theme.NeonCyan
 import com.lamontlabs.quantravision.ui.theme.NeonGold
 
 @Composable
-fun DevBotScreen(
-    viewModel: DevBotViewModel = viewModel()
-) {
+fun DevBotScreen() {
+    if (!BuildConfig.DEBUG) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                modifier = Modifier.padding(32.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF1A2332)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Warning",
+                        tint = Color.Red,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Text(
+                        text = "DevBot Not Available",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "DevBot is only available in debug builds. This feature is not enabled in release builds.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.8f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+        return
+    }
+    
+    val viewModel: DevBotViewModel = viewModel()
+    
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val hasModel by viewModel.hasModel.collectAsStateWithLifecycle()

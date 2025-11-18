@@ -7,11 +7,30 @@ import com.google.gson.reflect.TypeToken
 import com.lamontlabs.quantravision.devbot.data.DiagnosticEvent
 import java.io.InputStreamReader
 
+data class LoaderStats(
+    val totalPatterns: Int = 0,
+    val failedPatterns: Int = 0,
+    val failedCategories: Int = 0,
+    val loadedKeywords: Int = 0,
+    val errors: List<LoadError> = emptyList()
+)
+
+data class LoadError(
+    val category: String?,
+    val file: String?,
+    val errorMessage: String,
+    val exception: Exception
+)
+
 class DiagnosticKnowledgeLoader(private val context: Context) {
     private val gson = Gson()
     private val knowledgeCache = mutableMapOf<String, ErrorKnowledge>()
     private val categoryIndex = mutableMapOf<String, List<String>>()
     private val keywordIndex = mutableMapOf<String, MutableSet<String>>()
+    
+    private val loadErrors = mutableListOf<LoadError>()
+    private var totalFilesAttempted = 0
+    private var totalFilesSucceeded = 0
     
     private val categories = listOf(
         "crashes",
@@ -25,12 +44,61 @@ class DiagnosticKnowledgeLoader(private val context: Context) {
         "build"
     )
     
-    suspend fun loadKnowledge() {
+    suspend fun loadKnowledge(): LoaderStats {
+        loadErrors.clear()
+        totalFilesAttempted = 0
+        totalFilesSucceeded = 0
+        
+        Log.i("DiagnosticKnowledgeLoader", "Starting diagnostic knowledge loading for ${categories.size} categories")
+        
         categories.forEach { category ->
             loadCategoryKnowledge(category)
         }
+        
         buildKeywordIndex()
-        Log.d("DiagnosticKnowledgeLoader", "Loaded ${knowledgeCache.size} error patterns with ${keywordIndex.size} indexed keywords")
+        
+        val stats = LoaderStats(
+            totalPatterns = knowledgeCache.size,
+            failedPatterns = totalFilesAttempted - totalFilesSucceeded,
+            failedCategories = loadErrors.map { it.category }.distinct().count(),
+            loadedKeywords = keywordIndex.size,
+            errors = loadErrors.toList()
+        )
+        
+        Log.i("DiagnosticKnowledgeLoader", 
+            "Knowledge loading complete: ${stats.totalPatterns} patterns loaded, " +
+            "${stats.failedPatterns} failures, ${stats.loadedKeywords} keywords indexed"
+        )
+        
+        if (stats.failedPatterns > 0) {
+            Log.w("DiagnosticKnowledgeLoader", 
+                "WARNING: ${stats.failedPatterns} pattern(s) failed to load across ${stats.failedCategories} category(ies)"
+            )
+            loadErrors.forEach { error ->
+                Log.e("DiagnosticKnowledgeLoader", 
+                    "Failed to load ${error.category}/${error.file}: ${error.errorMessage}",
+                    error.exception
+                )
+            }
+        }
+        
+        if (stats.totalPatterns == 0) {
+            val criticalError = "CRITICAL: No diagnostic patterns loaded! DevBot will not function properly."
+            Log.e("DiagnosticKnowledgeLoader", criticalError)
+            throw IllegalStateException(criticalError)
+        }
+        
+        return stats
+    }
+    
+    fun getLoadStats(): LoaderStats {
+        return LoaderStats(
+            totalPatterns = knowledgeCache.size,
+            failedPatterns = totalFilesAttempted - totalFilesSucceeded,
+            failedCategories = loadErrors.map { it.category }.distinct().count(),
+            loadedKeywords = keywordIndex.size,
+            errors = loadErrors.toList()
+        )
     }
     
     private fun loadCategoryKnowledge(category: String) {
@@ -38,27 +106,74 @@ class DiagnosticKnowledgeLoader(private val context: Context) {
             val assetPath = "diagnostic_knowledge/$category"
             val files = context.assets.list(assetPath) ?: emptyArray()
             
-            val categoryErrors = mutableListOf<String>()
+            if (files.isEmpty()) {
+                Log.w("DiagnosticKnowledgeLoader", "No files found in category: $category")
+            }
             
-            files.filter { it.endsWith(".json") }.forEach { file ->
+            val categoryErrors = mutableListOf<String>()
+            val jsonFiles = files.filter { it.endsWith(".json") }
+            
+            Log.d("DiagnosticKnowledgeLoader", "Loading $category: ${jsonFiles.size} patterns")
+            
+            jsonFiles.forEach { file ->
+                totalFilesAttempted++
                 try {
                     val inputStream = context.assets.open("$assetPath/$file")
                     val reader = InputStreamReader(inputStream)
                     
                     val error = gson.fromJson(reader, ErrorKnowledge::class.java)
+                    
+                    if (error.errorName.isBlank()) {
+                        throw IllegalArgumentException("Pattern has blank errorName")
+                    }
+                    
                     knowledgeCache[error.errorName] = error
                     categoryErrors.add(error.errorName)
+                    totalFilesSucceeded++
                     
                     reader.close()
+                    inputStream.close()
+                    
+                    Log.v("DiagnosticKnowledgeLoader", "Loaded: $category/${error.errorName}")
+                    
                 } catch (e: Exception) {
-                    Log.e("DiagnosticKnowledgeLoader", "Error loading $file", e)
+                    val errorMessage = e.message ?: "Unknown error"
+                    loadErrors.add(
+                        LoadError(
+                            category = category,
+                            file = file,
+                            errorMessage = errorMessage,
+                            exception = e
+                        )
+                    )
+                    Log.e("DiagnosticKnowledgeLoader", 
+                        "Failed to load pattern $category/$file: $errorMessage", e
+                    )
                 }
             }
             
             categoryIndex[category] = categoryErrors
             
+            if (categoryErrors.isEmpty() && jsonFiles.isNotEmpty()) {
+                Log.w("DiagnosticKnowledgeLoader", 
+                    "WARNING: Category '$category' has ${jsonFiles.size} files but all failed to load!"
+                )
+            }
+            
         } catch (e: Exception) {
-            Log.e("DiagnosticKnowledgeLoader", "Error loading category $category", e)
+            val errorMessage = e.message ?: "Unknown error"
+            loadErrors.add(
+                LoadError(
+                    category = category,
+                    file = null,
+                    errorMessage = "Category loading failed: $errorMessage",
+                    exception = e
+                )
+            )
+            Log.e("DiagnosticKnowledgeLoader", 
+                "CRITICAL: Failed to load category $category: $errorMessage", e
+            )
+            categoryIndex[category] = emptyList()
         }
     }
     
