@@ -67,6 +67,10 @@ class OverlayService : Service() {
     // Track current scan job for cancellation
     private var currentScanJob: kotlinx.coroutines.Job? = null
     
+    // Track if MediaProjection is fully initialized and ready
+    @Volatile
+    private var isMediaProjectionReady: Boolean = false
+    
     private val stateMachine = OverlayStateMachine()
     private val singleFrameCapture = SingleFrameCapture()
     private lateinit var resultController: PatternResultController
@@ -136,9 +140,11 @@ class OverlayService : Service() {
                 Log.i(TAG, "Calling FloatingLogoButton.show()...")
                 show()
                 Log.i(TAG, "✓ FloatingLogoButton.show() completed")
+                // Start with disabled status until MediaProjection is ready
                 setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                setEnabled(false)  // Disable until MediaProjection is initialized
             }
-            Log.i(TAG, "✓ FloatingLogoButton fully initialized")
+            Log.i(TAG, "✓ FloatingLogoButton fully initialized (disabled until MediaProjection ready)")
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to create FloatingLogoButton", e)
             Toast.makeText(this, "Failed to create overlay button", Toast.LENGTH_LONG).show()
@@ -192,6 +198,20 @@ class OverlayService : Service() {
     
     private fun handleTap() {
         Log.i(TAG, "🎯 TAP DETECTED in OverlayService.handleTap()")
+        
+        // Check if MediaProjection is ready
+        if (!isMediaProjectionReady) {
+            Log.w(TAG, "❌ MediaProjection not ready yet, ignoring tap")
+            scope.launch(Dispatchers.Main) {
+                Toast.makeText(
+                    applicationContext,
+                    "Initializing screen capture... Please wait.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            return
+        }
+        
         val currentState = stateMachine.getCurrentState()
         Log.i(TAG, "Current state: $currentState")
         
@@ -468,15 +488,29 @@ class OverlayService : Service() {
                 Log.e(TAG, "❌ Failed to create VirtualDisplay")
                 Log.e(TAG, "MediaProjection state: ${if (mediaProjection != null) "exists" else "null"}")
                 Log.e(TAG, "ImageReader state: ${if (imageReader != null) "exists" else "null"}")
+                isMediaProjectionReady = false
                 Toast.makeText(this, "Failed to create screen capture display", Toast.LENGTH_SHORT).show()
                 stopSelf()
             } else {
                 Log.i(TAG, "✅ VirtualDisplay created successfully - will be reused for all scans")
                 Log.i(TAG, "✅ ImageReader ready: ${imageReader != null}")
+                
+                // Mark as ready and enable the floating button
+                isMediaProjectionReady = true
+                scope.launch(Dispatchers.Main) {
+                    floatingLogo?.setEnabled(true)
+                    Toast.makeText(
+                        applicationContext,
+                        "✓ Screen capture ready! Tap Q to scan charts.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                Log.i(TAG, "✅ MediaProjection fully initialized and ready for scans")
             }
             
         } catch (e: Exception) {
             Log.e(TAG, "Failed to create VirtualDisplay", e)
+            isMediaProjectionReady = false
             Toast.makeText(this, "Failed to setup screen capture: ${e.message}", Toast.LENGTH_SHORT).show()
             stopSelf()
         }
@@ -507,6 +541,12 @@ class OverlayService : Service() {
     }
 
     private fun cleanupMediaProjectionResources() {
+        // Mark as not ready during cleanup
+        isMediaProjectionReady = false
+        scope.launch(Dispatchers.Main) {
+            floatingLogo?.setEnabled(false)
+        }
+        
         // Clean up VirtualDisplay and ImageReader first
         try {
             virtualDisplay?.release()

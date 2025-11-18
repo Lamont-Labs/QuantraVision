@@ -140,6 +140,12 @@ class FloatingLogoButton(
             }
         }
     }
+    
+    fun setEnabled(enabled: Boolean) {
+        logoView.isEnabled = enabled
+        logoImage.alpha = if (enabled) 1f else 0.5f
+        android.util.Log.i("FloatingLogoButton", "Button enabled state: $enabled")
+    }
 
     private fun setupTouchListener() {
         logoView.setOnTouchListener { _, event ->
