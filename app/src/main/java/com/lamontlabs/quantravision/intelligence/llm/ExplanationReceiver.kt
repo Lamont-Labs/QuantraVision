@@ -58,7 +58,17 @@ class ExplanationReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 val explainer = PatternExplainer(context)
-                explainer.initialize()
+                
+                // Initialize explainer - this may fail if model is missing
+                // Fallback explanations still work even when initialization fails
+                val initResult = explainer.initialize()
+                if (initResult.isFailure) {
+                    Timber.w(
+                        "🧠 PatternExplainer initialization failed: ${initResult.exceptionOrNull()?.message}. " +
+                        "Using fallback explanations."
+                    )
+                    // Continue anyway - fallbacks will work
+                }
                 
                 // Build minimal PatternMatch for explanation
                 val indicators = com.lamontlabs.quantravision.intelligence.IndicatorContext.fromJson(indicatorsJson)
@@ -71,7 +81,7 @@ class ExplanationReceiver : BroadcastReceiver() {
                     scoreResult = null
                 )
                 
-                // Show explanation notification
+                // Show explanation notification with specific error details
                 when (result) {
                     is ExplanationResult.Success -> {
                         showExplanationNotification(
@@ -79,7 +89,8 @@ class ExplanationReceiver : BroadcastReceiver() {
                             patternName, 
                             result.text,
                             patternId,
-                            fromCache = result.fromCache
+                            fromCache = result.fromCache,
+                            reason = null
                         )
                     }
                     is ExplanationResult.Unavailable -> {
@@ -88,7 +99,8 @@ class ExplanationReceiver : BroadcastReceiver() {
                             patternName,
                             result.fallbackText,
                             patternId,
-                            fromCache = false
+                            fromCache = false,
+                            reason = result.reason  // Surface specific unavailability reason to user
                         )
                     }
                     is ExplanationResult.Failure -> {
@@ -129,7 +141,8 @@ class ExplanationReceiver : BroadcastReceiver() {
         patternName: String,
         explanation: String,
         patternId: Long,
-        fromCache: Boolean
+        fromCache: Boolean,
+        reason: String? = null
     ) {
         createExplanationChannel(context)
         
@@ -149,11 +162,18 @@ class ExplanationReceiver : BroadcastReceiver() {
         // Build notification with big text style
         val title = if (fromCache) "🧠 $patternName" else "🧠 AI Insight: $patternName"
         
+        // Include reason in notification if model unavailable
+        val fullText = if (reason != null && reason.isNotEmpty()) {
+            "Note: $reason\n\n$explanation"
+        } else {
+            explanation
+        }
+        
         val notification = NotificationCompat.Builder(context, CHANNEL_ID_EXPLANATIONS)
             .setSmallIcon(R.drawable.ic_overlay_marker)
             .setContentTitle(title)
             .setContentText(explanation)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(explanation))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(fullText))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -162,7 +182,7 @@ class ExplanationReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(getNotificationId(patternId), notification)
         
-        Timber.i("🧠 Explanation shown for $patternName (fromCache=$fromCache)")
+        Timber.i("🧠 Explanation shown for $patternName (fromCache=$fromCache, reason=$reason)")
     }
     
     /**
