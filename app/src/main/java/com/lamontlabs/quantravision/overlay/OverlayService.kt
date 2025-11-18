@@ -298,7 +298,24 @@ class OverlayService : Service() {
                 
                 Timber.i("📸 Starting frame capture from VirtualDisplay...")
                 val captureStartTime = System.currentTimeMillis()
-                val bitmap = singleFrameCapture.captureFrame(reader)
+                
+                val bitmap = try {
+                    singleFrameCapture.captureFrame(reader)
+                } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+                    Timber.e("❌ TIMEOUT: No frame received from VirtualDisplay after 2.5s")
+                    Timber.e("This is a Samsung One UI quirk - VirtualDisplay not delivering frames")
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            applicationContext,
+                            "❌ Screen capture timed out. Please restart scanner.\n(Samsung One UI bug - try restarting phone if this persists)",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                    }
+                    stateMachine.transitionToIdle()
+                    return@launch
+                }
+                
                 val captureTime = System.currentTimeMillis() - captureStartTime
                 Timber.i("✅ Frame captured in ${captureTime}ms - size: ${bitmap.width}x${bitmap.height}")
                 

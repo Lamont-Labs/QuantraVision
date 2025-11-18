@@ -2,11 +2,12 @@ package com.lamontlabs.quantravision
 
 import android.content.Context
 import org.opencv.core.Mat
+import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
 import org.yaml.snakeyaml.Yaml
-import java.io.File
-import java.io.FileInputStream
+import java.io.InputStream
 import java.security.MessageDigest
+import timber.log.Timber
 
 data class Template(
     val name: String,
@@ -25,31 +26,45 @@ data class Template(
 class TemplateLibrary(private val context: Context) {
 
     /**
-     * Load pattern templates from YAML files
-     * Returns list of successfully loaded templates
-     * Skips corrupted templates and logs warnings
+     * Load pattern templates directly from APK assets.
+     * Returns list of successfully loaded templates.
+     * Skips corrupted templates and logs warnings.
+     * 
+     * Templates are loaded from assets/pattern_templates/ and cached in memory.
+     * No filesystem copies needed - direct asset access with in-memory caching.
      * 
      * @throws TemplateLoadException if NO templates could be loaded (critical failure)
      */
     fun loadTemplates(): List<Template> {
         val yaml = Yaml()
-        val dir = File(context.filesDir, "pattern_templates")
+        val assetManager = context.assets
+        val assetPath = "pattern_templates"
         
-        if (!dir.exists()) {
-            throw TemplateLoadException("Template directory not found: ${dir.absolutePath}. Please reinstall the app.")
+        // List all YAML files in the asset directory
+        val yamlFiles = try {
+            assetManager.list(assetPath)?.filter { it.endsWith(".yaml") } ?: emptyList()
+        } catch (e: Exception) {
+            Timber.e(e, "❌ Failed to list assets in $assetPath")
+            throw TemplateLoadException("Cannot access pattern_templates in APK assets. App may be corrupted.")
+        }
+        
+        if (yamlFiles.isEmpty()) {
+            throw TemplateLoadException("No template YAML files found in assets/$assetPath. App packaging is broken.")
         }
         
         val templates = mutableListOf<Template>()
-        var totalYamlFiles = 0
+        var totalYamlFiles = yamlFiles.size
         var skippedCount = 0
         
-        dir.listFiles()?.filter { it.extension == "yaml" }?.forEach { file ->
-            totalYamlFiles++
+        Timber.i("📚 Loading ${totalYamlFiles} pattern templates from assets...")
+        
+        yamlFiles.forEach { yamlFileName ->
             try {
-                FileInputStream(file).use { fis ->
-                    val data = yaml.load<Map<String, Any>>(fis)
+                // Load and parse YAML file from assets
+                assetManager.open("$assetPath/$yamlFileName").use { yamlStream ->
+                    val data = yaml.load<Map<String, Any>>(yamlStream)
                     val name = data["name"] as String
-                    val path = data["image"] as String
+                    val imagePath = data["image"] as String  // e.g., "pattern_templates/foo_ref.png"
                     val threshold = (data["threshold"] as Number).toDouble()
                     val sr = (data["scale_range"] as? List<*>)?.map { (it as Number).toDouble() } ?: listOf(0.6, 1.6)
                     val scaleMin = sr.getOrElse(0) { 0.6 }
@@ -59,22 +74,45 @@ class TemplateLibrary(private val context: Context) {
                     val tfHints = (data["timeframe_hints"] as? List<*>)?.map { it.toString() } ?: emptyList()
                     val minBars = (data["min_bars"] as? Number)?.toInt() ?: 0
 
-                    val imageFile = File(context.filesDir, path)
-                    val imageMat = Imgcodecs.imread(imageFile.absolutePath, Imgcodecs.IMREAD_GRAYSCALE)
+                    // Load image from assets and decode with OpenCV
+                    val imageMat = try {
+                        // Extract just the filename from the path (in case YAML has full path)
+                        val imageFileName = imagePath.substringAfterLast("/")
+                        val imageAssetPath = "$assetPath/$imageFileName"
+                        
+                        assetManager.open(imageAssetPath).use { imageStream ->
+                            val imageBytes = imageStream.readBytes()
+                            
+                            // Decode image bytes to OpenCV Mat
+                            val matOfByte = MatOfByte(*imageBytes)
+                            val decodedMat = Imgcodecs.imdecode(matOfByte, Imgcodecs.IMREAD_GRAYSCALE)
+                            matOfByte.release()  // Release temporary buffer
+                            
+                            if (decodedMat.empty()) {
+                                Timber.w("⚠️ SKIPPED: Failed to decode image $imageAssetPath")
+                                null
+                            } else {
+                                decodedMat
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Timber.w(e, "⚠️ SKIPPED: Cannot load image asset for $name")
+                        null
+                    }
                     
-                    // CRITICAL: Check if image loaded successfully before creating template
-                    // If empty, skip this template instead of crashing the entire app
-                    if (imageMat.empty()) {
-                        android.util.Log.w("TemplateLibrary", "SKIPPED: Template image not found or empty: $path (file: ${imageFile.absolutePath})")
+                    if (imageMat == null) {
                         skippedCount++
                         return@forEach
                     }
 
-                    val tplHash = sha256(imageFile.readBytes())
+                    // Compute hash from image bytes for integrity checking
+                    val imageBytes = assetManager.open("$assetPath/${imagePath.substringAfterLast("/")}").use { it.readBytes() }
+                    val tplHash = sha256(imageBytes)
+                    
                     templates.add(
                         Template(
                             name = name,
-                            path = path,
+                            path = imagePath,
                             threshold = threshold,
                             image = imageMat,
                             scaleMin = scaleMin,
@@ -88,17 +126,22 @@ class TemplateLibrary(private val context: Context) {
                     )
                 }
             } catch (e: Exception) {
-                android.util.Log.e("TemplateLibrary", "Error loading template ${file.name}", e)
+                Timber.e(e, "❌ Error loading template $yamlFileName")
                 skippedCount++
             }
         }
         
-        android.util.Log.i("TemplateLibrary", "Loaded ${templates.size}/${totalYamlFiles} templates ($skippedCount skipped)")
+        Timber.i("✅ Loaded ${templates.size}/${totalYamlFiles} templates ($skippedCount skipped)")
         
         // CRITICAL: Throw exception if NO templates loaded successfully
-        // This indicates app corruption and requires reinstall
-        if (templates.isEmpty() && totalYamlFiles > 0) {
-            throw TemplateLoadException("Failed to load any templates (0/$totalYamlFiles). Pattern detection will not work. Please reinstall the app.")
+        // This indicates app corruption or broken asset packaging
+        if (templates.isEmpty()) {
+            throw TemplateLoadException("Failed to load any templates (0/$totalYamlFiles). Pattern detection will not work. App packaging is broken.")
+        }
+        
+        // VALIDATION: Expect ~109 templates (each with PNG + YAML = 218+ files)
+        if (templates.size < 50) {
+            Timber.w("⚠️ WARNING: Only ${templates.size} templates loaded - expected ~109. Some templates may be missing.")
         }
         
         return templates
