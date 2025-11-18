@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lamontlabs.quantravision.ui.AdvancedVisuals.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.NeonCyan
 import com.lamontlabs.quantravision.ui.NeonGold
 import java.text.SimpleDateFormat
