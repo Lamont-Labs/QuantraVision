@@ -32,7 +32,7 @@ class LogcatMonitor(
     val errors: SharedFlow<LogcatError> = _errors.asSharedFlow()
     
     @Volatile
-    private var logcatProcess: Process? = null
+    private var logcatProcess: java.lang.Process? = null
     
     @Volatile
     private var monitoringJob: Job? = null

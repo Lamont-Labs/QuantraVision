@@ -47,12 +47,14 @@ object DiagnosticEngine {
         
         startMonitoring()
         
-        logEvent(
-            DiagnosticEvent.Info(
-                "DevBot initialized - diagnostic monitoring active",
-                "DiagnosticEngine"
+        scope.launch {
+            logEvent(
+                DiagnosticEvent.Info(
+                    "DevBot initialized - diagnostic monitoring active",
+                    "DiagnosticEngine"
+                )
             )
-        )
+        }
     }
     
     private fun startMonitoring() {

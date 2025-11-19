@@ -2,7 +2,7 @@ package com.lamontlabs.quantravision.devbot.ai
 
 import android.content.Context
 import android.util.Log
-import com.lamontlabs.quantravision.ai.GemmaEngine
+import com.lamontlabs.quantravision.intelligence.llm.GemmaEngine
 import com.lamontlabs.quantravision.devbot.data.DiagnosticEvent
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
 import kotlinx.coroutines.*

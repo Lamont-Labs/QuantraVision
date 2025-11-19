@@ -4,10 +4,20 @@ import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.intelligence.llm.GemmaEngine
 import com.lamontlabs.quantravision.intelligence.llm.PatternExplainer
+import com.lamontlabs.quantravision.intelligence.llm.ExplanationResult
 import com.lamontlabs.quantravision.intelligence.IndicatorContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+
+/**
+ * Extract text from ExplanationResult
+ */
+private fun ExplanationResult.extractText(): String = when (this) {
+    is ExplanationResult.Success -> text
+    is ExplanationResult.Failure -> fallbackText ?: "Error: $error"
+    is ExplanationResult.Unavailable -> fallbackText
+}
 
 /**
  * QuantraBot - AI Trading Assistant
@@ -105,7 +115,7 @@ class QuantraBotEngine(private val context: Context) {
             val prompt = promptBuilder.buildValidationPrompt(pattern, knowledge, indicatorContext)
             
             // Get LLM validation
-            val response = gemmaEngine.generate(prompt)
+            val response = gemmaEngine.generate(prompt).extractText()
             
             // Parse response
             parseValidationResponse(response)
@@ -132,15 +142,15 @@ class QuantraBotEngine(private val context: Context) {
             // If model available and we have knowledge, use LLM
             if (hasModel && knowledge != null) {
                 val prompt = promptBuilder.buildExplanationPrompt(pattern, knowledge, indicatorContext)
-                return@withContext gemmaEngine.generate(prompt)
+                return@withContext gemmaEngine.generate(prompt).extractText()
             }
             
             // Fallback to template-based explanation
-            fallbackExplainer.explainPattern(pattern.patternName)
+            fallbackExplainer.explainPattern(pattern, indicatorContext).extractText()
             
         } catch (e: Exception) {
             Timber.e(e, "Error explaining pattern: ${pattern.patternName}")
-            fallbackExplainer.explainPattern(pattern.patternName)
+            fallbackExplainer.explainPattern(pattern, indicatorContext).extractText()
         }
     }
     
@@ -159,7 +169,7 @@ class QuantraBotEngine(private val context: Context) {
             }
             
             val prompt = promptBuilder.buildGeneralQuestionPrompt(question, recentPatterns)
-            gemmaEngine.generate(prompt)
+            gemmaEngine.generate(prompt).extractText()
             
         } catch (e: Exception) {
             Timber.e(e, "Error answering question")
@@ -179,7 +189,7 @@ class QuantraBotEngine(private val context: Context) {
             
             if (hasModel) {
                 val prompt = promptBuilder.buildScoreExplanationPrompt(pattern, knowledge, indicatorContext)
-                return@withContext gemmaEngine.generate(prompt)
+                return@withContext gemmaEngine.generate(prompt).extractText()
             }
             
             // Fallback to simple explanation
@@ -211,7 +221,7 @@ class QuantraBotEngine(private val context: Context) {
             }
             
             val prompt = promptBuilder.buildComparisonPrompt(knowledge1, knowledge2)
-            gemmaEngine.generate(prompt)
+            gemmaEngine.generate(prompt).extractText()
             
         } catch (e: Exception) {
             Timber.e(e, "Error comparing patterns")
