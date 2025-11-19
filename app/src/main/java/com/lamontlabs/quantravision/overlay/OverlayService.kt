@@ -86,6 +86,20 @@ class OverlayService : Service() {
         super.onCreate()
         Log.i(TAG, "=== OverlayService.onCreate() START ===")
         
+        // CRITICAL: Defense-in-depth - Check if service should be disabled
+        // This should NEVER happen (OverlayServiceGuard disables component before import)
+        // But if it does, we fail gracefully instead of crashing
+        if (!com.lamontlabs.quantravision.overlay.OverlayServiceGuard.isEnabled(this)) {
+            Log.e(TAG, "CRITICAL: Service started while disabled! This should never happen.")
+            android.widget.Toast.makeText(
+                this,
+                "Scanner is temporarily disabled during model import",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+            stopSelf()
+            return
+        }
+        
         // CRITICAL: Must call startForeground() before any stopSelf() to avoid crash
         // This prevents "app has a bug" error when service needs to stop immediately
         startForegroundService()
