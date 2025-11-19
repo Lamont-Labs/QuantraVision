@@ -27,6 +27,12 @@
       </intent-filter>
     </activity>
 
+    <!-- Model Import Activity - stable lifecycle for file picker -->
+    <activity
+        android:name=".intelligence.llm.ImportActivity"
+        android:exported="false"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
     <service
         android:name=".overlay.OverlayService"
         android:exported="false"

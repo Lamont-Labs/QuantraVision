@@ -38,21 +38,12 @@ fun DevBotScreen() {
     val importState by importController.importState.collectAsStateWithLifecycle()
     var showImportDialog by remember { mutableStateOf(false) }
     
-    // File picker launcher
-    val filePicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        try {
-            timber.log.Timber.i("📥 DevBotScreen: File picker returned, uri=$uri")
-            uri?.let { selectedUri ->
-                timber.log.Timber.i("📥 DevBotScreen: Calling handleFileSelected")
-                importController.handleFileSelected(selectedUri)
-            } ?: run {
-                timber.log.Timber.w("📥 DevBotScreen: No URI selected")
-            }
-        } catch (e: Exception) {
-            timber.log.Timber.e(e, "📥 DevBotScreen: CRASH in file picker callback")
-        }
+    // Import Activity launcher - stable lifecycle for file picker
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        timber.log.Timber.i("📥 DevBotScreen: ImportActivity returned with result: ${result.resultCode}")
+        // Import started - just wait for WorkManager to update state
     }
     
     // Show import dialog when importing
@@ -264,10 +255,9 @@ fun DevBotScreen() {
                         // Show import prompt when model not available
                         ModelNotFoundCard(
                             onImportClick = {
-                                val activity = context as? Activity
-                                if (activity != null) {
-                                    importController.startImport(filePicker)
-                                }
+                                timber.log.Timber.i("📥 DevBotScreen: Launching ImportActivity")
+                                val intent = Intent(context, com.lamontlabs.quantravision.intelligence.llm.ImportActivity::class.java)
+                                importLauncher.launch(intent)
                             }
                         )
                     } else {

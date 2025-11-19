@@ -45,13 +45,14 @@
     public static *** w(...);
 }
 
-# Strip Timber logs in release
--assumenosideeffects class timber.log.Timber {
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-    public static *** w(...);
-}
+# Strip Timber logs in release - TEMPORARILY DISABLED FOR DEBUGGING
+# TODO: Re-enable after model import is working
+#-assumenosideeffects class timber.log.Timber {
+#    public static *** d(...);
+#    public static *** v(...);
+#    public static *** i(...);
+#    public static *** w(...);
+#}
 
 # Remove test/debug utilities (belt-and-suspenders; already in test source set)
 -assumenosideeffects class * {
