@@ -167,24 +167,36 @@ class ModelImportController(private val context: Context) {
      */
     fun handleFileSelected(uri: Uri) {
         try {
-            // Take persistable permission so WorkManager can access it later
-            context.contentResolver.takePersistableUriPermission(
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
+            Timber.i("📥 File selected: $uri")
+            
+            // Try to take persistable permission (optional - some providers don't support it)
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                Timber.i("📥 Persistable permission granted")
+            } catch (e: SecurityException) {
+                Timber.w("📥 Persistable permission not available - will copy immediately")
+                // Not a fatal error - we'll copy the file immediately instead
+            }
             
             // Validate file
+            Timber.i("📥 Validating file...")
             val validation = validateSelectedFile(uri)
             if (!validation.isValid) {
+                Timber.e("📥 Validation failed: ${validation.errorMessage}")
                 _importState.value = ImportState.Error(
                     validation.errorMessage ?: "Invalid file",
                     recoverable = true
                 )
                 return
             }
+            Timber.i("📥 Validation passed: ${validation.fileSize / 1_000_000}MB")
             
             // Check storage space
             if (!hasEnoughSpace()) {
+                Timber.e("📥 Not enough storage space")
                 _importState.value = ImportState.Error(
                     "Not enough storage space. Need at least 1GB free.",
                     recoverable = false
@@ -193,10 +205,11 @@ class ModelImportController(private val context: Context) {
             }
             
             // Start background copy with WorkManager (pass validated file size)
+            Timber.i("📥 Starting background copy...")
             startBackgroundCopy(uri, validation.fileSize)
             
         } catch (e: Exception) {
-            Timber.e(e, "Error handling file selection")
+            Timber.e(e, "📥 ERROR in handleFileSelected")
             _importState.value = ImportState.Error(
                 "Failed to process file: ${e.message}",
                 recoverable = true
