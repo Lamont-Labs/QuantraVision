@@ -1,13 +1,22 @@
 package com.lamontlabs.quantravision.devbot.ui
 
 import android.app.Application
+import android.content.Intent
+import android.util.Log
+import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.lamontlabs.quantravision.devbot.ai.DevBotEngine
 import com.lamontlabs.quantravision.devbot.ai.DiagnosticChatMessage
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DevBotViewModel(application: Application) : AndroidViewModel(application) {
     private val devBotEngine = DevBotEngine(application.applicationContext)
@@ -103,6 +112,115 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
         
         return questions.take(4)
     }
+    
+    private val _exportStatus = MutableStateFlow<ExportStatus>(ExportStatus.Idle)
+    val exportStatus: StateFlow<ExportStatus> = _exportStatus.asStateFlow()
+    
+    fun requestExport() {
+        _exportStatus.value = ExportStatus.ConfirmationRequired
+    }
+    
+    fun exportDiagnostics() {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.Main) {
+                    _exportStatus.value = ExportStatus.Exporting
+                }
+                
+                val result = withContext(Dispatchers.IO) {
+                    cleanupOldExports()
+                    
+                    val jsonData = DiagnosticEngine.exportDiagnostics()
+                    
+                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
+                    val filename = "devbot_diagnostics_${dateFormat.format(Date())}.json"
+                    
+                    val exportDir = File(getApplication<Application>().cacheDir, "exports")
+                    exportDir.mkdirs()
+                    
+                    val file = File(exportDir, filename)
+                    file.writeText(jsonData)
+                    
+                    val uri = FileProvider.getUriForFile(
+                        getApplication(),
+                        "${getApplication<Application>().packageName}.fileprovider",
+                        file
+                    )
+                    
+                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        putExtra(Intent.EXTRA_SUBJECT, "QuantraVision DevBot Diagnostics")
+                        putExtra(Intent.EXTRA_TEXT, buildExportMessage())
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        addCategory(Intent.CATEGORY_DEFAULT)
+                    }
+                    
+                    val chooserIntent = Intent.createChooser(sendIntent, "Share Diagnostics").apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    
+                    Pair(chooserIntent, filename)
+                }
+                
+                withContext(Dispatchers.Main) {
+                    if (getApplication<Application>().packageManager.queryIntentActivities(
+                            result.first,
+                            android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
+                        ).isNotEmpty()
+                    ) {
+                        _exportStatus.value = ExportStatus.Success(result.first, result.second)
+                    } else {
+                        _exportStatus.value = ExportStatus.Error("No app available to share diagnostics")
+                    }
+                }
+                
+            } catch (e: Exception) {
+                Log.e("DevBotViewModel", "Error exporting diagnostics", e)
+                withContext(Dispatchers.Main) {
+                    _exportStatus.value = ExportStatus.Error(e.message ?: "Export failed")
+                }
+            }
+        }
+    }
+    
+    private fun buildExportMessage(): String {
+        val stats = _errorStats.value
+        return """
+            QuantraVision DevBot Diagnostic Report
+            
+            ⚠️ CONTAINS SENSITIVE DEBUG INFORMATION ⚠️
+            This file contains stack traces and error details from your app.
+            Only share with developers you trust for debugging purposes.
+            
+            Summary:
+            - Total Events: ${stats.totalErrors}
+            - Crashes: ${stats.crashes}
+            - Performance Issues: ${stats.performanceIssues}
+            - Network Errors: ${stats.networkErrors}
+            - Database Issues: ${stats.databaseIssues}
+        """.trimIndent()
+    }
+    
+    private fun cleanupOldExports() {
+        try {
+            val exportDir = File(getApplication<Application>().cacheDir, "exports")
+            if (!exportDir.exists()) return
+            
+            val files = exportDir.listFiles() ?: return
+            val sortedFiles = files.sortedByDescending { it.lastModified() }
+            
+            sortedFiles.drop(5).forEach { file ->
+                file.delete()
+            }
+        } catch (e: Exception) {
+            Log.w("DevBotViewModel", "Failed to cleanup old exports", e)
+        }
+    }
+    
+    fun resetExportStatus() {
+        _exportStatus.value = ExportStatus.Idle
+    }
 }
 
 data class ErrorStats(
@@ -112,3 +230,11 @@ data class ErrorStats(
     val networkErrors: Int = 0,
     val databaseIssues: Int = 0
 )
+
+sealed class ExportStatus {
+    data object Idle : ExportStatus()
+    data object ConfirmationRequired : ExportStatus()
+    data object Exporting : ExportStatus()
+    data class Success(val intent: Intent, val filename: String) : ExportStatus()
+    data class Error(val message: String) : ExportStatus()
+}

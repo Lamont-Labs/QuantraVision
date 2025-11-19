@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision.devbot.ui
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,17 +75,127 @@ fun DevBotScreen() {
     val isReady by viewModel.isReady.collectAsStateWithLifecycle()
     val errorStats by viewModel.errorStats.collectAsStateWithLifecycle()
     
+    val context = LocalContext.current
+    val exportStatus by viewModel.exportStatus.collectAsStateWithLifecycle()
+    
+    var showExportConfirmation by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(exportStatus) {
+        when (exportStatus) {
+            is ExportStatus.ConfirmationRequired -> {
+                showExportConfirmation = true
+            }
+            is ExportStatus.Success -> {
+                context.startActivity((exportStatus as ExportStatus.Success).intent)
+                viewModel.resetExportStatus()
+            }
+            else -> {}
+        }
+    }
+    
+    if (showExportConfirmation) {
+        AlertDialog(
+            onDismissRequest = {
+                showExportConfirmation = false
+                viewModel.resetExportStatus()
+            },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = NeonGold,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Export Sensitive Data?", color = Color.White)
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "This diagnostic export contains sensitive information:",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "• Complete stack traces\n• App crash details\n• Performance metrics\n• Network URLs\n• Database queries",
+                        color = Color.White.copy(alpha = 0.9f),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "Only share with developers you trust.",
+                        color = NeonGold,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExportConfirmation = false
+                        viewModel.exportDiagnostics()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = NeonGold,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Export & Share")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showExportConfirmation = false
+                        viewModel.resetExportStatus()
+                    }
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
+            },
+            containerColor = Color(0xFF1A2332),
+            iconContentColor = NeonGold
+        )
+    }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        if (exportStatus is ExportStatus.Error) {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.Red.copy(alpha = 0.2f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Export failed: ${(exportStatus as ExportStatus.Error).message}",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { viewModel.resetExportStatus() }) {
+                        Icon(Icons.Default.Close, "Dismiss", tint = Color.Red)
+                    }
+                }
+            }
+        }
+        
         DevBotHeader(
             isReady = isReady,
             hasModel = hasModel,
             errorStats = errorStats,
+            exportStatus = exportStatus,
             onClearChat = { viewModel.clearChat() },
-            onClearErrors = { viewModel.clearErrorHistory() }
+            onClearErrors = { viewModel.clearErrorHistory() },
+            onExport = { viewModel.requestExport() }
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -145,8 +257,10 @@ private fun DevBotHeader(
     isReady: Boolean,
     hasModel: Boolean,
     errorStats: ErrorStats,
+    exportStatus: ExportStatus,
     onClearChat: () -> Unit,
-    onClearErrors: () -> Unit
+    onClearErrors: () -> Unit,
+    onExport: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -182,6 +296,24 @@ private fun DevBotHeader(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    IconButton(
+                        onClick = onExport,
+                        enabled = exportStatus !is ExportStatus.Exporting
+                    ) {
+                        if (exportStatus is ExportStatus.Exporting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = NeonGold,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Export Diagnostics",
+                                tint = NeonGold
+                            )
+                        }
+                    }
                     IconButton(onClick = onClearChat) {
                         Icon(
                             imageVector = Icons.Default.Delete,
