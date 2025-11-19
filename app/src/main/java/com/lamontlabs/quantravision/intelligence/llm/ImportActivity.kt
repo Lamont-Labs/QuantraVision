@@ -21,10 +21,10 @@ import com.lamontlabs.quantravision.overlay.OverlayServiceGuard
 import com.lamontlabs.quantravision.ui.MetallicButton
 import com.lamontlabs.quantravision.ui.MetallicCard
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.QuantraVisionTheme
 import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
-import com.lamontlabs.quantravision.ui.theme.QuantraVisionTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
