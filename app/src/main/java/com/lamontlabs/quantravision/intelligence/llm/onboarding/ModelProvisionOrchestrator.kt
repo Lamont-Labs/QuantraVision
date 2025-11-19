@@ -19,10 +19,10 @@ import com.lamontlabs.quantravision.intelligence.llm.ModelState
 import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
-import com.lamontlabs.quantravision.ui.components.MetallicCard
-import com.lamontlabs.quantravision.ui.components.NeonButton
-import com.lamontlabs.quantravision.ui.components.NeonText
-import com.lamontlabs.quantravision.ui.components.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.MetallicCard
+import com.lamontlabs.quantravision.ui.NeonButton
+import com.lamontlabs.quantravision.ui.NeonText
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import timber.log.Timber
 
 /**
@@ -78,7 +78,7 @@ fun ModelProvisionOrchestrator(
         ModelState.NotDownloaded, is ModelState.Error -> {
             ModelImportScreen(
                 isImporting = isImporting,
-                errorMessage = (modelState as? ModelState.Error)?.message,
+                errorMessage = (modelState as? ModelState.Error)?.error,
                 onImportClick = {
                     Timber.i("🧠 Launching ImportActivity from ModelProvisionOrchestrator")
                     isImporting = true
@@ -136,7 +136,7 @@ private fun ModelImportScreen(
                     Text(
                         text = "QuantraVision uses the Gemma 3 1B AI model (529MB) for intelligent pattern explanations.",
                         style = AppTypography.bodyLarge,
-                        color = AppColors.textSecondary,
+                        color = AppColors.MetallicSilver,
                         textAlign = TextAlign.Center
                     )
                     
@@ -145,7 +145,7 @@ private fun ModelImportScreen(
                     Text(
                         text = "To import your AI model:",
                         style = AppTypography.bodyMedium.copy(
-                            color = AppColors.textPrimary
+                            color = AppColors.OnBackground
                         )
                     )
                     
@@ -157,7 +157,7 @@ private fun ModelImportScreen(
                                "3. Select the downloaded file\n\n" +
                                "4. Wait for import to complete (~30 seconds)",
                         style = AppTypography.bodyMedium,
-                        color = AppColors.textSecondary
+                        color = AppColors.MetallicSilver
                     )
                     
                     if (errorMessage != null) {
@@ -165,7 +165,7 @@ private fun ModelImportScreen(
                         Text(
                             text = "⚠️ Previous import failed: $errorMessage",
                             style = AppTypography.bodySmall,
-                            color = AppColors.error,
+                            color = AppColors.Error,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -183,7 +183,7 @@ private fun ModelImportScreen(
                 if (isImporting) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = AppColors.neonCyan,
+                        color = AppColors.NeonCyan,
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(AppSpacing.sm))
@@ -198,7 +198,7 @@ private fun ModelImportScreen(
             Text(
                 text = "This is a one-time setup. The model works 100% offline once imported.",
                 style = AppTypography.bodySmall,
-                color = AppColors.textSecondary,
+                color = AppColors.MetallicSilver,
                 textAlign = TextAlign.Center
             )
         }
@@ -217,13 +217,13 @@ private fun LoadingScreen() {
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
             ) {
                 CircularProgressIndicator(
-                    color = AppColors.neonCyan,
+                    color = AppColors.NeonCyan,
                     strokeWidth = 3.dp
                 )
                 Text(
                     text = "Preparing AI model...",
                     style = AppTypography.bodyLarge,
-                    color = AppColors.textSecondary
+                    color = AppColors.MetallicSilver
                 )
             }
         }
