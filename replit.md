@@ -12,7 +12,7 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
-- **2025-11-19**: Version 3.0 released with initialization-time model import - Added ModelProvisionOrchestrator that gates app startup until AI model is imported (similar to permission flow), ensuring OverlayService never runs during import and completely eliminating Android 13+ tap-jacking crashes. Import now happens during onboarding before scanner can start.
+- **2025-11-19**: Version 3.0 released with initialization-time model import - Added ModelProvisionOrchestrator that gates app startup until AI model is imported (similar to permission flow), ensuring OverlayService never runs during import and completely eliminating Android 13+ tap-jacking crashes. Import now happens during onboarding before scanner can start. Fixed compilation errors in ModelProvisionOrchestrator (corrected imports and color constants).
 - **2025-11-19**: Version 2.9 released with scanner-stop requirement - ImportActivity now checks if OverlayService is running and requires user to manually stop scanner before importing, eliminating all race conditions and tap-jacking issues (shows clear dialog with instructions)
 - **2025-11-19**: Version 2.8 released with race condition fix - added null safety guards in suspendOverlayView() and 500ms initialization delay in ImportActivity to prevent crash when broadcast arrives before FloatingLogoButton is created
 - **2025-11-19**: Version 2.7 released with OverlayService suspension - ImportActivity now suspends floating overlay before launching SAF picker to prevent Android 13+ tap-jacking protection from killing the service
