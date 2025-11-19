@@ -11,9 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lamontlabs.quantravision.intelligence.llm.ImportActivity
 import com.lamontlabs.quantravision.intelligence.llm.ModelManager
@@ -110,106 +114,123 @@ private fun ModelImportScreen(
     onImportClick: () -> Unit
 ) {
     StaticBrandBackground {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(AppSpacing.xl),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Spacer(modifier = Modifier.height(AppSpacing.xxl))
-            // Icon
-            Text(
-                text = "🧠",
-                style = AppTypography.headlineLarge.copy(
-                    fontSize = AppTypography.headlineLarge.fontSize * 2
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(AppSpacing.xl))
-            
-            // Title
-            NeonText(
-                text = "AI Model Required",
-                style = AppTypography.headlineLarge.copy(
-                    textAlign = TextAlign.Center
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(AppSpacing.md))
-            
-            // Description
-            MetallicCard(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(AppSpacing.lg)) {
-                    Text(
-                        text = "QuantraVision uses the Gemma 3 1B AI model (529MB) for intelligent pattern explanations.",
-                        style = AppTypography.bodyLarge,
-                        color = AppColors.MetallicSilver,
-                        textAlign = TextAlign.Center
-                    )
-                    
-                    Spacer(modifier = Modifier.height(AppSpacing.lg))
-                    
-                    Text(
-                        text = "To import your AI model:",
-                        style = AppTypography.bodyMedium.copy(
-                            color = AppColors.OnBackground
-                        )
-                    )
+        Scaffold(
+            containerColor = Color.Transparent,
+            bottomBar = {
+                // Fixed button at bottom - always visible above system insets
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(AppSpacing.xl)
+                ) {
+                    MetallicButton(
+                        onClick = onImportClick,
+                        enabled = !isImporting,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        if (isImporting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = AppColors.NeonCyan,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(AppSpacing.sm))
+                            Text("Importing...")
+                        } else {
+                            Text("Import Model from Phone")
+                        }
+                    }
                     
                     Spacer(modifier = Modifier.height(AppSpacing.sm))
                     
                     Text(
-                        text = "1. Download gemma3-1b-it-int4.task (555MB) from HuggingFace to your phone\n\n" +
-                               "2. Tap 'Import Model' below\n\n" +
-                               "3. Select the downloaded file\n\n" +
-                               "4. Wait for import to complete (~30 seconds)",
-                        style = AppTypography.bodyMedium,
-                        color = AppColors.MetallicSilver
+                        text = "This is a one-time setup. The model works 100% offline once imported.",
+                        style = AppTypography.bodySmall,
+                        color = AppColors.MetallicSilver,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    
-                    if (errorMessage != null) {
-                        Spacer(modifier = Modifier.height(AppSpacing.lg))
+                }
+            }
+        ) { paddingValues ->
+            // Scrollable content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(paddingValues)
+                    .padding(horizontal = AppSpacing.xl),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Spacer(modifier = Modifier.height(AppSpacing.xxl))
+                
+                // Icon
+                Text(
+                    text = "🧠",
+                    style = AppTypography.headlineLarge.copy(
+                        fontSize = AppTypography.headlineLarge.fontSize * 2
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(AppSpacing.xl))
+                
+                // Title
+                NeonText(
+                    text = "AI Model Required",
+                    style = AppTypography.headlineLarge.copy(
+                        textAlign = TextAlign.Center
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(AppSpacing.md))
+                
+                // Description
+                MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(AppSpacing.lg)) {
                         Text(
-                            text = "⚠️ Previous import failed: $errorMessage",
-                            style = AppTypography.bodySmall,
-                            color = AppColors.Error,
+                            text = "QuantraVision uses the Gemma 3 1B AI model (529MB) for intelligent pattern explanations.",
+                            style = AppTypography.bodyLarge,
+                            color = AppColors.MetallicSilver,
                             textAlign = TextAlign.Center
                         )
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.lg))
+                        
+                        Text(
+                            text = "To import your AI model:",
+                            style = AppTypography.bodyMedium.copy(
+                                color = AppColors.OnBackground
+                            )
+                        )
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        
+                        Text(
+                            text = "1. Download gemma3-1b-it-int4.task (555MB) from HuggingFace to your phone\n\n" +
+                                   "2. Tap 'Import Model' below\n\n" +
+                                   "3. Select the downloaded file\n\n" +
+                                   "4. Wait for import to complete (~30 seconds)",
+                            style = AppTypography.bodyMedium,
+                            color = AppColors.MetallicSilver
+                        )
+                        
+                        if (errorMessage != null) {
+                            Spacer(modifier = Modifier.height(AppSpacing.lg))
+                            Text(
+                                text = "⚠️ Previous import failed: $errorMessage",
+                                style = AppTypography.bodySmall,
+                                color = AppColors.Error,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
+                
+                // Bottom padding to prevent content from getting hidden behind bottom bar
+                Spacer(modifier = Modifier.height(AppSpacing.xl))
             }
-            
-            Spacer(modifier = Modifier.height(AppSpacing.xl))
-            
-            // Import button
-            MetallicButton(
-                onClick = onImportClick,
-                enabled = !isImporting,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isImporting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = AppColors.NeonCyan,
-                        strokeWidth = 2.dp
-                    )
-                    Spacer(modifier = Modifier.width(AppSpacing.sm))
-                    Text("Importing...")
-                } else {
-                    Text("Import Model from Phone")
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(AppSpacing.md))
-            
-            Text(
-                text = "This is a one-time setup. The model works 100% offline once imported.",
-                style = AppTypography.bodySmall,
-                color = AppColors.MetallicSilver,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
