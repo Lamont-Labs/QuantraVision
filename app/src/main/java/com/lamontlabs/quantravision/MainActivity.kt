@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -9,12 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.lamontlabs.quantravision.permissions.PermissionOrchestrator
+import com.lamontlabs.quantravision.intelligence.llm.onboarding.ModelProvisionOrchestrator
 import com.lamontlabs.quantravision.ui.*
 
 class MainActivity : ComponentActivity() {
@@ -32,18 +35,56 @@ class MainActivity : ComponentActivity() {
     
     try {
       setContent {
-        var permissionsGranted by remember { mutableStateOf(false) }
+        val context = LocalContext.current
         
-        if (!permissionsGranted) {
-          // Show permission flow first
-          PermissionOrchestrator(
-            onAllPermissionsGranted = {
-              permissionsGranted = true
-            }
-          )
-        } else {
-          // All permissions granted - show main app
-          QuantraVisionApp(context = this)
+        // Initialize from actual state to handle process restarts
+        val hasNotificationPerm = remember {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            androidx.core.content.ContextCompat.checkSelfPermission(
+              context,
+              android.Manifest.permission.POST_NOTIFICATIONS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+          } else {
+            true
+          }
+        }
+        val hasOverlayPerm = remember {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            android.provider.Settings.canDrawOverlays(context)
+          } else {
+            true
+          }
+        }
+        val modelExists = remember {
+          com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
+            .getModelState() == com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded
+        }
+        
+        var permissionsGranted by remember { mutableStateOf(hasNotificationPerm && hasOverlayPerm) }
+        var modelReady by remember { mutableStateOf(modelExists) }
+        
+        when {
+          !permissionsGranted -> {
+            // Step 1: Request permissions first
+            PermissionOrchestrator(
+              onAllPermissionsGranted = {
+                permissionsGranted = true
+              }
+            )
+          }
+          !modelReady -> {
+            // Step 2: Ensure AI model is imported
+            // This happens BEFORE OverlayService can ever start
+            ModelProvisionOrchestrator(
+              onModelReady = {
+                modelReady = true
+              }
+            )
+          }
+          else -> {
+            // Step 3: All setup complete - show main app
+            QuantraVisionApp(context = this)
+          }
         }
       }
     } catch (e: Exception) {

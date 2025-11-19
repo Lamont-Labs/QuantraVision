@@ -17,9 +17,10 @@ import timber.log.Timber
 /**
  * Dedicated Activity for model import via Storage Access Framework.
  * 
- * Completely stops OverlayService before launching file picker to prevent 
- * Android 13+ tap-jacking protection from killing the service.
- * Restarts the service after import completes if it was previously running.
+ * For initial setup: Called from ModelProvisionOrchestrator before OverlayService starts
+ * For later imports: Checks if scanner is running and requires user to stop it first
+ * 
+ * This prevents Android 13+ tap-jacking protection from killing OverlayService.
  */
 class ImportActivity : AppCompatActivity() {
     
