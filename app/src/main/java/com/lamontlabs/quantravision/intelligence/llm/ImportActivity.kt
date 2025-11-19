@@ -1,148 +1,233 @@
 package com.lamontlabs.quantravision.intelligence.llm
 
 import android.app.Activity
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import com.lamontlabs.quantravision.overlay.OverlayService
 import com.lamontlabs.quantravision.overlay.OverlayServiceGuard
-import kotlinx.coroutines.delay
+import com.lamontlabs.quantravision.ui.MetallicButton
+import com.lamontlabs.quantravision.ui.MetallicCard
+import com.lamontlabs.quantravision.ui.StaticBrandBackground
+import com.lamontlabs.quantravision.ui.theme.AppColors
+import com.lamontlabs.quantravision.ui.theme.AppSpacing
+import com.lamontlabs.quantravision.ui.theme.AppTypography
+import com.lamontlabs.quantravision.ui.theme.QuantraVisionTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
 
 /**
- * Dedicated Activity for model import via Storage Access Framework.
+ * Direct file path import activity - BYPASSES Android's buggy file picker.
  * 
- * For initial setup: Called from ModelProvisionOrchestrator before OverlayService starts
- * For later imports: Checks if scanner is running and requires user to stop it first
+ * Android's Storage Access Framework has a known bug with files over 500MB that causes
+ * crashes on Android 14. This activity lets users type the file path directly, completely
+ * avoiding the file picker and all its tap-jacking/memory issues.
  * 
- * This prevents Android 13+ tap-jacking protection from killing OverlayService.
+ * Common path: /storage/emulated/0/Download/gemma3-1b-it-int4.task
  */
-class ImportActivity : AppCompatActivity() {
+class ImportActivity : ComponentActivity() {
     
-    private val filePicker = registerForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        try {
-            Timber.i("📥 ImportActivity: File picker returned, uri=$uri")
-            
-            if (uri == null) {
-                Timber.w("📥 ImportActivity: No file selected")
-                Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show()
-                finish()
-                return@registerForActivityResult
-            }
-            
-            // CRITICAL: Persist URI permission before activity finishes
-            // This prevents SecurityException when background worker tries to read file
-            try {
-                Timber.i("📥 ImportActivity: Taking persistable URI permission for $uri")
-                contentResolver.takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Timber.i("📥 ImportActivity: onCreate (direct path mode)")
+        
+        setContent {
+            QuantraVisionTheme {
+                DirectFilePathImportScreen(
+                    onImportComplete = {
+                        Timber.i("📥 Import complete, re-enabling OverlayService")
+                        OverlayServiceGuard.enable(this)
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    },
+                    onCancel = {
+                        Timber.i("📥 Import cancelled, re-enabling OverlayService")
+                        OverlayServiceGuard.enable(this)
+                        setResult(Activity.RESULT_CANCELED)
+                        finish()
+                    },
+                    onImport = { filePath ->
+                        importFromPath(filePath)
+                    }
                 )
-                Timber.i("📥 ImportActivity: Successfully persisted URI permission")
-            } catch (e: Exception) {
-                Timber.w(e, "📥 ImportActivity: Could not persist URI permission (some providers don't support it)")
-                // Continue anyway - some file providers don't support persistence
             }
-            
-            // Import the model
-            Timber.i("📥 ImportActivity: Starting import for URI: $uri")
-            val controller = ModelImportController(this)
-            
-            lifecycleScope.launch {
-                try {
+        }
+    }
+    
+    private fun importFromPath(filePath: String) {
+        lifecycleScope.launch {
+            try {
+                Timber.i("📥 Importing from path: $filePath")
+                
+                withContext(Dispatchers.IO) {
+                    val sourceFile = File(filePath)
+                    
+                    if (!sourceFile.exists()) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@ImportActivity,
+                                "File not found: $filePath",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        return@withContext
+                    }
+                    
+                    // Convert to Uri and use existing import system
+                    val uri = Uri.fromFile(sourceFile)
+                    val controller = ModelImportController(this@ImportActivity)
                     controller.handleFileSelected(uri)
-                    Timber.i("📥 ImportActivity: handleFileSelected completed")
-                    
-                    // Wait a moment for WorkManager to start
-                    kotlinx.coroutines.delay(500)
-                    
-                    // Re-enable OverlayService after successful import
-                    Timber.i("📥 ImportActivity: Re-enabling OverlayService")
+                }
+                
+                // Wait for background copy to start
+                kotlinx.coroutines.delay(500)
+                
+                // Re-enable service and finish
+                withContext(Dispatchers.Main) {
                     OverlayServiceGuard.enable(this@ImportActivity)
-                    
-                    // Success - return to app
                     setResult(Activity.RESULT_OK)
                     finish()
-                    
-                } catch (e: Exception) {
-                    Timber.e(e, "📥 ImportActivity: Error in handleFileSelected")
-                    
-                    // Re-enable service even on failure
-                    OverlayServiceGuard.enable(this@ImportActivity)
-                    
+                }
+                
+            } catch (e: Exception) {
+                Timber.e(e, "📥 Import failed")
+                withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@ImportActivity,
                         "Import failed: ${e.message}",
                         Toast.LENGTH_LONG
                     ).show()
+                    OverlayServiceGuard.enable(this@ImportActivity)
                     setResult(Activity.RESULT_CANCELED)
                     finish()
                 }
             }
-            
-        } catch (e: Exception) {
-            Timber.e(e, "📥 ImportActivity: CRASH in file picker callback")
-            Toast.makeText(this, "Picker crashed: ${e.message}", Toast.LENGTH_LONG).show()
-            setResult(Activity.RESULT_CANCELED)
-            finish()
         }
     }
+}
+
+@Composable
+private fun DirectFilePathImportScreen(
+    onImportComplete: () -> Unit,
+    onCancel: () -> Unit,
+    onImport: (String) -> Unit
+) {
+    var filePath by remember { 
+        mutableStateOf("/storage/emulated/0/Download/gemma3-1b-it-int4.task") 
+    }
+    var isImporting by remember { mutableStateOf(false) }
     
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Timber.i("📥 ImportActivity: onCreate")
-        
-        if (savedInstanceState == null) {
-            // CRITICAL: Disable OverlayService at OS level before importing
-            // This is the NUCLEAR option - completely prevents Android from starting the service
-            Timber.i("📥 ImportActivity: Disabling OverlayService at OS level")
-            OverlayServiceGuard.disable(this)
+    StaticBrandBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(AppSpacing.xl),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "📁",
+                style = AppTypography.headlineLarge.copy(
+                    fontSize = AppTypography.headlineLarge.fontSize * 2
+                )
+            )
             
-            // Also explicitly stop any running instance
-            val serviceIntent = Intent(this, OverlayService::class.java)
-            try {
-                stopService(serviceIntent)
-                Timber.i("📥 ImportActivity: Stopped OverlayService")
-            } catch (e: Exception) {
-                Timber.w(e, "📥 ImportActivity: Could not stop OverlayService")
+            Spacer(modifier = Modifier.height(AppSpacing.xl))
+            
+            Text(
+                text = "Enter File Path",
+                style = AppTypography.headlineLarge,
+                color = AppColors.NeonCyan,
+                textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(AppSpacing.md))
+            
+            MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(AppSpacing.lg)) {
+                    Text(
+                        text = "Type the full path to your downloaded model file:",
+                        style = AppTypography.bodyMedium,
+                        color = AppColors.MetallicSilver,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    
+                    OutlinedTextField(
+                        value = filePath,
+                        onValueChange = { filePath = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("File Path") },
+                        singleLine = false,
+                        maxLines = 3,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppColors.NeonCyan,
+                            unfocusedBorderColor = AppColors.MetallicSilver,
+                            focusedLabelColor = AppColors.NeonCyan,
+                            unfocusedLabelColor = AppColors.MetallicSilver,
+                            cursorColor = AppColors.NeonCyan
+                        )
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    
+                    Text(
+                        text = "Common location:\n/storage/emulated/0/Download/gemma3-1b-it-int4.task",
+                        style = AppTypography.bodySmall,
+                        color = AppColors.MetallicGold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             
-            // Launch file picker immediately
-            Timber.i("📥 ImportActivity: Launching file picker (service disabled)")
-            filePicker.launch(arrayOf("*/*"))
-        }
-    }
-    
-    private fun showScannerRunningDialog() {
-        android.app.AlertDialog.Builder(this)
-            .setTitle("Stop Scanner First")
-            .setMessage("The pattern scanner must be stopped before importing the AI model.\n\nPlease:\n1. Go to the Scan tab\n2. Tap 'Stop Scanner'\n3. Return here and try again")
-            .setPositiveButton("OK") { _, _ ->
-                setResult(Activity.RESULT_CANCELED)
-                finish()
+            Spacer(modifier = Modifier.height(AppSpacing.xl))
+            
+            MetallicButton(
+                onClick = {
+                    isImporting = true
+                    onImport(filePath)
+                },
+                enabled = !isImporting && filePath.isNotBlank(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (isImporting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = AppColors.NeonCyan,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(AppSpacing.sm))
+                    Text("Importing...")
+                } else {
+                    Text("Import Model")
+                }
             }
-            .setCancelable(false)
-            .show()
-    }
-    
-    private fun isOverlayServiceRunning(): Boolean {
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        @Suppress("DEPRECATION")
-        return activityManager.getRunningServices(Int.MAX_VALUE).any { service ->
-            service.service.className == OverlayService::class.java.name
+            
+            Spacer(modifier = Modifier.height(AppSpacing.md))
+            
+            TextButton(onClick = onCancel) {
+                Text(
+                    "Cancel",
+                    color = AppColors.MetallicSilver
+                )
+            }
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.i("📥 ImportActivity: onDestroy")
     }
 }

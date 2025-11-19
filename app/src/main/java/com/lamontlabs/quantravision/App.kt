@@ -20,6 +20,14 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         
+        // CRITICAL: Disable OverlayService IMMEDIATELY at app startup
+        // This prevents Android from auto-starting it during model import
+        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(this)
+        if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
+            Log.i("QuantraVision", "Model not imported - disabling OverlayService at OS level")
+            com.lamontlabs.quantravision.overlay.OverlayServiceGuard.disable(this)
+        }
+        
         // Initialize OpenCV with proper error handling and user notification
         try {
             val success = OpenCVLoader.initDebug()
