@@ -12,7 +12,7 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
-- **2025-11-19**: Implemented MediaPipe LLM Inference API integration (v0.10.27) for real on-device AI using Gemma 2B model (~1.5GB .task file). GemmaEngine now uses MediaPipe for true AI inference instead of template-based fallbacks, with shared instance pattern for memory efficiency, GPU acceleration support, and thread-safe singleton access
+- **2025-11-19**: Implemented MediaPipe LLM Inference API integration (v0.10.27) for real on-device AI using Gemma 3 1B model (~529MB .task file). GemmaEngine now uses MediaPipe for true AI inference instead of template-based fallbacks, with shared instance pattern for memory efficiency, GPU acceleration support, and thread-safe singleton access. Switched from Gemma 2B (1.5GB) to Gemma 3 1B (529MB) for 3x smaller size and faster performance
 - **2025-11-19**: Enabled Android 13+ predictive back gesture support (`android:enableOnBackInvokedCallback="true"`) for modern navigation UX
 - **2025-11-19**: Completed DevBot diagnostic export system with JSON serialization, security confirmation dialog, async file I/O, automatic cleanup (keeps last 5 exports), and secure sharing via FileProvider
 

@@ -1,12 +1,12 @@
 package com.lamontlabs.quantravision.intelligence.llm
 
 /**
- * Configuration for Gemma 2B model with MediaPipe LLM Inference API
+ * Configuration for Gemma 3 1B model with MediaPipe LLM Inference API
  * 
  * Model Details:
- * - Name: Gemma 2B Instruct (INT8 Quantized)
+ * - Name: Gemma 3 1B Instruct (INT4 Quantized)
  * - Format: MediaPipe .task file (includes model + tokenizer + metadata)
- * - Size: ~1.5GB on disk
+ * - Size: ~529MB on disk (MUCH smaller than Gemma 2B!)
  * - License: Apache 2.0 (commercial use allowed)
  * - Context: 8192 tokens
  * - Optimized for: Mobile GPU inference via MediaPipe
@@ -17,9 +17,9 @@ package com.lamontlabs.quantravision.intelligence.llm
 object ModelConfig {
     
     // Model file configuration
-    const val MODEL_NAME = "gemma-2b-it-gpu-int8.task"
-    const val MODEL_URL = "https://www.kaggle.com/models/google/gemma/tfLite"  // Manual download required
-    const val MODEL_SIZE_BYTES = 1_500_000_000L  // ~1.5GB
+    const val MODEL_NAME = "gemma-3-1b-it-int4.task"
+    const val MODEL_URL = "https://huggingface.co/litert-community/Gemma3-1B-IT"  // Manual download required
+    const val MODEL_SIZE_BYTES = 529_000_000L  // ~529MB
     
     // MediaPipe LLM Inference parameters
     const val MAX_OUTPUT_TOKENS = 200  // Keep responses concise for speed
