@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.lamontlabs.quantravision.devbot.ai.DevBotEngine
 import com.lamontlabs.quantravision.devbot.ai.DiagnosticChatMessage
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
+import com.lamontlabs.quantravision.intelligence.llm.ModelImportController
+import com.lamontlabs.quantravision.intelligence.llm.ModelManager
+import com.lamontlabs.quantravision.intelligence.llm.ModelState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,6 +23,9 @@ import java.util.Locale
 
 class DevBotViewModel(application: Application) : AndroidViewModel(application) {
     private val devBotEngine = DevBotEngine(application.applicationContext)
+    private val modelManager = ModelManager(application.applicationContext)
+    
+    val modelImportController = ModelImportController(application.applicationContext)
     
     val messages: StateFlow<List<DiagnosticChatMessage>> = devBotEngine.messages
     val isProcessing: StateFlow<Boolean> = devBotEngine.isProcessing
@@ -45,6 +51,22 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
                 updateErrorStats()
             }
         }
+        
+        viewModelScope.launch {
+            modelManager.modelStateFlow.collect { state ->
+                when (state) {
+                    is ModelState.Ready, is ModelState.Downloaded -> {
+                        refreshModelState()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        modelImportController.dispose()
     }
     
     fun sendMessage() {
@@ -220,6 +242,12 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
     
     fun resetExportStatus() {
         _exportStatus.value = ExportStatus.Idle
+    }
+    
+    fun refreshModelState() {
+        viewModelScope.launch {
+            devBotEngine.initialize()
+        }
     }
 }
 

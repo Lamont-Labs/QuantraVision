@@ -4,6 +4,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -22,8 +25,12 @@ class ModelManager(private val context: Context) {
     private val modelDir = File(context.filesDir, "llm_models")
     private val modelFile = File(modelDir, ModelConfig.MODEL_NAME)
     
+    private val _modelStateFlow = MutableStateFlow<ModelState>(ModelState.NotDownloaded)
+    val modelStateFlow: StateFlow<ModelState> = _modelStateFlow.asStateFlow()
+    
     init {
         modelDir.mkdirs()
+        _modelStateFlow.value = getModelState()
     }
     
     /**
@@ -132,5 +139,101 @@ class ModelManager(private val context: Context) {
         } else {
             ModelConfig.MODEL_SIZE_BYTES / (1024 * 1024)
         }
+    }
+    
+    /**
+     * Called after model import completes successfully
+     * Refreshes model state and validates imported file
+     */
+    fun onModelImported() {
+        Timber.i("🧠 Model import completed - refreshing state")
+        
+        // Re-check model existence and update internal state
+        val newState = getModelState()
+        
+        // Validate the imported model
+        val isValid = validateImportedModel()
+        if (!isValid) {
+            Timber.e("🧠 Imported model failed validation")
+            _modelStateFlow.value = ModelState.Error("Model validation failed", recoverable = true)
+        } else {
+            // Emit new state to any observers
+            _modelStateFlow.value = newState
+            Timber.i("🧠 New model state after import: $newState")
+        }
+    }
+    
+    /**
+     * Validate imported model file integrity
+     * 
+     * Checks:
+     * - File exists
+     * - Correct .task extension
+     * - Size within expected range
+     * 
+     * @return true if model is valid, false otherwise
+     */
+    fun validateImportedModel(): Boolean {
+        if (!modelFile.exists()) {
+            Timber.w("🧠 Model validation failed: file does not exist")
+            return false
+        }
+        
+        // Validate extension
+        if (!modelFile.name.endsWith(".task")) {
+            Timber.w("🧠 Model validation failed: incorrect extension ${modelFile.name}")
+            return false
+        }
+        
+        // Validate size (allow 10% variance)
+        val fileSize = modelFile.length()
+        val minSize = (ModelConfig.MODEL_SIZE_BYTES * 0.9).toLong()
+        val maxSize = (ModelConfig.MODEL_SIZE_BYTES * 1.1).toLong()
+        
+        if (fileSize !in minSize..maxSize) {
+            Timber.w("🧠 Model validation failed: size ${fileSize / 1_000_000}MB outside range ${minSize / 1_000_000}-${maxSize / 1_000_000}MB")
+            return false
+        }
+        
+        Timber.i("🧠 Model validation passed: ${fileSize / 1_000_000}MB")
+        return true
+    }
+    
+    /**
+     * Remove model file from device
+     * 
+     * Useful for:
+     * - Freeing up storage space
+     * - Re-importing corrupted model
+     * - Troubleshooting
+     * 
+     * @return Result.success if deleted, Result.failure if error
+     */
+    fun removeModel(): Result<Unit> {
+        return try {
+            if (!modelFile.exists()) {
+                Timber.i("🧠 No model file to remove")
+                return Result.success(Unit)
+            }
+            
+            val deleted = modelFile.delete()
+            if (deleted) {
+                Timber.i("🧠 Model file removed successfully")
+                Result.success(Unit)
+            } else {
+                Timber.e("🧠 Failed to delete model file")
+                Result.failure(Exception("Failed to delete model file"))
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "🧠 Error removing model file")
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * Get model file path for display in UI
+     */
+    fun getModelPath(): String {
+        return modelFile.absolutePath
     }
 }

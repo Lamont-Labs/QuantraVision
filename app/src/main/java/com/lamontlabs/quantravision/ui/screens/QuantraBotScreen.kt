@@ -1,5 +1,8 @@
 package com.lamontlabs.quantravision.ui.screens
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +21,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lamontlabs.quantravision.intelligence.llm.ImportState
+import com.lamontlabs.quantravision.ui.components.ImportModelDialog
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.NeonCyan
 import com.lamontlabs.quantravision.ui.NeonGold
@@ -43,6 +49,42 @@ fun QuantraBotScreen(
     val isReady by viewModel.isReady.collectAsState()
     val hasModel by viewModel.hasModel.collectAsState()
     val inputText by viewModel.inputText.collectAsState()
+    
+    val importController = viewModel.modelImportController
+    val importState by importController.importState.collectAsStateWithLifecycle()
+    var showImportDialog by remember { mutableStateOf(false) }
+    
+    // File picker launcher
+    val filePicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { selectedUri ->
+            importController.handleFileSelected(selectedUri)
+        }
+    }
+    
+    // Show import dialog when importing
+    LaunchedEffect(importState) {
+        showImportDialog = importState !is ImportState.Idle
+    }
+    
+    if (showImportDialog) {
+        ImportModelDialog(
+            importState = importState,
+            onDismiss = {
+                showImportDialog = false
+                importController.resetState()
+                
+                // Trigger ViewModel to refresh model state after successful import
+                if (importState is ImportState.Success) {
+                    viewModel.refreshModelState(context)
+                }
+            },
+            onCancel = {
+                importController.cancelImport()
+            }
+        )
+    }
     
     // Initialize on first composition
     LaunchedEffect(Unit) {
@@ -115,12 +157,24 @@ fun QuantraBotScreen(
             ) {
                 if (messages.isEmpty()) {
                     item {
-                        WelcomeMessage(
-                            onQuestionClick = { question ->
-                                viewModel.updateInputText(question)
-                                viewModel.sendMessage()
-                            }
-                        )
+                        if (!hasModel && isReady) {
+                            // Show import prompt when model not available
+                            ModelNotFoundCard(
+                                onImportClick = {
+                                    val activity = context as? Activity
+                                    if (activity != null) {
+                                        importController.startImport(filePicker)
+                                    }
+                                }
+                            )
+                        } else {
+                            WelcomeMessage(
+                                onQuestionClick = { question ->
+                                    viewModel.updateInputText(question)
+                                    viewModel.sendMessage()
+                                }
+                            )
+                        }
                     }
                 } else {
                     items(messages) { message ->
@@ -412,6 +466,80 @@ private fun TypingIndicator() {
                     modifier = Modifier.size(16.dp),
                     strokeWidth = 2.dp,
                     color = NeonCyan
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModelNotFoundCard(onImportClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1A2332)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.CloudDownload,
+                contentDescription = "AI Model Not Found",
+                tint = NeonGold,
+                modifier = Modifier.size(64.dp)
+            )
+            
+            Text(
+                text = "AI Model Not Found",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            
+            Text(
+                text = "QuantraBot can answer questions using fallback templates, but for AI-powered explanations, you'll need to import the Gemma 3 1B model.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
+            )
+            
+            Divider(color = Color.White.copy(alpha = 0.2f))
+            
+            Text(
+                text = "📥 Import from Phone",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = NeonCyan
+            )
+            
+            Text(
+                text = "1. Download gemma-3-1b-it-int4.task from HuggingFace\n2. Tap Import Model below\n3. Select the .task file from your Downloads folder\n4. Wait for import to complete (~529MB)",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.7f)
+            )
+            
+            Button(
+                onClick = onImportClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = NeonCyan,
+                    contentColor = Color.Black
+                )
+            ) {
+                Icon(Icons.Default.Download, contentDescription = "Import")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Import Model from Phone", fontWeight = FontWeight.Bold)
+            }
+            
+            TextButton(onClick = { /* TODO: Open download instructions */ }) {
+                Text(
+                    text = "Where do I download the model?",
+                    color = NeonGold.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }

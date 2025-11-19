@@ -1,11 +1,15 @@
 package com.lamontlabs.quantravision.ui.screens
 
+import android.app.Application
 import android.content.Context
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.ai.quantrabot.QuantraBotEngine
+import com.lamontlabs.quantravision.intelligence.llm.ModelImportController
+import com.lamontlabs.quantravision.intelligence.llm.ModelManager
+import com.lamontlabs.quantravision.intelligence.llm.ModelState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +26,11 @@ import timber.log.Timber
  * - QuantraBotEngine integration
  * - Recent scan context
  */
-class QuantraBotViewModel : ViewModel() {
+class QuantraBotViewModel(application: Application) : AndroidViewModel(application) {
+    
+    private val modelManager = ModelManager(application.applicationContext)
+    
+    val modelImportController = ModelImportController(application.applicationContext)
     
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
@@ -78,6 +86,22 @@ class QuantraBotViewModel : ViewModel() {
                 _isReady.value = true // Allow fallback mode
             }
         }
+        
+        viewModelScope.launch {
+            modelManager.modelStateFlow.collect { state ->
+                when (state) {
+                    is ModelState.Ready, is ModelState.Downloaded -> {
+                        refreshModelState(getApplication())
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        modelImportController.dispose()
     }
     
     /**
@@ -263,6 +287,29 @@ class QuantraBotViewModel : ViewModel() {
             } catch (e: Exception) {
                 Timber.w(e, "Failed to load recent patterns")
                 recentPatterns = emptyList()
+            }
+        }
+    }
+    
+    fun refreshModelState(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Timber.i("🤖 Refreshing model state after import...")
+                
+                val engine = QuantraBotEngine(context.applicationContext)
+                quantraBotEngine = engine
+                
+                val result = engine.initialize()
+                
+                if (result.isSuccess) {
+                    _hasModel.value = engine.hasAIModel()
+                    _isReady.value = true
+                    Timber.i("✅ Model state refreshed - Model available: ${_hasModel.value}")
+                } else {
+                    Timber.w("⚠️ Model refresh completed but model not available")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to refresh model state")
             }
         }
     }
