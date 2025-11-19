@@ -2,8 +2,6 @@ package com.lamontlabs.quantravision.intelligence.llm
 
 import android.content.Context
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
-import com.google.mediapipe.tasks.genai.llminference.LlmInferenceOptions
-import com.google.mediapipe.tasks.core.BaseOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -152,15 +150,12 @@ class GemmaEngine(private val context: Context) {
                     modelState = ModelState.Loading
                     
                     try {
-                        // BUILD BaseOptions with model path
-                        val baseOptions = BaseOptions.builder()
-                            .setModelAssetPath(modelFile.absolutePath)
-                            .setDelegate(if (ModelConfig.USE_GPU) BaseOptions.Delegate.GPU else BaseOptions.Delegate.CPU)
-                            .build()
-                        
-                        // Build LlmInferenceOptions with BaseOptions
-                        val options = LlmInferenceOptions.builder()
-                            .setBaseOptions(baseOptions)
+                        // Build LlmInferenceOptions with model path and configuration
+                        val options = LlmInference.LlmInferenceOptions.builder()
+                            .setModelPath(modelFile.absolutePath)
+                            .setResultListener { partialResult, done ->
+                                // Streaming response handler (optional for now)
+                            }
                             .setMaxTokens(ModelConfig.MAX_OUTPUT_TOKENS)
                             .setTemperature(ModelConfig.TEMPERATURE)
                             .setTopK(ModelConfig.TOP_K)
