@@ -80,6 +80,7 @@ class ModelImportController(private val context: Context) {
     companion object {
         private const val WORK_NAME = "model_import_work"
         const val KEY_SOURCE_URI = "source_uri"
+        const val KEY_FILE_SIZE = "file_size"
         const val KEY_PROGRESS = "progress"
         const val KEY_TOTAL_BYTES = "total_bytes"
         const val KEY_ERROR_MESSAGE = "error_message"
@@ -191,8 +192,8 @@ class ModelImportController(private val context: Context) {
                 return
             }
             
-            // Start background copy with WorkManager
-            startBackgroundCopy(uri)
+            // Start background copy with WorkManager (pass validated file size)
+            startBackgroundCopy(uri, validation.fileSize)
             
         } catch (e: Exception) {
             Timber.e(e, "Error handling file selection")
@@ -292,9 +293,10 @@ class ModelImportController(private val context: Context) {
     /**
      * Start background copy using WorkManager
      */
-    private fun startBackgroundCopy(uri: Uri) {
+    private fun startBackgroundCopy(uri: Uri, fileSize: Long) {
         val inputData = Data.Builder()
             .putString(KEY_SOURCE_URI, uri.toString())
+            .putLong(KEY_FILE_SIZE, fileSize)
             .build()
         
         val workRequest = OneTimeWorkRequestBuilder<ImportModelWorker>()
@@ -310,6 +312,8 @@ class ModelImportController(private val context: Context) {
         
         currentWorkId = workRequest.id
         observeWorkProgress(workRequest.id)
+        
+        Timber.i("📥 Starting import: ${fileSize / 1_000_000}MB file")
     }
     
     /**

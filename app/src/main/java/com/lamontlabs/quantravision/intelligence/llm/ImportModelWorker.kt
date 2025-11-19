@@ -97,10 +97,18 @@ class ImportModelWorker(
                     Data.Builder().putString("error", "Cannot open source file").build()
                 )
             
-            // Get file size for progress
-            val totalBytes = getFileSize(sourceUri)
+            // Get file size from inputData (passed from controller after validation)
+            val totalBytes = inputData.getLong(ModelImportController.KEY_FILE_SIZE, 0L)
+            if (totalBytes == 0L) {
+                return Result.failure(
+                    Data.Builder().putString("error", "File size unknown - cannot proceed").build()
+                )
+            }
+            
             var bytesCopied = 0L
             val startTime = System.currentTimeMillis()
+            
+            Timber.i("📥 Starting copy: ${totalBytes / 1_000_000}MB")
             
             // Stream copy with progress
             inputStream.use { input ->
