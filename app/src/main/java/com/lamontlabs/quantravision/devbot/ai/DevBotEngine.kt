@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision.devbot.ai
 import android.content.Context
 import android.util.Log
 import com.lamontlabs.quantravision.intelligence.llm.GemmaEngine
+import com.lamontlabs.quantravision.intelligence.llm.ExplanationResult
 import com.lamontlabs.quantravision.devbot.data.DiagnosticEvent
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
 import kotlinx.coroutines.*
@@ -38,7 +39,7 @@ class DevBotEngine(private val context: Context) {
         try {
             knowledgeLoader.loadKnowledge()
             
-            gemmaEngine = GemmaEngine.getInstance(context)
+            gemmaEngine = GemmaEngine(context)
             val initResult = gemmaEngine!!.initialize()
             
             _hasModel.value = initResult.isSuccess
@@ -106,8 +107,13 @@ class DevBotEngine(private val context: Context) {
             errorKnowledge = knowledgeLoader.getRelevantKnowledge(userMessage, recentErrors)
         )
         
-        return gemmaEngine?.generateText(prompt)
-            ?: generateFallbackResponse(userMessage)
+        return gemmaEngine?.generate(prompt)?.let { result ->
+            when (result) {
+                is ExplanationResult.Success -> result.text
+                is ExplanationResult.Failure -> result.fallbackText ?: generateFallbackResponse(userMessage)
+                is ExplanationResult.Unavailable -> result.fallbackText
+            }
+        } ?: generateFallbackResponse(userMessage)
     }
     
     private fun generateFallbackResponse(userMessage: String): String {
