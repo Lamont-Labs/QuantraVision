@@ -42,8 +42,16 @@ fun DevBotScreen() {
     val filePicker = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let { selectedUri ->
-            importController.handleFileSelected(selectedUri)
+        try {
+            timber.log.Timber.i("📥 DevBotScreen: File picker returned, uri=$uri")
+            uri?.let { selectedUri ->
+                timber.log.Timber.i("📥 DevBotScreen: Calling handleFileSelected")
+                importController.handleFileSelected(selectedUri)
+            } ?: run {
+                timber.log.Timber.w("📥 DevBotScreen: No URI selected")
+            }
+        } catch (e: Exception) {
+            timber.log.Timber.e(e, "📥 DevBotScreen: CRASH in file picker callback")
         }
     }
     

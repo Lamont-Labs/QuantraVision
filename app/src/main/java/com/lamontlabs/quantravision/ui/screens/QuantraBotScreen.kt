@@ -58,8 +58,16 @@ fun QuantraBotScreen(
     val filePicker = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let { selectedUri ->
-            importController.handleFileSelected(selectedUri)
+        try {
+            timber.log.Timber.i("📥 QuantraBotScreen: File picker returned, uri=$uri")
+            uri?.let { selectedUri ->
+                timber.log.Timber.i("📥 QuantraBotScreen: Calling handleFileSelected")
+                importController.handleFileSelected(selectedUri)
+            } ?: run {
+                timber.log.Timber.w("📥 QuantraBotScreen: No URI selected")
+            }
+        } catch (e: Exception) {
+            timber.log.Timber.e(e, "📥 QuantraBotScreen: CRASH in file picker callback")
         }
     }
     

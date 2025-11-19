@@ -12,6 +12,7 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
+- **2025-11-19**: Version 2.5 released with additional error handling in file picker callback to catch crashes before they reach import controller
 - **2025-11-19**: Version 2.4 released with crash fix - made persistable URI permission optional (some file providers don't support it), added extensive logging to diagnose import issues
 - **2025-11-19**: Version 2.3 released with WorkManager policy fix - changed from KEEP to REPLACE so new imports don't reuse stale jobs from previous versions
 - **2025-11-19**: Version 2.2 released with model import fix - file size now passed from Controller to Worker via WorkManager inputData instead of re-querying URI (which failed in worker context due to permission/context issues)
