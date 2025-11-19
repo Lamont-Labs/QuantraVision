@@ -81,12 +81,17 @@ class ImportActivity : AppCompatActivity() {
         Timber.i("📥 ImportActivity: onCreate")
         
         if (savedInstanceState == null) {
-            // Suspend overlay to prevent Android tap-jacking protection
-            suspendOverlay()
-            
-            // Launch picker after brief delay
+            // Launch picker with suspension logic
             lifecycleScope.launch {
-                kotlinx.coroutines.delay(100)
+                // Give OverlayService time to fully initialize before suspending
+                kotlinx.coroutines.delay(300)
+                
+                // Suspend overlay to prevent Android tap-jacking protection
+                suspendOverlay()
+                
+                // Brief delay to ensure suspension completes
+                kotlinx.coroutines.delay(200)
+                
                 Timber.i("📥 ImportActivity: Launching file picker")
                 filePicker.launch(arrayOf("*/*"))
             }

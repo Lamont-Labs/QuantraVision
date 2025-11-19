@@ -198,17 +198,39 @@ class OverlayService : Service() {
     private fun suspendOverlayView() {
         if (isOverlaySuspended) return
         
-        Timber.i("📥 OverlayService: Hiding floating logo")
-        floatingLogo?.hide()
-        isOverlaySuspended = true
+        // Safety: Don't try to hide if logo hasn't been created yet
+        val logo = floatingLogo
+        if (logo == null) {
+            Timber.w("📥 OverlayService: Cannot suspend - floating logo not initialized yet")
+            return
+        }
+        
+        try {
+            Timber.i("📥 OverlayService: Hiding floating logo")
+            logo.hide()
+            isOverlaySuspended = true
+        } catch (e: Exception) {
+            Timber.e(e, "📥 OverlayService: Error hiding floating logo")
+        }
     }
     
     private fun resumeOverlayView() {
         if (!isOverlaySuspended) return
         
-        Timber.i("📥 OverlayService: Showing floating logo")
-        floatingLogo?.show()
-        isOverlaySuspended = false
+        // Safety: Don't try to show if logo hasn't been created yet
+        val logo = floatingLogo
+        if (logo == null) {
+            Timber.w("📥 OverlayService: Cannot resume - floating logo not initialized yet")
+            return
+        }
+        
+        try {
+            Timber.i("📥 OverlayService: Showing floating logo")
+            logo.show()
+            isOverlaySuspended = false
+        } catch (e: Exception) {
+            Timber.e(e, "📥 OverlayService: Error showing floating logo")
+        }
     }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
