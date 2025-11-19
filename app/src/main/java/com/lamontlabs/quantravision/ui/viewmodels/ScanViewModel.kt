@@ -145,6 +145,19 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     
     private fun startOverlayService(resultCode: Int, data: Intent) {
         android.util.Log.i("ScanViewModel", "=== Starting OverlayService ===")
+        
+        // CRITICAL: Don't start service if model not imported
+        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
+        if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
+            android.util.Log.w("ScanViewModel", "Cannot start scanner - AI model not imported")
+            android.widget.Toast.makeText(
+                context,
+                "AI model required. Please import it from Settings first.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+        
         android.util.Log.i("ScanViewModel", "MediaProjection resultCode: $resultCode")
         android.util.Log.i("ScanViewModel", "MediaProjection data: $data")
         

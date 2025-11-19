@@ -92,6 +92,16 @@ class ImportActivity : AppCompatActivity() {
         Timber.i("📥 ImportActivity: onCreate")
         
         if (savedInstanceState == null) {
+            // CRITICAL: Explicitly stop any OverlayService before importing
+            // This prevents Android 14 tap-jacking protection from killing the service
+            val serviceIntent = Intent(this, OverlayService::class.java)
+            try {
+                stopService(serviceIntent)
+                Timber.i("📥 ImportActivity: Explicitly stopped OverlayService")
+            } catch (e: Exception) {
+                Timber.w(e, "📥 ImportActivity: Could not stop OverlayService (may not be running)")
+            }
+            
             // Check if OverlayService is running
             val isRunning = isOverlayServiceRunning()
             Timber.i("📥 ImportActivity: OverlayService running = $isRunning")

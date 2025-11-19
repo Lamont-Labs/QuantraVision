@@ -59,6 +59,17 @@ private fun AppNavigationHost(
     startDestination: String = "home"
 ) {
     val onStartScan = {
+        // CRITICAL: Don't start service if model not imported
+        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
+        if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
+            android.widget.Toast.makeText(
+                context,
+                "AI model required. Please import it first.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+            return@val Unit
+        }
+        
         // Start the overlay service for real-time detection
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             if (!android.provider.Settings.canDrawOverlays(context)) {
