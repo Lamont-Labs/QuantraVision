@@ -1,6 +1,9 @@
 package com.lamontlabs.quantravision.intelligence.llm
 
 import android.content.Context
+import com.google.mediapipe.tasks.genai.llminference.LlmInference
+import com.google.mediapipe.tasks.genai.llminference.LlmInferenceOptions
+import com.google.mediapipe.tasks.core.BaseOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -16,23 +19,28 @@ sealed class InitializationError(message: String) : Exception(message) {
     class ModelNotFound(path: String) : InitializationError("Gemma model file not found at $path")
     
     /**
-     * TFLite loader not yet implemented
+     * MediaPipe initialization failed
      */
-    class LoaderNotImplemented : InitializationError("TFLite model loader not yet implemented. Awaiting Gemma 2B integration.")
+    class MediaPipeLoadFailed(cause: Throwable) : InitializationError("MediaPipe LlmInference initialization failed: ${cause.message}")
     
     /**
      * Model loading failed with an error
      */
     class LoadFailed(cause: Throwable) : InitializationError("Failed to load model: ${cause.message}")
+    
+    /**
+     * Model loader not implemented
+     */
+    class LoaderNotImplemented : InitializationError("Model loader not implemented for current state")
 }
 
 /**
- * TensorFlow Lite inference engine for Gemma 2B
+ * MediaPipe LLM Inference engine for Gemma 2B
  * 
  * # STATE MANAGEMENT
  * 
  * This engine truthfully reports model availability through ModelState:
- * - **Ready**: TFLite model is loaded in memory and ready for LLM inference
+ * - **Ready**: MediaPipe model is loaded in memory and ready for LLM inference
  * - **Downloaded**: Model file exists but not loaded into memory
  * - **NotDownloaded**: No model file present
  * 
@@ -40,15 +48,15 @@ sealed class InitializationError(message: String) : Exception(message) {
  * 
  * ### initialize() returns Result.failure when:
  * - Model file does not exist (enables validation workflows to detect missing models)
- * - Model file exists but TFLite loader not implemented yet
+ * - Model file exists but MediaPipe initialization fails
  * - Any error occurs during initialization
  * 
  * ### initialize() returns Result.success ONLY when:
- * - TFLite model is successfully loaded and ready for inference (future implementation)
+ * - MediaPipe model is successfully loaded and ready for inference
  * 
  * ## Behavior by Model Availability
  * 
- * ### When NO model file exists (current typical case):
+ * ### When NO model file exists (typical case without manual download):
  * - `initialize()` **fails** with InitializationError.ModelNotFound, state set to NotDownloaded
  * - `generate()` returns `ExplanationResult.Unavailable` with fallback text
  * - `isReady()` returns `false` (no model available)
@@ -56,13 +64,12 @@ sealed class InitializationError(message: String) : Exception(message) {
  * - **Validation workflows detect missing model and can block production**
  * 
  * ### When model file downloaded but not loaded:
- * - `initialize()` **fails** with InitializationError.LoaderNotImplemented, state set to Downloaded
- * - `generate()` returns `ExplanationResult.Unavailable` with fallback text
- * - `isReady()` returns `false` (model not loaded)
+ * - User must call `initialize()` to load model into memory
+ * - Until then, state is `Downloaded` and `isReady()` returns false
  * - Fallback explanations still work
  * 
- * ### When TFLite model loaded (future):
- * - `initialize()` loads TFLite Interpreter and sets state to `Ready`
+ * ### When MediaPipe model loaded (after initialize() succeeds):
+ * - `initialize()` loads MediaPipe LlmInference and sets state to `Ready`
  * - `generate()` uses actual LLM inference for personalized explanations
  * - `isReady()` returns `true` (model loaded and ready for inference)
  * - UI receives `ExplanationResult.Success` with AI-generated content
@@ -72,13 +79,10 @@ sealed class InitializationError(message: String) : Exception(message) {
  * enabling validation workflows to detect issues. However, PatternExplainer handles
  * this gracefully, allowing fallback explanations to work even when initialization fails.
  * 
- * ## Future Integration Path
- * When Gemma 2B TFLite model becomes available:
- * 1. Add TFLite Interpreter initialization in `initialize()`
- * 2. Implement actual inference in `generate()`
- * 3. Integrate SentencePiece tokenizer
- * 4. Enable GPU/NNAPI acceleration
- * 5. Implement streaming token generation
+ * ## Memory Efficiency
+ * - Shared instance pattern: Both DevBot and QuantraBot share ONE model instance
+ * - Model is loaded lazily (only when first requested)
+ * - Can be unloaded to free memory when not in use
  * 
  * ## Error Handling
  * - Initialization errors are properly surfaced via Result.failure()
@@ -94,8 +98,8 @@ class GemmaEngine(private val context: Context) {
     private val modelManager = ModelManager(context)
     private var modelState: ModelState = ModelState.NotDownloaded
     
-    // TFLite Interpreter (will be initialized when model is loaded)
-    // private var interpreter: Interpreter? = null
+    // MediaPipe LlmInference instance (initialized when model is loaded)
+    private var llmInference: LlmInference? = null
     
     init {
         modelState = modelManager.getModelState()
@@ -103,23 +107,24 @@ class GemmaEngine(private val context: Context) {
     }
     
     /**
-     * Initialize model infrastructure
+     * Initialize MediaPipe LlmInference model
      * 
      * ## Initialization Contract
      * 
      * Returns **Result.failure** when:
      * - Model file does not exist (enables validation workflows to detect missing models)
-     * - Model file exists but TFLite loader not implemented yet
+     * - Model file exists but MediaPipe initialization fails
      * - Any error occurs during initialization
      * 
      * Returns **Result.success** ONLY when:
-     * - TFLite model is successfully loaded and ready for inference (future implementation)
+     * - MediaPipe model is successfully loaded and ready for inference
      * 
      * ## State Transitions
      * 
      * - No model file: Sets state to NotDownloaded, returns Result.failure
-     * - Model file exists but TFLite not loaded: Sets state to Downloaded, returns Result.failure
-     * - TFLite successfully loaded: Sets state to Ready, returns Result.success (future)
+     * - Model file exists: Attempts MediaPipe load, sets state to Loading
+     * - MediaPipe load succeeds: Sets state to Ready, returns Result.success
+     * - MediaPipe load fails: Sets state to Error, returns Result.failure
      * 
      * ## Expected Behavior
      * 
@@ -131,56 +136,69 @@ class GemmaEngine(private val context: Context) {
      * Fallbacks remain operational even when initialization fails, ensuring
      * users still receive template-based explanations.
      */
-    suspend fun initialize(): Result<Unit> = withContext(Dispatchers.Default) {
+    suspend fun initialize(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val modelFile = modelManager.getModelFile()
+            modelState = modelManager.getModelState()
             
-            if (modelFile == null) {
-                // No model file - return specific error to enable validation detection
-                modelState = ModelState.NotDownloaded
-                val modelDir = File(context.filesDir, "llm_models")
-                val expectedPath = File(modelDir, ModelConfig.MODEL_NAME).absolutePath
-                val error = InitializationError.ModelNotFound(expectedPath)
-                Timber.w(error, "🧠 GemmaEngine initialization failed - no model file present")
-                return@withContext Result.failure(error)
+            when (modelState) {
+                is ModelState.NotDownloaded -> {
+                    return@withContext Result.failure(InitializationError.ModelNotFound("Model file not downloaded"))
+                }
+                is ModelState.Downloaded -> {
+                    val modelFile = modelManager.getModelFile()
+                        ?: return@withContext Result.failure(InitializationError.ModelNotFound("Model file missing"))
+                    
+                    Timber.i("🧠 Loading Gemma model with MediaPipe: ${modelFile.absolutePath}")
+                    modelState = ModelState.Loading
+                    
+                    try {
+                        // BUILD BaseOptions with model path
+                        val baseOptions = BaseOptions.builder()
+                            .setModelAssetPath(modelFile.absolutePath)
+                            .setDelegate(if (ModelConfig.USE_GPU) BaseOptions.Delegate.GPU else BaseOptions.Delegate.CPU)
+                            .build()
+                        
+                        // Build LlmInferenceOptions with BaseOptions
+                        val options = LlmInferenceOptions.builder()
+                            .setBaseOptions(baseOptions)
+                            .setMaxTokens(ModelConfig.MAX_OUTPUT_TOKENS)
+                            .setTemperature(ModelConfig.TEMPERATURE)
+                            .setTopK(ModelConfig.TOP_K)
+                            .setTopP(ModelConfig.TOP_P)
+                            .setRandomSeed(ModelConfig.RANDOM_SEED)
+                            .build()
+                        
+                        // Create MediaPipe instance with proper options
+                        llmInference = LlmInference.createFromOptions(context, options)
+                        modelState = ModelState.Ready
+                        Timber.i("🧠 GemmaEngine ready - MediaPipe model loaded and ready for inference")
+                        return@withContext Result.success(Unit)
+                        
+                    } catch (loadError: Exception) {
+                        llmInference = null
+                        modelState = ModelState.Error(loadError.message ?: "MediaPipe load failed", recoverable = true)
+                        val error = InitializationError.MediaPipeLoadFailed(loadError)
+                        Timber.e(error, "🧠 MediaPipe initialization failed")
+                        return@withContext Result.failure(error)
+                    }
+                }
+                else -> {
+                    return@withContext Result.failure(InitializationError.LoaderNotImplemented())
+                }
             }
-            
-            // Model file exists but TFLite not loaded yet
-            modelState = ModelState.Downloaded
-            
-            // TODO: When TFLite integration is ready, uncomment this:
-            // modelState = ModelState.Loading
-            // try {
-            //     interpreter = Interpreter(modelFile, getInterpreterOptions())
-            //     modelState = ModelState.Ready
-            //     Timber.i("🧠 GemmaEngine ready - TFLite model loaded and ready for inference")
-            //     return@withContext Result.success(Unit)
-            // } catch (loadError: Exception) {
-            //     modelState = ModelState.Error(loadError.message ?: "Load failed", recoverable = true)
-            //     return@withContext Result.failure(InitializationError.LoadFailed(loadError))
-            // }
-            
-            // For now, return specific error since we can't actually load the model
-            val error = InitializationError.LoaderNotImplemented()
-            Timber.w(error, "🧠 GemmaEngine initialization failed - TFLite loader not implemented")
-            return@withContext Result.failure(error)
-            
         } catch (e: Exception) {
-            // Wrap unexpected exceptions in LoadFailed
-            modelState = ModelState.Error(e.message ?: "Unknown error", recoverable = true)
-            Timber.e(e, "🧠 Failed to initialize Gemma engine")
-            return@withContext Result.failure(InitializationError.LoadFailed(e))
+            modelState = ModelState.Error(e.message ?: "Initialization failed", recoverable = false)
+            return@withContext Result.failure(InitializationError.MediaPipeLoadFailed(e))
         }
     }
     
     /**
-     * Generate text from prompt
+     * Generate text from prompt using MediaPipe LlmInference
      * 
-     * Returns ExplanationResult.Unavailable when no TFLite model is loaded,
+     * Returns ExplanationResult.Unavailable when model is not loaded,
      * allowing PatternExplainer to use FallbackExplanations for template responses.
      * 
-     * FUTURE: When TFLite is integrated, will return Success with LLM-generated text
-     * when modelState is Ready.
+     * When model is Ready, uses MediaPipe for real AI-generated explanations.
      */
     suspend fun generate(
         prompt: String,
@@ -188,8 +206,8 @@ class GemmaEngine(private val context: Context) {
     ): ExplanationResult = withContext(Dispatchers.Default) {
         
         try {
-            // Check if TFLite model is loaded and ready
-            if (modelState !is ModelState.Ready) {
+            // Check if MediaPipe model is loaded and ready
+            if (modelState !is ModelState.Ready || llmInference == null) {
                 val reason = when (modelState) {
                     is ModelState.NotDownloaded -> "Model not downloaded"
                     is ModelState.Downloaded -> "Model not loaded into memory"
@@ -204,31 +222,42 @@ class GemmaEngine(private val context: Context) {
                 )
             }
             
-            // Model is Ready - perform inference
+            // Model is Ready - perform MediaPipe inference
             val startTime = System.currentTimeMillis()
+            val previousState = modelState
             modelState = ModelState.Generating
             
-            // TODO: Actual TFLite inference when model is integrated
-            // val tokens = tokenize(prompt)
-            // val output = runInference(tokens, maxTokens)
-            // val text = detokenize(output)
-            // 
-            // modelState = ModelState.Ready
-            // val inferenceTime = System.currentTimeMillis() - startTime
-            // 
-            // return@withContext ExplanationResult.Success(
-            //     text = text,
-            //     tokensGenerated = output.size,
-            //     inferenceTimeMs = inferenceTime,
-            //     fromCache = false
-            // )
-            
-            // This code path should never be reached until TFLite is integrated
-            modelState = ModelState.Ready
-            ExplanationResult.Unavailable(
-                reason = "TFLite integration pending",
-                fallbackText = "Model infrastructure ready but TFLite not integrated yet."
-            )
+            try {
+                // Generate response using MediaPipe LlmInference
+                Timber.d("🧠 Generating response for prompt: ${prompt.take(100)}...")
+                val response = llmInference!!.generateResponse(prompt)
+                
+                // Restore Ready state
+                modelState = previousState
+                val inferenceTime = System.currentTimeMillis() - startTime
+                
+                // Count tokens (approximate - count words as rough estimate)
+                val tokensGenerated = response.split("\\s+".toRegex()).size
+                
+                Timber.i("🧠 Generated response in ${inferenceTime}ms (~$tokensGenerated tokens)")
+                
+                return@withContext ExplanationResult.Success(
+                    text = response,
+                    tokensGenerated = tokensGenerated,
+                    inferenceTimeMs = inferenceTime,
+                    fromCache = false
+                )
+                
+            } catch (inferenceError: Exception) {
+                // Restore previous state on error
+                modelState = previousState
+                Timber.e(inferenceError, "🧠 MediaPipe inference failed")
+                
+                return@withContext ExplanationResult.Failure(
+                    error = inferenceError.message ?: "Inference failed",
+                    fallbackText = null
+                )
+            }
             
         } catch (e: Exception) {
             modelState = ModelState.Error(e.message ?: "Generation failed", recoverable = true)
@@ -247,9 +276,9 @@ class GemmaEngine(private val context: Context) {
     fun getState(): ModelState = modelState
     
     /**
-     * Check if TFLite model is loaded and ready for LLM inference
+     * Check if MediaPipe model is loaded and ready for LLM inference
      * 
-     * Returns true ONLY when modelState is Ready, indicating that a TFLite model
+     * Returns true ONLY when modelState is Ready, indicating that MediaPipe model
      * is loaded in memory and ready to generate AI explanations.
      * 
      * Returns false when:
@@ -259,11 +288,14 @@ class GemmaEngine(private val context: Context) {
      * - Model encountered an error (Error)
      */
     fun isReady(): Boolean {
-        return modelState is ModelState.Ready
+        return modelState is ModelState.Ready && llmInference != null
     }
     
     /**
-     * Download model from HuggingFace
+     * Download model (reserved for future automated download)
+     * 
+     * Currently delegates to ModelManager, which returns failure for Kaggle models.
+     * Users must follow manual download instructions in DOWNLOAD_INSTRUCTIONS.md
      */
     suspend fun downloadModel(
         onProgress: (ModelState.Downloading) -> Unit
@@ -272,36 +304,47 @@ class GemmaEngine(private val context: Context) {
     }
     
     /**
-     * Unload model from memory
+     * Unload MediaPipe model from memory to free resources
+     * 
+     * Useful for memory management when model is not actively needed.
+     * Call initialize() again to reload the model.
      */
     fun unload() {
-        // interpreter?.close()
-        // interpreter = null
-        modelState = ModelState.Downloaded
-        Timber.i("🧠 Model unloaded from memory")
-    }
-    
-    /**
-     * Get TFLite interpreter options
-     * Configures CPU threads and acceleration
-     */
-    /*
-    private fun getInterpreterOptions(): Interpreter.Options {
-        return Interpreter.Options().apply {
-            setNumThreads(ModelConfig.NUM_THREADS)
-            
-            // Enable XNNPACK delegate for CPU acceleration
-            if (ModelConfig.USE_XNNPACK) {
-                addDelegate(XNNPackDelegate())
-            }
-            
-            // Note: GPU delegate disabled in TFLite 2.17.0 due to compatibility
-            // Will re-enable when stable
+        llmInference?.close()
+        llmInference = null
+        
+        // Update state to Downloaded if model file still exists
+        modelState = if (modelManager.getModelFile() != null) {
+            ModelState.Downloaded
+        } else {
+            ModelState.NotDownloaded
         }
+        
+        Timber.i("🧠 MediaPipe model unloaded from memory - State: $modelState")
     }
-    */
     
     companion object {
         private const val TAG = "GemmaEngine"
+        
+        /**
+         * Shared instance for memory efficiency
+         * Both DevBot and QuantraBot should share ONE GemmaEngine instance
+         * to avoid loading the 1.5GB model multiple times in memory.
+         */
+        @Volatile
+        private var sharedInstance: GemmaEngine? = null
+        
+        /**
+         * Get or create shared GemmaEngine instance
+         * 
+         * This ensures only ONE model is loaded in memory, even when used by
+         * both DevBot and QuantraBot simultaneously.
+         */
+        @Synchronized
+        fun getInstance(context: Context): GemmaEngine {
+            return sharedInstance ?: GemmaEngine(context.applicationContext).also {
+                sharedInstance = it
+            }
+        }
     }
 }

@@ -12,7 +12,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * Manages Gemma model lifecycle: download, verification, caching
+ * Manages Gemma model lifecycle: verification, caching, and file management
+ * 
+ * NOTE: Model download is manual via Kaggle (requires authentication).
+ * See app/src/main/assets/models/DOWNLOAD_INSTRUCTIONS.md for setup guide.
  */
 class ModelManager(private val context: Context) {
     
@@ -29,88 +32,59 @@ class ModelManager(private val context: Context) {
     fun getModelState(): ModelState {
         return when {
             !modelFile.exists() -> ModelState.NotDownloaded
-            !isModelValid() -> ModelState.Error("Model file corrupted", recoverable = true)
+            !isModelValid() -> ModelState.Error("Model file corrupted or wrong format", recoverable = true)
             else -> ModelState.Downloaded
         }
     }
     
     /**
-     * Check if model file is valid (basic size check)
+     * Check if model file is valid (size check + .task format validation)
      */
     private fun isModelValid(): Boolean {
         if (!modelFile.exists()) return false
+        
+        // Validate file extension is .task (MediaPipe format)
+        if (!modelFile.name.endsWith(".task")) {
+            Timber.w("🧠 Invalid model format: ${modelFile.name}. Must be .task file for MediaPipe")
+            return false
+        }
+        
         val size = modelFile.length()
         
         // Model should be close to expected size (allow 10% variance)
         val minSize = (ModelConfig.MODEL_SIZE_BYTES * 0.9).toLong()
         val maxSize = (ModelConfig.MODEL_SIZE_BYTES * 1.1).toLong()
         
-        return size in minSize..maxSize
+        if (size !in minSize..maxSize) {
+            Timber.w("🧠 Model size ${size / 1_000_000}MB outside expected range ${minSize / 1_000_000}-${maxSize / 1_000_000}MB")
+            return false
+        }
+        
+        return true
     }
     
     /**
-     * Download model from HuggingFace
-     * Returns ModelState as download progresses
+     * Download model (reserved for future automated download)
+     * 
+     * NOTE: Currently not functional - Kaggle requires authentication.
+     * Users must manually download via instructions in DOWNLOAD_INSTRUCTIONS.md
+     * 
+     * This method is kept for potential future integration with:
+     * - Play Asset Delivery (for bundling with app)
+     * - Future authenticated Kaggle API support
+     * - Alternative model hosting solutions
      */
     suspend fun downloadModel(
         onProgress: (ModelState.Downloading) -> Unit
     ): Result<File> = withContext(Dispatchers.IO) {
-        try {
-            // Check WiFi availability if configured
-            if (!isWiFiConnected() && ModelConfig.PRELOAD_ON_WIFI) {
-                return@withContext Result.failure(
-                    Exception("WiFi required for model download. Connect to WiFi and try again.")
-                )
-            }
-            
-            Timber.i("🧠 Starting Gemma model download: ${ModelConfig.MODEL_URL}")
-            
-            val url = URL(ModelConfig.MODEL_URL)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.connect()
-            
-            val totalSize = connection.contentLength.toLong()
-            
-            // Create temporary file
-            val tempFile = File(modelDir, "${ModelConfig.MODEL_NAME}.tmp")
-            
-            connection.inputStream.use { input ->
-                FileOutputStream(tempFile).use { output ->
-                    val buffer = ByteArray(8192)
-                    var bytesRead: Int
-                    var totalBytesRead = 0L
-                    var lastProgressUpdate = 0L
-                    
-                    while (input.read(buffer).also { bytesRead = it } != -1) {
-                        output.write(buffer, 0, bytesRead)
-                        totalBytesRead += bytesRead
-                        
-                        // Update progress every 5MB to avoid UI flooding
-                        if (totalBytesRead - lastProgressUpdate > 5_000_000) {
-                            val progress = totalBytesRead.toFloat() / totalSize
-                            onProgress(ModelState.Downloading(progress, totalBytesRead))
-                            lastProgressUpdate = totalBytesRead
-                        }
-                    }
-                    
-                    // Final progress update
-                    onProgress(ModelState.Downloading(1.0f, totalBytesRead))
-                }
-            }
-            
-            // Move temp file to final location
-            if (tempFile.renameTo(modelFile)) {
-                Timber.i("🧠 Model downloaded successfully: ${modelFile.length()} bytes")
-                Result.success(modelFile)
-            } else {
-                tempFile.delete()
-                Result.failure(Exception("Failed to save model file"))
-            }
-            
-        } catch (e: Exception) {
-            Timber.e(e, "🧠 Model download failed")
-            Result.failure(e)
-        }
+        // Kaggle downloads require authentication - not supported for automatic download
+        Timber.w("🧠 Automatic download not supported. Please follow manual download instructions.")
+        return@withContext Result.failure(
+            Exception(
+                "Automatic download not supported for Kaggle models. " +
+                "Please see app/src/main/assets/models/DOWNLOAD_INSTRUCTIONS.md for setup guide."
+            )
+        )
     }
     
     /**

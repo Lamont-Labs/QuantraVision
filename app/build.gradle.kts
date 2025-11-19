@@ -177,6 +177,9 @@ dependencies {
     }
     // GPU delegate disabled due to compatibility issues in 2.17.0
     // implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
+    
+    // MediaPipe LLM Inference - For on-device Gemma AI
+    implementation("com.google.mediapipe:tasks-genai:0.10.27")
 
     // CameraX - Latest stable versions
     implementation("androidx.camera:camera-core:1.5.0")

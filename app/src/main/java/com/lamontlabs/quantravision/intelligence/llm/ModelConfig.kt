@@ -1,31 +1,36 @@
 package com.lamontlabs.quantravision.intelligence.llm
 
 /**
- * Configuration for Gemma 2B model
+ * Configuration for Gemma 2B model with MediaPipe LLM Inference API
  * 
  * Model Details:
- * - Name: Gemma 2B Instruct (Quantized INT8)
+ * - Name: Gemma 2B Instruct (INT8 Quantized)
+ * - Format: MediaPipe .task file (includes model + tokenizer + metadata)
  * - Size: ~1.5GB on disk
  * - License: Apache 2.0 (commercial use allowed)
  * - Context: 8192 tokens
- * - Optimized for: Mobile inference
+ * - Optimized for: Mobile GPU inference via MediaPipe
+ * 
+ * Download Instructions:
+ * See app/src/main/assets/models/DOWNLOAD_INSTRUCTIONS.md for complete setup guide
  */
 object ModelConfig {
     
     // Model file configuration
-    const val MODEL_NAME = "gemma-2b-it-gpu-int8.tflite"
-    const val MODEL_URL = "https://huggingface.co/google/gemma-2b-it/resolve/main/gemma-2b-it-gpu-int8.tflite"
+    const val MODEL_NAME = "gemma-2b-it-gpu-int8.task"
+    const val MODEL_URL = "https://www.kaggle.com/models/google/gemma/tfLite"  // Manual download required
     const val MODEL_SIZE_BYTES = 1_500_000_000L  // ~1.5GB
     
-    // Inference parameters
+    // MediaPipe LLM Inference parameters
     const val MAX_OUTPUT_TOKENS = 200  // Keep responses concise for speed
     const val TEMPERATURE = 0.7f       // Balanced creativity vs consistency
     const val TOP_K = 40               // Token sampling diversity
     const val TOP_P = 0.9f             // Nucleus sampling threshold
+    const val RANDOM_SEED = 42         // Reproducible generation (0 = random)
     
-    // Performance tuning
+    // Performance tuning for MediaPipe
     const val NUM_THREADS = 4          // CPU threads for inference
-    const val USE_XNNPACK = true       // CPU acceleration delegate
+    const val USE_GPU = true           // Enable GPU acceleration (recommended)
     
     // Cache configuration
     const val CACHE_EXPLANATIONS = true
