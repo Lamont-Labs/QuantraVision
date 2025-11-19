@@ -12,6 +12,7 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
+- **2025-11-19**: Version 2.7 released with OverlayService suspension - ImportActivity now suspends floating overlay before launching SAF picker to prevent Android 13+ tap-jacking protection from killing the service
 - **2025-11-19**: Version 2.6 released with architectural fix - moved file picker to dedicated ImportActivity with stable lifecycle (fixes Compose recomposition crash), enabled Timber logging in release builds for diagnostics
 - **2025-11-19**: Version 2.5 released with additional error handling in file picker callback to catch crashes before they reach import controller
 - **2025-11-19**: Version 2.4 released with crash fix - made persistable URI permission optional (some file providers don't support it), added extensive logging to diagnose import issues

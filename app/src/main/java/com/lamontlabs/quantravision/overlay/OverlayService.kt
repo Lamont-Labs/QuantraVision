@@ -1,8 +1,10 @@
 package com.lamontlabs.quantravision.overlay
 
 import android.app.*
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -59,6 +61,8 @@ class OverlayService : Service() {
     private var behavioralGuardrails: BehavioralGuardrails? = null
     private var mediaProjection: MediaProjection? = null
     private var mediaProjectionCallback: MediaProjection.Callback? = null
+    private var overlaySuspendReceiver: BroadcastReceiver? = null
+    private var isOverlaySuspended = false
     
     // Android 14 fix: Create VirtualDisplay ONCE and reuse for all scans
     private var virtualDisplay: android.hardware.display.VirtualDisplay? = null
@@ -159,9 +163,52 @@ class OverlayService : Service() {
             return
         }
         
+        // Register broadcast receiver for overlay suspension during file picker
+        overlaySuspendReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                when (intent.action) {
+                    "com.lamontlabs.quantravision.SUSPEND_OVERLAY" -> {
+                        Timber.i("📥 OverlayService: Received SUSPEND request")
+                        suspendOverlayView()
+                    }
+                    "com.lamontlabs.quantravision.RESUME_OVERLAY" -> {
+                        Timber.i("📥 OverlayService: Received RESUME request")
+                        resumeOverlayView()
+                    }
+                }
+            }
+        }
+        
+        val filter = IntentFilter().apply {
+            addAction("com.lamontlabs.quantravision.SUSPEND_OVERLAY")
+            addAction("com.lamontlabs.quantravision.RESUME_OVERLAY")
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(overlaySuspendReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(overlaySuspendReceiver, filter)
+        }
+        Timber.i("📥 OverlayService: Broadcast receiver registered")
+        
         Log.i(TAG, "Starting foreground service...")
         startForegroundService()
         Log.i(TAG, "=== OverlayService.onCreate() COMPLETE ===")
+    }
+    
+    private fun suspendOverlayView() {
+        if (isOverlaySuspended) return
+        
+        Timber.i("📥 OverlayService: Hiding floating logo")
+        floatingLogo?.hide()
+        isOverlaySuspended = true
+    }
+    
+    private fun resumeOverlayView() {
+        if (!isOverlaySuspended) return
+        
+        Timber.i("📥 OverlayService: Showing floating logo")
+        floatingLogo?.show()
+        isOverlaySuspended = false
     }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -741,6 +788,16 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
+        // Unregister broadcast receiver
+        try {
+            overlaySuspendReceiver?.let {
+                unregisterReceiver(it)
+                Timber.i("📥 OverlayService: Broadcast receiver unregistered")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error unregistering overlay suspend receiver", e)
+        }
+        
         try {
             patternNotificationManager.cleanup()
         } catch (e: Exception) {
