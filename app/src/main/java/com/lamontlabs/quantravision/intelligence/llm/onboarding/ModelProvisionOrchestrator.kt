@@ -94,6 +94,10 @@ fun ModelProvisionOrchestrator(
             // Shouldn't happen with manual import, but show loading if it does
             LoadingScreen()
         }
+        ModelState.Loading, ModelState.Ready, ModelState.Generating -> {
+            // Model is already operational - proceed to main app
+            LoadingScreen()
+        }
     }
 }
 
@@ -124,8 +128,9 @@ private fun ModelImportScreen(
             // Title
             NeonText(
                 text = "AI Model Required",
-                style = AppTypography.headlineLarge,
-                textAlign = TextAlign.Center
+                style = AppTypography.headlineLarge.copy(
+                    textAlign = TextAlign.Center
+                )
             )
             
             Spacer(modifier = Modifier.height(AppSpacing.md))
