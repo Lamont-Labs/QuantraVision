@@ -150,14 +150,11 @@ class GemmaEngine(private val context: Context) {
                     modelState = ModelState.Loading
                     
                     try {
-                        // Build LlmInferenceOptions with model path and configuration
+                        // Build LlmInferenceOptions with model path
+                        // Note: temperature/topK/topP only available in LlmInferenceSession, not here
                         val options = LlmInference.LlmInferenceOptions.builder()
                             .setModelPath(modelFile.absolutePath)
                             .setMaxTokens(ModelConfig.MAX_OUTPUT_TOKENS)
-                            .setTemperature(ModelConfig.TEMPERATURE)
-                            .setTopK(ModelConfig.TOP_K)
-                            .setTopP(ModelConfig.TOP_P)
-                            .setRandomSeed(ModelConfig.RANDOM_SEED)
                             .build()
                         
                         // Create MediaPipe instance with proper options
