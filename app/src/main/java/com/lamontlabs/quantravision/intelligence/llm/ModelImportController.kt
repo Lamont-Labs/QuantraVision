@@ -306,7 +306,7 @@ class ModelImportController(private val context: Context) {
         
         workManager.enqueueUniqueWork(
             WORK_NAME,
-            ExistingWorkPolicy.KEEP,
+            ExistingWorkPolicy.REPLACE,
             workRequest
         )
         

@@ -12,6 +12,7 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
+- **2025-11-19**: Version 2.3 released with WorkManager policy fix - changed from KEEP to REPLACE so new imports don't reuse stale jobs from previous versions
 - **2025-11-19**: Version 2.2 released with model import fix - file size now passed from Controller to Worker via WorkManager inputData instead of re-querying URI (which failed in worker context due to permission/context issues)
 - **2025-11-19**: Fixed MediaPipe API compatibility - corrected GemmaEngine to use proper MediaPipe 0.10.27 API structure: removed incorrect `BaseOptions` usage, removed non-existent `setResultListener()`/`setTemperature()`/`setTopK()`/`setTopP()` calls from LlmInferenceOptions (these are session-level parameters, not available on base options), implemented minimal correct API with only `setModelPath()` and `setMaxTokens()`
 - **2025-11-19**: Implemented mobile-only AI model import feature enabling users to import the 529MB Gemma model directly from their phone using Android Storage Access Framework. Features: file picker integration, background WorkManager copy with progress tracking, configuration-change robustness, automatic model detection after import, StateFlow-based reactive updates, and zero-permission requirement. Users download model from HuggingFace → tap "Import Model" in app → select file → AI ready automatically
