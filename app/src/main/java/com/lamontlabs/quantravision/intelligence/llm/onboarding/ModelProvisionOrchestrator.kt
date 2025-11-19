@@ -20,7 +20,7 @@ import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
 import com.lamontlabs.quantravision.ui.MetallicCard
-import com.lamontlabs.quantravision.ui.NeonButton
+import com.lamontlabs.quantravision.ui.MetallicButton
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import timber.log.Timber
@@ -175,7 +175,7 @@ private fun ModelImportScreen(
             Spacer(modifier = Modifier.height(AppSpacing.xl))
             
             // Import button
-            NeonButton(
+            MetallicButton(
                 onClick = onImportClick,
                 enabled = !isImporting,
                 modifier = Modifier.fillMaxWidth()
