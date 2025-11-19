@@ -37,6 +37,20 @@ class ImportActivity : AppCompatActivity() {
                 return@registerForActivityResult
             }
             
+            // CRITICAL: Persist URI permission before activity finishes
+            // This prevents SecurityException when background worker tries to read file
+            try {
+                Timber.i("📥 ImportActivity: Taking persistable URI permission for $uri")
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                Timber.i("📥 ImportActivity: Successfully persisted URI permission")
+            } catch (e: Exception) {
+                Timber.w(e, "📥 ImportActivity: Could not persist URI permission (some providers don't support it)")
+                // Continue anyway - some file providers don't support persistence
+            }
+            
             // Import the model
             Timber.i("📥 ImportActivity: Starting import for URI: $uri")
             val controller = ModelImportController(this)

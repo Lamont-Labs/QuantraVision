@@ -252,6 +252,12 @@ class ModelImportController(private val context: Context) {
             
             return FileValidation(isValid = true, fileSize = fileSize)
             
+        } catch (e: SecurityException) {
+            Timber.e(e, "📥 SecurityException: Lost file access permission")
+            return FileValidation(
+                isValid = false,
+                errorMessage = "File permission lost. Please select the file again."
+            )
         } catch (e: Exception) {
             Timber.e(e, "Error validating file")
             return FileValidation(
@@ -262,33 +268,49 @@ class ModelImportController(private val context: Context) {
     }
     
     /**
-     * Get file name from URI
+     * Get file name from URI with defensive error handling
      */
     private fun getFileName(uri: Uri): String {
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
-                if (nameIndex >= 0) {
-                    return cursor.getString(nameIndex)
+        return try {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex >= 0) {
+                        return cursor.getString(nameIndex)
+                    }
                 }
             }
+            uri.lastPathSegment ?: "unknown"
+        } catch (e: SecurityException) {
+            Timber.e(e, "📥 SecurityException querying file name")
+            throw e // Re-throw to be caught by validateSelectedFile
+        } catch (e: Exception) {
+            Timber.e(e, "📥 Error getting file name")
+            uri.lastPathSegment ?: "unknown"
         }
-        return uri.lastPathSegment ?: "unknown"
     }
     
     /**
-     * Get file size from URI
+     * Get file size from URI with defensive error handling  
      */
     private fun getFileSize(uri: Uri): Long {
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
-                if (sizeIndex >= 0) {
-                    return cursor.getLong(sizeIndex)
+        return try {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
+                    if (sizeIndex >= 0) {
+                        return cursor.getLong(sizeIndex)
+                    }
                 }
             }
+            0L
+        } catch (e: SecurityException) {
+            Timber.e(e, "📥 SecurityException querying file size")
+            throw e // Re-throw to be caught by validateSelectedFile
+        } catch (e: Exception) {
+            Timber.e(e, "📥 Error getting file size")
+            0L
         }
-        return 0L
     }
     
     /**

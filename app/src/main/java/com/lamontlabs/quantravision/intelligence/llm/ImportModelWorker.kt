@@ -91,11 +91,30 @@ class ImportModelWorker(
             // Create temp file in cache
             tempFile = File(context.cacheDir, "model_temp_${System.currentTimeMillis()}.task")
             
-            // Get source input stream
-            val inputStream = context.contentResolver.openInputStream(sourceUri)
-                ?: return Result.failure(
+            // Get source input stream with defensive error handling
+            val inputStream = try {
+                context.contentResolver.openInputStream(sourceUri)
+            } catch (e: SecurityException) {
+                Timber.e(e, "📥 SecurityException: File permission lost. URI: $sourceUri")
+                return Result.failure(
+                    Data.Builder()
+                        .putString("error", "File permission lost. Please try importing again.")
+                        .build()
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "📥 Failed to open file: $sourceUri")
+                return Result.failure(
+                    Data.Builder()
+                        .putString("error", "Cannot open file: ${e.message}")
+                        .build()
+                )
+            }
+            
+            if (inputStream == null) {
+                return Result.failure(
                     Data.Builder().putString("error", "Cannot open source file").build()
                 )
+            }
             
             // Get file size from inputData (passed from controller after validation)
             val totalBytes = inputData.getLong(ModelImportController.KEY_FILE_SIZE, 0L)
