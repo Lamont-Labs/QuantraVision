@@ -6,11 +6,25 @@ QuantraVision uses a 529MB AI model that runs **100% offline** on your device. T
 
 ---
 
-## 🎯 **Two Ways to Deploy the Model**
+## 🎯 **Three Ways to Get AI Working**
 
-### **Option 1: For Testing (Manual Install)** ⚡ FASTEST
+### **Option 1: Mobile-Only Import (IN-APP)** 📱 **RECOMMENDED FOR YOU!**
 
-Use this method if you're building/testing the app yourself:
+Use this method if you're on mobile without a computer:
+
+**Steps:**
+1. Download model from HuggingFace to your phone
+2. Install QuantraVision APK
+3. Open app → tap "Import Model" button
+4. Select downloaded file → AI ready!
+
+**Time:** 3 minutes (no computer needed!)
+
+---
+
+### **Option 2: For Testing with Computer (Manual Install)** ⚡ FASTEST
+
+Use this method if you're building/testing the app yourself with ADB:
 
 **Steps:**
 1. Download the model (one-time)
@@ -32,7 +46,61 @@ Use this method for Play Store release:
 
 ---
 
-## 📥 **Option 1: Quick Testing Setup**
+## 📱 **Option 1: Mobile-Only Import (Recommended!)**
+
+### **Step 1: Download the Model to Your Phone**
+
+1. On your phone, visit: https://huggingface.co/litert-community/Gemma3-1B-IT
+2. Click **"Access repository"** (create free HuggingFace account if needed)
+3. Accept Google's Gemma license terms (instant approval)
+4. Click the **"Files"** tab
+5. Tap **`gemma-3-1b-it-int4.task`** (529MB)
+6. Download to your phone (goes to Downloads folder)
+
+### **Step 2: Build and Install QuantraVision APK**
+
+1. Build APK via GitHub Actions (or download from releases)
+2. Install APK on your Samsung S23 FE
+3. Open the app
+
+### **Step 3: Import Model in the App**
+
+1. Open **DevBot** or **QuantraBot** tab
+2. You'll see a card: **"AI Model Not Found"**
+3. Tap **"Import Model from Phone"** button
+4. Android file picker opens
+5. Navigate to **Downloads** folder
+6. Select **`gemma-3-1b-it-int4.task`**
+7. Tap **"Select"**
+
+### **Step 4: Wait for Import to Complete**
+
+A progress dialog appears showing:
+- ✅ Percentage complete (0-100%)
+- ✅ Transfer speed (MB/s)
+- ✅ Time remaining
+- ✅ Cancel button (if needed)
+
+Takes **2-5 minutes** to copy 529MB file.
+
+### **Step 5: AI Ready!**
+
+When import completes:
+- ✅ Dialog dismisses automatically
+- ✅ "AI Model Not Found" card disappears
+- ✅ AI becomes ready instantly
+- ✅ You can immediately ask questions!
+
+**Benefits:**
+- 📱 No computer needed
+- 🔒 No special permissions required
+- 🔄 Survives phone rotation during import
+- ⚡ Can navigate away - import continues in background
+- 🎯 Zero configuration
+
+---
+
+## 💻 **Option 2: Quick Testing with ADB**
 
 ### **Step 1: Download the Model**
 
@@ -74,7 +142,7 @@ The script will:
 
 ---
 
-## 🏆 **Option 2: Production Setup (Play Asset Delivery)**
+## 🏆 **Option 3: Production Setup (Play Asset Delivery)**
 
 For Play Store releases, the model should download automatically during app installation.
 
