@@ -86,6 +86,22 @@ class OverlayService : Service() {
         super.onCreate()
         Log.i(TAG, "=== OverlayService.onCreate() START ===")
         
+        // CRITICAL: Check if AI model is imported before starting service
+        // This prevents crash when Android auto-restarts the service (START_STICKY)
+        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(this)
+        val modelState = modelManager.getModelState()
+        if (modelState != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
+            Log.w(TAG, "AI model not imported yet (state=$modelState), stopping service")
+            Toast.makeText(
+                this,
+                "Scanner requires AI model. Please import it from the app first.",
+                Toast.LENGTH_LONG
+            ).show()
+            stopSelf()
+            return
+        }
+        Log.i(TAG, "✓ AI model is imported")
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 Log.e(TAG, "CRITICAL: SYSTEM_ALERT_WINDOW permission not granted, stopping service")
@@ -167,6 +183,16 @@ class OverlayService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Log.i(TAG, "=== OverlayService.onStartCommand() START ===")
+        
+        // Double-check model state in case service was restarted
+        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(this)
+        val modelState = modelManager.getModelState()
+        if (modelState != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
+            Log.w(TAG, "AI model not imported (state=$modelState) in onStartCommand, stopping service")
+            stopSelf()
+            return START_NOT_STICKY
+        }
+        
         Log.i(TAG, "Intent action: ${intent?.action}")
         Log.i(TAG, "Current state - MediaProjection: ${if (mediaProjection != null) "✓ EXISTS" else "❌ NULL"}, ImageReader: ${if (imageReader != null) "✓ EXISTS" else "❌ NULL"}")
         
