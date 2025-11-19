@@ -86,17 +86,22 @@ class OverlayService : Service() {
         super.onCreate()
         Log.i(TAG, "=== OverlayService.onCreate() START ===")
         
-        // CRITICAL: Check if AI model is imported before starting service
-        // This prevents crash when Android auto-restarts the service (START_STICKY)
+        // CRITICAL: Must call startForeground() before any stopSelf() to avoid crash
+        // This prevents "app has a bug" error when service needs to stop immediately
+        startForegroundService()
+        
+        // Check if AI model is imported before initializing service
         val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(this)
         val modelState = modelManager.getModelState()
         if (modelState != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
-            Log.w(TAG, "AI model not imported yet (state=$modelState), stopping service")
+            Log.w(TAG, "AI model not imported yet (state=$modelState), stopping service gracefully")
             Toast.makeText(
                 this,
                 "Scanner requires AI model. Please import it from the app first.",
                 Toast.LENGTH_LONG
             ).show()
+            // Properly stop foreground service to avoid crash
+            stopForeground(true)
             stopSelf()
             return
         }
@@ -110,6 +115,8 @@ class OverlayService : Service() {
                     "Overlay permission required. Please enable it in settings.",
                     Toast.LENGTH_LONG
                 ).show()
+                // Properly stop foreground service to avoid crash
+                stopForeground(true)
                 stopSelf()
                 return
             } else {
@@ -126,6 +133,8 @@ class OverlayService : Service() {
                 "Overlay service not supported on this device.",
                 Toast.LENGTH_LONG
             ).show()
+            // Properly stop foreground service to avoid crash
+            stopForeground(true)
             stopSelf()
             return
         }
@@ -171,12 +180,13 @@ class OverlayService : Service() {
         } catch (e: Exception) {
             Log.e(TAG, "CRITICAL: Failed to create FloatingLogoButton", e)
             Toast.makeText(this, "Failed to create overlay button", Toast.LENGTH_LONG).show()
+            // Properly stop foreground service to avoid crash
+            stopForeground(true)
             stopSelf()
             return
         }
         
-        Log.i(TAG, "Starting foreground service...")
-        startForegroundService()
+        // Note: startForegroundService() already called at beginning of onCreate()
         Log.i(TAG, "=== OverlayService.onCreate() COMPLETE ===")
     }
     
@@ -189,8 +199,10 @@ class OverlayService : Service() {
         val modelState = modelManager.getModelState()
         if (modelState != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
             Log.w(TAG, "AI model not imported (state=$modelState) in onStartCommand, stopping service")
+            // Properly stop foreground service to avoid crash
+            stopForeground(true)
             stopSelf()
-            return START_NOT_STICKY
+            return START_NOT_STICKY // Don't restart service
         }
         
         Log.i(TAG, "Intent action: ${intent?.action}")
@@ -213,6 +225,7 @@ class OverlayService : Service() {
             } else {
                 Log.e(TAG, "CRITICAL: MediaProjection data is NULL - permission result not stored or already consumed")
                 Toast.makeText(this, "Failed to start screen capture. Please restart scanner.", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
         } else if (intent == null) {
@@ -220,6 +233,7 @@ class OverlayService : Service() {
             Log.w(TAG, "Current MediaProjection state: ${if (mediaProjection != null) "exists (will continue)" else "null (stopping service)"}")
             if (mediaProjection == null) {
                 Toast.makeText(this, "Screen capture stopped. Please restart scanner.", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
         }
@@ -549,6 +563,7 @@ class OverlayService : Service() {
             if (mediaProjection == null) {
                 Log.e(TAG, "Failed to get MediaProjection")
                 Toast.makeText(this, "Screen capture permission denied", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
                 return
             }
@@ -560,6 +575,7 @@ class OverlayService : Service() {
                     cleanupMediaProjectionResources()
                     scope.launch(Dispatchers.Main) {
                         Toast.makeText(applicationContext, "Screen capture stopped", Toast.LENGTH_SHORT).show()
+                        stopForeground(true)
                         stopSelf()
                     }
                 }
@@ -586,10 +602,12 @@ class OverlayService : Service() {
         } catch (e: SecurityException) {
             Log.e(TAG, "SecurityException during MediaProjection initialization", e)
             Toast.makeText(this, "Permission denied. Please grant screen capture permission.", Toast.LENGTH_LONG).show()
+            stopForeground(true)
             stopSelf()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize MediaProjection", e)
             Toast.makeText(this, "Failed to start screen capture: ${e.message}", Toast.LENGTH_SHORT).show()
+            stopForeground(true)
             stopSelf()
         }
     }
@@ -627,6 +645,7 @@ class OverlayService : Service() {
                 Log.e(TAG, "ImageReader state: ${if (imageReader != null) "exists" else "null"}")
                 isMediaProjectionReady = false
                 Toast.makeText(this, "Failed to create screen capture display", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             } else {
                 Log.i(TAG, "✅ VirtualDisplay created successfully - will be reused for all scans")
@@ -672,6 +691,7 @@ class OverlayService : Service() {
                         }
                         isMediaProjectionReady = false
                         // Stop service on initialization failure - forces user to restart
+                        stopForeground(true)
                         stopSelf()
                     }
                 }
@@ -682,6 +702,7 @@ class OverlayService : Service() {
             Log.e(TAG, "Failed to create VirtualDisplay", e)
             isMediaProjectionReady = false
             Toast.makeText(this, "Failed to setup screen capture: ${e.message}", Toast.LENGTH_SHORT).show()
+            stopForeground(true)
             stopSelf()
         }
     }
