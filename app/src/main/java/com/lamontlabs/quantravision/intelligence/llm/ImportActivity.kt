@@ -123,23 +123,6 @@ class ImportActivity : ComponentActivity() {
         pendingFilePath?.let { importFromPath(it) }
     }
     
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100 && grantResults.isNotEmpty() && 
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            checkPermissionsAndProceed()
-        } else {
-            Toast.makeText(
-                this,
-                "Storage permission required to access the model file",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
     
     private fun importFromPath(filePath: String) {
         lifecycleScope.launch {
@@ -171,8 +154,10 @@ class ImportActivity : ComponentActivity() {
                         return@withContext
                     }
                     
-                    // Copy file directly to internal storage
-                    val destFile = File(this@ImportActivity.filesDir, "gemma-model.task")
+                    // Copy file to ModelManager's expected location
+                    val modelDir = File(this@ImportActivity.filesDir, "llm_models")
+                    modelDir.mkdirs()
+                    val destFile = File(modelDir, "gemma-3-1b-it-int4.task")
                     
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
@@ -198,7 +183,7 @@ class ImportActivity : ComponentActivity() {
                     
                     // Update ModelManager state
                     val modelManager = ModelManager(this@ImportActivity)
-                    modelManager.onModelDownloaded()
+                    modelManager.onModelImported()
                 }
                 
                 // Success
