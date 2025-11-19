@@ -1,21 +1,27 @@
 package com.lamontlabs.quantravision.intelligence.llm
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.lamontlabs.quantravision.overlay.OverlayServiceGuard
 import com.lamontlabs.quantravision.ui.MetallicButton
@@ -30,17 +36,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 /**
  * Direct file path import activity - BYPASSES Android's buggy file picker.
  * 
- * Android's Storage Access Framework has a known bug with files over 500MB that causes
- * crashes on Android 14. This activity lets users type the file path directly, completely
- * avoiding the file picker and all its tap-jacking/memory issues.
- * 
- * Common path: /storage/emulated/0/Download/gemma3-1b-it-int4.task
+ * Requires MANAGE_EXTERNAL_STORAGE permission on Android 11+ to access Download folder.
  */
 class ImportActivity : ComponentActivity() {
+    
+    private val storagePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        checkPermissionsAndProceed()
+    }
+    
+    private var pendingFilePath: String? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,10 +74,70 @@ class ImportActivity : ComponentActivity() {
                         finish()
                     },
                     onImport = { filePath ->
-                        importFromPath(filePath)
+                        pendingFilePath = filePath
+                        checkPermissionsAndProceed()
                     }
                 )
             }
+        }
+    }
+    
+    private fun checkPermissionsAndProceed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11+ requires MANAGE_EXTERNAL_STORAGE
+            if (!Environment.isExternalStorageManager()) {
+                Timber.w("📥 MANAGE_EXTERNAL_STORAGE permission not granted")
+                Toast.makeText(
+                    this,
+                    "Please grant 'All files access' permission to import the model file",
+                    Toast.LENGTH_LONG
+                ).show()
+                
+                try {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                    intent.data = Uri.parse("package:$packageName")
+                    storagePermissionLauncher.launch(intent)
+                } catch (e: Exception) {
+                    val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                    storagePermissionLauncher.launch(intent)
+                }
+                return
+            }
+        } else {
+            // Android 10 and below
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    100
+                )
+                return
+            }
+        }
+        
+        // Permission granted, proceed with import
+        pendingFilePath?.let { importFromPath(it) }
+    }
+    
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults.isNotEmpty() && 
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            checkPermissionsAndProceed()
+        } else {
+            Toast.makeText(
+                this,
+                "Storage permission required to access the model file",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
     
@@ -81,24 +153,62 @@ class ImportActivity : ComponentActivity() {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 this@ImportActivity,
-                                "File not found: $filePath",
+                                "File not found at: $filePath",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
                         return@withContext
                     }
                     
-                    // Convert to Uri and use existing import system
-                    val uri = Uri.fromFile(sourceFile)
-                    val controller = ModelImportController(this@ImportActivity)
-                    controller.handleFileSelected(uri)
+                    if (!sourceFile.canRead()) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@ImportActivity,
+                                "Cannot read file. Check permissions.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        return@withContext
+                    }
+                    
+                    // Copy file directly to internal storage
+                    val destFile = File(this@ImportActivity.filesDir, "gemma-model.task")
+                    
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@ImportActivity,
+                            "Importing ${sourceFile.length() / 1_000_000}MB model file...",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    
+                    Timber.i("📥 Copying ${sourceFile.length()} bytes to ${destFile.absolutePath}")
+                    
+                    FileInputStream(sourceFile).use { input ->
+                        FileOutputStream(destFile).use { output ->
+                            val buffer = ByteArray(8192)
+                            var bytesRead: Int
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                output.write(buffer, 0, bytesRead)
+                            }
+                        }
+                    }
+                    
+                    Timber.i("📥 Copy complete, file size: ${destFile.length()} bytes")
+                    
+                    // Update ModelManager state
+                    val modelManager = ModelManager(this@ImportActivity)
+                    modelManager.onModelDownloaded()
                 }
                 
-                // Wait for background copy to start
-                kotlinx.coroutines.delay(500)
-                
-                // Re-enable service and finish
+                // Success
                 withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ImportActivity,
+                        "✓ Model imported successfully!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    
                     OverlayServiceGuard.enable(this@ImportActivity)
                     setResult(Activity.RESULT_OK)
                     finish()
@@ -191,6 +301,16 @@ private fun DirectFilePathImportScreen(
                         text = "Common location:\n/storage/emulated/0/Download/gemma3-1b-it-int4.task",
                         style = AppTypography.bodySmall,
                         color = AppColors.MetallicGold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    
+                    Text(
+                        text = "Note: You'll be asked to grant 'All files access' permission.",
+                        style = AppTypography.bodySmall,
+                        color = AppColors.MetallicSilver.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )

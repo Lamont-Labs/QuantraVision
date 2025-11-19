@@ -12,8 +12,8 @@ android {
         applicationId = "com.lamontlabs.quantravision"
         minSdk = 26
         targetSdk = 35
-        versionCode = 32
-        versionName = "3.0.7"
+        versionCode = 33
+        versionName = "3.0.8"
         vectorDrawables.useSupportLibrary = true
         
         // App description metadata
