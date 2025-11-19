@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.lamontlabs.quantravision.overlay.OverlayService
+import com.lamontlabs.quantravision.overlay.OverlayServiceGuard
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -63,12 +64,20 @@ class ImportActivity : AppCompatActivity() {
                     // Wait a moment for WorkManager to start
                     kotlinx.coroutines.delay(500)
                     
+                    // Re-enable OverlayService after successful import
+                    Timber.i("📥 ImportActivity: Re-enabling OverlayService")
+                    OverlayServiceGuard.enable(this@ImportActivity)
+                    
                     // Success - return to app
                     setResult(Activity.RESULT_OK)
                     finish()
                     
                 } catch (e: Exception) {
                     Timber.e(e, "📥 ImportActivity: Error in handleFileSelected")
+                    
+                    // Re-enable service even on failure
+                    OverlayServiceGuard.enable(this@ImportActivity)
+                    
                     Toast.makeText(
                         this@ImportActivity,
                         "Import failed: ${e.message}",
@@ -92,29 +101,23 @@ class ImportActivity : AppCompatActivity() {
         Timber.i("📥 ImportActivity: onCreate")
         
         if (savedInstanceState == null) {
-            // CRITICAL: Explicitly stop any OverlayService before importing
-            // This prevents Android 14 tap-jacking protection from killing the service
+            // CRITICAL: Disable OverlayService at OS level before importing
+            // This is the NUCLEAR option - completely prevents Android from starting the service
+            Timber.i("📥 ImportActivity: Disabling OverlayService at OS level")
+            OverlayServiceGuard.disable(this)
+            
+            // Also explicitly stop any running instance
             val serviceIntent = Intent(this, OverlayService::class.java)
             try {
                 stopService(serviceIntent)
-                Timber.i("📥 ImportActivity: Explicitly stopped OverlayService")
+                Timber.i("📥 ImportActivity: Stopped OverlayService")
             } catch (e: Exception) {
-                Timber.w(e, "📥 ImportActivity: Could not stop OverlayService (may not be running)")
+                Timber.w(e, "📥 ImportActivity: Could not stop OverlayService")
             }
             
-            // Check if OverlayService is running
-            val isRunning = isOverlayServiceRunning()
-            Timber.i("📥 ImportActivity: OverlayService running = $isRunning")
-            
-            if (isRunning) {
-                // Scanner is running - show error dialog
-                Timber.w("📥 ImportActivity: Scanner must be stopped before import")
-                showScannerRunningDialog()
-            } else {
-                // Safe to proceed
-                Timber.i("📥 ImportActivity: Scanner not running, launching file picker")
-                filePicker.launch(arrayOf("*/*"))
-            }
+            // Launch file picker immediately
+            Timber.i("📥 ImportActivity: Launching file picker (service disabled)")
+            filePicker.launch(arrayOf("*/*"))
         }
     }
     

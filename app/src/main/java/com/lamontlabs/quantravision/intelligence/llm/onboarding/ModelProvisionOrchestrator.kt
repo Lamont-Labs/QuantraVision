@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lamontlabs.quantravision.intelligence.llm.ImportActivity
 import com.lamontlabs.quantravision.intelligence.llm.ModelManager
 import com.lamontlabs.quantravision.intelligence.llm.ModelState
+import com.lamontlabs.quantravision.overlay.OverlayServiceGuard
 import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
@@ -56,6 +57,15 @@ fun ModelProvisionOrchestrator(
     // Observe model state
     val modelState by modelManager.modelStateFlow.collectAsStateWithLifecycle()
     
+    // CRITICAL: Disable OverlayService until model is imported
+    // This prevents Android from auto-starting it during import (tap-jacking protection)
+    LaunchedEffect(Unit) {
+        if (modelState != ModelState.Downloaded) {
+            Timber.i("🔒 Disabling OverlayService until model imported")
+            OverlayServiceGuard.disable(context)
+        }
+    }
+    
     // Track if we're currently importing
     var isImporting by remember { mutableStateOf(false) }
     
@@ -74,7 +84,8 @@ fun ModelProvisionOrchestrator(
     LaunchedEffect(modelState) {
         Timber.i("🧠 ModelProvisionOrchestrator: modelState = $modelState")
         if (modelState == ModelState.Downloaded) {
-            Timber.i("🧠 Model ready! Proceeding to main app")
+            Timber.i("🧠 Model ready! Re-enabling OverlayService and proceeding to main app")
+            OverlayServiceGuard.enable(context)
             onModelReady()
         }
     }
