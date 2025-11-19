@@ -11,6 +11,7 @@
   <application 
       android:name=".App"
       android:debuggable="false"
+      android:enableOnBackInvokedCallback="true"
       android:networkSecurityConfig="@xml/network_security_config"
       android:allowBackup="true"
       android:label="@string/app_name"

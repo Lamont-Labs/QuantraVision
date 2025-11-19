@@ -11,6 +11,10 @@ Always Follow These Steps:
 3. Check git log before assuming changes aren't committed (Replit auto-commits)
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
+## Recent Changes
+- **2025-11-19**: Enabled Android 13+ predictive back gesture support (`android:enableOnBackInvokedCallback="true"`) for modern navigation UX
+- **2025-11-19**: Completed DevBot diagnostic export system with JSON serialization, security confirmation dialog, async file I/O, automatic cleanup (keeps last 5 exports), and secure sharing via FileProvider
+
 ## System Architecture
 
 ### UI/UX Decisions
