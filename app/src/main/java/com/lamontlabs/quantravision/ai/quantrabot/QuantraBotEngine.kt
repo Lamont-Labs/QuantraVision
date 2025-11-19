@@ -35,7 +35,7 @@ class QuantraBotEngine(private val context: Context) {
     
     private val knowledgeLoader = PatternKnowledgeLoader(context)
     private val promptBuilder = PatternPromptBuilder()
-    private val gemmaEngine = GemmaEngine(context)
+    private val gemmaEngine = GemmaEngine.getInstance(context)  // Use singleton instance
     private val fallbackExplainer = PatternExplainer(context)
     
     // Track initialization status
@@ -164,16 +164,22 @@ class QuantraBotEngine(private val context: Context) {
         recentPatterns: List<PatternMatch> = emptyList()
     ): String = withContext(Dispatchers.Default) {
         try {
-            if (!hasModel) {
-                return@withContext "QuantraBot requires the AI model to answer questions. The model is not currently available."
+            if (!hasModel || !gemmaEngine.isReady()) {
+                return@withContext "QuantraBot requires the AI model to answer questions. The model is not currently loaded. Please restart the app after importing the model."
             }
             
+            Timber.d("🤖 Answering question: ${question.take(50)}...")
             val prompt = promptBuilder.buildGeneralQuestionPrompt(question, recentPatterns)
-            gemmaEngine.generate(prompt).extractText()
+            
+            val result = gemmaEngine.generate(prompt)
+            Timber.d("🤖 Got result type: ${result::class.simpleName}")
+            
+            result.extractText()
             
         } catch (e: Exception) {
-            Timber.e(e, "Error answering question")
-            "I'm having trouble answering that right now. Please try again later."
+            Timber.e(e, "Error answering question: ${e.message}")
+            e.printStackTrace()
+            "Error: ${e.message ?: "Unknown error occurred"}. Please try restarting the app."
         }
     }
     

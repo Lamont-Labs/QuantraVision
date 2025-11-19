@@ -91,13 +91,17 @@ sealed class InitializationError(message: String) : Exception(message) {
  * @see ModelState for all possible states
  * @see ExplanationResult for generation outcomes
  */
-class GemmaEngine(private val context: Context) {
+class GemmaEngine private constructor(private val context: Context) {
     
     private val modelManager = ModelManager(context)
     private var modelState: ModelState = ModelState.NotDownloaded
     
     // MediaPipe LlmInference instance (initialized when model is loaded)
+    @Volatile
     private var llmInference: LlmInference? = null
+    
+    // Synchronization lock for initialization
+    private val initLock = Any()
     
     init {
         modelState = modelManager.getModelState()
@@ -135,49 +139,70 @@ class GemmaEngine(private val context: Context) {
      * users still receive template-based explanations.
      */
     suspend fun initialize(): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            modelState = modelManager.getModelState()
-            
-            when (modelState) {
-                is ModelState.NotDownloaded -> {
-                    return@withContext Result.failure(InitializationError.ModelNotFound("Model file not downloaded"))
+        synchronized(initLock) {
+            try {
+                // If already ready, return success (idempotent)
+                if (modelState is ModelState.Ready && llmInference != null) {
+                    Timber.d("🧠 Model already initialized and ready")
+                    return@withContext Result.success(Unit)
                 }
-                is ModelState.Downloaded -> {
-                    val modelFile = modelManager.getModelFile()
-                        ?: return@withContext Result.failure(InitializationError.ModelNotFound("Model file missing"))
-                    
-                    Timber.i("🧠 Loading Gemma model with MediaPipe: ${modelFile.absolutePath}")
-                    modelState = ModelState.Loading
-                    
-                    try {
-                        // Build LlmInferenceOptions with model path
-                        // Note: temperature/topK/topP only available in LlmInferenceSession, not here
-                        val options = LlmInference.LlmInferenceOptions.builder()
-                            .setModelPath(modelFile.absolutePath)
-                            .setMaxTokens(ModelConfig.MAX_OUTPUT_TOKENS)
-                            .build()
+                
+                // Refresh model state from manager
+                modelState = modelManager.getModelState()
+                
+                when (modelState) {
+                    is ModelState.NotDownloaded -> {
+                        Timber.w("🧠 Model file not found")
+                        return@withContext Result.failure(InitializationError.ModelNotFound("Model file not downloaded"))
+                    }
+                    is ModelState.Downloaded -> {
+                        val modelFile = modelManager.getModelFile()
+                        if (modelFile == null) {
+                            Timber.e("🧠 Model file missing despite Downloaded state")
+                            return@withContext Result.failure(InitializationError.ModelNotFound("Model file missing"))
+                        }
                         
-                        // Create MediaPipe instance with proper options
-                        llmInference = LlmInference.createFromOptions(context, options)
-                        modelState = ModelState.Ready
-                        Timber.i("🧠 GemmaEngine ready - MediaPipe model loaded and ready for inference")
-                        return@withContext Result.success(Unit)
+                        Timber.i("🧠 Loading Gemma model with MediaPipe: ${modelFile.absolutePath}")
+                        modelState = ModelState.Loading
                         
-                    } catch (loadError: Exception) {
-                        llmInference = null
-                        modelState = ModelState.Error(loadError.message ?: "MediaPipe load failed", recoverable = true)
-                        val error = InitializationError.MediaPipeLoadFailed(loadError)
-                        Timber.e(error, "🧠 MediaPipe initialization failed")
-                        return@withContext Result.failure(error)
+                        try {
+                            // Build LlmInferenceOptions with model path
+                            // Note: temperature/topK/topP only available in LlmInferenceSession, not here
+                            val options = LlmInference.LlmInferenceOptions.builder()
+                                .setModelPath(modelFile.absolutePath)
+                                .setMaxTokens(ModelConfig.MAX_OUTPUT_TOKENS)
+                                .build()
+                            
+                            // Create MediaPipe instance with proper options
+                            llmInference = LlmInference.createFromOptions(context, options)
+                            modelState = ModelState.Ready
+                            Timber.i("🧠 GemmaEngine ready - MediaPipe model loaded and ready for inference")
+                            return@withContext Result.success(Unit)
+                            
+                        } catch (loadError: Exception) {
+                            llmInference = null
+                            modelState = ModelState.Error(loadError.message ?: "MediaPipe load failed", recoverable = true)
+                            val error = InitializationError.MediaPipeLoadFailed(loadError)
+                            Timber.e(error, "🧠 MediaPipe initialization failed")
+                            return@withContext Result.failure(error)
+                        }
+                    }
+                    is ModelState.Ready -> {
+                        // State says Ready but llmInference is null - reinitialize
+                        Timber.w("🧠 State is Ready but llmInference is null - forcing reinitialization")
+                        modelState = ModelState.Downloaded
+                        return@withContext initialize()
+                    }
+                    else -> {
+                        Timber.e("🧠 Unexpected model state during initialization: $modelState")
+                        return@withContext Result.failure(InitializationError.LoaderNotImplemented())
                     }
                 }
-                else -> {
-                    return@withContext Result.failure(InitializationError.LoaderNotImplemented())
-                }
+            } catch (e: Exception) {
+                modelState = ModelState.Error(e.message ?: "Initialization failed", recoverable = false)
+                Timber.e(e, "🧠 Fatal initialization error")
+                return@withContext Result.failure(InitializationError.MediaPipeLoadFailed(e))
             }
-        } catch (e: Exception) {
-            modelState = ModelState.Error(e.message ?: "Initialization failed", recoverable = false)
-            return@withContext Result.failure(InitializationError.MediaPipeLoadFailed(e))
         }
     }
     
@@ -212,6 +237,15 @@ class GemmaEngine(private val context: Context) {
             }
             
             // Model is Ready - perform MediaPipe inference
+            val inference = llmInference
+            if (inference == null) {
+                Timber.e("🧠 llmInference is null despite Ready state")
+                return@withContext ExplanationResult.Failure(
+                    error = "Model instance is null",
+                    fallbackText = null
+                )
+            }
+            
             val startTime = System.currentTimeMillis()
             val previousState = modelState
             modelState = ModelState.Generating
@@ -219,7 +253,7 @@ class GemmaEngine(private val context: Context) {
             try {
                 // Generate response using MediaPipe LlmInference
                 Timber.d("🧠 Generating response for prompt: ${prompt.take(100)}...")
-                val response = llmInference!!.generateResponse(prompt)
+                val response = inference.generateResponse(prompt)
                 
                 // Restore Ready state
                 modelState = previousState
