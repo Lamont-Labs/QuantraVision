@@ -153,9 +153,6 @@ class GemmaEngine(private val context: Context) {
                         // Build LlmInferenceOptions with model path and configuration
                         val options = LlmInference.LlmInferenceOptions.builder()
                             .setModelPath(modelFile.absolutePath)
-                            .setResultListener { partialResult, done ->
-                                // Streaming response handler (optional for now)
-                            }
                             .setMaxTokens(ModelConfig.MAX_OUTPUT_TOKENS)
                             .setTemperature(ModelConfig.TEMPERATURE)
                             .setTopK(ModelConfig.TOP_K)
