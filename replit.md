@@ -12,6 +12,7 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
+- **2025-11-19**: Version 2.9 released with scanner-stop requirement - ImportActivity now checks if OverlayService is running and requires user to manually stop scanner before importing, eliminating all race conditions and tap-jacking issues (shows clear dialog with instructions)
 - **2025-11-19**: Version 2.8 released with race condition fix - added null safety guards in suspendOverlayView() and 500ms initialization delay in ImportActivity to prevent crash when broadcast arrives before FloatingLogoButton is created
 - **2025-11-19**: Version 2.7 released with OverlayService suspension - ImportActivity now suspends floating overlay before launching SAF picker to prevent Android 13+ tap-jacking protection from killing the service
 - **2025-11-19**: Version 2.6 released with architectural fix - moved file picker to dedicated ImportActivity with stable lifecycle (fixes Compose recomposition crash), enabled Timber logging in release builds for diagnostics
