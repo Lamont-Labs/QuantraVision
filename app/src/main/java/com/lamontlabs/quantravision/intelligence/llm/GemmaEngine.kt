@@ -3,6 +3,8 @@ package com.lamontlabs.quantravision.intelligence.llm
 import android.content.Context
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -100,8 +102,8 @@ class GemmaEngine private constructor(private val context: Context) {
     @Volatile
     private var llmInference: LlmInference? = null
     
-    // Synchronization lock for initialization
-    private val initLock = Any()
+    // Mutex for thread-safe initialization
+    private val initMutex = Mutex()
     
     init {
         modelState = modelManager.getModelState()
@@ -139,7 +141,7 @@ class GemmaEngine private constructor(private val context: Context) {
      * users still receive template-based explanations.
      */
     suspend fun initialize(): Result<Unit> = withContext(Dispatchers.IO) {
-        synchronized(initLock) {
+        initMutex.withLock {
             try {
                 // If already ready, return success (idempotent)
                 if (modelState is ModelState.Ready && llmInference != null) {

@@ -44,7 +44,7 @@ import timber.log.Timber
  */
 class PatternExplainer(private val context: Context) {
     
-    private val gemmaEngine = GemmaEngine(context)
+    private val gemmaEngine = GemmaEngine.getInstance(context)
     private val promptBuilder = PromptBuilder()
     private val cache = ExplanationCache(context)
     

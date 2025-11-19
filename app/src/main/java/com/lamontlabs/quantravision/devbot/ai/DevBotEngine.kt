@@ -39,7 +39,7 @@ class DevBotEngine(private val context: Context) {
         try {
             knowledgeLoader.loadKnowledge()
             
-            gemmaEngine = GemmaEngine(context)
+            gemmaEngine = GemmaEngine.getInstance(context)
             val initResult = gemmaEngine!!.initialize()
             
             _hasModel.value = initResult.isSuccess
