@@ -58,7 +58,7 @@ private fun AppNavigationHost(
     scope: kotlinx.coroutines.CoroutineScope,
     startDestination: String = "home"
 ) {
-    val onStartScan = {
+    val onStartScan = onStartScan@{
         // CRITICAL: Don't start service if model not imported
         val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
         if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
@@ -67,7 +67,7 @@ private fun AppNavigationHost(
                 "AI model required. Please import it first.",
                 android.widget.Toast.LENGTH_LONG
             ).show()
-            return@val Unit
+            return@onStartScan
         }
         
         // Start the overlay service for real-time detection
