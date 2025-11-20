@@ -219,19 +219,31 @@ class EnsembleEngine private constructor(private val context: Context) {
                             val embeddingsFile = modelManager.getEmbeddingsModelFile()
                             val mobileBertFile = modelManager.getMobileBertFile()
                             
-                            if (embeddingsFile == null || mobileBertFile == null) {
-                                Timber.e("🎯 Required model files missing despite Downloaded state")
+                            if (embeddingsFile == null) {
+                                Timber.e("🎯 Embeddings model file missing despite Downloaded state")
                                 return@withContext Result.failure(
-                                    InitializationError.ModelNotFound("Required model files missing")
+                                    InitializationError.ModelNotFound("Embeddings model file missing")
                                 )
                             }
                             
-                            // Initialize required models
+                            // Initialize required embeddings retriever
                             Timber.i("🎯 Initializing EmbeddingsRetriever from ${embeddingsFile.absolutePath}")
                             embeddingsRetriever = EmbeddingsRetriever(embeddingsFile, knowledgeBase)
                             
-                            Timber.i("🎯 Initializing MobileBERTQaAdapter from ${mobileBertFile.absolutePath}")
-                            mobileBertQa = MobileBERTQaAdapter(mobileBertFile)
+                            // Initialize MobileBERT if available (optional - will use retrieval-only if missing)
+                            if (mobileBertFile != null) {
+                                try {
+                                    Timber.i("🎯 Initializing MobileBERTQaAdapter from ${mobileBertFile.absolutePath}")
+                                    mobileBertQa = MobileBERTQaAdapter(mobileBertFile)
+                                    Timber.i("🎯 MobileBERT Q&A available as fallback")
+                                } catch (bertError: Exception) {
+                                    Timber.w(bertError, "🎯 MobileBERT initialization failed - will use retrieval-only mode")
+                                    mobileBertQa = null
+                                }
+                            } else {
+                                Timber.i("🎯 MobileBERT model not available - using retrieval-only mode")
+                                mobileBertQa = null
+                            }
                             
                             // Initialize optional intent classifier if available
                             val intentFile = modelManager.getIntentClassifierFile()
@@ -245,7 +257,11 @@ class EnsembleEngine private constructor(private val context: Context) {
                             }
                             
                             modelState = ModelState.Ready
-                            val modelsLoaded = if (intentClassifier != null) "all 3 models" else "2 required models (intent classifier optional)"
+                            val modelsLoaded = buildString {
+                                append("Embeddings retriever")
+                                if (mobileBertQa != null) append(" + MobileBERT Q&A")
+                                if (intentClassifier != null) append(" + Intent classifier")
+                            }
                             Timber.i("🎯 EnsembleEngine ready - $modelsLoaded loaded and ready for inference")
                             return@withContext Result.success(Unit)
                             
@@ -258,6 +274,8 @@ class EnsembleEngine private constructor(private val context: Context) {
                             embeddingsRetriever = null
                             mobileBertQa = null
                             
+                            // Note: Don't fail if only MobileBERT failed - embeddings retriever is sufficient
+                            
                             modelState = ModelState.Error(
                                 loadError.message ?: "Model initialization failed", 
                                 recoverable = true
@@ -269,10 +287,15 @@ class EnsembleEngine private constructor(private val context: Context) {
                     }
                     
                     is ModelState.Ready -> {
-                        // State says Ready but required models are null - reinitialize
-                        Timber.w("🎯 State is Ready but required models are null - forcing reinitialization")
-                        modelState = ModelState.Downloaded
-                        return@withContext initialize()
+                        // State says Ready but embeddings retriever is null - reinitialize
+                        if (embeddingsRetriever == null) {
+                            Timber.w("🎯 State is Ready but embeddings retriever is null - forcing reinitialization")
+                            modelState = ModelState.Downloaded
+                            return@withContext initialize()
+                        } else {
+                            Timber.d("🎯 Ensemble already ready")
+                            return@withContext Result.success(Unit)
+                        }
                     }
                     
                     else -> {
@@ -307,10 +330,9 @@ class EnsembleEngine private constructor(private val context: Context) {
     ): ExplanationResult = withContext(Dispatchers.Default) {
         
         try {
-            // Check if required models are loaded and ready
+            // Check if required models are loaded and ready (embeddings required, MobileBERT optional)
             if (modelState !is ModelState.Ready || 
-                embeddingsRetriever == null || 
-                mobileBertQa == null) {
+                embeddingsRetriever == null) {
                 
                 val reason = when (modelState) {
                     is ModelState.NotDownloaded -> "Ensemble models not downloaded"
@@ -368,33 +390,65 @@ class EnsembleEngine private constructor(private val context: Context) {
                     )
                 }
                 
-                // Step 3: Low confidence or no match - fall back to MobileBERT generation
-                Timber.d("🎯 Retrieval confidence too low (${retrievalResult?.confidence ?: 0f}), using MobileBERT generation")
-                
-                // Build context for MobileBERT (use retrieved answer as context if available)
-                val context = if (retrievalResult != null) {
-                    buildContextWithRetrieval(prompt, retrievalResult.answer, intentResult?.intent ?: "general")
-                } else {
-                    buildContextFromIntent(prompt, intentResult?.intent ?: "general")
+                // Step 3: Low confidence or no match - try MobileBERT if available, else use best retrieval
+                if (mobileBertQa != null) {
+                    try {
+                        Timber.d("🎯 Retrieval confidence too low (${retrievalResult?.confidence ?: 0f}), using MobileBERT generation")
+                        
+                        // Build context for MobileBERT (use retrieved answer as context if available)
+                        val context = if (retrievalResult != null) {
+                            buildContextWithRetrieval(prompt, retrievalResult.answer, intentResult?.intent ?: "general")
+                        } else {
+                            buildContextFromIntent(prompt, intentResult?.intent ?: "general")
+                        }
+                        
+                        val qaResult = mobileBertQa!!.answer(context, prompt)
+                        
+                        // Restore previous state
+                        modelState = previousState
+                        val inferenceTime = System.currentTimeMillis() - startTime
+                        
+                        // Count tokens (approximate - count words)
+                        val tokensGenerated = qaResult.answer.split("\\s+".toRegex()).size
+                        
+                        Timber.i("🎯 Generated answer in ${inferenceTime}ms (~$tokensGenerated tokens, confidence: ${qaResult.confidence})")
+                        
+                        return@withContext ExplanationResult.Success(
+                            text = qaResult.answer,
+                            tokensGenerated = tokensGenerated,
+                            inferenceTimeMs = inferenceTime,
+                            fromCache = false
+                        )
+                    } catch (bertError: Exception) {
+                        Timber.w(bertError, "🎯 MobileBERT failed, falling back to best retrieval match")
+                        // Fall through to use retrieval result below
+                    }
                 }
                 
-                val qaResult = mobileBertQa!!.answer(context, prompt)
-                
-                // Restore previous state
-                modelState = previousState
-                val inferenceTime = System.currentTimeMillis() - startTime
-                
-                // Count tokens (approximate - count words)
-                val tokensGenerated = qaResult.answer.split("\\s+".toRegex()).size
-                
-                Timber.i("🎯 Generated answer in ${inferenceTime}ms (~$tokensGenerated tokens, confidence: ${qaResult.confidence})")
-                
-                return@withContext ExplanationResult.Success(
-                    text = qaResult.answer,
-                    tokensGenerated = tokensGenerated,
-                    inferenceTimeMs = inferenceTime,
-                    fromCache = false
-                )
+                // MobileBERT unavailable or failed - use best retrieval match even if low confidence
+                if (retrievalResult != null) {
+                    modelState = previousState
+                    val inferenceTime = System.currentTimeMillis() - startTime
+                    val tokensGenerated = retrievalResult.answer.split("\\s+".toRegex()).size
+                    
+                    Timber.i("🎯 Using best retrieval match (confidence: ${retrievalResult.confidence}) in ${inferenceTime}ms")
+                    
+                    return@withContext ExplanationResult.Success(
+                        text = retrievalResult.answer,
+                        tokensGenerated = tokensGenerated,
+                        inferenceTimeMs = inferenceTime,
+                        fromCache = true
+                    )
+                } else {
+                    // No retrieval result at all
+                    modelState = previousState
+                    Timber.w("🎯 No retrieval match found and MobileBERT unavailable")
+                    
+                    return@withContext ExplanationResult.Unavailable(
+                        reason = "No matching answer found in knowledge base",
+                        fallbackText = "I don't have information about that specific topic. Try asking about chart patterns, technical indicators, or trading strategies."
+                    )
+                }
                 
             } catch (inferenceError: Exception) {
                 // Restore previous state on error

@@ -194,14 +194,13 @@ class ModelManager(private val context: Context) {
         Timber.i("🧠 ====== AUTO-PROVISION STARTING ======")
         val results = mutableMapOf<ModelType, Result<File>>()
         
-        // Only provision required models (embeddings + mobilebert)
-        // Intent classifier is optional and not bundled by default
-        val requiredModels = listOf(
-            ModelType.SENTENCE_EMBEDDINGS,
-            ModelType.MOBILEBERT_QA
+        // Provision all bundled models (embeddings required, others optional)
+        val bundledModels = listOf(
+            ModelType.SENTENCE_EMBEDDINGS,  // Required - retrieval system
+            ModelType.MOBILEBERT_QA         // Optional - generative fallback
         )
         
-        for (modelType in requiredModels) {
+        for (modelType in bundledModels) {
             Timber.i("🧠 Processing $modelType...")
             
             // Check if model already exists in internal storage
@@ -313,13 +312,12 @@ class ModelManager(private val context: Context) {
             importedModels.add(ModelType.MOBILEBERT_QA)
         }
         
-        // Check if we have the 2 required models (embeddings + mobilebert)
-        val hasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS) && 
-                                importedModels.contains(ModelType.MOBILEBERT_QA)
+        // Check if we have the required model (embeddings only - MobileBERT is optional)
+        val hasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS)
         
-        // If required models are missing, try to auto-provision from bundled assets
+        // If required model is missing, try to auto-provision from bundled assets
         if (!hasRequiredModels) {
-            Timber.i("🧠 Required models missing in internal storage, checking bundled assets...")
+            Timber.i("🧠 Required embeddings model missing in internal storage, checking bundled assets...")
             
             val provisionResults = autoProvisionFromAssets()
             
@@ -341,18 +339,18 @@ class ModelManager(private val context: Context) {
             Timber.i("🧠 Auto-provisioning complete: $successCount/$totalAttempted models provisioned successfully")
         }
         
-        // Final check: Do we have required models?
-        val finalHasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS) && 
-                                     importedModels.contains(ModelType.MOBILEBERT_QA)
+        // Final check: Do we have required model?
+        val finalHasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS)
         
         return when {
             importedModels.isEmpty() -> ModelState.NotDownloaded
             finalHasRequiredModels -> {
-                Timber.i("🧠 All required models available: ${importedModels.size} total")
-                ModelState.Downloaded  // 2 or 3 models present with required ones
+                val modelList = importedModels.joinToString(", ")
+                Timber.i("🧠 Required embeddings model available (${importedModels.size} total: $modelList)")
+                ModelState.Downloaded  // Embeddings present (MobileBERT and IntentClassifier optional)
             }
             else -> {
-                Timber.w("🧠 Only partial models available: $importedModels")
+                Timber.w("🧠 Required embeddings model missing. Available: $importedModels")
                 ModelState.PartiallyDownloaded(
                     importedCount = importedModels.size,
                     importedModels = importedModels
