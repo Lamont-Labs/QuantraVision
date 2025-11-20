@@ -151,7 +151,7 @@ class EnsembleEngine private constructor(private val context: Context) {
     
     init {
         modelState = modelManager.getModelState()
-        Timber.i("🎯 EnsembleEngine initialized - State: $modelState")
+        Timber.i("🎯 EnsembleEngine initialized - State: $modelState [BUILD: 2025-11-20-MOBILEBERT-OPTIONAL-v2]")
     }
     
     /**
