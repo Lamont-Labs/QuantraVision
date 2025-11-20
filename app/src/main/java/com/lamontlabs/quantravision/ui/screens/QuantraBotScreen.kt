@@ -100,7 +100,7 @@ fun QuantraBotScreen(
             // Header
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF0D1825).copy(alpha = 0.95f),
+                color = AppColors.Surface.copy(alpha = 0.95f),
                 tonalElevation = 4.dp
             ) {
                 Column(
