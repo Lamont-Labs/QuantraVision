@@ -11,17 +11,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.lamontlabs.quantravision.R
 
-// QuantraCore HD Contrast Colors - Sharp, High-Definition UI
-val QVCyan = Color(0xFF00F0FF)           // BRIGHTER primary neon cyan (HD contrast)
-val QVCyanBright = Color(0xFF00FFFF)     // BRIGHTEST cyan for sharp edges
-val QVDarkBg = Color(0xFF05070D)         // DEEPER background (near-black for max contrast)
-val QVSurface = Color(0xFF0D1219)        // DARKER surface (stronger separation)
+// QuantraVision Brand Colors - Neon Cyan & Metallic Dark Theme
+val QVCyan = Color(0xFF00F0FF)           // Primary neon cyan - QuantraVision brand
+val QVCyanBright = Color(0xFF00FFFF)     // Brightest cyan for sharp edges
+val QVDarkBg = Color(0xFF000814)         // Deep metallic dark background - QuantraVision brand
+val QVSurface = Color(0xFF0F1B2E)        // Metallic dark surface - QuantraVision brand
 val QVLightText = Color(0xFFFFFFFF)      // Pure white text (maximum contrast)
 val QVSuccess = Color(0xFF00FF88)        // Bright neon green
-val QVOrange = Color(0xFFFF9F00)         // BRIGHTER orange accent
-val QVError = Color(0xFFFF1F50)          // BRIGHTER neon red
-val QVGold = Color(0xFFFFB347)           // BRIGHTER gold metallic
-val QVInfo = Color(0xFF5FDDEB)           // BRIGHTER cyan for secondary text
+val QVOrange = Color(0xFFFF9F00)         // Brighter orange accent
+val QVError = Color(0xFFFF1F50)          // Brighter neon red
+val QVGold = Color(0xFFFFB347)           // Brighter gold metallic
+val QVInfo = Color(0xFF5FDDEB)           // Brighter cyan for secondary text
 
 private val QVColors = darkColorScheme(
     // Primary colors (BRIGHT Neon Cyan - HD contrast)
@@ -78,18 +78,18 @@ val ColorScheme.orange: Color
     get() = QVOrange
 
 object QuantraColors {
-    val cyanInt = 0xFF00F0FF.toInt()         // BRIGHTER primary
-    val cyanBrightInt = 0xFF00FFFF.toInt()   // BRIGHTEST for edges
+    val cyanInt = 0xFF00F0FF.toInt()         // QuantraVision neon cyan
+    val cyanBrightInt = 0xFF00FFFF.toInt()   // Brightest cyan for edges
     val cyanBrightestInt = 0xFF00FFFF.toInt()
-    val darkBgInt = 0xFF05070D.toInt()       // DEEPER background
-    val surfaceInt = 0xFF0D1219.toInt()      // DARKER surface
+    val darkBgInt = 0xFF000814.toInt()       // QuantraVision deep metallic background
+    val surfaceInt = 0xFF0F1B2E.toInt()      // QuantraVision metallic surface
     val whiteInt = 0xFFFFFFFF.toInt()
     val successInt = 0xFF00FF88.toInt()
-    val orangeInt = 0xFFFF9F00.toInt()       // BRIGHTER orange
-    val errorInt = 0xFFFF1F50.toInt()        // BRIGHTER red
-    val goldInt = 0xFFFFB347.toInt()         // BRIGHTER gold
-    val infoInt = 0xFF5FDDEB.toInt()         // BRIGHTER info cyan
-    val outlineInt = 0xFFAABBCC.toInt()      // LIGHTER outline
+    val orangeInt = 0xFFFF9F00.toInt()       // Brighter orange
+    val errorInt = 0xFFFF1F50.toInt()        // Brighter red
+    val goldInt = 0xFFFFB347.toInt()         // Brighter gold
+    val infoInt = 0xFF5FDDEB.toInt()         // Brighter info cyan
+    val outlineInt = 0xFFAABBCC.toInt()      // Lighter outline
 }
 
 // Orbitron font family - Futuristic display font for headers/branding (Samsung-safe direct TTF loading)

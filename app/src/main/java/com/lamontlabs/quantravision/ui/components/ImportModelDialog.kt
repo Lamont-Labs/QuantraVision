@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.intelligence.llm.ImportState
 import com.lamontlabs.quantravision.ui.NeonCyan
 import com.lamontlabs.quantravision.ui.NeonGold
+import com.lamontlabs.quantravision.ui.theme.AppColors
 
 /**
  * Dialog showing model import progress
@@ -235,7 +236,7 @@ fun ImportModelDialog(
                 }
             }
         },
-        containerColor = Color(0xFF1A2332),
+        containerColor = AppColors.Surface,
         iconContentColor = NeonCyan
     )
 }

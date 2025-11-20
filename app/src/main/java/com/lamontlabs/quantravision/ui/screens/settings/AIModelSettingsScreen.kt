@@ -28,6 +28,7 @@ import com.lamontlabs.quantravision.ui.NeonGold
 import com.lamontlabs.quantravision.ui.NeonText
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.components.SectionHeader
+import com.lamontlabs.quantravision.ui.theme.AppColors
 import com.lamontlabs.quantravision.ui.theme.AppSpacing
 import com.lamontlabs.quantravision.ui.theme.AppTypography
 
@@ -141,7 +142,7 @@ fun AIModelSettingsScreen(
                     Text("Cancel", color = Color.White)
                 }
             },
-            containerColor = Color(0xFF1A2332)
+            containerColor = AppColors.Surface
         )
     }
     

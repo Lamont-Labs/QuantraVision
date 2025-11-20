@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.lamontlabs.quantravision.detection.filtering.*
 import com.lamontlabs.quantravision.ui.MenuItemCard
 import com.lamontlabs.quantravision.ui.NeonCyan
+import com.lamontlabs.quantravision.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +32,7 @@ fun FilterSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = Color(0xFF0D1219)
+        containerColor = AppColors.Surface
     ) {
         Column(
             modifier = Modifier

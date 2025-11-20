@@ -29,6 +29,7 @@ import com.lamontlabs.quantravision.ui.components.ImportModelDialog
 import com.lamontlabs.quantravision.ui.StaticBrandBackground
 import com.lamontlabs.quantravision.ui.NeonCyan
 import com.lamontlabs.quantravision.ui.NeonGold
+import com.lamontlabs.quantravision.ui.theme.AppColors
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -200,7 +201,7 @@ fun QuantraBotScreen(
             // Input Area
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF0D1825).copy(alpha = 0.95f),
+                color = AppColors.Surface.copy(alpha = 0.95f),
                 tonalElevation = 8.dp
             ) {
                 Row(
@@ -251,7 +252,7 @@ private fun WelcomeMessage(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1A2332)
+            containerColor = AppColors.Surface
         )
     ) {
         Column(
@@ -381,7 +382,7 @@ private fun ChatMessageBubble(message: ChatMessage) {
                 containerColor = if (message.isUser) {
                     NeonCyan.copy(alpha = 0.2f)
                 } else {
-                    Color(0xFF1A2332)
+                    AppColors.Surface
                 }
             ),
             shape = RoundedCornerShape(
@@ -441,7 +442,7 @@ private fun TypingIndicator() {
     ) {
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF1A2332)
+                containerColor = AppColors.Surface
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -476,7 +477,7 @@ private fun ModelNotFoundCard(onImportClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1A2332)
+            containerColor = AppColors.Surface
         )
     ) {
         Column(

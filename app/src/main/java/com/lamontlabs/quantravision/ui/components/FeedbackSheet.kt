@@ -16,6 +16,7 @@ import com.lamontlabs.quantravision.analytics.PatternPerformanceTracker
 import com.lamontlabs.quantravision.analytics.model.Outcome
 import com.lamontlabs.quantravision.ui.success
 import com.lamontlabs.quantravision.ui.warning
+import com.lamontlabs.quantravision.ui.theme.AppColors
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +33,7 @@ fun FeedbackSheet(
     
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = Color(0xFF0D1219)
+        containerColor = AppColors.Surface
     ) {
         Column(
             modifier = Modifier
