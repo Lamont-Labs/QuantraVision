@@ -40,7 +40,12 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 /**
- * Direct file path import activity - BYPASSES Android's buggy file picker.
+ * Multi-step model import activity for 3 separate TFLite models
+ * 
+ * Handles sequential import of:
+ * 1. Intent Classifier (intent_classifier.tflite)
+ * 2. Sentence Embeddings (sentence_embeddings.tflite)
+ * 3. MobileBERT Q&A (mobilebert_qa_squad.tflite)
  * 
  * Requires MANAGE_EXTERNAL_STORAGE permission on Android 11+ to access Download folder.
  */
@@ -53,16 +58,17 @@ class ImportActivity : ComponentActivity() {
     }
     
     private var pendingFilePath: String? = null
+    private var pendingModelType: ModelType? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.i("📥 ImportActivity: onCreate (direct path mode)")
+        Timber.i("📥 ImportActivity: onCreate (3-step import mode)")
         
         setContent {
             QuantraVisionTheme {
-                DirectFilePathImportScreen(
+                MultiStepImportScreen(
                     onImportComplete = {
-                        Timber.i("📥 Import complete, re-enabling OverlayService")
+                        Timber.i("📥 All imports complete, re-enabling OverlayService")
                         OverlayServiceGuard.enable(this)
                         setResult(Activity.RESULT_OK)
                         finish()
@@ -73,8 +79,9 @@ class ImportActivity : ComponentActivity() {
                         setResult(Activity.RESULT_CANCELED)
                         finish()
                     },
-                    onImport = { filePath ->
+                    onImport = { filePath, modelType ->
                         pendingFilePath = filePath
+                        pendingModelType = modelType
                         checkPermissionsAndProceed()
                     }
                 )
@@ -89,7 +96,7 @@ class ImportActivity : ComponentActivity() {
                 Timber.w("📥 MANAGE_EXTERNAL_STORAGE permission not granted")
                 Toast.makeText(
                     this,
-                    "Please grant 'All files access' permission to import the model file",
+                    "Please grant 'All files access' permission to import model files",
                     Toast.LENGTH_LONG
                 ).show()
                 
@@ -120,18 +127,23 @@ class ImportActivity : ComponentActivity() {
         }
         
         // Permission granted, proceed with import
-        pendingFilePath?.let { importFromPath(it) }
+        val filePath = pendingFilePath
+        val modelType = pendingModelType
+        if (filePath != null && modelType != null) {
+            importFromPath(filePath, modelType)
+        }
     }
     
     
-    private fun importFromPath(filePath: String) {
+    private fun importFromPath(filePath: String, modelType: ModelType) {
         lifecycleScope.launch {
             try {
-                Timber.i("📥 Importing from path: $filePath")
+                Timber.i("📥 Importing $modelType from path: $filePath")
                 
                 withContext(Dispatchers.IO) {
                     val sourceFile = File(filePath)
                     
+                    // Validate source file exists
                     if (!sourceFile.exists()) {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
@@ -154,15 +166,39 @@ class ImportActivity : ComponentActivity() {
                         return@withContext
                     }
                     
+                    // Validate filename matches expected model type
+                    val expectedFilename = when (modelType) {
+                        ModelType.INTENT_CLASSIFIER -> ModelConfig.INTENT_CLASSIFIER_NAME
+                        ModelType.SENTENCE_EMBEDDINGS -> ModelConfig.SENTENCE_EMBEDDINGS_NAME
+                        ModelType.MOBILEBERT_QA -> ModelConfig.MOBILEBERT_QA_NAME
+                    }
+                    
+                    if (!sourceFile.name.equals(expectedFilename, ignoreCase = true)) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@ImportActivity,
+                                "❌ Incorrect filename! Expected: $expectedFilename\nGot: ${sourceFile.name}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        return@withContext
+                    }
+                    
                     // Copy file to ModelManager's expected location
                     val modelDir = File(this@ImportActivity.filesDir, "llm_models")
                     modelDir.mkdirs()
-                    val destFile = File(modelDir, "gemma-3-1b-it-int4.task")
+                    val destFile = File(modelDir, expectedFilename)
+                    
+                    val modelTypeName = when (modelType) {
+                        ModelType.INTENT_CLASSIFIER -> "Intent Classifier"
+                        ModelType.SENTENCE_EMBEDDINGS -> "Sentence Embeddings"
+                        ModelType.MOBILEBERT_QA -> "MobileBERT Q&A"
+                    }
                     
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             this@ImportActivity,
-                            "Importing ${sourceFile.length() / 1_000_000}MB model file...",
+                            "Importing $modelTypeName (${sourceFile.length() / 1_000_000}MB)...",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -181,35 +217,37 @@ class ImportActivity : ComponentActivity() {
                     
                     Timber.i("📥 Copy complete, file size: ${destFile.length()} bytes")
                     
-                    // Update ModelManager state
+                    // Update ModelManager state for this specific model
                     val modelManager = ModelManager(this@ImportActivity)
-                    modelManager.onModelImported()
+                    modelManager.onModelImported(modelType)
                 }
                 
-                // Success
+                // Success - don't finish, let user continue importing
                 withContext(Dispatchers.Main) {
+                    val modelTypeName = when (modelType) {
+                        ModelType.INTENT_CLASSIFIER -> "Intent Classifier"
+                        ModelType.SENTENCE_EMBEDDINGS -> "Sentence Embeddings"
+                        ModelType.MOBILEBERT_QA -> "MobileBERT Q&A"
+                    }
                     Toast.makeText(
                         this@ImportActivity,
-                        "✓ Model imported successfully!",
-                        Toast.LENGTH_LONG
+                        "✓ $modelTypeName imported successfully!",
+                        Toast.LENGTH_SHORT
                     ).show()
                     
-                    OverlayServiceGuard.enable(this@ImportActivity)
-                    setResult(Activity.RESULT_OK)
-                    finish()
+                    // Clear pending state
+                    pendingFilePath = null
+                    pendingModelType = null
                 }
                 
             } catch (e: Exception) {
-                Timber.e(e, "📥 Import failed")
+                Timber.e(e, "📥 Import failed for $modelType")
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@ImportActivity,
                         "Import failed: ${e.message}",
                         Toast.LENGTH_LONG
                     ).show()
-                    OverlayServiceGuard.enable(this@ImportActivity)
-                    setResult(Activity.RESULT_CANCELED)
-                    finish()
                 }
             }
         }
@@ -217,15 +255,55 @@ class ImportActivity : ComponentActivity() {
 }
 
 @Composable
-private fun DirectFilePathImportScreen(
+private fun MultiStepImportScreen(
     onImportComplete: () -> Unit,
     onCancel: () -> Unit,
-    onImport: (String) -> Unit
+    onImport: (String, ModelType) -> Unit
 ) {
-    var filePath by remember { 
-        mutableStateOf("/storage/emulated/0/Download/gemma3-1b-it-int4.task") 
-    }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val modelManager = remember { ModelManager(context) }
+    
+    var modelState by remember { mutableStateOf(modelManager.getModelState()) }
+    var filePath by remember { mutableStateOf("") }
+    var currentStep by remember { mutableStateOf(1) }
     var isImporting by remember { mutableStateOf(false) }
+    
+    // Determine which models are imported
+    val importedModels = when (val state = modelState) {
+        is ModelState.PartiallyDownloaded -> state.importedModels
+        is ModelState.Downloaded -> setOf(ModelType.INTENT_CLASSIFIER, ModelType.SENTENCE_EMBEDDINGS, ModelType.MOBILEBERT_QA)
+        else -> emptySet()
+    }
+    
+    val totalModels = 3
+    val importedCount = importedModels.size
+    
+    // Determine current model to import based on what's missing
+    val pendingModelType = when {
+        ModelType.INTENT_CLASSIFIER !in importedModels -> ModelType.INTENT_CLASSIFIER
+        ModelType.SENTENCE_EMBEDDINGS !in importedModels -> ModelType.SENTENCE_EMBEDDINGS
+        ModelType.MOBILEBERT_QA !in importedModels -> ModelType.MOBILEBERT_QA
+        else -> null
+    }
+    
+    // Update default file path based on current model
+    LaunchedEffect(pendingModelType) {
+        filePath = when (pendingModelType) {
+            ModelType.INTENT_CLASSIFIER -> "/storage/emulated/0/Download/${ModelConfig.INTENT_CLASSIFIER_NAME}"
+            ModelType.SENTENCE_EMBEDDINGS -> "/storage/emulated/0/Download/${ModelConfig.SENTENCE_EMBEDDINGS_NAME}"
+            ModelType.MOBILEBERT_QA -> "/storage/emulated/0/Download/${ModelConfig.MOBILEBERT_QA_NAME}"
+            null -> ""
+        }
+    }
+    
+    // Refresh model state periodically
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(500)
+            modelState = modelManager.getModelState()
+            isImporting = false  // Reset importing flag when state changes
+        }
+    }
     
     StaticBrandBackground {
         Column(
@@ -236,92 +314,170 @@ private fun DirectFilePathImportScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "📁",
+                text = "📦",
                 style = AppTypography.headlineLarge.copy(
                     fontSize = AppTypography.headlineLarge.fontSize * 2
                 )
             )
             
-            Spacer(modifier = Modifier.height(AppSpacing.xl))
+            Spacer(modifier = Modifier.height(AppSpacing.md))
             
             Text(
-                text = "Enter File Path",
+                text = "Import AI Models",
                 style = AppTypography.headlineLarge,
                 color = AppColors.NeonCyan,
                 textAlign = TextAlign.Center
             )
             
-            Spacer(modifier = Modifier.height(AppSpacing.md))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             
+            Text(
+                text = "$importedCount / $totalModels models imported",
+                style = AppTypography.bodyLarge,
+                color = if (importedCount == totalModels) AppColors.MetallicGold else AppColors.MetallicSilver,
+                textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(AppSpacing.xl))
+            
+            // Status cards for each model
             MetallicCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(AppSpacing.lg)) {
-                    Text(
-                        text = "Type the full path to your downloaded model file:",
-                        style = AppTypography.bodyMedium,
-                        color = AppColors.MetallicSilver,
-                        textAlign = TextAlign.Center
+                    ModelStatusRow(
+                        modelName = "Intent Classifier",
+                        filename = ModelConfig.INTENT_CLASSIFIER_NAME,
+                        isImported = ModelType.INTENT_CLASSIFIER in importedModels,
+                        isCurrent = pendingModelType == ModelType.INTENT_CLASSIFIER
                     )
                     
-                    Spacer(modifier = Modifier.height(AppSpacing.lg))
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
                     
-                    OutlinedTextField(
-                        value = filePath,
-                        onValueChange = { filePath = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("File Path") },
-                        singleLine = false,
-                        maxLines = 3,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.NeonCyan,
-                            unfocusedBorderColor = AppColors.MetallicSilver,
-                            focusedLabelColor = AppColors.NeonCyan,
-                            unfocusedLabelColor = AppColors.MetallicSilver,
-                            cursorColor = AppColors.NeonCyan
-                        )
+                    ModelStatusRow(
+                        modelName = "Sentence Embeddings",
+                        filename = ModelConfig.SENTENCE_EMBEDDINGS_NAME,
+                        isImported = ModelType.SENTENCE_EMBEDDINGS in importedModels,
+                        isCurrent = pendingModelType == ModelType.SENTENCE_EMBEDDINGS
                     )
                     
-                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
                     
-                    Text(
-                        text = "Common location:\n/storage/emulated/0/Download/gemma3-1b-it-int4.task",
-                        style = AppTypography.bodySmall,
-                        color = AppColors.MetallicGold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    Spacer(modifier = Modifier.height(AppSpacing.sm))
-                    
-                    Text(
-                        text = "Note: You'll be asked to grant 'All files access' permission.",
-                        style = AppTypography.bodySmall,
-                        color = AppColors.MetallicSilver.copy(alpha = 0.7f),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                    ModelStatusRow(
+                        modelName = "MobileBERT Q&A",
+                        filename = ModelConfig.MOBILEBERT_QA_NAME,
+                        isImported = ModelType.MOBILEBERT_QA in importedModels,
+                        isCurrent = pendingModelType == ModelType.MOBILEBERT_QA
                     )
                 }
             }
             
             Spacer(modifier = Modifier.height(AppSpacing.xl))
             
-            MetallicButton(
-                onClick = {
-                    isImporting = true
-                    onImport(filePath)
-                },
-                enabled = !isImporting && filePath.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isImporting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = AppColors.NeonCyan,
-                        strokeWidth = 2.dp
-                    )
-                    Spacer(modifier = Modifier.width(AppSpacing.sm))
-                    Text("Importing...")
-                } else {
-                    Text("Import Model")
+            // Show import UI only if not all models are imported
+            if (pendingModelType != null) {
+                MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(AppSpacing.lg)) {
+                        val modelTypeName = when (pendingModelType) {
+                            ModelType.INTENT_CLASSIFIER -> "Intent Classifier"
+                            ModelType.SENTENCE_EMBEDDINGS -> "Sentence Embeddings"
+                            ModelType.MOBILEBERT_QA -> "MobileBERT Q&A"
+                        }
+                        
+                        Text(
+                            text = "Import: $modelTypeName",
+                            style = AppTypography.bodyLarge,
+                            color = AppColors.NeonCyan,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.md))
+                        
+                        OutlinedTextField(
+                            value = filePath,
+                            onValueChange = { filePath = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("File Path") },
+                            singleLine = false,
+                            maxLines = 3,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = AppColors.NeonCyan,
+                                unfocusedBorderColor = AppColors.MetallicSilver,
+                                focusedLabelColor = AppColors.NeonCyan,
+                                unfocusedLabelColor = AppColors.MetallicSilver,
+                                cursorColor = AppColors.NeonCyan
+                            )
+                        )
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        
+                        Text(
+                            text = "💡 Tip: Place files in /storage/emulated/0/Download/",
+                            style = AppTypography.bodySmall,
+                            color = AppColors.MetallicSilver.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(AppSpacing.lg))
+                
+                MetallicButton(
+                    onClick = {
+                        isImporting = true
+                        onImport(filePath, pendingModelType)
+                    },
+                    enabled = !isImporting && filePath.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (isImporting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = AppColors.NeonCyan,
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(AppSpacing.sm))
+                        Text("Importing...")
+                    } else {
+                        Text("Import ${when (pendingModelType) {
+                            ModelType.INTENT_CLASSIFIER -> "Intent Classifier"
+                            ModelType.SENTENCE_EMBEDDINGS -> "Embeddings"
+                            ModelType.MOBILEBERT_QA -> "Q&A Model"
+                        }}")
+                    }
+                }
+            } else {
+                // All models imported - show complete button
+                MetallicCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(AppSpacing.lg),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "✓ All Models Imported!",
+                            style = AppTypography.headlineMedium,
+                            color = AppColors.MetallicGold,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
+                        
+                        Text(
+                            text = "All 3 AI models are ready for use.",
+                            style = AppTypography.bodyMedium,
+                            color = AppColors.MetallicSilver,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(AppSpacing.lg))
+                
+                MetallicButton(
+                    onClick = onImportComplete,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Complete Setup")
                 }
             }
             
@@ -329,10 +485,58 @@ private fun DirectFilePathImportScreen(
             
             TextButton(onClick = onCancel) {
                 Text(
-                    "Cancel",
+                    if (importedCount == 0) "Cancel" else "Close",
                     color = AppColors.MetallicSilver
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ModelStatusRow(
+    modelName: String,
+    filename: String,
+    isImported: Boolean,
+    isCurrent: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = if (isImported) "✓" else if (isCurrent) "→" else "○",
+            style = AppTypography.headlineSmall,
+            color = if (isImported) AppColors.MetallicGold else if (isCurrent) AppColors.NeonCyan else AppColors.MetallicSilver.copy(alpha = 0.5f)
+        )
+        
+        Spacer(modifier = Modifier.width(AppSpacing.md))
+        
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = modelName,
+                style = AppTypography.bodyMedium,
+                color = if (isCurrent) AppColors.NeonCyan else AppColors.MetallicSilver
+            )
+            Text(
+                text = filename,
+                style = AppTypography.bodySmall,
+                color = AppColors.MetallicSilver.copy(alpha = 0.7f)
+            )
+        }
+        
+        if (isImported) {
+            Text(
+                text = "Imported",
+                style = AppTypography.bodySmall,
+                color = AppColors.MetallicGold
+            )
+        } else if (isCurrent) {
+            Text(
+                text = "Pending",
+                style = AppTypography.bodySmall,
+                color = AppColors.NeonCyan
+            )
         }
     }
 }

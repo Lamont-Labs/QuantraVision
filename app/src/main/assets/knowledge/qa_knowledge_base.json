@@ -1,0 +1,1190 @@
+[
+  {
+    "question": "What is Head and Shoulders pattern?",
+    "answer": "A bearish reversal pattern with three peaks where the middle peak (head) is highest. It signals the end of an uptrend when price breaks below the neckline connecting the troughs. Enter short on neckline break with stop above right shoulder.",
+    "category": "pattern_explanation",
+    "keywords": ["head and shoulders", "reversal", "bearish", "neckline"]
+  },
+  {
+    "question": "How does Inverse Head and Shoulders work?",
+    "answer": "A bullish reversal pattern forming at the bottom of downtrends with three troughs where the middle (head) is lowest. Buy when price breaks above the neckline with increased volume. Target is measured from head to neckline, projected upward.",
+    "category": "pattern_explanation",
+    "keywords": ["inverse head and shoulders", "bullish", "reversal", "bottom"]
+  },
+  {
+    "question": "What is a Double Bottom pattern?",
+    "answer": "A bullish reversal pattern showing two distinct lows at similar price levels separated by a moderate peak. Enter long when price breaks above the middle peak with volume confirmation. Set stop below the second bottom.",
+    "category": "pattern_explanation",
+    "keywords": ["double bottom", "bullish", "reversal", "W pattern"]
+  },
+  {
+    "question": "What is a Double Top pattern?",
+    "answer": "A bearish reversal pattern with two peaks at roughly equal heights. Enter short when price breaks below the middle trough (neckline) with volume increase. Stop loss goes above the second top with target equal to pattern height.",
+    "category": "pattern_explanation",
+    "keywords": ["double top", "bearish", "reversal", "M pattern"]
+  },
+  {
+    "question": "How does an Ascending Triangle work?",
+    "answer": "A bullish continuation pattern with horizontal resistance and rising support forming a right triangle. Price consolidates before breaking upward through resistance. Enter on breakout with volume, stop below last swing low.",
+    "category": "pattern_explanation",
+    "keywords": ["ascending triangle", "bullish", "continuation", "breakout"]
+  },
+  {
+    "question": "What is a Descending Triangle?",
+    "answer": "A bearish continuation pattern featuring horizontal support and descending resistance. Price typically breaks down through support. Enter short on breakdown with volume confirmation, stop above descending trendline.",
+    "category": "pattern_explanation",
+    "keywords": ["descending triangle", "bearish", "continuation", "breakdown"]
+  },
+  {
+    "question": "What is a Symmetrical Triangle?",
+    "answer": "A neutral continuation pattern with converging trendlines where both support and resistance slope toward each other. Breakout direction often continues prior trend. Trade the breakout with stops on opposite side.",
+    "category": "pattern_explanation",
+    "keywords": ["symmetrical triangle", "continuation", "neutral", "coil"]
+  },
+  {
+    "question": "How does a Bull Flag pattern work?",
+    "answer": "A bullish continuation pattern showing a strong upward move (flagpole) followed by a downward consolidation channel (flag). Enter long on upside breakout from the flag channel. Target equals flagpole height projected from breakout.",
+    "category": "pattern_explanation",
+    "keywords": ["bull flag", "bullish", "continuation", "flagpole"]
+  },
+  {
+    "question": "What is a Bear Flag?",
+    "answer": "A bearish continuation pattern with a sharp decline (flagpole) followed by upward consolidation in a channel. Enter short when price breaks down from the flag. Measure target by projecting flagpole length downward.",
+    "category": "pattern_explanation",
+    "keywords": ["bear flag", "bearish", "continuation", "downtrend"]
+  },
+  {
+    "question": "What is Cup and Handle pattern?",
+    "answer": "A bullish continuation pattern resembling a tea cup with rounded bottom and small pullback (handle). The cup forms over weeks/months, handle in days/weeks. Enter on handle breakout above cup rim with volume.",
+    "category": "pattern_explanation",
+    "keywords": ["cup and handle", "bullish", "continuation", "rounded bottom"]
+  },
+  {
+    "question": "How does Rising Wedge work?",
+    "answer": "A bearish reversal pattern with both support and resistance sloping upward, but converging. Despite higher highs, momentum weakens. Enter short on breakdown below support with declining volume during formation validating it.",
+    "category": "pattern_explanation",
+    "keywords": ["rising wedge", "bearish", "reversal", "wedge"]
+  },
+  {
+    "question": "What is a Falling Wedge?",
+    "answer": "A bullish reversal pattern where both trendlines slope downward but converge. Price makes lower lows with weakening momentum. Enter long on upside breakout with volume confirmation, stop below last low.",
+    "category": "pattern_explanation",
+    "keywords": ["falling wedge", "bullish", "reversal", "wedge"]
+  },
+  {
+    "question": "What is Bullish Engulfing pattern?",
+    "answer": "A two-candle bullish reversal where a large green candle completely engulfs the previous red candle's body. Shows strong buying pressure overwhelming sellers. Most reliable at support levels or after downtrends.",
+    "category": "pattern_explanation",
+    "keywords": ["bullish engulfing", "candlestick", "reversal", "bullish"]
+  },
+  {
+    "question": "What is Bearish Engulfing pattern?",
+    "answer": "A two-candle bearish reversal where a large red candle completely engulfs the prior green candle's body. Indicates sellers taking control. Most effective at resistance or after uptrends with volume confirmation.",
+    "category": "pattern_explanation",
+    "keywords": ["bearish engulfing", "candlestick", "reversal", "bearish"]
+  },
+  {
+    "question": "How does Morning Star work?",
+    "answer": "A three-candle bullish reversal: large red candle, small-bodied candle (star), then large green candle. The star shows indecision at bottom, followed by bullish confirmation. Enter on third candle close.",
+    "category": "pattern_explanation",
+    "keywords": ["morning star", "candlestick", "bullish", "reversal"]
+  },
+  {
+    "question": "What is Evening Star pattern?",
+    "answer": "A three-candle bearish reversal: large green candle, small-bodied star, then large red candle. Signals exhaustion at top and reversal. Enter short on third candle close, stop above star high.",
+    "category": "pattern_explanation",
+    "keywords": ["evening star", "candlestick", "bearish", "reversal"]
+  },
+  {
+    "question": "What is Three White Soldiers?",
+    "answer": "A bullish reversal pattern of three consecutive large green candles with higher closes and small wicks. Shows strong, sustained buying pressure. Most reliable after downtrend at support with increasing volume.",
+    "category": "pattern_explanation",
+    "keywords": ["three white soldiers", "candlestick", "bullish", "reversal"]
+  },
+  {
+    "question": "What is Three Black Crows?",
+    "answer": "A bearish reversal pattern of three consecutive large red candles with lower closes. Indicates strong selling pressure and trend reversal. Most effective at resistance after uptrend with high volume.",
+    "category": "pattern_explanation",
+    "keywords": ["three black crows", "candlestick", "bearish", "reversal"]
+  },
+  {
+    "question": "What is a Doji candlestick?",
+    "answer": "A candle where open and close are nearly equal, creating a cross or plus sign. Signals market indecision and potential reversal when at extremes. Requires confirmation from next candle before trading.",
+    "category": "pattern_explanation",
+    "keywords": ["doji", "candlestick", "indecision", "reversal"]
+  },
+  {
+    "question": "What is a Hammer candlestick?",
+    "answer": "A bullish reversal candle with small body at top and long lower shadow (2x+ body size). Shows rejection of lower prices at support. Confirm with green candle next, then enter long.",
+    "category": "pattern_explanation",
+    "keywords": ["hammer", "candlestick", "bullish", "reversal"]
+  },
+  {
+    "question": "What is a Shooting Star?",
+    "answer": "A bearish reversal candle with small body at bottom and long upper shadow. Shows rejection at resistance. Confirm with red candle following, then enter short with stop above shadow high.",
+    "category": "pattern_explanation",
+    "keywords": ["shooting star", "candlestick", "bearish", "reversal"]
+  },
+  {
+    "question": "What is a Pennant pattern?",
+    "answer": "A short-term continuation pattern resembling a small symmetrical triangle after a strong price move. Converging trendlines create a pennant shape. Break direction usually continues prior trend within 1-3 weeks.",
+    "category": "pattern_explanation",
+    "keywords": ["pennant", "continuation", "triangle", "consolidation"]
+  },
+  {
+    "question": "What is a Rounding Bottom?",
+    "answer": "A long-term bullish reversal forming a smooth U-shaped curve. Gradual shift from selling to buying creates rounded pattern over months. Enter on breakout above resistance with volume increase.",
+    "category": "pattern_explanation",
+    "keywords": ["rounding bottom", "bullish", "reversal", "saucer"]
+  },
+  {
+    "question": "What is a Diamond Top?",
+    "answer": "A bearish reversal pattern shaped like a diamond, rare but powerful. Expanding then contracting price action at top signals confusion then breakdown. Enter short on breakdown below lower support.",
+    "category": "pattern_explanation",
+    "keywords": ["diamond top", "bearish", "reversal", "rare"]
+  },
+  {
+    "question": "What is a Triple Top?",
+    "answer": "A bearish reversal with three peaks at similar levels showing strong resistance. Each rally fails at same price zone. Enter short on breakdown below support with volume, stop above third peak.",
+    "category": "pattern_explanation",
+    "keywords": ["triple top", "bearish", "reversal", "resistance"]
+  },
+  {
+    "question": "What is a Triple Bottom?",
+    "answer": "A bullish reversal with three troughs at similar levels indicating strong support. Each decline stops at same zone. Buy on breakout above resistance with volume confirmation, stop below third bottom.",
+    "category": "pattern_explanation",
+    "keywords": ["triple bottom", "bullish", "reversal", "support"]
+  },
+  {
+    "question": "What is Hanging Man pattern?",
+    "answer": "A bearish reversal candle similar to hammer but appears after uptrend. Small body at top with long lower shadow. Requires bearish confirmation next candle. Enter short on confirmation with stop above high.",
+    "category": "pattern_explanation",
+    "keywords": ["hanging man", "candlestick", "bearish", "reversal"]
+  },
+  {
+    "question": "What is Inverted Hammer?",
+    "answer": "A bullish reversal candle with small body at bottom and long upper shadow appearing after downtrend. Shows buying attempt. Needs green candle confirmation before entering long position.",
+    "category": "pattern_explanation",
+    "keywords": ["inverted hammer", "candlestick", "bullish", "reversal"]
+  },
+  {
+    "question": "What is a Rectangle pattern?",
+    "answer": "A continuation pattern showing price consolidating between parallel horizontal support and resistance. Can be bullish or bearish. Trade the breakout direction with stops on opposite boundary.",
+    "category": "pattern_explanation",
+    "keywords": ["rectangle", "continuation", "consolidation", "channel"]
+  },
+  {
+    "question": "What is a Channel pattern?",
+    "answer": "Parallel trendlines containing price action, can be ascending (bullish), descending (bearish), or horizontal. Trade bounces within channel or breakouts. Channels define trend strength and direction.",
+    "category": "pattern_explanation",
+    "keywords": ["channel", "trendline", "parallel", "trend"]
+  },
+  {
+    "question": "What is Dark Cloud Cover?",
+    "answer": "A two-candle bearish reversal where red candle opens above prior green candle's high but closes below its midpoint. Shows selling pressure overwhelming buyers at resistance. Enter short on confirmation.",
+    "category": "pattern_explanation",
+    "keywords": ["dark cloud cover", "candlestick", "bearish", "reversal"]
+  },
+  {
+    "question": "What is Piercing Line?",
+    "answer": "A two-candle bullish reversal where green candle opens below prior red candle's low but closes above its midpoint. Shows buying pressure at support. Confirm with next candle before entry.",
+    "category": "pattern_explanation",
+    "keywords": ["piercing line", "candlestick", "bullish", "reversal"]
+  },
+  {
+    "question": "What is Island Reversal?",
+    "answer": "A gap-isolated price cluster indicating exhaustion and reversal. Price gaps up/down, trades briefly, then gaps in opposite direction leaving island. Strong reversal signal, enter after second gap.",
+    "category": "pattern_explanation",
+    "keywords": ["island reversal", "gap", "reversal", "exhaustion"]
+  },
+  {
+    "question": "What is a Broadening pattern?",
+    "answer": "An expanding pattern where swing highs get higher and lows get lower, creating megaphone shape. Shows increasing volatility and confusion. Typically bearish, trade breakdown with tight stop.",
+    "category": "pattern_explanation",
+    "keywords": ["broadening", "megaphone", "volatility", "expansion"]
+  },
+  {
+    "question": "What is Harami pattern?",
+    "answer": "A two-candle pattern where second candle is contained within first candle's body. Bullish harami appears in downtrend, bearish in uptrend. Shows momentum slowing, requires confirmation before entry.",
+    "category": "pattern_explanation",
+    "keywords": ["harami", "candlestick", "reversal", "inside bar"]
+  },
+  {
+    "question": "What is a Consolidation Box?",
+    "answer": "A rectangular pattern where price moves sideways between defined high and low boundaries. Represents equilibrium before next move. Trade the breakout direction with volume, stop on opposite side.",
+    "category": "pattern_explanation",
+    "keywords": ["consolidation", "box", "sideways", "range"]
+  },
+  {
+    "question": "What is a Measured Move?",
+    "answer": "A pattern projecting price target equal to initial move. First leg establishes distance, consolidation follows, then second leg matches first. Use for profit targets by measuring initial impulse.",
+    "category": "pattern_explanation",
+    "keywords": ["measured move", "target", "projection", "continuation"]
+  },
+  {
+    "question": "What is a Kicker pattern?",
+    "answer": "A powerful two-candle reversal with gap between opposite-colored candles showing dramatic shift. Bullish kicker gaps up green, bearish gaps down red. Strongest reversal signal, immediate trend change.",
+    "category": "pattern_explanation",
+    "keywords": ["kicker", "gap", "reversal", "powerful"]
+  },
+  {
+    "question": "What is Tweezer Top/Bottom?",
+    "answer": "Two or more candles with matching highs (top) or lows (bottom) showing price rejection. Tweezers at support are bullish, at resistance bearish. Stronger with opposite-colored candles.",
+    "category": "pattern_explanation",
+    "keywords": ["tweezer", "reversal", "rejection", "double"]
+  },
+  {
+    "question": "What is Abandoned Baby pattern?",
+    "answer": "A rare three-candle reversal with doji star gapping away from both surrounding candles. Shows dramatic shift in sentiment. Bullish at bottom, bearish at top, very reliable signal.",
+    "category": "pattern_explanation",
+    "keywords": ["abandoned baby", "doji", "gap", "reversal"]
+  },
+  {
+    "question": "What is Belt Hold pattern?",
+    "answer": "A single strong candle opening at extreme and closing near opposite end with minimal wick. Bullish belt hold opens at low, bearish at high. Shows immediate dominance by one side.",
+    "category": "pattern_explanation",
+    "keywords": ["belt hold", "marubozu", "strong", "reversal"]
+  },
+  {
+    "question": "What is Three Inside Up/Down?",
+    "answer": "A three-candle pattern: harami followed by confirmation candle. Inside Up is bullish with green confirmation, Inside Down bearish with red. More reliable than harami alone due to confirmation.",
+    "category": "pattern_explanation",
+    "keywords": ["three inside", "harami", "confirmation", "reversal"]
+  },
+  {
+    "question": "What is Three Outside Up/Down?",
+    "answer": "A three-candle pattern starting with engulfing pattern plus confirmation candle. Outside Up is bullish, Outside Down bearish. Third candle confirms engulfing pattern strength.",
+    "category": "pattern_explanation",
+    "keywords": ["three outside", "engulfing", "confirmation", "reversal"]
+  },
+  {
+    "question": "What is Spinning Top candlestick?",
+    "answer": "A candle with small body and long wicks on both sides showing indecision. Neither bulls nor bears control. At trend extremes, signals potential reversal. Needs confirmation before trading.",
+    "category": "pattern_explanation",
+    "keywords": ["spinning top", "indecision", "small body", "reversal"]
+  },
+  {
+    "question": "What is a Marubozu?",
+    "answer": "A candle with no wicks, just a solid body from open to close. Green marubozu shows strong buying, red shows strong selling. Indicates conviction and often continues in same direction.",
+    "category": "pattern_explanation",
+    "keywords": ["marubozu", "strong", "no wick", "continuation"]
+  },
+  {
+    "question": "What is Gap analysis?",
+    "answer": "Gaps are price jumps leaving empty spaces on chart. Breakaway gaps start trends, runaway gaps accelerate them, exhaustion gaps end them. Understanding gap types helps predict price action.",
+    "category": "pattern_explanation",
+    "keywords": ["gap", "breakaway", "exhaustion", "continuation"]
+  },
+  {
+    "question": "What is Bump and Run pattern?",
+    "answer": "A three-phase pattern: lead-in phase with gentle slope, bump phase with steep rally creating unsustainable slope, then run phase breaking down. Bearish pattern showing blow-off top.",
+    "category": "pattern_explanation",
+    "keywords": ["bump and run", "blow off", "bearish", "three phase"]
+  },
+  {
+    "question": "What is a Horn pattern?",
+    "answer": "A V-shaped reversal with rapid, sharp price movement. Horn Bottom is V-shaped recovery, Horn Top inverted V decline. Quick reversals with little consolidation, difficult to catch.",
+    "category": "pattern_explanation",
+    "keywords": ["horn", "v pattern", "sharp", "reversal"]
+  },
+  {
+    "question": "What is a Pipe pattern?",
+    "answer": "Similar to island reversal but with stronger gap. Pipe Top has exhaustion gap up then gap down, Pipe Bottom opposite. Shows dramatic sentiment shift, very bearish/bullish respectively.",
+    "category": "pattern_explanation",
+    "keywords": ["pipe", "gap", "reversal", "exhaustion"]
+  },
+  {
+    "question": "What is a Scallop pattern?",
+    "answer": "A J-shaped curve showing gradual decline then sharper rally. Scallop Bullish curves up, Bearish curves down. Less reliable than rounding patterns but still indicates trend shift.",
+    "category": "pattern_explanation",
+    "keywords": ["scallop", "j curve", "gradual", "reversal"]
+  },
+  {
+    "question": "Why does this pattern have a high QuantraScore?",
+    "answer": "High QuantraScore (75+) means strong confluence between pattern structure, technical indicators, and volume confirmation. Multiple factors align: proper pattern formation, supportive RSI/MACD readings, volume confirmation, and strong trend context supporting the setup.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "high score", "quality", "confluence"]
+  },
+  {
+    "question": "Why is the QuantraScore only 60?",
+    "answer": "A moderate QuantraScore (60-74) indicates the pattern structure is valid but lacks strong supporting evidence. Some indicators may be neutral, volume might be average, or pattern context isn't ideal. Still tradeable but requires more caution and tighter risk management.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "moderate", "average", "caution"]
+  },
+  {
+    "question": "What makes a pattern score above 80?",
+    "answer": "Scores above 80 require exceptional alignment: perfect pattern structure, strong volume confirmation, multiple supporting indicators (RSI, MACD, momentum), ideal trend context, and confluence with support/resistance. These are high-probability setups worth larger position sizes.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "high quality", "80+", "confluence"]
+  },
+  {
+    "question": "What does QuantraScore measure?",
+    "answer": "QuantraScore is a 0-100 composite quality metric combining pattern structure quality, indicator confluence (RSI, MACD, volume), trend context, and support/resistance alignment. Higher scores indicate more reliable setups with better risk/reward ratios and higher success probability.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "measure", "composite", "quality"]
+  },
+  {
+    "question": "How is volume factored into QuantraScore?",
+    "answer": "Volume confirmation adds significant points to QuantraScore. Breakouts with 1.5x+ average volume score higher. Declining volume during pattern formation (for reversals) or increasing volume on breakout boosts the score substantially, typically adding 10-20 points.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "volume", "confirmation", "breakout"]
+  },
+  {
+    "question": "Do indicators affect QuantraScore?",
+    "answer": "Yes significantly. RSI alignment (oversold for bullish, overbought for bearish), MACD crossovers supporting pattern direction, and momentum indicators all contribute. Each supporting indicator can add 5-15 points to the overall QuantraScore.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "indicators", "RSI", "MACD"]
+  },
+  {
+    "question": "Why does my pattern score low despite looking good?",
+    "answer": "Visual appeal doesn't guarantee quality. Low scores indicate missing confirmation: weak volume, indicators not supporting, poor trend context, or forming at wrong price levels. Pattern structure alone isn't enough for high QuantraScore without supporting evidence.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "low score", "visual", "confirmation"]
+  },
+  {
+    "question": "What's the minimum tradeable QuantraScore?",
+    "answer": "The default SmartFilter threshold is 60. Patterns scoring below 60 are filtered as low-quality. You can trade 50-60 scores with reduced position size and tighter stops, but below 50 has poor risk/reward and high failure rate.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "minimum", "threshold", "smartfilter"]
+  },
+  {
+    "question": "How does trend context affect score?",
+    "answer": "Patterns forming in proper context score 10-20 points higher. Reversal patterns need prior trend to reverse (uptrend for bearish, downtrend for bullish). Continuation patterns need existing trend. Wrong context severely penalizes the QuantraScore.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "trend", "context", "reversal"]
+  },
+  {
+    "question": "What's the difference between 65 and 75 score?",
+    "answer": "A 10-point gap represents significant quality difference. 65 is marginal with mixed signals, trade cautiously. 75 shows strong confluence and supporting evidence, justifying standard position sizing. This 10-point range often separates break-even traders from profitable ones.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "difference", "quality gap", "65 vs 75"]
+  },
+  {
+    "question": "Can QuantraScore predict pattern success rate?",
+    "answer": "Yes, historically patterns scoring 80+ have 65-75% success rate, 70-79 have 55-65%, 60-69 have 45-55%. Below 60 drops under 40%. The score correlates strongly with outcome probability based on learned historical data.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "success rate", "probability", "historical"]
+  },
+  {
+    "question": "Why do similar patterns have different scores?",
+    "answer": "Context matters more than structure. Same pattern can score 55 in choppy market with no volume versus 85 with strong trend, volume surge, and indicator alignment. QuantraScore evaluates complete setup quality, not just pattern shape.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "different scores", "context", "same pattern"]
+  },
+  {
+    "question": "How often does QuantraScore update?",
+    "answer": "QuantraScore is calculated at scan time using real-time indicator values. It doesn't update continuously but reflects conditions at moment of detection. Rescan the same chart later for updated score based on new indicator readings.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "update", "real-time", "scan"]
+  },
+  {
+    "question": "What if indicators conflict?",
+    "answer": "Conflicting indicators lower QuantraScore. If RSI shows oversold but MACD bearish, or volume weak on bullish pattern, the score reflects this uncertainty. Mixed signals result in moderate 55-65 scores requiring careful evaluation before trading.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "conflict", "mixed signals", "uncertainty"]
+  },
+  {
+    "question": "Does pattern size affect QuantraScore?",
+    "answer": "Indirectly yes. Larger patterns (spanning weeks/months on higher timeframes) often score higher due to more reliable structure and meaningful volume. Small patterns on low timeframes may lack significance, scoring lower even with good shape.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "pattern size", "timeframe", "reliability"]
+  },
+  {
+    "question": "Can I filter patterns by QuantraScore?",
+    "answer": "Yes, SmartFilter automatically hides patterns below your threshold (default 60). Adjust in settings: higher threshold (70-75) shows only high-quality setups, lower (50-55) shows more opportunities but lower quality. Pro users can customize per pattern type.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "filter", "smartfilter", "threshold"]
+  },
+  {
+    "question": "What's a good score for beginners?",
+    "answer": "Beginners should focus on 75+ scores only. These high-quality setups have clearer signals and better risk/reward, ideal for learning. As experience grows, you can evaluate 65-75 range. Avoid sub-65 scores until proven profitable with higher scores.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "beginners", "75+", "learning"]
+  },
+  {
+    "question": "How does timeframe impact score?",
+    "answer": "Higher timeframes (daily, 4H) generally produce higher QuantraScores due to more reliable patterns and less noise. Lower timeframes (1M, 5M) face more false signals and lower scores. Same pattern structure scores better on daily than on 5-minute chart.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "timeframe", "daily", "reliability"]
+  },
+  {
+    "question": "Why did the score change after market close?",
+    "answer": "If you rescan after close, final candle formation and volume totals may differ from mid-session scan. This changes indicator values (RSI, MACD) and volume confirmation, resulting in different QuantraScore. End-of-day scans are more reliable.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "changed", "market close", "rescan"]
+  },
+  {
+    "question": "What's better: 70 on daily or 80 on 15-minute?",
+    "answer": "The 70 on daily chart. Higher timeframes carry more weight in quality assessment. An 80 on 15-minute still has more noise and false signals than 70 on daily. Always prefer higher timeframe patterns for better reliability and follow-through.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "timeframe comparison", "daily vs intraday", "reliability"]
+  },
+  {
+    "question": "Can perfect pattern score low?",
+    "answer": "Yes. A textbook pattern structure in wrong context (no trend, weak volume, conflicting indicators) scores poorly. QuantraScore evaluates complete trading environment, not just geometric pattern accuracy. Context and confirmation matter more than perfect shape.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "perfect pattern", "low score", "context"]
+  },
+  {
+    "question": "How does support/resistance affect score?",
+    "answer": "Patterns forming at major support/resistance levels score 10-20 points higher. Confluence with key price levels increases probability of follow-through. Pattern at random price zone scores lower than identical pattern at tested support/resistance.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "support", "resistance", "key levels"]
+  },
+  {
+    "question": "What's the average QuantraScore?",
+    "answer": "Most detected patterns score 55-70 range. The 60-65 band is most common. Scores above 75 are relatively rare (10-15% of detections), making them valuable opportunities. Below 50 occurs in 20-30% of scans and should be avoided.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "average", "typical", "distribution"]
+  },
+  {
+    "question": "Does QuantraScore guarantee profit?",
+    "answer": "No. QuantraScore indicates probability and quality, not certainty. Even 90+ scores can fail. It helps identify better opportunities and improve win rate over time, but requires proper risk management, position sizing, and stop losses regardless of score.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "guarantee", "profit", "probability"]
+  },
+  {
+    "question": "How do I improve pattern quality I find?",
+    "answer": "Scan during high-volume periods, use higher timeframes (4H, daily), focus on trending markets not sideways, wait for patterns near support/resistance. Quality comes from market conditions, not scanning technique. Patient waiting beats forcing low-quality trades.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "improve quality", "better patterns", "patience"]
+  },
+  {
+    "question": "What score justifies increasing position size?",
+    "answer": "Consider larger positions (1.5-2x normal) only on 80+ scores with all factors aligned. 70-79 use standard sizing. 60-69 use half size. Below 60 avoid or use minimum size. Position sizing should scale directly with QuantraScore quality.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "position size", "80+", "risk management"]
+  },
+  {
+    "question": "Can score improve as pattern develops?",
+    "answer": "Yes. A forming pattern scoring 65 might reach 75 as volume increases, indicators align, and structure completes. Conversely, scores can drop if pattern deteriorates or indicators turn against it. Rescan periodically for updated assessment.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "improve", "developing pattern", "rescan"]
+  },
+  {
+    "question": "Why focus on QuantraScore vs. just pattern type?",
+    "answer": "Pattern type alone has limited predictive power. A Head and Shoulders scoring 55 is worse than a Flag scoring 80. Quality trumps pattern identity. QuantraScore provides objective quality measure across all pattern types for consistent decision-making.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "pattern type", "quality", "objective"]
+  },
+  {
+    "question": "Does crypto score differently than stocks?",
+    "answer": "Scoring algorithm is identical, but crypto's higher volatility and 24/7 trading often produce more extreme scores. Same pattern might score slightly lower on crypto due to noise and volatility. Adjust expectations: 70 on crypto = 75 on stocks roughly.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "crypto", "stocks", "volatility"]
+  },
+  {
+    "question": "What if score conflicts with my analysis?",
+    "answer": "Trust the score initially, especially as beginner. QuantraScore removes emotion and bias. If consistently disagreeing, review your analysis criteria - you might be overweighting certain factors. The algorithm learns from thousands of outcomes, not subjective preferences.",
+    "category": "quantra_score",
+    "keywords": ["quantrascore", "conflict", "analysis", "trust"]
+  },
+  {
+    "question": "Where should I enter on a pattern?",
+    "answer": "Enter on breakout confirmation, not anticipation. For bullish patterns, buy when price breaks above resistance with volume. For bearish, sell/short on breakdown below support. Wait for candle close beyond breakout level to confirm, reducing false breakout risk.",
+    "category": "trading_strategy",
+    "keywords": ["entry point", "breakout", "confirmation", "entry"]
+  },
+  {
+    "question": "How do I set stop loss correctly?",
+    "answer": "Place stops beyond pattern invalidation point. For Head and Shoulders, above right shoulder. For Double Bottom, below the bottoms. Give pattern room to breathe (1-2 ATR beyond invalidation) while protecting capital. Never risk more than 1-2% account per trade.",
+    "category": "trading_strategy",
+    "keywords": ["stop loss", "risk management", "invalidation", "ATR"]
+  },
+  {
+    "question": "What's a good profit target?",
+    "answer": "Use measured move: measure pattern height and project from breakout point. For Head and Shoulders, measure head to neckline, project down. Alternatively, target next major support/resistance or use 2:1 or 3:1 risk-reward ratio based on your stop distance.",
+    "category": "trading_strategy",
+    "keywords": ["profit target", "measured move", "take profit", "reward"]
+  },
+  {
+    "question": "Should I wait for breakout or trade inside pattern?",
+    "answer": "Beginners should wait for breakout confirmation. Advanced traders can trade bounces within pattern (buy at support, sell at resistance) but this requires experience. Breakout trading has clearer signals and better risk/reward for most traders.",
+    "category": "trading_strategy",
+    "keywords": ["breakout", "inside pattern", "timing", "confirmation"]
+  },
+  {
+    "question": "How much volume confirms a breakout?",
+    "answer": "Look for 1.5x to 2x average volume on breakout. Higher volume shows conviction and reduces false breakout probability. Volume surge accompanying price breakout is one of strongest confirmation signals, especially on bullish patterns.",
+    "category": "trading_strategy",
+    "keywords": ["volume", "breakout confirmation", "volume surge", "1.5x"]
+  },
+  {
+    "question": "When should I move stop to breakeven?",
+    "answer": "Move stop to breakeven (entry price) after price moves 1:1 risk distance in your favor or after first profit target hit. This locks in risk-free trade. Don't move too early or normal volatility will stop you out prematurely.",
+    "category": "trading_strategy",
+    "keywords": ["breakeven", "stop loss", "trailing stop", "risk-free"]
+  },
+  {
+    "question": "How do I scale out of positions?",
+    "answer": "Take partial profit (1/3 to 1/2 position) at first target, move stop to breakeven, let remainder run to second target. This captures profit while allowing winners to run. Alternatively, take 1/3 at each of three targets for gradual exit.",
+    "category": "trading_strategy",
+    "keywords": ["scale out", "partial profit", "position sizing", "targets"]
+  },
+  {
+    "question": "What timeframe should I trade?",
+    "answer": "Higher timeframes (daily, 4H) are more reliable with better signal quality. Start with daily charts for swing trading. Day traders can use 15M-1H. Avoid very low timeframes (1M, 5M) until experienced - they have more noise and false signals.",
+    "category": "trading_strategy",
+    "keywords": ["timeframe", "daily chart", "swing trading", "reliability"]
+  },
+  {
+    "question": "How many patterns should I trade simultaneously?",
+    "answer": "Limit to 3-5 positions maximum to maintain focus and manage risk. More positions dilute attention and can lead to overexposure. Better to trade fewer high-quality setups than many mediocre ones. Quality beats quantity always.",
+    "category": "trading_strategy",
+    "keywords": ["position management", "simultaneous trades", "focus", "quality"]
+  },
+  {
+    "question": "Should I trade both bullish and bearish patterns?",
+    "answer": "Yes, but follow overall market trend. In bull market, focus on bullish patterns with better odds. In bear market, prioritize bearish setups. Trading against macro trend decreases success rate. Flexibility with trend bias improves consistency.",
+    "category": "trading_strategy",
+    "keywords": ["bullish", "bearish", "market trend", "directional bias"]
+  },
+  {
+    "question": "What's the best risk-reward ratio?",
+    "answer": "Aim for minimum 2:1 reward-to-risk, ideally 3:1 or better. This means if risking $100, target at least $200-300 profit. Higher ratios allow profitable trading even with 40-50% win rate. Never take trades worse than 1.5:1 risk-reward.",
+    "category": "trading_strategy",
+    "keywords": ["risk-reward", "ratio", "2:1", "profitability"]
+  },
+  {
+    "question": "How do I know if breakout is false?",
+    "answer": "False breakouts show weak volume, quick reversal back inside pattern, and lack of follow-through. True breakouts have strong volume, close beyond breakout level, and continue moving. Wait for candle close confirmation to filter false breaks.",
+    "category": "trading_strategy",
+    "keywords": ["false breakout", "confirmation", "volume", "reversal"]
+  },
+  {
+    "question": "Should I use limit or market orders?",
+    "answer": "Use limit orders for entries to get better prices, but accept some missed trades. Market orders guarantee execution but worse fills. For stop losses, always use market orders (or stop-market) for guaranteed exit when triggered.",
+    "category": "trading_strategy",
+    "keywords": ["order types", "limit order", "market order", "execution"]
+  },
+  {
+    "question": "What if pattern fails immediately after entry?",
+    "answer": "Exit at predetermined stop loss without hesitation. Failed patterns are normal (30-40% failure rate even on good setups). Don't move stops or hope for recovery. Take the loss quickly, preserve capital, and look for next opportunity.",
+    "category": "trading_strategy",
+    "keywords": ["failed pattern", "stop loss", "exit", "discipline"]
+  },
+  {
+    "question": "How long should I hold a position?",
+    "answer": "Hold until reaching profit target or stop loss. Don't exit winners early from fear. Pattern trades typically last days to weeks. Let the pattern play out completely. Only exit early if pattern invalidates (breakdown above resistance for shorts, etc.).",
+    "category": "trading_strategy",
+    "keywords": ["hold time", "exit", "patience", "duration"]
+  },
+  {
+    "question": "Can I average down on losing trades?",
+    "answer": "No, never average down. Averaging into losers turns small losses into large ones. If stopped out, accept it. You can re-enter if pattern resets and shows new setup, but don't add to losing position hoping to reduce average cost.",
+    "category": "trading_strategy",
+    "keywords": ["averaging down", "risk management", "don't", "discipline"]
+  },
+  {
+    "question": "Should I use trailing stops?",
+    "answer": "Yes, after locking in profit. Once price moves significantly in your favor (1.5-2x initial risk), use trailing stop to protect profits while allowing further gains. Trail by ATR or percentage. Don't trail too tight or normal pullbacks will stop you out.",
+    "category": "trading_strategy",
+    "keywords": ["trailing stop", "protect profit", "ATR", "exit strategy"]
+  },
+  {
+    "question": "What's better: tight or wide stops?",
+    "answer": "Give patterns appropriate room (1-2 ATR beyond invalidation point). Too tight and you'll get stopped by normal volatility. Too wide and you risk excessive capital. Stop distance should match pattern structure and current volatility, not arbitrary percentage.",
+    "category": "trading_strategy",
+    "keywords": ["stop distance", "tight vs wide", "ATR", "volatility"]
+  },
+  {
+    "question": "How do I trade during news events?",
+    "answer": "Avoid trading during major news releases (FOMC, earnings, economic data). News creates erratic moves that invalidate patterns. If holding position through news, tighten stops or take partial profit. Best practice is staying out entirely until volatility settles.",
+    "category": "trading_strategy",
+    "keywords": ["news trading", "volatility", "events", "avoid"]
+  },
+  {
+    "question": "Should I trade pre-market or after-hours?",
+    "answer": "Avoid extended hours trading. Low liquidity causes wide spreads and erratic price action. Patterns are most reliable during regular market hours with normal volume. Stick to 9:30am-4pm EST for stock trading when volume is consistent.",
+    "category": "trading_strategy",
+    "keywords": ["pre-market", "after-hours", "liquidity", "regular hours"]
+  },
+  {
+    "question": "How do I manage multiple timeframe analysis?",
+    "answer": "Use higher timeframe for trend direction and major patterns, lower for entry timing. Example: daily chart shows trend and major pattern, 1H chart for precise entry on pullback. Trade in direction of higher timeframe, time entry on lower timeframe.",
+    "category": "trading_strategy",
+    "keywords": ["multiple timeframes", "MTF", "trend", "entry timing"]
+  },
+  {
+    "question": "What if pattern doesn't reach target?",
+    "answer": "Common occurrence. If price stalls before target, watch for reversal signs. At minimum, move stop to breakeven to protect against losses. Consider taking partial profit at 50-75% of target if momentum weakens. Don't force patterns to hit exact targets.",
+    "category": "trading_strategy",
+    "keywords": ["target not reached", "partial profit", "stall", "momentum"]
+  },
+  {
+    "question": "Should I trade continuation or reversal patterns?",
+    "answer": "Both are valid. Continuation patterns (flags, triangles) often have higher win rates as they trade with trend. Reversal patterns (head and shoulders, double tops/bottoms) offer bigger moves but lower probability. Beginners should favor continuation patterns.",
+    "category": "trading_strategy",
+    "keywords": ["continuation vs reversal", "pattern type", "win rate", "trend"]
+  },
+  {
+    "question": "How do I handle overnight risk?",
+    "answer": "Holding overnight exposes you to gap risk. For swing trades, this is acceptable with proper position sizing. Day traders should close before market close. Never hold overnight with position size exceeding your risk tolerance for potential gap against you.",
+    "category": "trading_strategy",
+    "keywords": ["overnight risk", "gap risk", "swing trading", "close position"]
+  },
+  {
+    "question": "What's the best position size?",
+    "answer": "Risk 1-2% of account per trade maximum. Position size = (Account Size × Risk %) ÷ (Entry Price - Stop Price). If $10,000 account risking 1% ($100), and stop is $1 away, buy 100 shares. Position size varies per trade based on stop distance.",
+    "category": "trading_strategy",
+    "keywords": ["position sizing", "risk management", "1%", "calculation"]
+  },
+  {
+    "question": "Should I trust my first pattern recognition?",
+    "answer": "Verify with multiple scans and different angles. QuantraScore helps validate your assessment. Beginners often see patterns everywhere (confirmation bias). If score is high and structure clear, trust it. If score low, trust the system over your eyes.",
+    "category": "trading_strategy",
+    "keywords": ["pattern recognition", "confirmation", "trust", "verification"]
+  },
+  {
+    "question": "How do I avoid overtrading?",
+    "answer": "Set maximum trades per day/week. Only trade setups scoring 70+ to limit quantity. Having strict entry criteria (QuantraScore threshold, volume requirement, etc.) naturally reduces trade frequency. Patience and selectivity improve profitability more than activity.",
+    "category": "trading_strategy",
+    "keywords": ["overtrading", "discipline", "selectivity", "patience"]
+  },
+  {
+    "question": "What if two patterns conflict?",
+    "answer": "Conflicting patterns (bullish on one timeframe, bearish on another) signal uncertainty. Higher timeframe takes priority. If same timeframe shows conflicts, stay out - lack of clarity indicates poor setup. Wait for alignment across timeframes and pattern types.",
+    "category": "trading_strategy",
+    "keywords": ["conflicting patterns", "uncertainty", "stay out", "timeframe priority"]
+  },
+  {
+    "question": "Should I trade during lunch hours?",
+    "answer": "Avoid 11:30am-1:30pm EST when volume drops and choppy action increases. Best trading during market open (9:30-11am) and close (2:30-4pm) when volume and directional movement are strongest. Low volume hours produce more false signals.",
+    "category": "trading_strategy",
+    "keywords": ["lunch hours", "volume", "best hours", "timing"]
+  },
+  {
+    "question": "How do I recover from losing streak?",
+    "answer": "Reduce position size to 25-50% of normal until confidence returns. Review trades for mistakes vs. bad luck. Don't force trades to recover losses. Take break if needed. Losing streaks are normal; preserving capital through them is critical.",
+    "category": "trading_strategy",
+    "keywords": ["losing streak", "recovery", "reduce size", "preserve capital"]
+  },
+  {
+    "question": "What's the ideal win rate to aim for?",
+    "answer": "50-60% win rate is realistic and profitable with proper risk-reward (2:1+). Don't chase 80%+ win rates - they're unsustainable and lead to poor risk management. Consistency matters more than high win rate. Protect your losers, let winners run.",
+    "category": "trading_strategy",
+    "keywords": ["win rate", "50-60%", "realistic", "consistency"]
+  },
+  {
+    "question": "Should I hedge my positions?",
+    "answer": "Generally no for pattern trading. Hedging complicates management and reduces profit potential. Better to use appropriate position sizing and stops. If concerned about market risk, simply reduce position size rather than opening complex hedge positions.",
+    "category": "trading_strategy",
+    "keywords": ["hedging", "position management", "simplicity", "risk"]
+  },
+  {
+    "question": "How many indicators should I use?",
+    "answer": "Focus on 2-3 key indicators: volume, RSI, and MACD cover most needs. More indicators create confusion and conflicting signals. QuantraScore already integrates multiple indicators, so you don't need to track many separately. Less is more in indicator analysis.",
+    "category": "trading_strategy",
+    "keywords": ["indicators", "2-3", "volume RSI MACD", "simplicity"]
+  },
+  {
+    "question": "Can I trust pattern on low-volume stock?",
+    "answer": "No. Low volume stocks lack liquidity for reliable pattern formation and execution. Stick to stocks with 500K+ daily volume for swing trading, higher for day trading. Volume ensures patterns form from actual supply/demand, not manipulation or randomness.",
+    "category": "trading_strategy",
+    "keywords": ["low volume", "liquidity", "500K volume", "reliability"]
+  },
+  {
+    "question": "What if stop loss is too far away?",
+    "answer": "Don't force the trade. If proper stop placement risks more than 2% of account, reduce position size or skip the trade. Never move stops closer to entry just to fit position size. Pattern invalidation point determines stop, not your desired position size.",
+    "category": "trading_strategy",
+    "keywords": ["stop too far", "skip trade", "position size", "invalidation"]
+  },
+  {
+    "question": "Should I trade options on patterns?",
+    "answer": "Options add complexity and time decay. Stock/futures are simpler for pattern trading. If using options, buy ITM or ATM with 30+ days expiration for swing trades. Deep OTM or weeklies often expire worthless despite correct pattern call.",
+    "category": "trading_strategy",
+    "keywords": ["options", "stocks better", "ITM", "time decay"]
+  },
+  {
+    "question": "How do I know when trend is changing?",
+    "answer": "Look for reversal patterns at extremes (head and shoulders at top, double bottom at lows) with volume confirmation. Also watch for higher lows in downtrend or lower highs in uptrend. Trend changes take time; don't chase every reversal attempt.",
+    "category": "trading_strategy",
+    "keywords": ["trend change", "reversal", "extremes", "confirmation"]
+  },
+  {
+    "question": "What if I miss the entry?",
+    "answer": "Don't chase. Wait for pullback to support/resistance for second entry or find new setup. FOMO (fear of missing out) leads to poor entries and losses. There's always another pattern, another opportunity. Patience prevents costly mistakes.",
+    "category": "trading_strategy",
+    "keywords": ["missed entry", "don't chase", "FOMO", "patience"]
+  },
+  {
+    "question": "Should I trade crypto differently than stocks?",
+    "answer": "Same principles apply but adjust for higher volatility. Use wider stops (1.5-2x what you'd use for stocks), accept more whipsaws, trade smaller position sizes. Crypto's 24/7 market creates overnight gaps. Patterns work but require more risk tolerance.",
+    "category": "trading_strategy",
+    "keywords": ["crypto", "volatility", "wider stops", "same principles"]
+  },
+  {
+    "question": "How do I build a trading plan?",
+    "answer": "Define: which patterns you trade, minimum QuantraScore, position size rules (1-2% risk), profit targets (2:1+ R:R), maximum daily/weekly trades, and stop loss rules. Write it down. Review weekly. Stick to the plan even when emotions say otherwise.",
+    "category": "trading_strategy",
+    "keywords": ["trading plan", "rules", "discipline", "write down"]
+  },
+  {
+    "question": "What percentage of account should I trade?",
+    "answer": "Never risk more than 2% per trade, ideally 1%. With 5 positions, you'd risk maximum 10% of account total. This ensures survival through losing streaks. Conservative traders risk 0.5% per trade. Risk less to trade longer and learn more.",
+    "category": "trading_strategy",
+    "keywords": ["account risk", "1-2%", "survival", "conservative"]
+  },
+  {
+    "question": "When should I increase position size?",
+    "answer": "Only after 20+ consecutive profitable trades proving consistent execution. Increase gradually (add 25-50% to size, not doubling). Never increase after losses to recover. Growing accounts come from consistency and time, not aggressive sizing after hot streaks.",
+    "category": "trading_strategy",
+    "keywords": ["increase size", "20+ trades", "gradual", "consistency"]
+  },
+  {
+    "question": "How do I handle emotions while trading?",
+    "answer": "Follow your trading plan mechanically. Pre-define all decisions before entering (entry, stop, target). Use automatic orders when possible. Take breaks after losses. Never trade angry or desperate. Emotional trading breaks rules and causes bigger losses.",
+    "category": "trading_strategy",
+    "keywords": ["emotions", "discipline", "trading plan", "mechanical"]
+  },
+  {
+    "question": "Should I trade the same patterns repeatedly?",
+    "answer": "Yes, specialize in 3-5 pattern types you understand deeply. Mastering few patterns beats mediocre knowledge of many. Track performance by pattern type to identify your edge. Focus on what works for you personally.",
+    "category": "trading_strategy",
+    "keywords": ["specialize", "3-5 patterns", "mastery", "track performance"]
+  },
+  {
+    "question": "What is RSI indicator?",
+    "answer": "Relative Strength Index measures momentum on 0-100 scale. Above 70 is overbought (potential reversal down), below 30 oversold (potential reversal up). RSI divergence (price makes new high but RSI doesn't) signals weakening trend and possible reversal.",
+    "category": "indicator",
+    "keywords": ["RSI", "momentum", "overbought", "oversold", "70", "30"]
+  },
+  {
+    "question": "How does MACD work?",
+    "answer": "Moving Average Convergence Divergence shows trend direction and momentum. MACD line crossing above signal line is bullish, below is bearish. Histogram shows strength. Crossing zero line indicates trend change. Use for confirmation, not sole entry signal.",
+    "category": "indicator",
+    "keywords": ["MACD", "moving average", "crossover", "histogram", "trend"]
+  },
+  {
+    "question": "What does volume indicate?",
+    "answer": "Volume measures trading activity and conviction. Rising volume on breakouts confirms move. Declining volume during pattern formation (reversals) or consolidation is normal. Volume surge signals institutional participation and genuine supply/demand, not random noise.",
+    "category": "indicator",
+    "keywords": ["volume", "activity", "breakout confirmation", "conviction"]
+  },
+  {
+    "question": "What is Stochastic oscillator?",
+    "answer": "Stochastic compares close price to price range over period (typically 14 bars). Values above 80 are overbought, below 20 oversold. %K crossing above %D is buy signal, below is sell. Best used to time entries in trending markets.",
+    "category": "indicator",
+    "keywords": ["stochastic", "oscillator", "overbought", "oversold", "crossover"]
+  },
+  {
+    "question": "How do moving averages help?",
+    "answer": "Moving averages smooth price data showing trend direction. Price above MA is bullish, below bearish. 50-day and 200-day are most watched. MA crossovers signal trend changes. Also act as dynamic support/resistance levels for entries and exits.",
+    "category": "indicator",
+    "keywords": ["moving average", "MA", "50-day", "200-day", "trend"]
+  },
+  {
+    "question": "What is Bollinger Bands?",
+    "answer": "Bands plot standard deviations around moving average, showing volatility. Price at upper band is extended high, lower band extended low. Band squeeze (narrowing) precedes volatility expansion and breakouts. Use for identifying overbought/oversold and breakout setups.",
+    "category": "indicator",
+    "keywords": ["bollinger bands", "volatility", "standard deviation", "squeeze"]
+  },
+  {
+    "question": "What does ATR measure?",
+    "answer": "Average True Range measures volatility by averaging candle ranges over period (typically 14). Higher ATR means more volatility and wider stops needed. Use ATR to size stops appropriately: 1-2 ATR beyond invalidation point prevents random noise stop-outs.",
+    "category": "indicator",
+    "keywords": ["ATR", "average true range", "volatility", "stop loss"]
+  },
+  {
+    "question": "How does OBV work?",
+    "answer": "On Balance Volume accumulates volume on up days, subtracts on down days. Rising OBV confirms uptrend strength, falling confirms downtrend. OBV divergence (price rising but OBV falling) signals weakening momentum and potential reversal. Volume-based trend confirmation tool.",
+    "category": "indicator",
+    "keywords": ["OBV", "on balance volume", "volume", "divergence"]
+  },
+  {
+    "question": "What is ADX indicator?",
+    "answer": "Average Directional Index measures trend strength (not direction) on 0-100 scale. Above 25 indicates trending market, below 20 is choppy/ranging. Use to confirm trend strength for continuation patterns. High ADX validates trend-following setups.",
+    "category": "indicator",
+    "keywords": ["ADX", "trend strength", "25", "directional index"]
+  },
+  {
+    "question": "What does Fibonacci retracement show?",
+    "answer": "Fibonacci levels (23.6%, 38.2%, 50%, 61.8%) identify potential support/resistance during pullbacks. After strong move, price often retraces to these levels before continuing. Use for entry timing: buy at 38.2-61.8% retracement in uptrend.",
+    "category": "indicator",
+    "keywords": ["fibonacci", "retracement", "38.2", "61.8", "pullback"]
+  },
+  {
+    "question": "How do I read Volume Profile?",
+    "answer": "Volume Profile shows volume traded at each price level, revealing areas of high/low activity. High-volume nodes are support/resistance. Low-volume areas gap quickly. Use to identify key price levels where patterns may react or reverse.",
+    "category": "indicator",
+    "keywords": ["volume profile", "price level", "volume node", "support resistance"]
+  },
+  {
+    "question": "What is Money Flow Index?",
+    "answer": "MFI is RSI incorporating volume, measuring buying/selling pressure. Above 80 overbought, below 20 oversold. MFI divergence (price new high, MFI lower high) signals reversal. Better than RSI for volume-sensitive analysis.",
+    "category": "indicator",
+    "keywords": ["MFI", "money flow", "volume RSI", "pressure"]
+  },
+  {
+    "question": "What does CCI indicator do?",
+    "answer": "Commodity Channel Index measures price deviation from average. Above +100 is overbought, below -100 oversold. CCI crossing back into ±100 range signals reversals. Originally for commodities but works on any market for cycle identification.",
+    "category": "indicator",
+    "keywords": ["CCI", "commodity channel index", "deviation", "cycle"]
+  },
+  {
+    "question": "How does Williams %R work?",
+    "answer": "Williams %R measures overbought/oversold on -100 to 0 scale. Above -20 is overbought, below -80 oversold. Similar to Stochastic but inverted. Use for timing entries: buy when rising from -80, sell when falling from -20 zone.",
+    "category": "indicator",
+    "keywords": ["williams %R", "overbought", "oversold", "-20", "-80"]
+  },
+  {
+    "question": "What is Parabolic SAR?",
+    "answer": "Stop and Reverse plots dots above/below price showing trend direction and trailing stops. Dots below price = uptrend, above = downtrend. Dot flip signals trend change. Use as dynamic trailing stop in trending markets.",
+    "category": "indicator",
+    "keywords": ["parabolic SAR", "stop and reverse", "trend", "trailing stop"]
+  },
+  {
+    "question": "What does Accumulation/Distribution show?",
+    "answer": "A/D line measures cumulative buying/selling pressure using price and volume. Rising A/D confirms uptrend, falling confirms downtrend. A/D divergence signals reversal: price rising but A/D falling shows distribution (bearish). Volume-weighted trend indicator.",
+    "category": "indicator",
+    "keywords": ["accumulation distribution", "A/D", "volume", "pressure"]
+  },
+  {
+    "question": "How do I use Pivot Points?",
+    "answer": "Pivot Points calculate support/resistance from prior period's high, low, close. Central pivot plus three support (S1, S2, S3) and resistance (R1, R2, R3) levels. Price above pivot is bullish, below bearish. Use levels for targets and stops.",
+    "category": "indicator",
+    "keywords": ["pivot points", "support", "resistance", "S1 S2 S3", "R1 R2 R3"]
+  },
+  {
+    "question": "What is Ichimoku Cloud?",
+    "answer": "Complex indicator with cloud (Kumo) showing support/resistance, conversion and base lines for signals. Price above cloud = bullish, below = bearish. Cloud thickness shows support/resistance strength. TK cross signals entries. Advanced but comprehensive trend system.",
+    "category": "indicator",
+    "keywords": ["ichimoku", "cloud", "kumo", "trend"]
+  },
+  {
+    "question": "What does Aroon indicator measure?",
+    "answer": "Aroon measures time since highest high (Aroon Up) and lowest low (Aroon Down) over period. Aroon Up above 70 signals uptrend, Down above 70 signals downtrend. Both below 50 indicates consolidation. Identifies trend strength and changes.",
+    "category": "indicator",
+    "keywords": ["aroon", "trend strength", "70", "consolidation"]
+  },
+  {
+    "question": "How does Rate of Change (ROC) work?",
+    "answer": "ROC measures percentage price change over period. Positive ROC shows upward momentum, negative shows downward. Extreme ROC readings signal overbought/oversold. ROC divergence predicts reversals. Pure momentum indicator for trend strength assessment.",
+    "category": "indicator",
+    "keywords": ["ROC", "rate of change", "momentum", "percentage"]
+  },
+  {
+    "question": "What is VWAP?",
+    "answer": "Volume Weighted Average Price shows average price weighted by volume. Institutions use VWAP for execution benchmarks. Price above VWAP is bullish bias, below bearish. Day traders use VWAP as dynamic support/resistance and mean reversion level.",
+    "category": "indicator",
+    "keywords": ["VWAP", "volume weighted", "intraday", "institutional"]
+  },
+  {
+    "question": "What does Chaikin Oscillator show?",
+    "answer": "Chaikin measures momentum of Accumulation/Distribution line. Positive values show accumulation (bullish), negative show distribution (bearish). Crossing zero line signals buy/sell. Divergence between price and Chaikin predicts reversals. Volume-based momentum indicator.",
+    "category": "indicator",
+    "keywords": ["chaikin oscillator", "momentum", "accumulation", "distribution"]
+  },
+  {
+    "question": "How do I use Elder Ray?",
+    "answer": "Elder Ray has Bull Power (high minus EMA) and Bear Power (low minus EMA). Positive Bull Power with rising EMA = uptrend. Negative Bear Power with falling EMA = downtrend. Divergence signals weakening trend and reversals.",
+    "category": "indicator",
+    "keywords": ["elder ray", "bull power", "bear power", "EMA"]
+  },
+  {
+    "question": "What is Keltner Channel?",
+    "answer": "Similar to Bollinger Bands but uses ATR instead of standard deviation. Bands show volatility envelope around EMA. Breakouts beyond channel signal strong moves. Channel squeeze indicates low volatility before expansion. Alternative to Bollinger for volatility analysis.",
+    "category": "indicator",
+    "keywords": ["keltner channel", "ATR", "volatility", "breakout"]
+  },
+  {
+    "question": "What does Momentum indicator measure?",
+    "answer": "Momentum compares current price to price N periods ago. Rising momentum = accelerating trend, falling = decelerating. Crossing zero shows trend change. Divergence (price new high, momentum lower high) signals reversal. Simple but effective trend strength measure.",
+    "category": "indicator",
+    "keywords": ["momentum", "acceleration", "trend strength", "divergence"]
+  },
+  {
+    "question": "How does Force Index work?",
+    "answer": "Force Index combines price change and volume to measure buying/selling pressure. Positive spikes show strong buying, negative show selling. EMA of Force Index smooths signals. Rising Force confirms uptrend, falling confirms downtrend. Volume-weighted momentum tool.",
+    "category": "indicator",
+    "keywords": ["force index", "volume", "pressure", "momentum"]
+  },
+  {
+    "question": "What is True Strength Index (TSI)?",
+    "answer": "TSI is double-smoothed momentum oscillator reducing noise. Above zero bullish, below bearish. Crossing signal line generates buy/sell signals. Less whipsaw than RSI or Stochastic. Good for identifying overbought/oversold in trending markets.",
+    "category": "indicator",
+    "keywords": ["TSI", "true strength index", "momentum", "smoothed"]
+  },
+  {
+    "question": "What does KST (Know Sure Thing) show?",
+    "answer": "KST combines four different ROC timeframes for comprehensive momentum view. Crossing above signal line is bullish, below bearish. Above zero confirms uptrend. Multi-timeframe approach reduces false signals compared to single momentum indicator.",
+    "category": "indicator",
+    "keywords": ["KST", "know sure thing", "multi-timeframe", "momentum"]
+  },
+  {
+    "question": "How many indicators should I watch?",
+    "answer": "Focus on 2-3 complementary indicators: one momentum (RSI/MACD), one volume-based (OBV/Volume), one trend (MA/ADX). More indicators create confusion and conflicts. QuantraScore already integrates many indicators, so minimal additional analysis needed.",
+    "category": "indicator",
+    "keywords": ["how many indicators", "2-3", "complementary", "simple"]
+  },
+  {
+    "question": "Can indicators guarantee profitable trades?",
+    "answer": "No. Indicators are tools, not crystal balls. They lag price (based on historical data) and give false signals. Use indicators for confirmation, not prediction. Combine indicators with price action, patterns, and risk management for complete trading system.",
+    "category": "indicator",
+    "keywords": ["indicators guarantee", "no", "tools", "confirmation"]
+  },
+  {
+    "question": "What's better: leading or lagging indicators?",
+    "answer": "Both have roles. Leading indicators (RSI, Stochastic) predict reversals but give false signals. Lagging indicators (MA, MACD) confirm trends but signal late. Use combination: leading for entries, lagging for trend confirmation. Neither is universally better.",
+    "category": "indicator",
+    "keywords": ["leading vs lagging", "prediction", "confirmation", "combination"]
+  },
+  {
+    "question": "How do I validate a pattern?",
+    "answer": "Check QuantraScore first. Verify structure matches pattern definition. Confirm volume behavior (increasing on breakouts, declining on reversals). Check indicators support direction (RSI, MACD aligned). Ensure proper trend context. High score means validation checks passed.",
+    "category": "validation",
+    "keywords": ["validate pattern", "verification", "checks", "quantrascore"]
+  },
+  {
+    "question": "What confirms a valid Head and Shoulders?",
+    "answer": "Three peaks with middle highest, shoulders roughly equal height (within 10%), clear neckline, forming after uptrend, declining volume through formation, volume surge on neckline break. If missing any element, pattern reliability decreases significantly.",
+    "category": "validation",
+    "keywords": ["validate head and shoulders", "neckline", "volume", "shoulders"]
+  },
+  {
+    "question": "How do I know Double Bottom is real?",
+    "answer": "Two bottoms at similar price (within 3-5%), separated by 4+ weeks, middle peak at least 10% above bottoms, second bottom forms on lower volume than first, breakout above middle peak with volume increase. Quick double bottoms are often just noise.",
+    "category": "validation",
+    "keywords": ["validate double bottom", "two bottoms", "volume", "separation"]
+  },
+  {
+    "question": "What validates a Triangle pattern?",
+    "answer": "Minimum 4 touch points (2 on each trendline), forms over weeks not days, volume declining during formation, clear converging trendlines, breakout in expected direction with 1.5x+ volume. Sloppy triangles without clean trendlines are unreliable.",
+    "category": "validation",
+    "keywords": ["validate triangle", "touch points", "converging", "volume"]
+  },
+  {
+    "question": "How do I confirm Flag pattern validity?",
+    "answer": "Strong prior move (flagpole) with high volume, flag consolidation against trend on declining volume, flag forms in 1-3 weeks, parallel channel boundaries, breakout continues prior trend with volume. Flags without strong poles often fail.",
+    "category": "validation",
+    "keywords": ["validate flag", "flagpole", "consolidation", "parallel"]
+  },
+  {
+    "question": "What confirms a Wedge is valid?",
+    "answer": "Both trendlines converge, minimum 5 touch points total, forms over 4+ weeks, volume declines throughout, breaks opposite to wedge slope (rising wedge breaks down, falling up). Quick wedges lack significance and often fail.",
+    "category": "validation",
+    "keywords": ["validate wedge", "converging", "touch points", "break direction"]
+  },
+  {
+    "question": "How do I validate Cup and Handle?",
+    "answer": "Cup forms rounded bottom over months, depth 12-33% from rim, handle forms in upper half of cup over weeks, handle depth less than 1/3 cup depth, breakout above rim on increased volume. Sharp V-bottoms aren't true cups.",
+    "category": "validation",
+    "keywords": ["validate cup handle", "rounded", "handle depth", "months"]
+  },
+  {
+    "question": "What confirms Rectangle pattern?",
+    "answer": "Horizontal support/resistance clearly defined, minimum 2 touches each level, forms over weeks, volume declining during consolidation, breakout exceeds 3% beyond boundary with volume. Sloppy ranges without clear boundaries are unreliable.",
+    "category": "validation",
+    "keywords": ["validate rectangle", "horizontal", "touches", "clear boundaries"]
+  },
+  {
+    "question": "How do I know Channel is valid?",
+    "answer": "Parallel trendlines, minimum 3 touches on each line, consistent angle, price respects boundaries with clear bounces, volume behavior matches direction (increasing on trend moves). Channels with frequent overshoots lack structure.",
+    "category": "validation",
+    "keywords": ["validate channel", "parallel", "touches", "respect boundaries"]
+  },
+  {
+    "question": "What validates a Candlestick pattern?",
+    "answer": "Appears at appropriate location (reversals at extremes, continuations mid-trend), confirmation candle follows, volume supports pattern direction, meets size requirements (engulfing fully covers, hammers have 2x+ shadow). Isolated patterns without confirmation often fail.",
+    "category": "validation",
+    "keywords": ["validate candlestick", "location", "confirmation", "size requirements"]
+  },
+  {
+    "question": "How do I confirm pattern breakout?",
+    "answer": "Price closes beyond breakout level (not just intraday wick), volume 1.5-2x average, breakout candle closes in top 1/3 of range (bullish) or bottom 1/3 (bearish), follow-through next 1-3 candles. Weak breakouts often reverse quickly.",
+    "category": "validation",
+    "keywords": ["validate breakout", "close beyond", "volume", "follow-through"]
+  },
+  {
+    "question": "What if pattern forms too quickly?",
+    "answer": "Quick formations (hours or days on higher timeframe charts) lack significance and reliability. Patterns need time to develop proper structure and participation. Reject patterns forming faster than normal timeframe expectations regardless of appearance.",
+    "category": "validation",
+    "keywords": ["too quick", "time requirement", "reliability", "reject"]
+  },
+  {
+    "question": "How important is volume in validation?",
+    "answer": "Critical. Volume confirms genuine supply/demand causing pattern, not randomness. Breakouts without volume fail 60-70% of time. Reversals need declining volume during formation. Always check volume behavior - it's often difference between success and failure.",
+    "category": "validation",
+    "keywords": ["volume importance", "critical", "confirmation", "supply demand"]
+  },
+  {
+    "question": "Can pattern work without indicator support?",
+    "answer": "Yes but lower probability. Patterns with price structure alone have 45-50% success rate. Adding indicator confluence (RSI, MACD aligned) raises to 55-65%. Indicators aren't required but significantly improve odds. QuantraScore reflects this indicator impact.",
+    "category": "validation",
+    "keywords": ["without indicators", "lower probability", "confluence", "improve odds"]
+  },
+  {
+    "question": "What invalidates a pattern immediately?",
+    "answer": "Price moving beyond invalidation point (above resistance for shorts, below support for longs), volume increasing during consolidation when it should decline, pattern forming in wrong trend context, major structural requirement missing (equal shoulders, parallel lines, etc.).",
+    "category": "validation",
+    "keywords": ["invalidation", "beyond point", "wrong context", "missing structure"]
+  },
+  {
+    "question": "How do I validate on lower timeframes?",
+    "answer": "Require higher QuantraScore (75+ vs. 65+ on daily) due to more noise. Need stronger volume confirmation (2x vs. 1.5x average). Patterns must still form over appropriate period (hours not minutes). Lower timeframes harder to validate reliably.",
+    "category": "validation",
+    "keywords": ["lower timeframes", "higher score", "more confirmation", "noise"]
+  },
+  {
+    "question": "Should I trust patterns in choppy markets?",
+    "answer": "No. Choppy, sideways markets produce false patterns. Patterns need trending or transitioning markets. Check ADX: below 20 indicates chop, patterns unreliable. Wait for ADX above 25 or clear trend before trusting pattern signals.",
+    "category": "validation",
+    "keywords": ["choppy markets", "false patterns", "ADX", "trending required"]
+  },
+  {
+    "question": "What if same pattern forms multiple times?",
+    "answer": "Each instance validates independently. If failing repeatedly in similar context, the pattern may not work well for that asset or market condition. Track pattern performance by context. Recurring failures suggest avoiding that pattern in those conditions.",
+    "category": "validation",
+    "keywords": ["multiple formations", "independent", "track performance", "context matters"]
+  },
+  {
+    "question": "How do I validate in ranging market?",
+    "answer": "Only trade range boundaries (support/resistance) or breakouts. Mid-range patterns unreliable. Require higher volume on boundary touches. Expect lower success rates than trending markets. Consider staying out until range resolves with clear breakout.",
+    "category": "validation",
+    "keywords": ["ranging market", "boundaries only", "lower success", "breakout"]
+  },
+  {
+    "question": "Can perfect-looking pattern fail?",
+    "answer": "Absolutely. Even 80+ QuantraScore patterns fail 20-30% of time. Perfect structure doesn't guarantee success. External factors (news, market crashes, liquidity) can override technical signals. This is why stops are non-negotiable regardless of pattern quality.",
+    "category": "validation",
+    "keywords": ["perfect pattern fail", "yes", "80+ fails", "stops required"]
+  },
+  {
+    "question": "What's minimum pattern size worth trading?",
+    "answer": "Pattern should offer minimum 2:1 reward-to-risk. If pattern height only provides 1:1 or worse, skip it. Also consider absolute dollar amount - $0.50 move on $10 stock (5%) more significant than $0.50 on $100 stock (0.5%).",
+    "category": "validation",
+    "keywords": ["minimum size", "2:1 reward", "pattern height", "skip small"]
+  },
+  {
+    "question": "How do I validate multi-timeframe patterns?",
+    "answer": "Higher timeframe pattern takes priority. Lower timeframe should confirm, not conflict. If daily shows Head and Shoulders but 4H shows bullish flag, trust daily. Use lower timeframe for entry timing only, not contradicting signals.",
+    "category": "validation",
+    "keywords": ["multi-timeframe", "higher priority", "no conflict", "entry timing"]
+  },
+  {
+    "question": "What if validation criteria conflict?",
+    "answer": "If some criteria pass (structure good) but others fail (volume weak, indicators against), score will be moderate (60-70). Trade smaller size or skip. Perfect setups have all criteria aligned. Partial validation means partial confidence.",
+    "category": "validation",
+    "keywords": ["conflicting criteria", "partial validation", "moderate score", "smaller size"]
+  },
+  {
+    "question": "Should I validate manually or trust QuantraScore?",
+    "answer": "QuantraScore does heavy lifting, checking structure, volume, indicators automatically. Use it as primary filter. Manual validation adds context awareness (news, market conditions) QuantraScore can't know. Combination of both is ideal approach.",
+    "category": "validation",
+    "keywords": ["manual vs score", "trust quantrascore", "combination", "context"]
+  },
+  {
+    "question": "How many validation factors are enough?",
+    "answer": "Minimum 3 of 5: proper structure, right context, volume confirmation, indicator support, price action follow-through. Having all 5 creates 75+ scores. With only 1-2 factors, pattern has 40% or worse success rate. More factors = higher probability.",
+    "category": "validation",
+    "keywords": ["how many factors", "3 of 5", "minimum", "more better"]
+  },
+  {
+    "question": "Can I skip validation on familiar patterns?",
+    "answer": "Never skip. Familiarity breeds complacency and losses. Every pattern requires validation regardless of experience. Market conditions change constantly. What worked before may not work now. Disciplined validation prevents overconfidence mistakes.",
+    "category": "validation",
+    "keywords": ["skip validation", "never", "discipline", "every pattern"]
+  },
+  {
+    "question": "What's difference between validation and confirmation?",
+    "answer": "Validation checks if pattern structure is correct (before breakout). Confirmation verifies breakout actually happened (volume, close beyond level, follow-through). Validate first to identify pattern, wait for confirmation before entering trade. Both required.",
+    "category": "validation",
+    "keywords": ["validation vs confirmation", "structure vs breakout", "both required", "sequence"]
+  },
+  {
+    "question": "How do I validate in volatile conditions?",
+    "answer": "Require wider patterns (more time to form), higher volume confirmation (2x+ vs. 1.5x), and higher QuantraScore (75+ vs. 65+). Volatility creates false patterns and whipsaws. Tighter criteria filter noise. Consider staying out during extreme volatility (VIX 30+).",
+    "category": "validation",
+    "keywords": ["volatile conditions", "wider patterns", "higher requirements", "VIX"]
+  },
+  {
+    "question": "What if I validate but still unsure?",
+    "answer": "Skip the trade. Uncertainty signals insufficient edge or confidence. There will be another clear setup. Trading uncertain setups leads to hesitation, poor execution, and premature exits. Only trade when validation gives confidence.",
+    "category": "validation",
+    "keywords": ["unsure", "skip trade", "confidence required", "wait for clarity"]
+  },
+  {
+    "question": "Can backtesting validate patterns?",
+    "answer": "Yes. Test pattern on historical charts to see actual outcomes. Track success rate by QuantraScore range, market condition, timeframe. Real data beats assumptions. QuantraVision learning engine does this automatically, improving scores over time based on actual results.",
+    "category": "validation",
+    "keywords": ["backtesting", "historical", "track results", "learning engine"]
+  },
+  {
+    "question": "Should I validate more strictly as beginner?",
+    "answer": "Absolutely. Beginners should require 75+ QuantraScore, perfect volume, strong indicators, clear trend. Tight criteria while learning reduces losses and builds confidence. Loosen standards gradually as you gain experience and track record. Strict validation teaches discipline.",
+    "category": "validation",
+    "keywords": ["beginner validation", "strict", "75+", "build experience"]
+  },
+  {
+    "question": "What is support and resistance?",
+    "answer": "Support is price level where buying overwhelms selling, preventing further decline. Resistance where selling overwhelms buying, preventing rally. These levels form from previous price action and represent areas where supply/demand imbalance occurs. Critical for pattern analysis and trade planning.",
+    "category": "general_trading",
+    "keywords": ["support", "resistance", "levels", "supply demand"]
+  },
+  {
+    "question": "How do I manage risk properly?",
+    "answer": "Risk maximum 1-2% of account per trade. Use stop losses on every trade without exception. Position size based on stop distance, not arbitrary share count. Diversify across 3-5 positions maximum. Never risk more on single trade to recover losses. Capital preservation enables long-term survival.",
+    "category": "general_trading",
+    "keywords": ["risk management", "1-2%", "stop loss", "position sizing"]
+  },
+  {
+    "question": "What is a trend?",
+    "answer": "A trend is directional price movement over time. Uptrend has higher highs and higher lows, downtrend lower highs and lower lows. Trends persist until reversal. Trading with trend increases probability. 'Trend is your friend' is market wisdom for good reason.",
+    "category": "general_trading",
+    "keywords": ["trend", "uptrend", "downtrend", "direction"]
+  },
+  {
+    "question": "What's the difference between trading and investing?",
+    "answer": "Trading is short to medium-term (days to months) focused on price movements and patterns. Investing is long-term (years) focused on fundamental value. Trading requires active management and technical analysis. Investing emphasizes buy-and-hold with fundamental research. Different goals, timeframes, strategies.",
+    "category": "general_trading",
+    "keywords": ["trading vs investing", "short-term", "long-term", "active vs passive"]
+  },
+  {
+    "question": "How much capital do I need to start trading?",
+    "answer": "Minimum $2,000-$5,000 for pattern trading to allow proper position sizing and multiple positions. With $1,000, risking 1% means $10 per trade - insufficient for meaningful learning. More capital allows better risk management and diversification. Start small but not tiny.",
+    "category": "general_trading",
+    "keywords": ["starting capital", "minimum", "$2000-$5000", "position sizing"]
+  },
+  {
+    "question": "What timeframe should beginners use?",
+    "answer": "Start with daily charts for swing trading. Daily timeframe has less noise, clearer patterns, and suits working professionals (no need to watch screen all day). Once profitable on daily, explore 4H or 1H. Avoid minute charts until very experienced.",
+    "category": "general_trading",
+    "keywords": ["beginner timeframe", "daily chart", "swing trading", "less noise"]
+  },
+  {
+    "question": "How do I build a watchlist?",
+    "answer": "Focus on liquid stocks (500K+ daily volume) with clear trends and patterns. Scan 20-50 stocks regularly, noting key levels and patterns forming. Update weekly as setups complete or invalidate. Quality over quantity - better to know 20 stocks deeply than 200 superficially.",
+    "category": "general_trading",
+    "keywords": ["watchlist", "liquid stocks", "20-50", "quality"]
+  },
+  {
+    "question": "What's most common trading mistake?",
+    "answer": "Not using stop losses or moving them further when losing. This single mistake causes catastrophic losses. Other common errors: overtrading, revenge trading after losses, position sizes too large, no trading plan. Discipline and risk management matter more than pattern knowledge.",
+    "category": "general_trading",
+    "keywords": ["common mistake", "no stop loss", "discipline", "risk management"]
+  },
+  {
+    "question": "How long until I'm profitable?",
+    "answer": "Most traders need 6-12 months of consistent practice and learning. Some faster (3-6 months), many slower (1-2 years). Focus on consistency and small wins first, not quick profits. Rushing leads to blown accounts. Take time to master one approach thoroughly before expecting income.",
+    "category": "general_trading",
+    "keywords": ["profitability timeline", "6-12 months", "consistency", "patience"]
+  },
+  {
+    "question": "Should I quit my job to trade full-time?",
+    "answer": "Not until consistently profitable for 12+ months with 6-12 months living expenses saved. Full-time trading adds pressure that often hurts performance. Most successful traders keep day jobs initially. Transition gradually only after proven track record. Financial pressure destroys trading discipline.",
+    "category": "general_trading",
+    "keywords": ["quit job", "full-time trading", "12+ months profitable", "pressure"]
+  },
+  {
+    "question": "What's the best market to trade?",
+    "answer": "Stocks, forex, futures, and crypto all work with patterns. Start where you're most interested and understand best. Stocks offer most educational resources and moderate volatility. Forex is 24/7 but high leverage risk. Futures require more capital. Crypto very volatile. Master one market first.",
+    "category": "general_trading",
+    "keywords": ["best market", "stocks forex futures crypto", "master one", "interest"]
+  },
+  {
+    "question": "Do I need expensive software?",
+    "answer": "No. Free charting (TradingView, Yahoo Finance) is sufficient for learning. QuantraVision handles pattern recognition. Focus on learning patterns and risk management, not collecting tools. Expensive software won't make you profitable if fundamentals are weak. Start free, upgrade if necessary later.",
+    "category": "general_trading",
+    "keywords": ["expensive software", "no", "free charting", "fundamentals matter"]
+  }
+]

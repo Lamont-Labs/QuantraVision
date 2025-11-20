@@ -1,6 +1,15 @@
 package com.lamontlabs.quantravision.intelligence.llm
 
 /**
+ * Model type identifier for tracking individual model files
+ */
+enum class ModelType {
+    INTENT_CLASSIFIER,      // Intent classification model
+    SENTENCE_EMBEDDINGS,    // Sentence embeddings model
+    MOBILEBERT_QA          // MobileBERT Q&A model
+}
+
+/**
  * Represents the current state of the LLM model
  */
 sealed class ModelState {
@@ -8,6 +17,18 @@ sealed class ModelState {
      * Model not yet downloaded
      */
     data object NotDownloaded : ModelState()
+    
+    /**
+     * Some but not all models are downloaded
+     * @param importedCount Number of models imported (1-2)
+     * @param totalRequired Total number of models required (always 3)
+     * @param importedModels Set of model types that are imported
+     */
+    data class PartiallyDownloaded(
+        val importedCount: Int,
+        val totalRequired: Int = 3,
+        val importedModels: Set<ModelType>
+    ) : ModelState()
     
     /**
      * Model is being downloaded
@@ -20,7 +41,7 @@ sealed class ModelState {
     ) : ModelState()
     
     /**
-     * Model downloaded but not loaded into memory
+     * All models downloaded but not loaded into memory
      */
     data object Downloaded : ModelState()
     

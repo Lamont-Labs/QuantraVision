@@ -15,15 +15,28 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * Manages Gemma model lifecycle: verification, caching, and file management
+ * Manages ensemble model lifecycle: verification, caching, and file management
  * 
- * NOTE: Model download is manual via Kaggle (requires authentication).
- * See app/src/main/assets/models/DOWNLOAD_INSTRUCTIONS.md for setup guide.
+ * Tracks 3 separate TFLite models:
+ * 1. Intent Classifier - for intent classification
+ * 2. Sentence Embeddings - for semantic similarity
+ * 3. MobileBERT Q&A - for question answering
+ * 
+ * NOTE: Model download is manual.
+ * See app/src/main/assets/models/ENSEMBLE_MODEL_DOWNLOADS.md for setup guide.
  */
 class ModelManager(private val context: Context) {
     
     private val modelDir = File(context.filesDir, "llm_models")
-    private val modelFile = File(modelDir, ModelConfig.MODEL_NAME)
+    
+    // 3 separate model files
+    private val intentClassifierFile = File(modelDir, ModelConfig.INTENT_CLASSIFIER_NAME)
+    private val sentenceEmbeddingsFile = File(modelDir, ModelConfig.SENTENCE_EMBEDDINGS_NAME)
+    private val mobileBertFile = File(modelDir, ModelConfig.MOBILEBERT_QA_NAME)
+    
+    // Legacy model file (for backward compatibility during migration)
+    @Deprecated("Use individual model files instead")
+    private val legacyModelFile = File(modelDir, ModelConfig.MODEL_NAME)
     
     private val _modelStateFlow = MutableStateFlow<ModelState>(ModelState.NotDownloaded)
     val modelStateFlow: StateFlow<ModelState> = _modelStateFlow.asStateFlow()
@@ -34,36 +47,112 @@ class ModelManager(private val context: Context) {
     }
     
     /**
-     * Get current model state
+     * Get the Intent Classifier model file if available
+     */
+    fun getIntentClassifierFile(): File? {
+        return if (intentClassifierFile.exists() && isModelValid(ModelType.INTENT_CLASSIFIER)) {
+            intentClassifierFile
+        } else null
+    }
+    
+    /**
+     * Get the Sentence Embeddings model file if available
+     */
+    fun getEmbeddingsModelFile(): File? {
+        return if (sentenceEmbeddingsFile.exists() && isModelValid(ModelType.SENTENCE_EMBEDDINGS)) {
+            sentenceEmbeddingsFile
+        } else null
+    }
+    
+    /**
+     * Get the MobileBERT Q&A model file if available
+     */
+    fun getMobileBertFile(): File? {
+        return if (mobileBertFile.exists() && isModelValid(ModelType.MOBILEBERT_QA)) {
+            mobileBertFile
+        } else null
+    }
+    
+    /**
+     * Check if all 3 models are available
+     */
+    fun isModelAvailable(): Boolean {
+        return getIntentClassifierFile() != null &&
+               getEmbeddingsModelFile() != null &&
+               getMobileBertFile() != null
+    }
+    
+    /**
+     * Get current model state based on which models are imported
      */
     fun getModelState(): ModelState {
-        return when {
-            !modelFile.exists() -> ModelState.NotDownloaded
-            !isModelValid() -> ModelState.Error("Model file corrupted or wrong format", recoverable = true)
-            else -> ModelState.Downloaded
+        val importedModels = mutableSetOf<ModelType>()
+        
+        // Check each model file
+        if (intentClassifierFile.exists() && isModelValid(ModelType.INTENT_CLASSIFIER)) {
+            importedModels.add(ModelType.INTENT_CLASSIFIER)
+        }
+        if (sentenceEmbeddingsFile.exists() && isModelValid(ModelType.SENTENCE_EMBEDDINGS)) {
+            importedModels.add(ModelType.SENTENCE_EMBEDDINGS)
+        }
+        if (mobileBertFile.exists() && isModelValid(ModelType.MOBILEBERT_QA)) {
+            importedModels.add(ModelType.MOBILEBERT_QA)
+        }
+        
+        return when (importedModels.size) {
+            0 -> ModelState.NotDownloaded
+            3 -> ModelState.Downloaded  // All 3 models present
+            else -> ModelState.PartiallyDownloaded(
+                importedCount = importedModels.size,
+                importedModels = importedModels
+            )
         }
     }
     
     /**
-     * Check if model file is valid (size check + .task format validation)
+     * Check if a specific model file is valid (size check + .tflite format validation)
      */
-    private fun isModelValid(): Boolean {
-        if (!modelFile.exists()) return false
+    private fun isModelValid(modelType: ModelType): Boolean {
+        val (file, expectedSize, expectedName) = when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> Triple(
+                intentClassifierFile,
+                ModelConfig.INTENT_CLASSIFIER_SIZE_BYTES,
+                ModelConfig.INTENT_CLASSIFIER_NAME
+            )
+            ModelType.SENTENCE_EMBEDDINGS -> Triple(
+                sentenceEmbeddingsFile,
+                ModelConfig.SENTENCE_EMBEDDINGS_SIZE_BYTES,
+                ModelConfig.SENTENCE_EMBEDDINGS_NAME
+            )
+            ModelType.MOBILEBERT_QA -> Triple(
+                mobileBertFile,
+                ModelConfig.MOBILEBERT_QA_SIZE_BYTES,
+                ModelConfig.MOBILEBERT_QA_NAME
+            )
+        }
         
-        // Validate file extension is .task (MediaPipe format)
-        if (!modelFile.name.endsWith(".task")) {
-            Timber.w("🧠 Invalid model format: ${modelFile.name}. Must be .task file for MediaPipe")
+        if (!file.exists()) return false
+        
+        // Validate file extension is .tflite
+        if (!file.name.endsWith(".tflite")) {
+            Timber.w("🧠 Invalid model format: ${file.name}. Must be .tflite file")
             return false
         }
         
-        val size = modelFile.length()
+        // Validate filename matches expected
+        if (file.name != expectedName) {
+            Timber.w("🧠 Model filename mismatch: expected $expectedName, got ${file.name}")
+            return false
+        }
         
-        // Model should be close to expected size (allow 10% variance)
-        val minSize = (ModelConfig.MODEL_SIZE_BYTES * 0.9).toLong()
-        val maxSize = (ModelConfig.MODEL_SIZE_BYTES * 1.1).toLong()
+        val size = file.length()
+        
+        // Model should be close to expected size (allow 20% variance for TFLite models)
+        val minSize = (expectedSize * 0.8).toLong()
+        val maxSize = (expectedSize * 1.2).toLong()
         
         if (size !in minSize..maxSize) {
-            Timber.w("🧠 Model size ${size / 1_000_000}MB outside expected range ${minSize / 1_000_000}-${maxSize / 1_000_000}MB")
+            Timber.w("🧠 Model size ${size / 1_000_000}MB outside expected range ${minSize / 1_000_000}-${maxSize / 1_000_000}MB for $modelType")
             return false
         }
         
@@ -95,24 +184,67 @@ class ModelManager(private val context: Context) {
     }
     
     /**
-     * Get model file if available
+     * Get model file if available (legacy - returns Intent Classifier for backward compatibility)
      */
+    @Deprecated("Use getIntentClassifierFile(), getEmbeddingsModelFile(), or getMobileBertFile() instead")
     fun getModelFile(): File? {
-        return if (modelFile.exists() && isModelValid()) modelFile else null
+        return getIntentClassifierFile()
     }
     
     /**
-     * Delete model file (for clearing cache or re-downloading)
+     * Get model file for a specific model type
+     */
+    fun getModelFile(modelType: ModelType): File? {
+        return when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> getIntentClassifierFile()
+            ModelType.SENTENCE_EMBEDDINGS -> getEmbeddingsModelFile()
+            ModelType.MOBILEBERT_QA -> getMobileBertFile()
+        }
+    }
+    
+    /**
+     * Delete all model files (for clearing cache or re-downloading)
      */
     fun deleteModel(): Boolean {
         return try {
-            if (modelFile.exists()) {
-                modelFile.delete()
+            var allDeleted = true
+            if (intentClassifierFile.exists()) {
+                allDeleted = allDeleted && intentClassifierFile.delete()
+            }
+            if (sentenceEmbeddingsFile.exists()) {
+                allDeleted = allDeleted && sentenceEmbeddingsFile.delete()
+            }
+            if (mobileBertFile.exists()) {
+                allDeleted = allDeleted && mobileBertFile.delete()
+            }
+            // Also delete legacy file if present
+            if (legacyModelFile.exists()) {
+                legacyModelFile.delete()
+            }
+            allDeleted
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to delete model files")
+            false
+        }
+    }
+    
+    /**
+     * Delete a specific model file
+     */
+    fun deleteModel(modelType: ModelType): Boolean {
+        return try {
+            val file = when (modelType) {
+                ModelType.INTENT_CLASSIFIER -> intentClassifierFile
+                ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile
+                ModelType.MOBILEBERT_QA -> mobileBertFile
+            }
+            if (file.exists()) {
+                file.delete()
             } else {
                 true
             }
         } catch (e: Exception) {
-            Timber.e(e, "Failed to delete model file")
+            Timber.e(e, "Failed to delete model file for $modelType")
             false
         }
     }
@@ -131,72 +263,130 @@ class ModelManager(private val context: Context) {
     }
     
     /**
-     * Get model size for UI display
+     * Get total model size for UI display (sum of all 3 models)
      */
     fun getModelSizeMB(): Long {
-        return if (modelFile.exists()) {
-            modelFile.length() / (1024 * 1024)
+        var totalSize = 0L
+        if (intentClassifierFile.exists()) totalSize += intentClassifierFile.length()
+        if (sentenceEmbeddingsFile.exists()) totalSize += sentenceEmbeddingsFile.length()
+        if (mobileBertFile.exists()) totalSize += mobileBertFile.length()
+        
+        return if (totalSize > 0) {
+            totalSize / (1024 * 1024)
         } else {
-            ModelConfig.MODEL_SIZE_BYTES / (1024 * 1024)
+            // Return expected total size
+            (ModelConfig.INTENT_CLASSIFIER_SIZE_BYTES +
+             ModelConfig.SENTENCE_EMBEDDINGS_SIZE_BYTES +
+             ModelConfig.MOBILEBERT_QA_SIZE_BYTES) / (1024 * 1024)
         }
     }
     
     /**
-     * Called after model import completes successfully
-     * Refreshes model state and validates imported file
+     * Get size of a specific model for UI display
      */
+    fun getModelSizeMB(modelType: ModelType): Long {
+        val file = when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> intentClassifierFile
+            ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile
+            ModelType.MOBILEBERT_QA -> mobileBertFile
+        }
+        
+        val expectedSize = when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> ModelConfig.INTENT_CLASSIFIER_SIZE_BYTES
+            ModelType.SENTENCE_EMBEDDINGS -> ModelConfig.SENTENCE_EMBEDDINGS_SIZE_BYTES
+            ModelType.MOBILEBERT_QA -> ModelConfig.MOBILEBERT_QA_SIZE_BYTES
+        }
+        
+        return if (file.exists()) {
+            file.length() / (1024 * 1024)
+        } else {
+            expectedSize / (1024 * 1024)
+        }
+    }
+    
+    /**
+     * Called after a specific model import completes successfully
+     * Refreshes model state and validates imported file
+     * 
+     * @param modelType The type of model that was imported
+     */
+    fun onModelImported(modelType: ModelType) {
+        Timber.i("🧠 Model import completed for $modelType - refreshing state")
+        
+        // Validate the imported model
+        val isValid = validateImportedModel(modelType)
+        if (!isValid) {
+            Timber.e("🧠 Imported model $modelType failed validation")
+            _modelStateFlow.value = ModelState.Error("Model validation failed for $modelType", recoverable = true)
+        } else {
+            // Re-check model existence and update internal state
+            val newState = getModelState()
+            _modelStateFlow.value = newState
+            Timber.i("🧠 New model state after $modelType import: $newState")
+        }
+    }
+    
+    /**
+     * Called after model import completes successfully (legacy method)
+     * Assumes all models were imported
+     */
+    @Deprecated("Use onModelImported(ModelType) instead to track individual model imports")
     fun onModelImported() {
         Timber.i("🧠 Model import completed - refreshing state")
         
         // Re-check model existence and update internal state
         val newState = getModelState()
-        
-        // Validate the imported model
-        val isValid = validateImportedModel()
-        if (!isValid) {
-            Timber.e("🧠 Imported model failed validation")
-            _modelStateFlow.value = ModelState.Error("Model validation failed", recoverable = true)
-        } else {
-            // Emit new state to any observers
-            _modelStateFlow.value = newState
-            Timber.i("🧠 New model state after import: $newState")
+        _modelStateFlow.value = newState
+        Timber.i("🧠 New model state after import: $newState")
+    }
+    
+    /**
+     * Validate imported model file integrity for a specific model type
+     * 
+     * Checks:
+     * - File exists
+     * - Correct .tflite extension
+     * - Correct filename
+     * - Size within expected range
+     * 
+     * @param modelType The type of model to validate
+     * @return true if model is valid, false otherwise
+     */
+    fun validateImportedModel(modelType: ModelType): Boolean {
+        return isModelValid(modelType).also { isValid ->
+            if (isValid) {
+                val file = when (modelType) {
+                    ModelType.INTENT_CLASSIFIER -> intentClassifierFile
+                    ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile
+                    ModelType.MOBILEBERT_QA -> mobileBertFile
+                }
+                Timber.i("🧠 Model validation passed for $modelType: ${file.length() / 1_000_000}MB")
+            } else {
+                Timber.w("🧠 Model validation failed for $modelType")
+            }
         }
     }
     
     /**
-     * Validate imported model file integrity
+     * Validate all imported model files
      * 
-     * Checks:
-     * - File exists
-     * - Correct .task extension
-     * - Size within expected range
-     * 
-     * @return true if model is valid, false otherwise
+     * @return true if all present models are valid, false otherwise
      */
+    @Deprecated("Use validateImportedModel(ModelType) instead")
     fun validateImportedModel(): Boolean {
-        if (!modelFile.exists()) {
-            Timber.w("🧠 Model validation failed: file does not exist")
-            return false
+        var allValid = true
+        
+        if (intentClassifierFile.exists()) {
+            allValid = allValid && isModelValid(ModelType.INTENT_CLASSIFIER)
+        }
+        if (sentenceEmbeddingsFile.exists()) {
+            allValid = allValid && isModelValid(ModelType.SENTENCE_EMBEDDINGS)
+        }
+        if (mobileBertFile.exists()) {
+            allValid = allValid && isModelValid(ModelType.MOBILEBERT_QA)
         }
         
-        // Validate extension
-        if (!modelFile.name.endsWith(".task")) {
-            Timber.w("🧠 Model validation failed: incorrect extension ${modelFile.name}")
-            return false
-        }
-        
-        // Validate size (allow 10% variance)
-        val fileSize = modelFile.length()
-        val minSize = (ModelConfig.MODEL_SIZE_BYTES * 0.9).toLong()
-        val maxSize = (ModelConfig.MODEL_SIZE_BYTES * 1.1).toLong()
-        
-        if (fileSize !in minSize..maxSize) {
-            Timber.w("🧠 Model validation failed: size ${fileSize / 1_000_000}MB outside range ${minSize / 1_000_000}-${maxSize / 1_000_000}MB")
-            return false
-        }
-        
-        Timber.i("🧠 Model validation passed: ${fileSize / 1_000_000}MB")
-        return true
+        return allValid
     }
     
     /**
@@ -233,7 +423,19 @@ class ModelManager(private val context: Context) {
     /**
      * Get model file path for display in UI
      */
+    fun getModelPath(modelType: ModelType): String {
+        return when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> intentClassifierFile.absolutePath
+            ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile.absolutePath
+            ModelType.MOBILEBERT_QA -> mobileBertFile.absolutePath
+        }
+    }
+    
+    /**
+     * Get model directory path (legacy method)
+     */
+    @Deprecated("Use getModelPath(ModelType) instead")
     fun getModelPath(): String {
-        return modelFile.absolutePath
+        return modelDir.absolutePath
     }
 }

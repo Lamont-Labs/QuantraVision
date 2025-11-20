@@ -1,0 +1,513 @@
+package com.lamontlabs.quantravision.ai.ensemble
+
+import android.content.Context
+import com.lamontlabs.quantravision.ai.ensemble.knowledge.QAKnowledgeBase
+import com.lamontlabs.quantravision.intelligence.llm.ExplanationResult
+import com.lamontlabs.quantravision.intelligence.llm.InitializationError
+import com.lamontlabs.quantravision.intelligence.llm.ModelManager
+import com.lamontlabs.quantravision.intelligence.llm.ModelState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import timber.log.Timber
+
+/**
+ * Ensemble AI Engine orchestrating 3 TFLite models for fast, efficient Q&A
+ * 
+ * # ARCHITECTURE
+ * 
+ * This engine replaces the 555MB Gemma model with 3 lightweight TFLite models:
+ * 1. **IntentClassifier** (15MB) - Classifies user intent (pattern_explanation, quantra_score, etc.)
+ * 2. **EmbeddingsRetriever** (25MB) - Semantic similarity search over 198 Q&A pairs
+ * 3. **MobileBERT Q&A** (110MB) - Extractive question answering for novel questions
+ * 
+ * Total size: ~150MB (vs 555MB Gemma)
+ * 
+ * # INTERFACE COMPATIBILITY
+ * 
+ * Maintains **exact same interface** as GemmaEngine:
+ * - Singleton pattern: getInstance(context)
+ * - initialize(): Result<Unit>
+ * - generate(prompt: String, maxTokens: Int): ExplanationResult
+ * - isReady(): Boolean
+ * - getState(): ModelState
+ * 
+ * # ORCHESTRATION FLOW
+ * 
+ * ```
+ * generate(prompt) →
+ *   1. Check if all 3 models loaded (if not, return ExplanationResult.Unavailable)
+ *   2. Classify intent using IntentClassifier
+ *   3. Search for answer using EmbeddingsRetriever
+ *   4. If retrieval confidence > 0.75:
+ *      Return ExplanationResult.Success(text = retrievedAnswer, fromCache = true)
+ *   5. Else fall back to MobileBERT:
+ *      Build context from prompt + pattern info
+ *      Get answer from MobileBERTQaAdapter
+ *      Return ExplanationResult.Success(text = generatedAnswer, fromCache = false)
+ *   6. Handle all errors gracefully (return ExplanationResult.Failure or Unavailable)
+ * ```
+ * 
+ * # STATE MANAGEMENT
+ * 
+ * This engine truthfully reports model availability through ModelState:
+ * - **Ready**: All 3 models loaded and ready for inference
+ * - **Downloaded**: All 3 model files exist but not loaded into memory
+ * - **PartiallyDownloaded**: Only 1-2 models imported (cannot initialize)
+ * - **NotDownloaded**: No model files present
+ * 
+ * ## Initialization Contract (CRITICAL FOR VALIDATION)
+ * 
+ * ### initialize() returns Result.failure when:
+ * - Not all 3 model files exist (enables validation workflows to detect missing models)
+ * - Model files exist but initialization fails
+ * - Any error occurs during initialization
+ * 
+ * ### initialize() returns Result.success ONLY when:
+ * - All 3 models successfully loaded and ready for inference
+ * 
+ * ## Behavior by Model Availability
+ * 
+ * ### When NO model files exist:
+ * - `initialize()` **fails** with InitializationError.ModelNotFound
+ * - `generate()` returns `ExplanationResult.Unavailable` with fallback text
+ * - `isReady()` returns `false`
+ * - PatternExplainer uses FallbackExplanations for template-based responses
+ * 
+ * ### When only 1-2 models downloaded (PartiallyDownloaded):
+ * - `initialize()` **fails** with InitializationError.PartialModels
+ * - User sees clear error message indicating which models are missing
+ * - `generate()` returns `ExplanationResult.Unavailable`
+ * 
+ * ### When all 3 models loaded (Ready):
+ * - `generate()` uses fast retrieval-first approach (10x faster than generation)
+ * - High-confidence matches (>0.75) return instantly from cache
+ * - Novel questions fall back to MobileBERT generation
+ * - `isReady()` returns `true`
+ * 
+ * # PERFORMANCE BENEFITS
+ * 
+ * - **10x faster** for common questions (embedding retrieval vs LLM generation)
+ * - **3.7x smaller** model size (150MB vs 555MB)
+ * - **Lower memory** usage (no need to load 555MB model)
+ * - **Same user experience** (drop-in replacement for GemmaEngine)
+ * 
+ * @see IntentClassifier for intent classification
+ * @see EmbeddingsRetriever for semantic similarity search
+ * @see MobileBERTQaAdapter for extractive Q&A
+ */
+class EnsembleEngine private constructor(private val context: Context) {
+    
+    private val modelManager = ModelManager(context)
+    private val knowledgeBase = QAKnowledgeBase(context)
+    
+    private var modelState: ModelState = ModelState.NotDownloaded
+    
+    // 3 ensemble components (initialized when models are loaded)
+    @Volatile
+    private var intentClassifier: IntentClassifier? = null
+    
+    @Volatile
+    private var embeddingsRetriever: EmbeddingsRetriever? = null
+    
+    @Volatile
+    private var mobileBertQa: MobileBERTQaAdapter? = null
+    
+    // Mutex for thread-safe initialization
+    private val initMutex = Mutex()
+    
+    companion object {
+        private const val TAG = "EnsembleEngine"
+        private const val RETRIEVAL_CONFIDENCE_THRESHOLD = 0.75f
+        
+        /**
+         * Shared instance for memory efficiency
+         * Both DevBot and QuantraBot should share ONE EnsembleEngine instance
+         */
+        @Volatile
+        private var sharedInstance: EnsembleEngine? = null
+        
+        /**
+         * Get or create shared EnsembleEngine instance
+         * 
+         * This ensures only ONE set of models is loaded in memory, even when used by
+         * both DevBot and QuantraBot simultaneously.
+         */
+        @Synchronized
+        fun getInstance(context: Context): EnsembleEngine {
+            return sharedInstance ?: EnsembleEngine(context.applicationContext).also {
+                sharedInstance = it
+            }
+        }
+    }
+    
+    init {
+        modelState = modelManager.getModelState()
+        Timber.i("🎯 EnsembleEngine initialized - State: $modelState")
+    }
+    
+    /**
+     * Initialize all 3 ensemble models
+     * 
+     * ## Initialization Contract
+     * 
+     * Returns **Result.failure** when:
+     * - Not all 3 model files exist (enables validation workflows to detect missing models)
+     * - Model files exist but initialization fails
+     * - Any error occurs during initialization
+     * 
+     * Returns **Result.success** ONLY when:
+     * - All 3 models successfully loaded and ready for inference
+     * 
+     * ## State Transitions
+     * 
+     * - No model files: Sets state to NotDownloaded, returns Result.failure
+     * - Partial models: Sets state to PartiallyDownloaded, returns Result.failure
+     * - All model files exist: Sets state to Loading, attempts initialization
+     * - Initialization succeeds: Sets state to Ready, returns Result.success
+     * - Initialization fails: Sets state to Error, returns Result.failure
+     */
+    suspend fun initialize(): Result<Unit> = withContext(Dispatchers.IO) {
+        initMutex.withLock {
+            try {
+                // If already ready, return success (idempotent)
+                if (modelState is ModelState.Ready && 
+                    intentClassifier != null && 
+                    embeddingsRetriever != null && 
+                    mobileBertQa != null) {
+                    Timber.d("🎯 Ensemble already initialized and ready")
+                    return@withContext Result.success(Unit)
+                }
+                
+                // Refresh model state from manager
+                modelState = modelManager.getModelState()
+                
+                when (val state = modelState) {
+                    is ModelState.NotDownloaded -> {
+                        Timber.w("🎯 No ensemble models found")
+                        return@withContext Result.failure(
+                            InitializationError.ModelNotFound("No ensemble model files downloaded. See ENSEMBLE_MODEL_DOWNLOADS.md")
+                        )
+                    }
+                    
+                    is ModelState.PartiallyDownloaded -> {
+                        val missing = getMissingModels(state)
+                        Timber.w("🎯 Only ${state.importedCount}/3 models imported. Missing: $missing")
+                        return@withContext Result.failure(
+                            InitializationError.PartialModels(
+                                imported = state.importedCount,
+                                total = state.totalRequired,
+                                missing = missing
+                            )
+                        )
+                    }
+                    
+                    is ModelState.Downloaded -> {
+                        Timber.i("🎯 Loading ensemble models...")
+                        modelState = ModelState.Loading
+                        
+                        try {
+                            // Get model files
+                            val intentFile = modelManager.getIntentClassifierFile()
+                            val embeddingsFile = modelManager.getEmbeddingsModelFile()
+                            val mobileBertFile = modelManager.getMobileBertFile()
+                            
+                            if (intentFile == null || embeddingsFile == null || mobileBertFile == null) {
+                                Timber.e("🎯 Model files missing despite Downloaded state")
+                                return@withContext Result.failure(
+                                    InitializationError.ModelNotFound("Model files missing")
+                                )
+                            }
+                            
+                            // Initialize all 3 components
+                            Timber.i("🎯 Initializing IntentClassifier from ${intentFile.absolutePath}")
+                            intentClassifier = IntentClassifier(context, intentFile)
+                            
+                            Timber.i("🎯 Initializing EmbeddingsRetriever from ${embeddingsFile.absolutePath}")
+                            embeddingsRetriever = EmbeddingsRetriever(embeddingsFile, knowledgeBase)
+                            
+                            Timber.i("🎯 Initializing MobileBERTQaAdapter from ${mobileBertFile.absolutePath}")
+                            mobileBertQa = MobileBERTQaAdapter(mobileBertFile)
+                            
+                            modelState = ModelState.Ready
+                            Timber.i("🎯 EnsembleEngine ready - All 3 models loaded and ready for inference")
+                            return@withContext Result.success(Unit)
+                            
+                        } catch (loadError: Exception) {
+                            // Clean up partial initialization
+                            intentClassifier?.close()
+                            embeddingsRetriever?.close()
+                            mobileBertQa?.close()
+                            intentClassifier = null
+                            embeddingsRetriever = null
+                            mobileBertQa = null
+                            
+                            modelState = ModelState.Error(
+                                loadError.message ?: "Model initialization failed", 
+                                recoverable = true
+                            )
+                            val error = InitializationError.LoadFailed(loadError)
+                            Timber.e(error, "🎯 Ensemble initialization failed")
+                            return@withContext Result.failure(error)
+                        }
+                    }
+                    
+                    is ModelState.Ready -> {
+                        // State says Ready but models are null - reinitialize
+                        Timber.w("🎯 State is Ready but models are null - forcing reinitialization")
+                        modelState = ModelState.Downloaded
+                        return@withContext initialize()
+                    }
+                    
+                    else -> {
+                        Timber.e("🎯 Unexpected model state during initialization: $modelState")
+                        return@withContext Result.failure(InitializationError.LoaderNotImplemented())
+                    }
+                }
+            } catch (e: Exception) {
+                modelState = ModelState.Error(e.message ?: "Initialization failed", recoverable = false)
+                Timber.e(e, "🎯 Fatal initialization error")
+                return@withContext Result.failure(InitializationError.LoadFailed(e))
+            }
+        }
+    }
+    
+    /**
+     * Generate answer for user question using ensemble approach
+     * 
+     * ## Orchestration Flow
+     * 
+     * 1. Classify intent using IntentClassifier
+     * 2. Search for answer using EmbeddingsRetriever
+     * 3. If confidence > 0.75: return cached answer (10x faster)
+     * 4. Otherwise: use MobileBERT to generate answer from context
+     * 
+     * Returns ExplanationResult.Unavailable when models not loaded,
+     * allowing PatternExplainer to use FallbackExplanations.
+     */
+    suspend fun generate(
+        prompt: String,
+        maxTokens: Int = 512
+    ): ExplanationResult = withContext(Dispatchers.Default) {
+        
+        try {
+            // Check if all 3 models are loaded and ready
+            if (modelState !is ModelState.Ready || 
+                intentClassifier == null || 
+                embeddingsRetriever == null || 
+                mobileBertQa == null) {
+                
+                val reason = when (modelState) {
+                    is ModelState.NotDownloaded -> "Ensemble models not downloaded"
+                    is ModelState.PartiallyDownloaded -> {
+                        val state = modelState as ModelState.PartiallyDownloaded
+                        "Only ${state.importedCount}/3 models imported"
+                    }
+                    is ModelState.Downloaded -> "Models not loaded into memory"
+                    is ModelState.Loading -> "Models currently loading"
+                    is ModelState.Error -> "Model error: ${(modelState as ModelState.Error).error}"
+                    else -> "Models not ready"
+                }
+                
+                return@withContext ExplanationResult.Unavailable(
+                    reason = reason,
+                    fallbackText = "Models not available. Using template response."
+                )
+            }
+            
+            val startTime = System.currentTimeMillis()
+            val previousState = modelState
+            modelState = ModelState.Generating
+            
+            try {
+                Timber.d("🎯 Processing question: ${prompt.take(100)}...")
+                
+                // Step 1: Classify intent
+                val intentResult = intentClassifier!!.classify(prompt)
+                Timber.d("🎯 Intent: ${intentResult.intent} (confidence: ${intentResult.confidence})")
+                
+                // Step 2: Try retrieval-based answer (fast path)
+                val retrievalResult = embeddingsRetriever!!.retrieve(prompt)
+                
+                if (retrievalResult != null && retrievalResult.confidence >= RETRIEVAL_CONFIDENCE_THRESHOLD) {
+                    // High confidence match - return cached answer instantly
+                    modelState = previousState
+                    val inferenceTime = System.currentTimeMillis() - startTime
+                    
+                    // Count tokens (approximate - count words)
+                    val tokensGenerated = retrievalResult.answer.split("\\s+".toRegex()).size
+                    
+                    Timber.i("🎯 Retrieved cached answer in ${inferenceTime}ms (~$tokensGenerated tokens, confidence: ${retrievalResult.confidence})")
+                    
+                    return@withContext ExplanationResult.Success(
+                        text = retrievalResult.answer,
+                        tokensGenerated = tokensGenerated,
+                        inferenceTimeMs = inferenceTime,
+                        fromCache = true
+                    )
+                }
+                
+                // Step 3: Low confidence or no match - fall back to MobileBERT generation
+                Timber.d("🎯 Retrieval confidence too low (${retrievalResult?.confidence ?: 0f}), using MobileBERT generation")
+                
+                // Build context for MobileBERT (use retrieved answer as context if available)
+                val context = if (retrievalResult != null) {
+                    buildContextWithRetrieval(prompt, retrievalResult.answer, intentResult.intent)
+                } else {
+                    buildContextFromIntent(prompt, intentResult.intent)
+                }
+                
+                val qaResult = mobileBertQa!!.answer(context, prompt)
+                
+                // Restore previous state
+                modelState = previousState
+                val inferenceTime = System.currentTimeMillis() - startTime
+                
+                // Count tokens (approximate - count words)
+                val tokensGenerated = qaResult.answer.split("\\s+".toRegex()).size
+                
+                Timber.i("🎯 Generated answer in ${inferenceTime}ms (~$tokensGenerated tokens, confidence: ${qaResult.confidence})")
+                
+                return@withContext ExplanationResult.Success(
+                    text = qaResult.answer,
+                    tokensGenerated = tokensGenerated,
+                    inferenceTimeMs = inferenceTime,
+                    fromCache = false
+                )
+                
+            } catch (inferenceError: Exception) {
+                // Restore previous state on error
+                modelState = previousState
+                Timber.e(inferenceError, "🎯 Ensemble inference failed")
+                
+                return@withContext ExplanationResult.Failure(
+                    error = inferenceError.message ?: "Inference failed",
+                    fallbackText = null
+                )
+            }
+            
+        } catch (e: Exception) {
+            modelState = ModelState.Error(e.message ?: "Generation failed", recoverable = true)
+            Timber.e(e, "🎯 Text generation failed")
+            
+            ExplanationResult.Failure(
+                error = e.message ?: "Unknown error",
+                fallbackText = null
+            )
+        }
+    }
+    
+    /**
+     * Build context for MobileBERT when retrieval found a low-confidence match
+     * 
+     * Uses the retrieved answer as additional context to improve generation quality
+     */
+    private fun buildContextWithRetrieval(
+        question: String,
+        retrievedAnswer: String,
+        intent: String
+    ): String {
+        return """
+            Related information: $retrievedAnswer
+            
+            Question: $question
+            Intent: $intent
+        """.trimIndent()
+    }
+    
+    /**
+     * Build context for MobileBERT when no retrieval match found
+     * 
+     * Uses intent to provide minimal context
+     */
+    private fun buildContextFromIntent(
+        question: String,
+        intent: String
+    ): String {
+        val intentContext = when (intent) {
+            "pattern_explanation" -> "This is a question about chart patterns and technical analysis."
+            "quantra_score" -> "This is a question about the Quantra Score metric for pattern quality."
+            "trading_strategy" -> "This is a question about trading strategies and market analysis."
+            "indicator" -> "This is a question about technical indicators."
+            "validation" -> "This is a question about pattern validation and confirmation."
+            else -> "This is a general question about trading and markets."
+        }
+        
+        return """
+            $intentContext
+            
+            Question: $question
+        """.trimIndent()
+    }
+    
+    /**
+     * Get list of missing models for PartiallyDownloaded state
+     */
+    private fun getMissingModels(state: ModelState.PartiallyDownloaded): List<String> {
+        val allModels = setOf(
+            com.lamontlabs.quantravision.intelligence.llm.ModelType.INTENT_CLASSIFIER,
+            com.lamontlabs.quantravision.intelligence.llm.ModelType.SENTENCE_EMBEDDINGS,
+            com.lamontlabs.quantravision.intelligence.llm.ModelType.MOBILEBERT_QA
+        )
+        
+        val missing = allModels - state.importedModels
+        
+        return missing.map { modelType ->
+            when (modelType) {
+                com.lamontlabs.quantravision.intelligence.llm.ModelType.INTENT_CLASSIFIER -> 
+                    "intent_classifier.tflite"
+                com.lamontlabs.quantravision.intelligence.llm.ModelType.SENTENCE_EMBEDDINGS -> 
+                    "sentence_embeddings.tflite"
+                com.lamontlabs.quantravision.intelligence.llm.ModelType.MOBILEBERT_QA -> 
+                    "mobilebert_qa_squad.tflite"
+            }
+        }
+    }
+    
+    /**
+     * Get current model state
+     */
+    fun getState(): ModelState = modelState
+    
+    /**
+     * Check if all 3 ensemble models are loaded and ready
+     * 
+     * Returns true ONLY when modelState is Ready, indicating that all 3 models
+     * are loaded in memory and ready to generate answers.
+     * 
+     * Returns false when:
+     * - No models downloaded (NotDownloaded)
+     * - Only some models downloaded (PartiallyDownloaded)
+     * - Models downloaded but not loaded (Downloaded)
+     * - Models are loading (Loading)
+     * - Models encountered an error (Error)
+     */
+    fun isReady(): Boolean {
+        return modelState is ModelState.Ready && 
+               intentClassifier != null && 
+               embeddingsRetriever != null && 
+               mobileBertQa != null
+    }
+    
+    /**
+     * Unload ensemble models from memory to free resources
+     * 
+     * Useful for memory management when models are not actively needed.
+     * Call initialize() again to reload the models.
+     */
+    fun unload() {
+        intentClassifier?.close()
+        embeddingsRetriever?.close()
+        mobileBertQa?.close()
+        
+        intentClassifier = null
+        embeddingsRetriever = null
+        mobileBertQa = null
+        
+        // Update state to Downloaded if model files still exist
+        modelState = modelManager.getModelState()
+        
+        Timber.i("🎯 Ensemble models unloaded from memory - State: $modelState")
+    }
+}

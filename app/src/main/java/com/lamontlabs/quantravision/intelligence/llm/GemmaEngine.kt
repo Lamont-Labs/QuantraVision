@@ -32,6 +32,16 @@ sealed class InitializationError(message: String) : Exception(message) {
      * Model loader not implemented
      */
     class LoaderNotImplemented : InitializationError("Model loader not implemented for current state")
+    
+    /**
+     * Partial ensemble models imported (EnsembleEngine only)
+     * Indicates that not all required models are available
+     */
+    class PartialModels(
+        imported: Int,
+        total: Int,
+        missing: List<String>
+    ) : InitializationError("Only $imported/$total models imported. Missing: ${missing.joinToString(", ")}")
 }
 
 /**
