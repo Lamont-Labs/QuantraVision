@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.lamontlabs.quantravision.ai.ensemble.models.QAEntry
+import timber.log.Timber
 import java.io.InputStreamReader
 
 class QAKnowledgeBase(private val context: Context) {
@@ -13,18 +14,28 @@ class QAKnowledgeBase(private val context: Context) {
     
     fun loadAll(): List<QAEntry> {
         if (cachedEntries != null) {
+            Timber.d("📚 Returning ${cachedEntries!!.size} cached Q&A entries")
             return cachedEntries!!
         }
         
         return try {
+            Timber.i("📚 Loading Q&A knowledge base from assets...")
             val inputStream = context.assets.open("knowledge/qa_knowledge_base.json")
             val reader = InputStreamReader(inputStream)
             val type = object : TypeToken<List<QAEntry>>() {}.type
             val entries = gson.fromJson<List<QAEntry>>(reader, type)
             reader.close()
+            
+            if (entries.isNullOrEmpty()) {
+                Timber.e("📚 Knowledge base loaded but is empty!")
+                return emptyList()
+            }
+            
             cachedEntries = entries
+            Timber.i("📚 Successfully loaded ${entries.size} Q&A entries from knowledge base")
             entries
         } catch (e: Exception) {
+            Timber.e(e, "📚 CRITICAL ERROR: Failed to load Q&A knowledge base from assets/knowledge/qa_knowledge_base.json")
             emptyList()
         }
     }

@@ -73,6 +73,12 @@ class EmbeddingsRetriever(
                 knowledgeBase.loadAll()
             }
             
+            if (qaEntries.isEmpty()) {
+                Timber.e("🔍 CRITICAL: Knowledge base is empty! Retrieval will retry on next call.")
+                // Don't set isInitialized - allow retry on next retrieve() call
+                return@withLock false
+            }
+            
             Timber.i("🔍 Pre-computing embeddings for ${qaEntries.size} Q&A entries...")
             
             // Pre-compute embeddings for all questions
@@ -87,6 +93,12 @@ class EmbeddingsRetriever(
                 } catch (e: Exception) {
                     Timber.w(e, "🔍 Failed to generate embedding for: ${entry.question}")
                 }
+            }
+            
+            if (successCount == 0) {
+                Timber.e("🔍 CRITICAL: Failed to generate any embeddings! Retrieval will retry on next call.")
+                // Don't set isInitialized - allow retry on next retrieve() call
+                return@withLock false
             }
             
             isInitialized = true

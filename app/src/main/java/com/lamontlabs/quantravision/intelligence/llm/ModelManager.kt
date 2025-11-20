@@ -85,20 +85,101 @@ class ModelManager(private val context: Context) {
         }
         
         return try {
-            Timber.i("🧠 Copying $modelType from assets to internal storage...")
+            Timber.i("🧠 Copying $modelType from assets/$assetPath to ${targetFile.absolutePath}...")
+            
+            // Ensure parent directory exists
+            if (!modelDir.exists()) {
+                Timber.d("🧠 Creating model directory: ${modelDir.absolutePath}")
+                modelDir.mkdirs()
+            }
+            
+            // Copy to temp file first to avoid losing valid model if copy fails
+            val tempFile = File(modelDir, "${targetFile.name}.tmp")
+            if (tempFile.exists()) {
+                tempFile.delete()
+            }
             
             context.assets.open(assetPath).use { input ->
-                FileOutputStream(targetFile).use { output ->
-                    input.copyTo(output)
+                FileOutputStream(tempFile).use { output ->
+                    val bytesCopied = input.copyTo(output)
+                    Timber.d("🧠 Copied $bytesCopied bytes to temp file")
                 }
             }
             
+            // Verify temp file was created successfully
+            if (!tempFile.exists() || tempFile.length() == 0L) {
+                tempFile.delete()
+                throw Exception("Temp file validation failed after copy")
+            }
+            
+            // Atomic swap: Preserve existing valid model until new one is confirmed
+            val backupFile = if (targetFile.exists()) {
+                val backup = File(modelDir, "${targetFile.name}.bak")
+                if (backup.exists()) backup.delete()
+                Timber.d("🧠 Backing up existing file before replacement")
+                
+                // Try rename first (atomic), fallback to copy if locked/cross-filesystem
+                if (targetFile.renameTo(backup)) {
+                    backup
+                } else {
+                    Timber.d("🧠 Rename to backup failed, using copy-based backup")
+                    targetFile.copyTo(backup, overwrite = false)
+                    
+                    // CRITICAL: Ensure original is deleted before swap attempt
+                    if (!targetFile.delete()) {
+                        backup.delete()
+                        throw Exception("Cannot delete original file after backup - file may be locked")
+                    }
+                    backup
+                }
+            } else {
+                null
+            }
+            
+            try {
+                // Try atomic rename first (fastest)
+                if (!tempFile.renameTo(targetFile)) {
+                    // Fallback: copy if rename fails (different filesystems)
+                    Timber.d("🧠 Rename failed, using copy fallback")
+                    tempFile.copyTo(targetFile, overwrite = true)
+                    tempFile.delete()
+                }
+                
+                // Success! Delete backup if present
+                backupFile?.delete()
+            } catch (e: Exception) {
+                // Restore backup on failure with robust fallback
+                if (backupFile != null && backupFile.exists()) {
+                    Timber.w("🧠 Swap failed, restoring backup")
+                    
+                    // Try rename first, fallback to copy (mirror forward path)
+                    if (!backupFile.renameTo(targetFile)) {
+                        Timber.d("🧠 Backup restore rename failed, using copy")
+                        try {
+                            // Use overwrite=true to handle any partially written target
+                            backupFile.copyTo(targetFile, overwrite = true)
+                            backupFile.delete()
+                        } catch (restoreError: Exception) {
+                            Timber.e(restoreError, "🧠 CRITICAL: Failed to restore backup! Backup preserved at ${backupFile.absolutePath}")
+                            // Don't delete backup - let user recover manually
+                            tempFile.delete()
+                            throw Exception("Model provisioning failed and backup restoration failed. Backup preserved at ${backupFile.absolutePath}", e)
+                        }
+                    } else {
+                        // Rename succeeded, safe to delete backup
+                        backupFile.delete()
+                    }
+                }
+                tempFile.delete()
+                throw e
+            }
+            
             val sizeMB = targetFile.length() / (1024 * 1024)
-            Timber.i("🧠 Successfully copied $modelType (${sizeMB}MB) to ${targetFile.absolutePath}")
+            Timber.i("🧠 ✅ Successfully copied $modelType (${sizeMB}MB) to ${targetFile.absolutePath}")
             
             Result.success(targetFile)
         } catch (e: Exception) {
-            Timber.e(e, "🧠 Failed to copy $modelType from assets")
+            Timber.e(e, "🧠 ❌ Failed to copy $modelType from assets/$assetPath - existing valid model preserved if present")
             Result.failure(e)
         }
     }
@@ -110,6 +191,7 @@ class ModelManager(private val context: Context) {
      * @return Map of ModelType to Result indicating which models were provisioned
      */
     private fun autoProvisionFromAssets(): Map<ModelType, Result<File>> {
+        Timber.i("🧠 ====== AUTO-PROVISION STARTING ======")
         val results = mutableMapOf<ModelType, Result<File>>()
         
         // Only provision required models (embeddings + mobilebert)
@@ -120,6 +202,8 @@ class ModelManager(private val context: Context) {
         )
         
         for (modelType in requiredModels) {
+            Timber.i("🧠 Processing $modelType...")
+            
             // Check if model already exists in internal storage
             val targetFile = when (modelType) {
                 ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile
@@ -127,15 +211,28 @@ class ModelManager(private val context: Context) {
                 else -> continue
             }
             
-            if (targetFile.exists() && isModelValid(modelType)) {
-                Timber.d("🧠 $modelType already exists in internal storage, skipping provision")
-                results[modelType] = Result.success(targetFile)
-                continue
+            Timber.d("🧠 Target file: ${targetFile.absolutePath}")
+            Timber.d("🧠 File exists: ${targetFile.exists()}")
+            
+            if (targetFile.exists()) {
+                val isValid = isModelValid(modelType)
+                Timber.d("🧠 File is valid: $isValid")
+                
+                if (isValid) {
+                    Timber.i("🧠 ✅ $modelType already exists and is valid, skipping provision")
+                    results[modelType] = Result.success(targetFile)
+                    continue
+                } else {
+                    Timber.w("🧠 ⚠️ $modelType exists but is invalid, will re-provision from assets")
+                }
             }
             
             // Check if model exists in assets
-            if (!modelExistsInAssets(modelType)) {
-                Timber.w("🧠 $modelType not found in bundled assets")
+            val existsInAssets = modelExistsInAssets(modelType)
+            Timber.d("🧠 Model exists in assets: $existsInAssets")
+            
+            if (!existsInAssets) {
+                Timber.e("🧠 ❌ $modelType not found in bundled assets!")
                 results[modelType] = Result.failure(
                     Exception("Model not found in assets: $modelType")
                 )
@@ -143,16 +240,18 @@ class ModelManager(private val context: Context) {
             }
             
             // Copy from assets to internal storage
+            Timber.i("🧠 Attempting to copy $modelType from assets...")
             val result = copyModelFromAssets(modelType)
             results[modelType] = result
             
             if (result.isSuccess) {
-                Timber.i("🧠 Auto-provisioned $modelType from bundled assets")
+                Timber.i("🧠 ✅ Auto-provisioned $modelType from bundled assets")
             } else {
-                Timber.e("🧠 Failed to auto-provision $modelType: ${result.exceptionOrNull()?.message}")
+                Timber.e("🧠 ❌ Failed to auto-provision $modelType: ${result.exceptionOrNull()?.message}")
             }
         }
         
+        Timber.i("🧠 ====== AUTO-PROVISION COMPLETE ======")
         return results
     }
     
