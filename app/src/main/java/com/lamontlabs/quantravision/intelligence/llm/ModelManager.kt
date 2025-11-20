@@ -203,10 +203,10 @@ class ModelManager(private val context: Context) {
         )
         val results = mutableMapOf<ModelType, Result<File>>()
         
-        // Provision all bundled models (embeddings required, others optional)
+        // Provision only bundled models available in assets
+        // MobileBERT is NOT bundled - it lacks TensorFlow Task metadata and would crash
         val bundledModels = listOf(
-            ModelType.SENTENCE_EMBEDDINGS,  // Required - retrieval system
-            ModelType.MOBILEBERT_QA         // Optional - generative fallback
+            ModelType.SENTENCE_EMBEDDINGS  // Required - retrieval system (embeddings-only mode)
         )
         
         for (modelType in bundledModels) {

@@ -408,14 +408,17 @@ class EnsembleEngine private constructor(private val context: Context) {
                                 details = modelsLoaded
                             )
                             
-                            // Update component health based on what loaded
-                            val healthStatus = when {
-                                mobileBertQa != null -> HealthStatus.HEALTHY
-                                else -> HealthStatus.DEGRADED
+                            // Update component health - embeddings-only mode is HEALTHY (normal operation)
+                            // MobileBERT is optional and not bundled (it lacks TFLite Task metadata)
+                            val healthStatus = if (embeddingsRetriever != null) {
+                                HealthStatus.HEALTHY
+                            } else {
+                                HealthStatus.FAILED
                             }
                             val healthMessage = when {
-                                mobileBertQa != null -> "All models loaded"
-                                else -> "MobileBERT unavailable - retrieval only"
+                                embeddingsRetriever != null && mobileBertQa != null -> "Embeddings + MobileBERT loaded"
+                                embeddingsRetriever != null -> "Embeddings retrieval ready (198 Q&As)"
+                                else -> "Failed to load embeddings"
                             }
                             ComponentHealthMonitor.updateComponentHealth(
                                 componentName = "Ensemble AI Engine",

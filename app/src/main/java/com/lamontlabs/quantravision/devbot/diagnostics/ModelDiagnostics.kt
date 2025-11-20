@@ -105,10 +105,10 @@ object ModelDiagnostics {
     
     private fun diagnoseInternalStorage(context: Context): List<ModelFileInfo> {
         val modelFiles = mutableListOf<ModelFileInfo>()
-        val modelsDir = File(context.filesDir, "models")
+        val modelsDir = File(context.filesDir, "llm_models")
         
         if (!modelsDir.exists()) {
-            Timber.w("🔬 Models directory does not exist in internal storage")
+            Timber.w("🔬 Models directory does not exist in internal storage: ${modelsDir.absolutePath}")
             return modelFiles
         }
         
