@@ -175,10 +175,11 @@ dependencies {
         exclude(group = "com.google.ai.edge.litert", module = "litert-support")
         exclude(group = "com.google.ai.edge.litert", module = "litert-support-api")
     }
+    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4")
     // GPU delegate disabled due to compatibility issues in 2.17.0
     // implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
     
-    // MediaPipe LLM Inference - For on-device Gemma AI
+    // MediaPipe LLM Inference - For on-device Gemma AI (legacy, being replaced by ensemble)
     implementation("com.google.mediapipe:tasks-genai:0.10.27")
 
     // CameraX - Latest stable versions
