@@ -71,7 +71,7 @@ jobs:
           echo "Release errors: $(grep -c 'e: file:' build-logs/compilation-errors-release.txt 2>/dev/null || echo 0)" >> build-logs/error-summary.txt
 
       - name: Upload build logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: build-logs
@@ -79,7 +79,7 @@ jobs:
           retention-days: 30
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: quantravision-debug-apk
@@ -87,7 +87,7 @@ jobs:
           retention-days: 30
 
       - name: Upload release APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: quantravision-release-apk
