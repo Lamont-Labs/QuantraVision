@@ -16,6 +16,11 @@ android {
         versionName = "3.1.0"
         vectorDrawables.useSupportLibrary = true
         
+        // Target arm64-v8a only for Samsung S23 FE (saves ~40MB)
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
+        
         // App description metadata
         manifestPlaceholders["appDescription"] = "Offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
         
@@ -96,12 +101,11 @@ android {
     }
     
     // APK splits for different architectures (reduces APK size)
+    // DISABLED: Building single arm64-v8a APK via ndk.abiFilters instead
+    // Universal APK was causing 250MB bloat by including all architectures
     splits {
         abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
+            isEnable = false
         }
     }
 
@@ -184,8 +188,10 @@ dependencies {
     // GPU delegate disabled due to compatibility issues in 2.17.0
     // implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
     
-    // MediaPipe LLM Inference - For on-device Gemma AI (legacy, being replaced by ensemble)
-    implementation("com.google.mediapipe:tasks-genai:0.10.27")
+    // MediaPipe LLM Inference - REMOVED (saved 12MB)
+    // Was only used by old GemmaEngine.kt (555MB model)
+    // Replaced with TFLite ensemble models (47MB total, bundled in APK)
+    // implementation("com.google.mediapipe:tasks-genai:0.10.27")
 
     // CameraX - Latest stable versions
     implementation("androidx.camera:camera-core:1.5.0")

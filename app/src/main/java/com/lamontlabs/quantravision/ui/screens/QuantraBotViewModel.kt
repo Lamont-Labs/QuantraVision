@@ -296,11 +296,11 @@ class QuantraBotViewModel(application: Application) : AndroidViewModel(applicati
             try {
                 Timber.i("🤖 Refreshing model state after import...")
                 
-                // Re-initialize the singleton GemmaEngine first (forces it to reload the model)
-                val gemmaEngine = com.lamontlabs.quantravision.intelligence.llm.GemmaEngine.getInstance(context.applicationContext)
-                val gemmaResult = gemmaEngine.initialize()
+                // Re-initialize the singleton EnsembleEngine first (forces it to reload the models)
+                val ensembleEngine = com.lamontlabs.quantravision.ai.ensemble.EnsembleEngine.getInstance(context.applicationContext)
+                val ensembleResult = ensembleEngine.initialize()
                 
-                Timber.i("🤖 GemmaEngine re-initialization result: ${gemmaResult.isSuccess}, isReady: ${gemmaEngine.isReady()}")
+                Timber.i("🤖 EnsembleEngine re-initialization result: ${ensembleResult.isSuccess}, isReady: ${ensembleEngine.isReady()}")
                 
                 // Now create new QuantraBot engine (will use the updated singleton)
                 val engine = QuantraBotEngine(context.applicationContext)

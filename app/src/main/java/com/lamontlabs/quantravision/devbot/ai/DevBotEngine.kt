@@ -2,7 +2,7 @@ package com.lamontlabs.quantravision.devbot.ai
 
 import android.content.Context
 import android.util.Log
-import com.lamontlabs.quantravision.intelligence.llm.GemmaEngine
+import com.lamontlabs.quantravision.ai.ensemble.EnsembleEngine
 import com.lamontlabs.quantravision.intelligence.llm.ExplanationResult
 import com.lamontlabs.quantravision.devbot.data.DiagnosticEvent
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
@@ -18,7 +18,7 @@ data class DiagnosticChatMessage(
 
 class DevBotEngine(private val context: Context) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private var gemmaEngine: GemmaEngine? = null
+    private var ensembleEngine: EnsembleEngine? = null
     private val knowledgeLoader = DiagnosticKnowledgeLoader(context)
     private val promptBuilder = DiagnosticPromptBuilder()
     
@@ -39,8 +39,8 @@ class DevBotEngine(private val context: Context) {
         try {
             knowledgeLoader.loadKnowledge()
             
-            gemmaEngine = GemmaEngine.getInstance(context)
-            val initResult = gemmaEngine!!.initialize()
+            ensembleEngine = EnsembleEngine.getInstance(context)
+            val initResult = ensembleEngine!!.initialize()
             
             _hasModel.value = initResult.isSuccess
             isInitialized = true
@@ -69,7 +69,7 @@ class DevBotEngine(private val context: Context) {
         _messages.value += userChatMessage
         
         try {
-            val response = if (_hasModel.value && gemmaEngine != null) {
+            val response = if (_hasModel.value && ensembleEngine != null) {
                 generateAIResponse(userMessage)
             } else {
                 generateFallbackResponse(userMessage)
@@ -107,7 +107,7 @@ class DevBotEngine(private val context: Context) {
             errorKnowledge = knowledgeLoader.getRelevantKnowledge(userMessage, recentErrors)
         )
         
-        return gemmaEngine?.generate(prompt)?.let { result ->
+        return ensembleEngine?.generate(prompt)?.let { result ->
             when (result) {
                 is ExplanationResult.Success -> result.text
                 is ExplanationResult.Failure -> result.fallbackText ?: generateFallbackResponse(userMessage)
