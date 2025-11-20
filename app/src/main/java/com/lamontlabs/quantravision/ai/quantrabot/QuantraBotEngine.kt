@@ -142,7 +142,7 @@ class QuantraBotEngine(private val context: Context) {
             // If model available and we have knowledge, use LLM
             if (hasModel && knowledge != null) {
                 val prompt = promptBuilder.buildExplanationPrompt(pattern, knowledge, indicatorContext)
-                return@withContext gemmaEngine.generate(prompt).extractText()
+                return@withContext ensembleEngine.generate(prompt).extractText()
             }
             
             // Fallback to template-based explanation
@@ -195,7 +195,7 @@ class QuantraBotEngine(private val context: Context) {
             
             if (hasModel) {
                 val prompt = promptBuilder.buildScoreExplanationPrompt(pattern, knowledge, indicatorContext)
-                return@withContext gemmaEngine.generate(prompt).extractText()
+                return@withContext ensembleEngine.generate(prompt).extractText()
             }
             
             // Fallback to simple explanation
@@ -227,7 +227,7 @@ class QuantraBotEngine(private val context: Context) {
             }
             
             val prompt = promptBuilder.buildComparisonPrompt(knowledge1, knowledge2)
-            gemmaEngine.generate(prompt).extractText()
+            ensembleEngine.generate(prompt).extractText()
             
         } catch (e: Exception) {
             Timber.e(e, "Error comparing patterns")

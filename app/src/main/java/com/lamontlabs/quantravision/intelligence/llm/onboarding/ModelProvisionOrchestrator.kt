@@ -92,7 +92,7 @@ fun ModelProvisionOrchestrator(
     
     // Show import screen if model not ready
     when (modelState) {
-        ModelState.NotDownloaded, is ModelState.Error -> {
+        ModelState.NotDownloaded, is ModelState.PartiallyDownloaded, is ModelState.Error -> {
             ModelImportScreen(
                 isImporting = isImporting,
                 errorMessage = (modelState as? ModelState.Error)?.error,

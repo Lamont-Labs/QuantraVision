@@ -235,12 +235,15 @@ class PatternExplainer(private val context: Context) {
     
     /**
      * Get model download progress
+     * 
+     * NOTE: Models are now bundled in APK and auto-provision on first launch.
+     * This method is kept for backward compatibility but is no longer needed.
      */
     suspend fun downloadModel(
         onProgress: (ModelState.Downloading) -> Unit
     ): Result<Boolean> {
         return try {
-            ensembleEngine.downloadModel(onProgress)
+            // Models auto-provision from assets - just initialize
             initialize()
             Result.success(true)
         } catch (e: Exception) {
