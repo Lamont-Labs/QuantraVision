@@ -275,9 +275,10 @@ object DiagnosticEngine {
             
             // Startup Timeline
             put("startup_timeline", JSONObject().apply {
-                val timeline = StartupDiagnosticCollector.getTimeline()
+                val timeline = StartupDiagnosticCollector.timeline.value
+                val events = timeline?.events ?: emptyList()
                 val timelineArray = JSONArray()
-                timeline.forEach { event ->
+                events.forEach { event ->
                     timelineArray.put(JSONObject().apply {
                         put("component", event.component)
                         put("event", event.event)
@@ -290,17 +291,23 @@ object DiagnosticEngine {
                     })
                 }
                 put("events", timelineArray)
-                put("total_events", timeline.size)
-                timeline.firstOrNull()?.let { first ->
-                    timeline.lastOrNull()?.let { last ->
-                        put("total_startup_time_ms", last.timestamp - first.timestamp)
+                put("total_events", events.size)
+                timeline?.let {
+                    put("total_startup_time_ms", it.totalDuration)
+                    put("app_launch_time", it.appLaunchTime)
+                    put("build_fingerprint", it.buildFingerprint)
+                    if (it.failedComponents.isNotEmpty()) {
+                        put("failed_components", JSONArray(it.failedComponents))
+                    }
+                    if (it.warningComponents.isNotEmpty()) {
+                        put("warning_components", JSONArray(it.warningComponents))
                     }
                 }
             })
             
             // Component Health
             put("component_health", JSONObject().apply {
-                val healthStatuses = ComponentHealthMonitor.getAllComponentHealth()
+                val healthStatuses = ComponentHealthMonitor.getAllHealth()
                 val componentsArray = JSONArray()
                 healthStatuses.forEach { (componentName, status) ->
                     componentsArray.put(JSONObject().apply {
@@ -309,8 +316,8 @@ object DiagnosticEngine {
                         put("message", status.message)
                         put("last_updated_readable", dateFormat.format(Date(status.lastUpdated)))
                         put("last_updated_epoch_ms", status.lastUpdated)
-                        status.details?.let { details ->
-                            put("details", JSONObject(details))
+                        if (status.details.isNotEmpty()) {
+                            put("details", JSONObject(status.details))
                         }
                     })
                 }
