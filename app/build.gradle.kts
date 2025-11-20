@@ -162,51 +162,51 @@ android {
 // Force dependency versions to stay compatible with SDK 35
 configurations.all {
     resolutionStrategy {
-        force("androidx.core:core:1.15.0")
-        force("androidx.core:core-ktx:1.15.0")
-        force("androidx.activity:activity:1.9.3")
-        force("androidx.activity:activity-ktx:1.9.3")
-        force("androidx.activity:activity-compose:1.9.3")
+        force("androidx.core:core:1.17.0")
+        force("androidx.core:core-ktx:1.17.0")
+        force("androidx.activity:activity:1.12.0")
+        force("androidx.activity:activity-ktx:1.12.0")
+        force("androidx.activity:activity-compose:1.12.0")
     }
 }
 
 dependencies {
     // Core Android - Pinned to SDK 35 compatible versions
-    implementation("androidx.core:core-ktx:1.15.0") {
+    implementation("androidx.core:core-ktx:1.17.0") {
         // Prevent auto-update to 1.17.0 which requires SDK 36
         version { strictly("1.15.0") }
     }
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("com.google.android.material:material:1.13.0")
 
     // Room Database - Latest with KSP
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")
+    ksp("androidx.room:room-compiler:2.8.4")
 
     // Jetpack Compose - Pinned to SDK 35 compatible versions
-    implementation("androidx.activity:activity-compose:1.9.3") {
+    implementation("androidx.activity:activity-compose:1.12.0") {
         // Prevent auto-update to 1.12.0 which requires SDK 36
         version { strictly("1.9.3") }
     }
-    implementation("androidx.compose.ui:ui:1.7.5")
-    implementation("androidx.compose.material3:material3:1.3.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.7.5")
+    implementation("androidx.compose.ui:ui:1.9.5")
+    implementation("androidx.compose.material3:material3:1.4.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.9.5")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.9.5")
     
     // Navigation Compose - Latest stable
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.navigation:navigation-compose:2.9.6")
 
     // Billing & Security - Kotlin 1.9.25 compatible versions
     implementation("com.android.billingclient:billing-ktx:7.1.1")  // 8.0.0 requires Kotlin 2.0+
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto:1.1.0")
     
     // Coroutines - Kotlin 1.9.25 compatible version
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")  // 1.10.1 requires Kotlin 2.0+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")  // For Google Play Services Task<T>.await()
 
     // WorkManager - For background learning tasks
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("androidx.work:work-runtime-ktx:2.11.0")
 
     // TensorFlow Lite - Latest stable versions
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
@@ -231,10 +231,10 @@ dependencies {
     // implementation("com.google.mediapipe:tasks-genai:0.10.27")
 
     // CameraX - Latest stable versions
-    implementation("androidx.camera:camera-core:1.5.0")
-    implementation("androidx.camera:camera-camera2:1.5.0")
-    implementation("androidx.camera:camera-lifecycle:1.5.0")
-    implementation("androidx.camera:camera-view:1.5.0")
+    implementation("androidx.camera:camera-core:1.5.1")
+    implementation("androidx.camera:camera-camera2:1.5.1")
+    implementation("androidx.camera:camera-lifecycle:1.5.1")
+    implementation("androidx.camera:camera-view:1.5.1")
     
     // OpenCV - Latest official Maven Central release
     implementation("org.opencv:opencv:4.10.0")
@@ -256,10 +256,10 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
     
     // Material Icons Extended - For additional icons
-    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     // Testing - Latest stable
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }
