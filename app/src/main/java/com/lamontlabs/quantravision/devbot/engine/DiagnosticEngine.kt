@@ -283,9 +283,8 @@ object DiagnosticEngine {
                         put("component", event.component)
                         put("event", event.event)
                         put("status", event.status.name)
-                        put("timestamp_readable", dateFormat.format(Date(event.timestamp)))
+                        put("timestamp_readable", event.timestampReadable)
                         put("timestamp_epoch_ms", event.timestamp)
-                        event.duration?.let { put("duration_ms", it) }
                         event.details?.let { put("details", it) }
                         event.error?.let { put("error", it) }
                     })
