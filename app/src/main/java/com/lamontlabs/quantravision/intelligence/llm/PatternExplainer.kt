@@ -2,6 +2,7 @@ package com.lamontlabs.quantravision.intelligence.llm
 
 import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
+import com.lamontlabs.quantravision.ai.ensemble.EnsembleEngine
 import com.lamontlabs.quantravision.intelligence.IndicatorContext
 import com.lamontlabs.quantravision.intelligence.QuantraScorer
 import com.lamontlabs.quantravision.learning.adaptive.PatternLearningEngine
@@ -13,7 +14,7 @@ import timber.log.Timber
  * High-level API for generating pattern explanations
  * 
  * Coordinates between:
- * - GemmaEngine (TFLite LLM inference when model loaded)
+ * - EnsembleEngine (3-model AI system with intent routing + embeddings + MobileBERT Q&A)
  * - PromptBuilder (prompt engineering)
  * - FallbackExplanations (graceful template-based fallbacks)
  * - ExplanationCache (performance optimization)
@@ -44,7 +45,7 @@ import timber.log.Timber
  */
 class PatternExplainer(private val context: Context) {
     
-    private val gemmaEngine = GemmaEngine.getInstance(context)
+    private val ensembleEngine = EnsembleEngine.getInstance(context)
     private val promptBuilder = PromptBuilder()
     private val cache = ExplanationCache(context)
     
@@ -78,7 +79,7 @@ class PatternExplainer(private val context: Context) {
      */
     suspend fun initialize(): Result<Unit> {
         return try {
-            val result = gemmaEngine.initialize()
+            val result = ensembleEngine.initialize()
             
             // Only set initialized if engine initialization succeeded
             if (result.isSuccess) {
@@ -142,12 +143,12 @@ class PatternExplainer(private val context: Context) {
         }
         
         // Try LLM generation if model is ready
-        if (gemmaEngine.isReady()) {
+        if (ensembleEngine.isReady()) {
             val prompt = promptBuilder.buildPatternExplanation(
                 pattern, indicators, scoreResult, learningPhase, totalScans
             )
             
-            when (val result = gemmaEngine.generate(prompt)) {
+            when (val result = ensembleEngine.generate(prompt)) {
                 is ExplanationResult.Success -> {
                     // Cache successful explanation
                     cache.put(cacheKey, result.text)
@@ -187,9 +188,9 @@ class PatternExplainer(private val context: Context) {
     suspend fun answerQuestion(question: String): ExplanationResult = withContext(Dispatchers.Default) {
         
         // Try LLM if ready
-        if (gemmaEngine.isReady()) {
+        if (ensembleEngine.isReady()) {
             val prompt = promptBuilder.buildEducationalQuestion(question)
-            when (val result = gemmaEngine.generate(prompt)) {
+            when (val result = ensembleEngine.generate(prompt)) {
                 is ExplanationResult.Success -> return@withContext result
                 else -> { /* Fall through to fallback */ }
             }
@@ -214,11 +215,11 @@ class PatternExplainer(private val context: Context) {
     ): ExplanationResult = withContext(Dispatchers.Default) {
         
         // Try LLM if ready
-        if (gemmaEngine.isReady()) {
+        if (ensembleEngine.isReady()) {
             val prompt = promptBuilder.buildWeeklySummary(
                 totalScans, patternsFound, avgQuantraScore, learningProgress
             )
-            when (val result = gemmaEngine.generate(prompt, maxTokens = 150)) {
+            when (val result = ensembleEngine.generate(prompt, maxTokens = 150)) {
                 is ExplanationResult.Success -> return@withContext result
                 else -> { /* Fall through to fallback */ }
             }
@@ -239,7 +240,7 @@ class PatternExplainer(private val context: Context) {
         onProgress: (ModelState.Downloading) -> Unit
     ): Result<Boolean> {
         return try {
-            gemmaEngine.downloadModel(onProgress)
+            ensembleEngine.downloadModel(onProgress)
             initialize()
             Result.success(true)
         } catch (e: Exception) {
@@ -256,12 +257,12 @@ class PatternExplainer(private val context: Context) {
      * 
      * This can be used by UI to show model status or prompt model download.
      */
-    fun isLLMReady(): Boolean = gemmaEngine.isReady()
+    fun isLLMReady(): Boolean = ensembleEngine.isReady()
     
     /**
      * Get current model state
      */
-    fun getModelState(): ModelState = gemmaEngine.getState()
+    fun getModelState(): ModelState = ensembleEngine.getState()
     
     /**
      * Build cache key from pattern data

@@ -2,7 +2,7 @@ package com.lamontlabs.quantravision.ai.quantrabot
 
 import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
-import com.lamontlabs.quantravision.intelligence.llm.GemmaEngine
+import com.lamontlabs.quantravision.ai.ensemble.EnsembleEngine
 import com.lamontlabs.quantravision.intelligence.llm.PatternExplainer
 import com.lamontlabs.quantravision.intelligence.llm.ExplanationResult
 import com.lamontlabs.quantravision.intelligence.IndicatorContext
@@ -35,7 +35,7 @@ class QuantraBotEngine(private val context: Context) {
     
     private val knowledgeLoader = PatternKnowledgeLoader(context)
     private val promptBuilder = PatternPromptBuilder()
-    private val gemmaEngine = GemmaEngine.getInstance(context)  // Use singleton instance
+    private val ensembleEngine = EnsembleEngine.getInstance(context)  // Use singleton instance
     private val fallbackExplainer = PatternExplainer(context)
     
     // Track initialization status
@@ -60,14 +60,14 @@ class QuantraBotEngine(private val context: Context) {
             val knowledge = knowledgeLoader.loadAll()
             Timber.i("✅ Pattern knowledge loaded: ${knowledge.size} patterns")
             
-            // Initialize Gemma engine
-            val gemmaResult = gemmaEngine.initialize()
-            hasModel = gemmaResult.isSuccess
+            // Initialize Ensemble AI engine
+            val ensembleResult = ensembleEngine.initialize()
+            hasModel = ensembleResult.isSuccess
             
             if (hasModel) {
-                Timber.i("✅ Gemma 2B model available - QuantraBot fully operational")
+                Timber.i("✅ Ensemble AI models available - QuantraBot fully operational")
             } else {
-                Timber.w("⚠️ Gemma model not available - using fallback explanations")
+                Timber.w("⚠️ Ensemble AI models not available - using fallback explanations")
             }
             
             // Initialize fallback explainer
@@ -115,7 +115,7 @@ class QuantraBotEngine(private val context: Context) {
             val prompt = promptBuilder.buildValidationPrompt(pattern, knowledge, indicatorContext)
             
             // Get LLM validation
-            val response = gemmaEngine.generate(prompt).extractText()
+            val response = ensembleEngine.generate(prompt).extractText()
             
             // Parse response
             parseValidationResponse(response)
@@ -164,14 +164,14 @@ class QuantraBotEngine(private val context: Context) {
         recentPatterns: List<PatternMatch> = emptyList()
     ): String = withContext(Dispatchers.Default) {
         try {
-            if (!hasModel || !gemmaEngine.isReady()) {
+            if (!hasModel || !ensembleEngine.isReady()) {
                 return@withContext "QuantraBot requires the AI model to answer questions. The model is not currently loaded. Please restart the app after importing the model."
             }
             
             Timber.d("🤖 Answering question: ${question.take(50)}...")
             val prompt = promptBuilder.buildGeneralQuestionPrompt(question, recentPatterns)
             
-            val result = gemmaEngine.generate(prompt)
+            val result = ensembleEngine.generate(prompt)
             Timber.d("🤖 Got result type: ${result::class.simpleName}")
             
             result.extractText()
