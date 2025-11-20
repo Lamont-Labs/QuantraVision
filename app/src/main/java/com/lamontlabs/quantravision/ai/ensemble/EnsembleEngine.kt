@@ -19,20 +19,20 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
- * Ensemble AI Engine orchestrating 2-3 TFLite models for fast, efficient Q&A
+ * Ensemble AI Engine orchestrating lightweight TFLite models for fast, efficient Q&A
  * 
  * # ARCHITECTURE
  * 
- * This engine replaces the 555MB Gemma model with lightweight TFLite models:
+ * This engine replaces the 555MB Gemma model with a lightweight embeddings-only approach:
  * 
- * **Required models (2):**
- * 1. **EmbeddingsRetriever** (25MB) - Semantic similarity search over 198 Q&A pairs
- * 2. **MobileBERT Q&A** (110MB) - Extractive question answering for novel questions
+ * **Required model (1):**
+ * 1. **EmbeddingsRetriever** (22MB) - Semantic similarity search over 198 Q&A pairs
  * 
- * **Optional model (1):**
- * 3. **IntentClassifier** (15MB) - Classifies user intent (pattern_explanation, quantra_score, etc.)
+ * **Optional models (2):**
+ * 2. **MobileBERT Q&A** (25MB) - Extractive Q&A for novel questions (NOT BUNDLED - lacks TFLite Task metadata)
+ * 3. **IntentClassifier** (15MB) - Classifies user intent (NOT BUNDLED - retrieval-only mode is default)
  * 
- * Total size: ~135MB required (150MB with optional intent classifier, vs 555MB Gemma)
+ * Total bundled size: 22MB (vs 555MB Gemma = 25x smaller!)
  * 
  * # INTERFACE COMPATIBILITY
  * 
@@ -47,36 +47,37 @@ import timber.log.Timber
  * 
  * ```
  * generate(prompt) →
- *   1. Check if required models loaded (if not, return ExplanationResult.Unavailable)
+ *   1. Check if embeddings retriever loaded (if not, return ExplanationResult.Unavailable)
  *   2. [OPTIONAL] Classify intent using IntentClassifier (if available)
- *   3. Search for answer using EmbeddingsRetriever
+ *   3. Search for answer using EmbeddingsRetriever (semantic similarity over 198 Q&As)
  *   4. If retrieval confidence > 0.75:
  *      Return ExplanationResult.Success(text = retrievedAnswer, fromCache = true)
- *   5. Else fall back to MobileBERT:
+ *   5. Else if MobileBERT available (optional, not bundled):
  *      Build context from prompt + pattern info
  *      Get answer from MobileBERTQaAdapter
  *      Return ExplanationResult.Success(text = generatedAnswer, fromCache = false)
- *   6. Handle all errors gracefully (return ExplanationResult.Failure or Unavailable)
+ *   6. Else return best retrieval match (lower confidence but still useful)
+ *   7. Handle all errors gracefully (return ExplanationResult.Failure or Unavailable)
  * ```
  * 
  * # STATE MANAGEMENT
  * 
  * This engine truthfully reports model availability through ModelState:
- * - **Ready**: Required models (embeddings + MobileBERT) loaded and ready for inference
- * - **Downloaded**: Required model files exist but not loaded into memory
- * - **PartiallyDownloaded**: Missing required models (cannot initialize)
+ * - **Ready**: Required model (embeddings) loaded and ready for inference
+ * - **Downloaded**: Required model file exists but not loaded into memory
+ * - **PartiallyDownloaded**: Missing required model (cannot initialize)
  * - **NotDownloaded**: No model files present
  * 
  * ## Initialization Contract (CRITICAL FOR VALIDATION)
  * 
  * ### initialize() returns Result.failure when:
- * - Required model files don't exist (enables validation workflows to detect missing models)
- * - Model files exist but initialization fails
- * - Any error occurs during initialization
+ * - Embeddings model file doesn't exist (enables validation workflows to detect missing model)
+ * - Embeddings model exists but initialization fails
+ * - Any error occurs during embeddings initialization
  * 
  * ### initialize() returns Result.success ONLY when:
- * - Required models (embeddings + MobileBERT) successfully loaded and ready for inference
- * - Intent classifier is optional and will be loaded if available
+ * - Required model (embeddings) successfully loaded and ready for inference
+ * - Optional models (MobileBERT, Intent classifier) loaded if available, or skipped gracefully
  * 
  * ## Behavior by Model Availability
  * 
@@ -86,25 +87,25 @@ import timber.log.Timber
  * - `isReady()` returns `false`
  * - PatternExplainer uses FallbackExplanations for template-based responses
  * 
- * ### When missing required models (PartiallyDownloaded):
+ * ### When embeddings missing (PartiallyDownloaded):
  * - `initialize()` **fails** with InitializationError.PartialModels
- * - User sees clear error message indicating which required models are missing
+ * - User sees clear error message indicating embeddings model is missing
  * - `generate()` returns `ExplanationResult.Unavailable`
  * 
- * ### When required models loaded (Ready):
- * - `generate()` uses fast retrieval-first approach (10x faster than generation)
- * - High-confidence matches (>0.75) return instantly from cache
- * - Novel questions fall back to MobileBERT generation
+ * ### When embeddings loaded (Ready - embeddings-only mode):
+ * - `generate()` uses fast retrieval-first approach (instant semantic search)
+ * - High-confidence matches (>0.75) return instantly from 198 Q&A knowledge base
+ * - Lower-confidence matches still return best available answer
  * - `isReady()` returns `true`
- * - Intent classification is used if intent classifier is loaded, otherwise skipped
+ * - Optional models (MobileBERT, Intent classifier) enhance experience if available
  * 
  * # PERFORMANCE BENEFITS
  * 
- * - **10x faster** for common questions (embedding retrieval vs LLM generation)
- * - **4.1x smaller** model size (135MB required vs 555MB Gemma)
- * - **Lower memory** usage (no need to load 555MB model)
+ * - **Instant answers** for 198 pre-written pattern/trading Q&As (semantic similarity search)
+ * - **25x smaller** bundled model size (22MB vs 555MB Gemma)
+ * - **Ultra-low memory** usage (only embeddings model loaded)
  * - **Same user experience** (drop-in replacement for GemmaEngine)
- * - **Works with just 2 models** (135MB) - intent classifier optional
+ * - **Works with just 1 model** (22MB) - optional models enhance but aren't required
  * 
  * @see IntentClassifier for optional intent classification
  * @see EmbeddingsRetriever for semantic similarity search
@@ -171,8 +172,8 @@ class EnsembleEngine private constructor(private val context: Context) {
      * - Any error occurs during initialization
      * 
      * Returns **Result.success** ONLY when:
-     * - Required models (embeddings + MobileBERT) successfully loaded and ready for inference
-     * - Intent classifier loaded if available, otherwise skipped with logging
+     * - Required model (embeddings) successfully loaded and ready for inference
+     * - Optional models (MobileBERT, Intent classifier) loaded if available, otherwise skipped with logging
      * 
      * ## State Transitions
      * 
@@ -192,19 +193,23 @@ class EnsembleEngine private constructor(private val context: Context) {
                 )
                 
                 // If already ready, return success (idempotent)
-                if (modelState is ModelState.Ready && 
-                    embeddingsRetriever != null && 
-                    mobileBertQa != null) {
+                // Only embeddings retriever is required - MobileBERT is optional
+                if (modelState is ModelState.Ready && embeddingsRetriever != null) {
                     Timber.d("🎯 Ensemble already initialized and ready")
                     StartupDiagnosticCollector.logEvent(
                         component = "Ensemble AI Engine",
                         event = "Already initialized",
                         status = StartupStatus.SUCCESS
                     )
+                    val healthMsg = if (mobileBertQa != null) {
+                        "Embeddings + MobileBERT loaded"
+                    } else {
+                        "Embeddings retrieval ready (198 Q&As)"
+                    }
                     ComponentHealthMonitor.updateComponentHealth(
                         componentName = "Ensemble AI Engine",
                         status = HealthStatus.HEALTHY,
-                        message = "All models loaded"
+                        message = healthMsg
                     )
                     return@withContext Result.success(Unit)
                 }
@@ -346,21 +351,19 @@ class EnsembleEngine private constructor(private val context: Context) {
                                         status = StartupStatus.WARNING,
                                         error = bertError.message
                                     )
-                                    ModelDiagnostics.recordInitialization(
-                                        modelType = ModelType.MOBILEBERT_QA,
-                                        success = false,
-                                        error = bertError.message,
-                                        stackTrace = bertError.stackTraceToString()
-                                    )
+                                    // Note: Do NOT record as initialization failure - MobileBERT is optional and not bundled
+                                    // Recording failures triggers false-positive error recommendations in DevBot
                                 }
                             } else {
-                                Timber.i("🎯 MobileBERT model not available - using retrieval-only mode")
+                                // MobileBERT is intentionally not bundled (lacks TFLite Task metadata)
+                                // This is the normal/expected state for embeddings-only mode
+                                Timber.i("🎯 MobileBERT model not bundled - using embeddings-only mode (expected)")
                                 mobileBertQa = null
                                 StartupDiagnosticCollector.logEvent(
                                     component = "Ensemble AI Engine",
-                                    event = "MobileBERT not available",
-                                    status = StartupStatus.WARNING,
-                                    details = "Using retrieval-only mode"
+                                    event = "Embeddings-only mode",
+                                    status = StartupStatus.SUCCESS,
+                                    details = "MobileBERT not bundled (by design)"
                                 )
                             }
                             
@@ -381,16 +384,13 @@ class EnsembleEngine private constructor(private val context: Context) {
                                 } catch (intentError: Exception) {
                                     Timber.w(intentError, "🎯 Intent classifier initialization failed")
                                     intentClassifier = null
-                                    ModelDiagnostics.recordInitialization(
-                                        modelType = ModelType.INTENT_CLASSIFIER,
-                                        success = false,
-                                        error = intentError.message,
-                                        stackTrace = intentError.stackTraceToString()
-                                    )
+                                    // Note: Do NOT record as initialization failure - intent classifier is optional
+                                    // Recording failures triggers false-positive error recommendations in DevBot
                                 }
                             } else {
                                 Timber.i("🎯 Intent classifier not available - running without intent classification")
                                 intentClassifier = null
+                                // No diagnostic logging needed - intent classifier is optional and not bundled
                             }
                             
                             modelState = ModelState.Ready
