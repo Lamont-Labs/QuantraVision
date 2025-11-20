@@ -28,7 +28,7 @@ android {
             }.standardOutput.asText.map { it.trim() }.orElse("no-git").get()
         }.getOrElse { "no-git" }
         
-        val buildTimestamp = System.getenv("BUILD_TIMESTAMP") ?: java.time.Instant.now().toString()
+        val buildTimestamp = System.getenv("BUILD_TIMESTAMP") ?: System.currentTimeMillis().toString()
         val timestampShort = when {
             buildTimestamp.isBlank() -> "unknown"
             buildTimestamp.length >= 19 -> buildTimestamp.substring(0, 19)
