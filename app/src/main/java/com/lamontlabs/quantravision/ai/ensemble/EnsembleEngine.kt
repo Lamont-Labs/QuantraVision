@@ -751,9 +751,9 @@ class EnsembleEngine private constructor(private val context: Context) {
      * - Models encountered an error (Error)
      */
     fun isReady(): Boolean {
-        return modelState is ModelState.Ready && 
-               embeddingsRetriever != null && 
-               mobileBertQa != null
+        // Only embeddings retriever is required for embeddings-only mode
+        // MobileBERT is optional and not bundled
+        return modelState is ModelState.Ready && embeddingsRetriever != null
     }
     
     /**
