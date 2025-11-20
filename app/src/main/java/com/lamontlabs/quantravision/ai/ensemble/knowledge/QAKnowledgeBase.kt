@@ -7,12 +7,12 @@ import com.lamontlabs.quantravision.ai.ensemble.models.QAEntry
 import timber.log.Timber
 import java.io.InputStreamReader
 
-class QAKnowledgeBase(private val context: Context) {
+class QAKnowledgeBase(private val context: Context) : KnowledgeBase {
     
     private val gson = Gson()
     private var cachedEntries: List<QAEntry>? = null
     
-    fun loadAll(): List<QAEntry> {
+    override fun loadAll(): List<QAEntry> {
         if (cachedEntries != null) {
             Timber.d("📚 Returning ${cachedEntries!!.size} cached Q&A entries")
             return cachedEntries!!
@@ -40,7 +40,7 @@ class QAKnowledgeBase(private val context: Context) {
         }
     }
     
-    fun search(query: String): List<QAEntry> {
+    override fun search(query: String): List<QAEntry> {
         val entries = loadAll()
         val queryLower = query.lowercase().trim()
         
@@ -64,12 +64,12 @@ class QAKnowledgeBase(private val context: Context) {
         }
     }
     
-    fun getByCategory(category: String): List<QAEntry> {
+    override fun getByCategory(category: String): List<QAEntry> {
         val entries = loadAll()
         return entries.filter { it.category.equals(category, ignoreCase = true) }
     }
     
-    fun clearCache() {
+    override fun clearCache() {
         cachedEntries = null
     }
 }

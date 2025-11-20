@@ -1,6 +1,7 @@
 package com.lamontlabs.quantravision.ai.ensemble
 
 import android.content.Context
+import com.lamontlabs.quantravision.ai.ensemble.knowledge.KnowledgeBase
 import com.lamontlabs.quantravision.ai.ensemble.knowledge.QAKnowledgeBase
 import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealthMonitor
 import com.lamontlabs.quantravision.devbot.diagnostics.HealthStatus
@@ -111,10 +112,12 @@ import timber.log.Timber
  * @see EmbeddingsRetriever for semantic similarity search
  * @see MobileBERTQaAdapter for extractive Q&A
  */
-class EnsembleEngine private constructor(private val context: Context) {
+class EnsembleEngine private constructor(
+    private val context: Context,
+    private val knowledgeBase: KnowledgeBase
+) {
     
     private val modelManager = ModelManager(context)
-    private val knowledgeBase = QAKnowledgeBase(context)
     
     private var modelState: ModelState = ModelState.NotDownloaded
     
@@ -137,22 +140,40 @@ class EnsembleEngine private constructor(private val context: Context) {
         
         /**
          * Shared instance for memory efficiency
-         * Both DevBot and QuantraBot should share ONE EnsembleEngine instance
+         * Used by QuantraBot for trading Q&A
          */
         @Volatile
         private var sharedInstance: EnsembleEngine? = null
         
         /**
-         * Get or create shared EnsembleEngine instance
+         * Get or create shared EnsembleEngine instance for trading Q&A
          * 
-         * This ensures only ONE set of models is loaded in memory, even when used by
-         * both DevBot and QuantraBot simultaneously.
+         * This ensures only ONE set of models is loaded in memory for QuantraBot.
+         * Used for trading pattern questions with QAKnowledgeBase (198 entries).
          */
         @Synchronized
         fun getInstance(context: Context): EnsembleEngine {
-            return sharedInstance ?: EnsembleEngine(context.applicationContext).also {
+            return sharedInstance ?: EnsembleEngine(
+                context.applicationContext,
+                QAKnowledgeBase(context.applicationContext)
+            ).also {
                 sharedInstance = it
             }
+        }
+        
+        /**
+         * Create a new EnsembleEngine instance with custom knowledge base
+         * 
+         * Used by DevBot to create its own instance with DiagnosticKnowledgeBase.
+         * This allows DevBot to use diagnostic knowledge (234 entries) instead of 
+         * trading Q&A, while sharing the same embeddings model file (22MB) with QuantraBot.
+         * 
+         * @param context Android application context
+         * @param knowledgeBase Custom knowledge base implementation
+         * @return New EnsembleEngine instance (NOT singleton)
+         */
+        fun createInstance(context: Context, knowledgeBase: KnowledgeBase): EnsembleEngine {
+            return EnsembleEngine(context.applicationContext, knowledgeBase)
         }
     }
     

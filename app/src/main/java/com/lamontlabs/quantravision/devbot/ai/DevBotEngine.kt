@@ -39,13 +39,15 @@ class DevBotEngine(private val context: Context) {
         try {
             knowledgeLoader.loadKnowledge()
             
-            ensembleEngine = EnsembleEngine.getInstance(context)
+            // Create DevBot's own EnsembleEngine instance with diagnostic knowledge
+            val diagnosticKnowledgeBase = DiagnosticKnowledgeBase(context)
+            ensembleEngine = EnsembleEngine.createInstance(context, diagnosticKnowledgeBase)
             val initResult = ensembleEngine!!.initialize()
             
             _hasModel.value = initResult.isSuccess
             isInitialized = true
             
-            Log.d("DevBotEngine", "Initialized - Model available: ${_hasModel.value}")
+            Log.d("DevBotEngine", "Initialized - Model available: ${_hasModel.value}, using DiagnosticKnowledgeBase")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e("DevBotEngine", "Initialization failed", e)

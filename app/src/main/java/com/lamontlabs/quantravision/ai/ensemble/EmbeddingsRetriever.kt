@@ -1,6 +1,6 @@
 package com.lamontlabs.quantravision.ai.ensemble
 
-import com.lamontlabs.quantravision.ai.ensemble.knowledge.QAKnowledgeBase
+import com.lamontlabs.quantravision.ai.ensemble.knowledge.KnowledgeBase
 import com.lamontlabs.quantravision.ai.ensemble.models.QAEntry
 import com.lamontlabs.quantravision.ai.ensemble.models.RetrievalResult
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ import kotlin.math.sqrt
  * Embeddings-based retrieval for Q&A using sentence-transformers (all-MiniLM-L6-v2)
  * 
  * Uses semantic similarity to find the best matching answer from the knowledge base.
- * Pre-computes embeddings for all 198 Q&A entries during initialization for fast retrieval.
+ * Pre-computes embeddings for all Q&A entries during initialization for fast retrieval.
  * 
  * Returns match only if cosine similarity > 0.75 threshold.
  * 
@@ -26,7 +26,7 @@ import kotlin.math.sqrt
  */
 class EmbeddingsRetriever(
     private val modelFile: File?,
-    private val knowledgeBase: QAKnowledgeBase
+    private val knowledgeBase: KnowledgeBase
 ) {
     private var interpreter: Interpreter? = null
     private val initMutex = Mutex()
