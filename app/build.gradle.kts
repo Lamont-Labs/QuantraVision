@@ -139,9 +139,23 @@ android {
     }
 }
 
+// Force dependency versions to stay compatible with SDK 35
+configurations.all {
+    resolutionStrategy {
+        force("androidx.core:core:1.15.0")
+        force("androidx.core:core-ktx:1.15.0")
+        force("androidx.activity:activity:1.9.3")
+        force("androidx.activity:activity-ktx:1.9.3")
+        force("androidx.activity:activity-compose:1.9.3")
+    }
+}
+
 dependencies {
-    // Core Android - Latest stable versions
-    implementation("androidx.core:core-ktx:1.15.0")
+    // Core Android - Pinned to SDK 35 compatible versions
+    implementation("androidx.core:core-ktx:1.15.0") {
+        // Prevent auto-update to 1.17.0 which requires SDK 36
+        version { strictly("1.15.0") }
+    }
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
 
@@ -150,8 +164,11 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // Jetpack Compose - Latest stable versions
-    implementation("androidx.activity:activity-compose:1.9.3")
+    // Jetpack Compose - Pinned to SDK 35 compatible versions
+    implementation("androidx.activity:activity-compose:1.9.3") {
+        // Prevent auto-update to 1.12.0 which requires SDK 36
+        version { strictly("1.9.3") }
+    }
     implementation("androidx.compose.ui:ui:1.7.5")
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
