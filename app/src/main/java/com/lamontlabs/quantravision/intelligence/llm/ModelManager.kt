@@ -84,6 +84,9 @@ class ModelManager(private val context: Context) {
     
     /**
      * Get current model state based on which models are imported
+     * 
+     * Required models: SENTENCE_EMBEDDINGS + MOBILEBERT_QA (2 models)
+     * Optional model: INTENT_CLASSIFIER (bonus feature)
      */
     fun getModelState(): ModelState {
         val importedModels = mutableSetOf<ModelType>()
@@ -99,9 +102,13 @@ class ModelManager(private val context: Context) {
             importedModels.add(ModelType.MOBILEBERT_QA)
         }
         
-        return when (importedModels.size) {
-            0 -> ModelState.NotDownloaded
-            3 -> ModelState.Downloaded  // All 3 models present
+        // Check if we have the 2 required models (embeddings + mobilebert)
+        val hasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS) && 
+                                importedModels.contains(ModelType.MOBILEBERT_QA)
+        
+        return when {
+            importedModels.isEmpty() -> ModelState.NotDownloaded
+            hasRequiredModels -> ModelState.Downloaded  // 2 or 3 models present with required ones
             else -> ModelState.PartiallyDownloaded(
                 importedCount = importedModels.size,
                 importedModels = importedModels

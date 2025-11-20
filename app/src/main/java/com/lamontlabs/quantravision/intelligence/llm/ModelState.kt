@@ -19,14 +19,14 @@ sealed class ModelState {
     data object NotDownloaded : ModelState()
     
     /**
-     * Some but not all models are downloaded
-     * @param importedCount Number of models imported (1-2)
-     * @param totalRequired Total number of models required (always 3)
+     * Some but not all required models are downloaded
+     * @param importedCount Number of models imported (1 or missing required models)
+     * @param totalRequired Total number of models required (2: embeddings + mobilebert, intent classifier is optional)
      * @param importedModels Set of model types that are imported
      */
     data class PartiallyDownloaded(
         val importedCount: Int,
-        val totalRequired: Int = 3,
+        val totalRequired: Int = 2,
         val importedModels: Set<ModelType>
     ) : ModelState()
     

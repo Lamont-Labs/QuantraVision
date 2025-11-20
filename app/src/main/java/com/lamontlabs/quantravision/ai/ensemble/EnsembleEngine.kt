@@ -13,16 +13,20 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
- * Ensemble AI Engine orchestrating 3 TFLite models for fast, efficient Q&A
+ * Ensemble AI Engine orchestrating 2-3 TFLite models for fast, efficient Q&A
  * 
  * # ARCHITECTURE
  * 
- * This engine replaces the 555MB Gemma model with 3 lightweight TFLite models:
- * 1. **IntentClassifier** (15MB) - Classifies user intent (pattern_explanation, quantra_score, etc.)
- * 2. **EmbeddingsRetriever** (25MB) - Semantic similarity search over 198 Q&A pairs
- * 3. **MobileBERT Q&A** (110MB) - Extractive question answering for novel questions
+ * This engine replaces the 555MB Gemma model with lightweight TFLite models:
  * 
- * Total size: ~150MB (vs 555MB Gemma)
+ * **Required models (2):**
+ * 1. **EmbeddingsRetriever** (25MB) - Semantic similarity search over 198 Q&A pairs
+ * 2. **MobileBERT Q&A** (110MB) - Extractive question answering for novel questions
+ * 
+ * **Optional model (1):**
+ * 3. **IntentClassifier** (15MB) - Classifies user intent (pattern_explanation, quantra_score, etc.)
+ * 
+ * Total size: ~135MB required (150MB with optional intent classifier, vs 555MB Gemma)
  * 
  * # INTERFACE COMPATIBILITY
  * 
@@ -37,8 +41,8 @@ import timber.log.Timber
  * 
  * ```
  * generate(prompt) →
- *   1. Check if all 3 models loaded (if not, return ExplanationResult.Unavailable)
- *   2. Classify intent using IntentClassifier
+ *   1. Check if required models loaded (if not, return ExplanationResult.Unavailable)
+ *   2. [OPTIONAL] Classify intent using IntentClassifier (if available)
  *   3. Search for answer using EmbeddingsRetriever
  *   4. If retrieval confidence > 0.75:
  *      Return ExplanationResult.Success(text = retrievedAnswer, fromCache = true)
@@ -52,20 +56,21 @@ import timber.log.Timber
  * # STATE MANAGEMENT
  * 
  * This engine truthfully reports model availability through ModelState:
- * - **Ready**: All 3 models loaded and ready for inference
- * - **Downloaded**: All 3 model files exist but not loaded into memory
- * - **PartiallyDownloaded**: Only 1-2 models imported (cannot initialize)
+ * - **Ready**: Required models (embeddings + MobileBERT) loaded and ready for inference
+ * - **Downloaded**: Required model files exist but not loaded into memory
+ * - **PartiallyDownloaded**: Missing required models (cannot initialize)
  * - **NotDownloaded**: No model files present
  * 
  * ## Initialization Contract (CRITICAL FOR VALIDATION)
  * 
  * ### initialize() returns Result.failure when:
- * - Not all 3 model files exist (enables validation workflows to detect missing models)
+ * - Required model files don't exist (enables validation workflows to detect missing models)
  * - Model files exist but initialization fails
  * - Any error occurs during initialization
  * 
  * ### initialize() returns Result.success ONLY when:
- * - All 3 models successfully loaded and ready for inference
+ * - Required models (embeddings + MobileBERT) successfully loaded and ready for inference
+ * - Intent classifier is optional and will be loaded if available
  * 
  * ## Behavior by Model Availability
  * 
@@ -75,25 +80,27 @@ import timber.log.Timber
  * - `isReady()` returns `false`
  * - PatternExplainer uses FallbackExplanations for template-based responses
  * 
- * ### When only 1-2 models downloaded (PartiallyDownloaded):
+ * ### When missing required models (PartiallyDownloaded):
  * - `initialize()` **fails** with InitializationError.PartialModels
- * - User sees clear error message indicating which models are missing
+ * - User sees clear error message indicating which required models are missing
  * - `generate()` returns `ExplanationResult.Unavailable`
  * 
- * ### When all 3 models loaded (Ready):
+ * ### When required models loaded (Ready):
  * - `generate()` uses fast retrieval-first approach (10x faster than generation)
  * - High-confidence matches (>0.75) return instantly from cache
  * - Novel questions fall back to MobileBERT generation
  * - `isReady()` returns `true`
+ * - Intent classification is used if intent classifier is loaded, otherwise skipped
  * 
  * # PERFORMANCE BENEFITS
  * 
  * - **10x faster** for common questions (embedding retrieval vs LLM generation)
- * - **3.7x smaller** model size (150MB vs 555MB)
+ * - **4.1x smaller** model size (135MB required vs 555MB Gemma)
  * - **Lower memory** usage (no need to load 555MB model)
  * - **Same user experience** (drop-in replacement for GemmaEngine)
+ * - **Works with just 2 models** (135MB) - intent classifier optional
  * 
- * @see IntentClassifier for intent classification
+ * @see IntentClassifier for optional intent classification
  * @see EmbeddingsRetriever for semantic similarity search
  * @see MobileBERTQaAdapter for extractive Q&A
  */
@@ -148,23 +155,24 @@ class EnsembleEngine private constructor(private val context: Context) {
     }
     
     /**
-     * Initialize all 3 ensemble models
+     * Initialize ensemble models (2 required, 1 optional)
      * 
      * ## Initialization Contract
      * 
      * Returns **Result.failure** when:
-     * - Not all 3 model files exist (enables validation workflows to detect missing models)
+     * - Required model files don't exist (enables validation workflows to detect missing models)
      * - Model files exist but initialization fails
      * - Any error occurs during initialization
      * 
      * Returns **Result.success** ONLY when:
-     * - All 3 models successfully loaded and ready for inference
+     * - Required models (embeddings + MobileBERT) successfully loaded and ready for inference
+     * - Intent classifier loaded if available, otherwise skipped with logging
      * 
      * ## State Transitions
      * 
      * - No model files: Sets state to NotDownloaded, returns Result.failure
-     * - Partial models: Sets state to PartiallyDownloaded, returns Result.failure
-     * - All model files exist: Sets state to Loading, attempts initialization
+     * - Missing required models: Sets state to PartiallyDownloaded, returns Result.failure
+     * - Required models exist: Sets state to Loading, attempts initialization
      * - Initialization succeeds: Sets state to Ready, returns Result.success
      * - Initialization fails: Sets state to Error, returns Result.failure
      */
@@ -173,7 +181,6 @@ class EnsembleEngine private constructor(private val context: Context) {
             try {
                 // If already ready, return success (idempotent)
                 if (modelState is ModelState.Ready && 
-                    intentClassifier != null && 
                     embeddingsRetriever != null && 
                     mobileBertQa != null) {
                     Timber.d("🎯 Ensemble already initialized and ready")
@@ -193,7 +200,7 @@ class EnsembleEngine private constructor(private val context: Context) {
                     
                     is ModelState.PartiallyDownloaded -> {
                         val missing = getMissingModels(state)
-                        Timber.w("🎯 Only ${state.importedCount}/3 models imported. Missing: $missing")
+                        Timber.w("🎯 Only ${state.importedCount}/${state.totalRequired} required models imported. Missing: $missing")
                         return@withContext Result.failure(
                             InitializationError.PartialModels(
                                 imported = state.importedCount,
@@ -208,30 +215,38 @@ class EnsembleEngine private constructor(private val context: Context) {
                         modelState = ModelState.Loading
                         
                         try {
-                            // Get model files
-                            val intentFile = modelManager.getIntentClassifierFile()
+                            // Get required model files
                             val embeddingsFile = modelManager.getEmbeddingsModelFile()
                             val mobileBertFile = modelManager.getMobileBertFile()
                             
-                            if (intentFile == null || embeddingsFile == null || mobileBertFile == null) {
-                                Timber.e("🎯 Model files missing despite Downloaded state")
+                            if (embeddingsFile == null || mobileBertFile == null) {
+                                Timber.e("🎯 Required model files missing despite Downloaded state")
                                 return@withContext Result.failure(
-                                    InitializationError.ModelNotFound("Model files missing")
+                                    InitializationError.ModelNotFound("Required model files missing")
                                 )
                             }
                             
-                            // Initialize all 3 components
-                            Timber.i("🎯 Initializing IntentClassifier from ${intentFile.absolutePath}")
-                            intentClassifier = IntentClassifier(context, intentFile)
-                            
+                            // Initialize required models
                             Timber.i("🎯 Initializing EmbeddingsRetriever from ${embeddingsFile.absolutePath}")
                             embeddingsRetriever = EmbeddingsRetriever(embeddingsFile, knowledgeBase)
                             
                             Timber.i("🎯 Initializing MobileBERTQaAdapter from ${mobileBertFile.absolutePath}")
                             mobileBertQa = MobileBERTQaAdapter(mobileBertFile)
                             
+                            // Initialize optional intent classifier if available
+                            val intentFile = modelManager.getIntentClassifierFile()
+                            if (intentFile != null) {
+                                Timber.i("🎯 Initializing optional IntentClassifier from ${intentFile.absolutePath}")
+                                intentClassifier = IntentClassifier(context, intentFile)
+                                Timber.i("🎯 Intent classification enabled")
+                            } else {
+                                Timber.i("🎯 Intent classifier not available - running without intent classification")
+                                intentClassifier = null
+                            }
+                            
                             modelState = ModelState.Ready
-                            Timber.i("🎯 EnsembleEngine ready - All 3 models loaded and ready for inference")
+                            val modelsLoaded = if (intentClassifier != null) "all 3 models" else "2 required models (intent classifier optional)"
+                            Timber.i("🎯 EnsembleEngine ready - $modelsLoaded loaded and ready for inference")
                             return@withContext Result.success(Unit)
                             
                         } catch (loadError: Exception) {
@@ -254,8 +269,8 @@ class EnsembleEngine private constructor(private val context: Context) {
                     }
                     
                     is ModelState.Ready -> {
-                        // State says Ready but models are null - reinitialize
-                        Timber.w("🎯 State is Ready but models are null - forcing reinitialization")
+                        // State says Ready but required models are null - reinitialize
+                        Timber.w("🎯 State is Ready but required models are null - forcing reinitialization")
                         modelState = ModelState.Downloaded
                         return@withContext initialize()
                     }
@@ -278,12 +293,12 @@ class EnsembleEngine private constructor(private val context: Context) {
      * 
      * ## Orchestration Flow
      * 
-     * 1. Classify intent using IntentClassifier
+     * 1. [OPTIONAL] Classify intent using IntentClassifier (if available)
      * 2. Search for answer using EmbeddingsRetriever
      * 3. If confidence > 0.75: return cached answer (10x faster)
      * 4. Otherwise: use MobileBERT to generate answer from context
      * 
-     * Returns ExplanationResult.Unavailable when models not loaded,
+     * Returns ExplanationResult.Unavailable when required models not loaded,
      * allowing PatternExplainer to use FallbackExplanations.
      */
     suspend fun generate(
@@ -292,9 +307,8 @@ class EnsembleEngine private constructor(private val context: Context) {
     ): ExplanationResult = withContext(Dispatchers.Default) {
         
         try {
-            // Check if all 3 models are loaded and ready
+            // Check if required models are loaded and ready
             if (modelState !is ModelState.Ready || 
-                intentClassifier == null || 
                 embeddingsRetriever == null || 
                 mobileBertQa == null) {
                 
@@ -302,7 +316,7 @@ class EnsembleEngine private constructor(private val context: Context) {
                     is ModelState.NotDownloaded -> "Ensemble models not downloaded"
                     is ModelState.PartiallyDownloaded -> {
                         val state = modelState as ModelState.PartiallyDownloaded
-                        "Only ${state.importedCount}/3 models imported"
+                        "Only ${state.importedCount}/${state.totalRequired} required models imported"
                     }
                     is ModelState.Downloaded -> "Models not loaded into memory"
                     is ModelState.Loading -> "Models currently loading"
@@ -323,9 +337,15 @@ class EnsembleEngine private constructor(private val context: Context) {
             try {
                 Timber.d("🎯 Processing question: ${prompt.take(100)}...")
                 
-                // Step 1: Classify intent
-                val intentResult = intentClassifier!!.classify(prompt)
-                Timber.d("🎯 Intent: ${intentResult.intent} (confidence: ${intentResult.confidence})")
+                // Step 1 (Optional): Classify intent if intent classifier is available
+                val intentResult = if (intentClassifier != null) {
+                    val result = intentClassifier!!.classify(prompt)
+                    Timber.d("🎯 Intent: ${result.intent} (confidence: ${result.confidence})")
+                    result
+                } else {
+                    Timber.d("🎯 Skipping intent classification (intent classifier not loaded)")
+                    null
+                }
                 
                 // Step 2: Try retrieval-based answer (fast path)
                 val retrievalResult = embeddingsRetriever!!.retrieve(prompt)
@@ -353,9 +373,9 @@ class EnsembleEngine private constructor(private val context: Context) {
                 
                 // Build context for MobileBERT (use retrieved answer as context if available)
                 val context = if (retrievalResult != null) {
-                    buildContextWithRetrieval(prompt, retrievalResult.answer, intentResult.intent)
+                    buildContextWithRetrieval(prompt, retrievalResult.answer, intentResult?.intent ?: "general")
                 } else {
-                    buildContextFromIntent(prompt, intentResult.intent)
+                    buildContextFromIntent(prompt, intentResult?.intent ?: "general")
                 }
                 
                 val qaResult = mobileBertQa!!.answer(context, prompt)
@@ -442,27 +462,28 @@ class EnsembleEngine private constructor(private val context: Context) {
     }
     
     /**
-     * Get list of missing models for PartiallyDownloaded state
+     * Get list of missing REQUIRED models for PartiallyDownloaded state
+     * 
+     * Only reports missing required models (embeddings + mobilebert).
+     * Intent classifier is optional and not reported as missing.
      */
     private fun getMissingModels(state: ModelState.PartiallyDownloaded): List<String> {
-        val allModels = setOf(
-            com.lamontlabs.quantravision.intelligence.llm.ModelType.INTENT_CLASSIFIER,
+        val requiredModels = setOf(
             com.lamontlabs.quantravision.intelligence.llm.ModelType.SENTENCE_EMBEDDINGS,
             com.lamontlabs.quantravision.intelligence.llm.ModelType.MOBILEBERT_QA
         )
         
-        val missing = allModels - state.importedModels
+        val missing = requiredModels - state.importedModels
         
         return missing.map { modelType ->
             when (modelType) {
-                com.lamontlabs.quantravision.intelligence.llm.ModelType.INTENT_CLASSIFIER -> 
-                    "intent_classifier.tflite"
                 com.lamontlabs.quantravision.intelligence.llm.ModelType.SENTENCE_EMBEDDINGS -> 
                     "sentence_embeddings.tflite"
                 com.lamontlabs.quantravision.intelligence.llm.ModelType.MOBILEBERT_QA -> 
                     "mobilebert_qa_squad.tflite"
+                else -> ""
             }
-        }
+        }.filter { it.isNotEmpty() }
     }
     
     /**
@@ -471,21 +492,22 @@ class EnsembleEngine private constructor(private val context: Context) {
     fun getState(): ModelState = modelState
     
     /**
-     * Check if all 3 ensemble models are loaded and ready
+     * Check if required ensemble models are loaded and ready
      * 
-     * Returns true ONLY when modelState is Ready, indicating that all 3 models
-     * are loaded in memory and ready to generate answers.
+     * Returns true when modelState is Ready, indicating that required models
+     * (embeddings + MobileBERT) are loaded in memory and ready to generate answers.
+     * 
+     * Intent classifier is optional - engine is ready with or without it.
      * 
      * Returns false when:
      * - No models downloaded (NotDownloaded)
-     * - Only some models downloaded (PartiallyDownloaded)
+     * - Missing required models (PartiallyDownloaded)
      * - Models downloaded but not loaded (Downloaded)
      * - Models are loading (Loading)
      * - Models encountered an error (Error)
      */
     fun isReady(): Boolean {
         return modelState is ModelState.Ready && 
-               intentClassifier != null && 
                embeddingsRetriever != null && 
                mobileBertQa != null
     }
