@@ -22,10 +22,10 @@ object ModelConfig {
     const val SENTENCE_EMBEDDINGS_NAME = "sentence_embeddings.tflite"
     const val MOBILEBERT_QA_NAME = "mobilebert_qa_squad.tflite"
     
-    // Individual model sizes
+    // Individual model sizes (bundled quantized versions)
     const val INTENT_CLASSIFIER_SIZE_BYTES = 15_000_000L  // ~15MB
-    const val SENTENCE_EMBEDDINGS_SIZE_BYTES = 25_000_000L  // ~25MB
-    const val MOBILEBERT_QA_SIZE_BYTES = 110_000_000L  // ~110MB
+    const val SENTENCE_EMBEDDINGS_SIZE_BYTES = 23_000_000L  // ~23MB (all-MiniLM-L6-v2 quantized)
+    const val MOBILEBERT_QA_SIZE_BYTES = 26_000_000L  // ~26MB (INT8 quantized)
     
     // Legacy single model configuration (kept for backward compatibility)
     @Deprecated("Use individual model names instead", ReplaceWith("INTENT_CLASSIFIER_NAME, SENTENCE_EMBEDDINGS_NAME, MOBILEBERT_QA_NAME"))

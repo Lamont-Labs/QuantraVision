@@ -18,12 +18,14 @@ import java.net.URL
  * Manages ensemble model lifecycle: verification, caching, and file management
  * 
  * Tracks 3 separate TFLite models:
- * 1. Intent Classifier - for intent classification
- * 2. Sentence Embeddings - for semantic similarity
- * 3. MobileBERT Q&A - for question answering
+ * 1. Intent Classifier - for intent classification (optional)
+ * 2. Sentence Embeddings - for semantic similarity (required, bundled)
+ * 3. MobileBERT Q&A - for question answering (required, bundled)
  * 
- * NOTE: Model download is manual.
- * See app/src/main/assets/models/ENSEMBLE_MODEL_DOWNLOADS.md for setup guide.
+ * Auto-provisioning: On first launch, ModelManager automatically detects bundled models
+ * in app/src/main/assets/models/ and copies them to internal storage. No manual import needed!
+ * 
+ * Manual import still available as backup if user wants to use different/updated models.
  */
 class ModelManager(private val context: Context) {
     
@@ -44,6 +46,114 @@ class ModelManager(private val context: Context) {
     init {
         modelDir.mkdirs()
         _modelStateFlow.value = getModelState()
+    }
+    
+    /**
+     * Check if a model exists in the bundled assets
+     */
+    private fun modelExistsInAssets(modelType: ModelType): Boolean {
+        val assetPath = when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> "models/${ModelConfig.INTENT_CLASSIFIER_NAME}"
+            ModelType.SENTENCE_EMBEDDINGS -> "models/${ModelConfig.SENTENCE_EMBEDDINGS_NAME}"
+            ModelType.MOBILEBERT_QA -> "models/${ModelConfig.MOBILEBERT_QA_NAME}"
+        }
+        
+        return try {
+            context.assets.open(assetPath).use { true }
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    /**
+     * Copy model from assets to internal storage
+     * 
+     * @param modelType The type of model to copy
+     * @return Result.success if copied successfully, Result.failure otherwise
+     */
+    private fun copyModelFromAssets(modelType: ModelType): Result<File> {
+        val assetPath = when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> "models/${ModelConfig.INTENT_CLASSIFIER_NAME}"
+            ModelType.SENTENCE_EMBEDDINGS -> "models/${ModelConfig.SENTENCE_EMBEDDINGS_NAME}"
+            ModelType.MOBILEBERT_QA -> "models/${ModelConfig.MOBILEBERT_QA_NAME}"
+        }
+        
+        val targetFile = when (modelType) {
+            ModelType.INTENT_CLASSIFIER -> intentClassifierFile
+            ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile
+            ModelType.MOBILEBERT_QA -> mobileBertFile
+        }
+        
+        return try {
+            Timber.i("🧠 Copying $modelType from assets to internal storage...")
+            
+            context.assets.open(assetPath).use { input ->
+                FileOutputStream(targetFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            
+            val sizeMB = targetFile.length() / (1024 * 1024)
+            Timber.i("🧠 Successfully copied $modelType (${sizeMB}MB) to ${targetFile.absolutePath}")
+            
+            Result.success(targetFile)
+        } catch (e: Exception) {
+            Timber.e(e, "🧠 Failed to copy $modelType from assets")
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * Auto-provision models from bundled assets if not already in internal storage
+     * This runs automatically on first launch to set up the models
+     * 
+     * @return Map of ModelType to Result indicating which models were provisioned
+     */
+    private fun autoProvisionFromAssets(): Map<ModelType, Result<File>> {
+        val results = mutableMapOf<ModelType, Result<File>>()
+        
+        // Only provision required models (embeddings + mobilebert)
+        // Intent classifier is optional and not bundled by default
+        val requiredModels = listOf(
+            ModelType.SENTENCE_EMBEDDINGS,
+            ModelType.MOBILEBERT_QA
+        )
+        
+        for (modelType in requiredModels) {
+            // Check if model already exists in internal storage
+            val targetFile = when (modelType) {
+                ModelType.SENTENCE_EMBEDDINGS -> sentenceEmbeddingsFile
+                ModelType.MOBILEBERT_QA -> mobileBertFile
+                else -> continue
+            }
+            
+            if (targetFile.exists() && isModelValid(modelType)) {
+                Timber.d("🧠 $modelType already exists in internal storage, skipping provision")
+                results[modelType] = Result.success(targetFile)
+                continue
+            }
+            
+            // Check if model exists in assets
+            if (!modelExistsInAssets(modelType)) {
+                Timber.w("🧠 $modelType not found in bundled assets")
+                results[modelType] = Result.failure(
+                    Exception("Model not found in assets: $modelType")
+                )
+                continue
+            }
+            
+            // Copy from assets to internal storage
+            val result = copyModelFromAssets(modelType)
+            results[modelType] = result
+            
+            if (result.isSuccess) {
+                Timber.i("🧠 Auto-provisioned $modelType from bundled assets")
+            } else {
+                Timber.e("🧠 Failed to auto-provision $modelType: ${result.exceptionOrNull()?.message}")
+            }
+        }
+        
+        return results
     }
     
     /**
@@ -85,13 +195,15 @@ class ModelManager(private val context: Context) {
     /**
      * Get current model state based on which models are imported
      * 
+     * Auto-provisions bundled models from assets on first launch if needed.
+     * 
      * Required models: SENTENCE_EMBEDDINGS + MOBILEBERT_QA (2 models)
      * Optional model: INTENT_CLASSIFIER (bonus feature)
      */
     fun getModelState(): ModelState {
         val importedModels = mutableSetOf<ModelType>()
         
-        // Check each model file
+        // First pass: Check which models already exist in internal storage
         if (intentClassifierFile.exists() && isModelValid(ModelType.INTENT_CLASSIFIER)) {
             importedModels.add(ModelType.INTENT_CLASSIFIER)
         }
@@ -106,13 +218,47 @@ class ModelManager(private val context: Context) {
         val hasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS) && 
                                 importedModels.contains(ModelType.MOBILEBERT_QA)
         
+        // If required models are missing, try to auto-provision from bundled assets
+        if (!hasRequiredModels) {
+            Timber.i("🧠 Required models missing in internal storage, checking bundled assets...")
+            
+            val provisionResults = autoProvisionFromAssets()
+            
+            // Re-check which models are now available after auto-provisioning
+            importedModels.clear()
+            if (intentClassifierFile.exists() && isModelValid(ModelType.INTENT_CLASSIFIER)) {
+                importedModels.add(ModelType.INTENT_CLASSIFIER)
+            }
+            if (sentenceEmbeddingsFile.exists() && isModelValid(ModelType.SENTENCE_EMBEDDINGS)) {
+                importedModels.add(ModelType.SENTENCE_EMBEDDINGS)
+            }
+            if (mobileBertFile.exists() && isModelValid(ModelType.MOBILEBERT_QA)) {
+                importedModels.add(ModelType.MOBILEBERT_QA)
+            }
+            
+            // Log provisioning summary
+            val successCount = provisionResults.values.count { it.isSuccess }
+            val totalAttempted = provisionResults.size
+            Timber.i("🧠 Auto-provisioning complete: $successCount/$totalAttempted models provisioned successfully")
+        }
+        
+        // Final check: Do we have required models?
+        val finalHasRequiredModels = importedModels.contains(ModelType.SENTENCE_EMBEDDINGS) && 
+                                     importedModels.contains(ModelType.MOBILEBERT_QA)
+        
         return when {
             importedModels.isEmpty() -> ModelState.NotDownloaded
-            hasRequiredModels -> ModelState.Downloaded  // 2 or 3 models present with required ones
-            else -> ModelState.PartiallyDownloaded(
-                importedCount = importedModels.size,
-                importedModels = importedModels
-            )
+            finalHasRequiredModels -> {
+                Timber.i("🧠 All required models available: ${importedModels.size} total")
+                ModelState.Downloaded  // 2 or 3 models present with required ones
+            }
+            else -> {
+                Timber.w("🧠 Only partial models available: $importedModels")
+                ModelState.PartiallyDownloaded(
+                    importedCount = importedModels.size,
+                    importedModels = importedModels
+                )
+            }
         }
     }
     
@@ -397,7 +543,7 @@ class ModelManager(private val context: Context) {
     }
     
     /**
-     * Remove model file from device
+     * Remove all model files from device
      * 
      * Useful for:
      * - Freeing up storage space
@@ -408,21 +554,25 @@ class ModelManager(private val context: Context) {
      */
     fun removeModel(): Result<Unit> {
         return try {
-            if (!modelFile.exists()) {
-                Timber.i("🧠 No model file to remove")
+            val hasModels = intentClassifierFile.exists() || 
+                           sentenceEmbeddingsFile.exists() || 
+                           mobileBertFile.exists()
+            
+            if (!hasModels) {
+                Timber.i("🧠 No model files to remove")
                 return Result.success(Unit)
             }
             
-            val deleted = modelFile.delete()
+            val deleted = deleteModel()
             if (deleted) {
-                Timber.i("🧠 Model file removed successfully")
+                Timber.i("🧠 All model files removed successfully")
                 Result.success(Unit)
             } else {
-                Timber.e("🧠 Failed to delete model file")
-                Result.failure(Exception("Failed to delete model file"))
+                Timber.e("🧠 Failed to delete some model files")
+                Result.failure(Exception("Failed to delete model files"))
             }
         } catch (e: Exception) {
-            Timber.e(e, "🧠 Error removing model file")
+            Timber.e(e, "🧠 Error removing model files")
             Result.failure(e)
         }
     }
