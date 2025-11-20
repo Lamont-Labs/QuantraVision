@@ -6,8 +6,14 @@ import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.lamontlabs.quantravision.BuildConfig
 import com.lamontlabs.quantravision.devbot.ai.DevBotEngine
 import com.lamontlabs.quantravision.devbot.ai.DiagnosticChatMessage
+import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealth
+import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealthMonitor
+import com.lamontlabs.quantravision.devbot.diagnostics.ModelDiagnostics
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupDiagnosticCollector
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupEvent
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
 import com.lamontlabs.quantravision.intelligence.llm.ModelImportController
 import com.lamontlabs.quantravision.intelligence.llm.ModelManager
@@ -40,6 +46,20 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
     private val _errorStats = MutableStateFlow(ErrorStats())
     val errorStats: StateFlow<ErrorStats> = _errorStats.asStateFlow()
     
+    // Build Info
+    val buildFingerprint: String = BuildConfig.BUILD_FINGERPRINT
+    val buildTimestamp: String = BuildConfig.BUILD_TIMESTAMP
+    val gitHash: String = BuildConfig.GIT_HASH
+    val buildId: String = BuildConfig.BUILD_ID
+    
+    // Component Health Flow
+    private val _componentHealth = MutableStateFlow<Map<String, ComponentHealth>>(emptyMap())
+    val componentHealth: StateFlow<Map<String, ComponentHealth>> = _componentHealth.asStateFlow()
+    
+    // Startup Timeline Flow
+    private val _startupTimeline = MutableStateFlow<List<StartupEvent>>(emptyList())
+    val startupTimeline: StateFlow<List<StartupEvent>> = _startupTimeline.asStateFlow()
+    
     init {
         viewModelScope.launch {
             devBotEngine.initialize()
@@ -62,6 +82,27 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
                 }
             }
         }
+        
+        // Monitor component health updates
+        viewModelScope.launch {
+            while (true) {
+                _componentHealth.value = ComponentHealthMonitor.getAllHealth()
+                kotlinx.coroutines.delay(1000) // Update every second
+            }
+        }
+        
+        // Monitor startup timeline updates
+        viewModelScope.launch {
+            while (true) {
+                _startupTimeline.value = StartupDiagnosticCollector.getTimeline()
+                kotlinx.coroutines.delay(1000) // Update every second
+            }
+        }
+    }
+    
+    // Suspend function to get model diagnostics
+    suspend fun getModelDiagnostics() = withContext(Dispatchers.IO) {
+        ModelDiagnostics.diagnose(getApplication())
     }
     
     override fun onCleared() {
@@ -152,7 +193,7 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
                 val result = withContext(Dispatchers.IO) {
                     cleanupOldExports()
                     
-                    val jsonData = DiagnosticEngine.exportDiagnostics()
+                    val jsonData = DiagnosticEngine.exportDiagnostics(getApplication())
                     
                     val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
                     val filename = "devbot_diagnostics_${dateFormat.format(Date())}.json"

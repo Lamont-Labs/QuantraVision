@@ -2,6 +2,9 @@ package com.lamontlabs.quantravision.devbot.engine
 
 import android.content.Context
 import com.lamontlabs.quantravision.BuildConfig
+import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealthMonitor
+import com.lamontlabs.quantravision.devbot.diagnostics.ModelDiagnostics
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupDiagnosticCollector
 import com.lamontlabs.quantravision.devbot.monitors.*
 import com.lamontlabs.quantravision.devbot.data.DiagnosticEvent
 import kotlinx.coroutines.*
@@ -55,7 +58,9 @@ object DiagnosticEngine {
         scope.launch {
             logEvent(
                 DiagnosticEvent.Info(
-                    "DevBot initialized - diagnostic monitoring active",
+                    "DevBot initialized - diagnostic monitoring active\n" +
+                    "Build: ${BuildConfig.BUILD_FINGERPRINT}\n" +
+                    "Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                     "DiagnosticEngine"
                 )
             )
@@ -204,7 +209,8 @@ object DiagnosticEngine {
         recentErrors.clear()
     }
     
-    fun exportDiagnostics(
+    suspend fun exportDiagnostics(
+        context: Context,
         filterTypes: Set<String>? = null,
         maxAge: Long? = null
     ): String {
@@ -233,6 +239,18 @@ object DiagnosticEngine {
             put("export_time_readable", exportTimeReadable)
             put("export_time_epoch_ms", exportTime)
             put("app_version", BuildConfig.VERSION_NAME)
+            put("app_version_code", BuildConfig.VERSION_CODE)
+            
+            // Build Information
+            put("build_info", JSONObject().apply {
+                put("fingerprint", BuildConfig.BUILD_FINGERPRINT)
+                put("timestamp", BuildConfig.BUILD_TIMESTAMP)
+                put("git_hash", BuildConfig.GIT_HASH)
+                put("build_id", BuildConfig.BUILD_ID)
+                put("build_type", BuildConfig.BUILD_TYPE)
+                put("debug", BuildConfig.DEBUG)
+            })
+            
             put("total_events_in_export", filteredEvents.size)
             put("total_events_in_memory", allEvents.size)
             put("max_events_stored", MAX_RECENT_ERRORS)
@@ -255,6 +273,116 @@ object DiagnosticEngine {
             }
             put("summary", eventsByType)
             
+            // Startup Timeline
+            put("startup_timeline", JSONObject().apply {
+                val timeline = StartupDiagnosticCollector.getTimeline()
+                val timelineArray = JSONArray()
+                timeline.forEach { event ->
+                    timelineArray.put(JSONObject().apply {
+                        put("component", event.component)
+                        put("event", event.event)
+                        put("status", event.status.name)
+                        put("timestamp_readable", dateFormat.format(Date(event.timestamp)))
+                        put("timestamp_epoch_ms", event.timestamp)
+                        event.duration?.let { put("duration_ms", it) }
+                        event.details?.let { put("details", it) }
+                        event.error?.let { put("error", it) }
+                    })
+                }
+                put("events", timelineArray)
+                put("total_events", timeline.size)
+                timeline.firstOrNull()?.let { first ->
+                    timeline.lastOrNull()?.let { last ->
+                        put("total_startup_time_ms", last.timestamp - first.timestamp)
+                    }
+                }
+            })
+            
+            // Component Health
+            put("component_health", JSONObject().apply {
+                val healthStatuses = ComponentHealthMonitor.getAllComponentHealth()
+                val componentsArray = JSONArray()
+                healthStatuses.forEach { (componentName, status) ->
+                    componentsArray.put(JSONObject().apply {
+                        put("name", componentName)
+                        put("status", status.status.name)
+                        put("message", status.message)
+                        put("last_updated_readable", dateFormat.format(Date(status.lastUpdated)))
+                        put("last_updated_epoch_ms", status.lastUpdated)
+                        status.details?.let { details ->
+                            put("details", JSONObject(details))
+                        }
+                    })
+                }
+                put("components", componentsArray)
+                put("total_components", healthStatuses.size)
+                put("healthy_count", healthStatuses.values.count { it.status.name == "HEALTHY" })
+                put("degraded_count", healthStatuses.values.count { it.status.name == "DEGRADED" })
+                put("failed_count", healthStatuses.values.count { it.status.name == "FAILED" })
+            })
+            
+            // Model Diagnostics
+            put("model_diagnostics", JSONObject().apply {
+                val modelDiag = ModelDiagnostics.diagnose(context)
+                
+                // Assets models
+                val assetsArray = JSONArray()
+                modelDiag.filesInAssets.forEach { model ->
+                    assetsArray.put(JSONObject().apply {
+                        put("model_type", model.modelType.name)
+                        put("file_name", model.fileName)
+                        put("exists", model.exists)
+                        put("size", model.size)
+                        put("size_readable", model.sizeReadable)
+                        put("location", model.location)
+                        put("is_valid", model.isValid)
+                        model.validationError?.let { put("validation_error", it) }
+                    })
+                }
+                put("bundled_assets", assetsArray)
+                
+                // Internal storage models
+                val internalArray = JSONArray()
+                modelDiag.filesInInternalStorage.forEach { model ->
+                    internalArray.put(JSONObject().apply {
+                        put("model_type", model.modelType.name)
+                        put("file_name", model.fileName)
+                        put("exists", model.exists)
+                        put("size", model.size)
+                        put("size_readable", model.sizeReadable)
+                        put("checksum", model.checksum)
+                        put("location", model.location)
+                        put("is_valid", model.isValid)
+                        put("last_modified_readable", model.lastModifiedReadable)
+                        put("last_modified_epoch_ms", model.lastModified)
+                        model.validationError?.let { put("validation_error", it) }
+                    })
+                }
+                put("internal_storage", internalArray)
+                
+                // Initialization statuses
+                val initArray = JSONArray()
+                modelDiag.initializationStatuses.forEach { status ->
+                    initArray.put(JSONObject().apply {
+                        put("model_type", status.modelType.name)
+                        put("initialized", status.initialized)
+                        status.initializationTime?.let { put("initialization_time_ms", it) }
+                        status.error?.let { put("error", it) }
+                        status.stackTrace?.let { put("stack_trace", it) }
+                    })
+                }
+                put("initialization_statuses", initArray)
+                
+                // Recommendations
+                val recommendationsArray = JSONArray(modelDiag.recommendations)
+                put("recommendations", recommendationsArray)
+                
+                put("total_assets_size", modelDiag.totalAssetsSize)
+                put("total_internal_size", modelDiag.totalInternalSize)
+                put("total_assets_size_readable", formatBytes(modelDiag.totalAssetsSize))
+                put("total_internal_size_readable", formatBytes(modelDiag.totalInternalSize))
+            })
+            
             val eventsArray = JSONArray()
             filteredEvents.forEach { event ->
                 eventsArray.put(serializeEvent(event, dateFormat))
@@ -263,6 +391,15 @@ object DiagnosticEngine {
         }
         
         return json.toString(2)
+    }
+    
+    private fun formatBytes(bytes: Long): String {
+        return when {
+            bytes < 1024 -> "$bytes B"
+            bytes < 1024 * 1024 -> String.format("%.2f KB", bytes / 1024.0)
+            bytes < 1024 * 1024 * 1024 -> String.format("%.2f MB", bytes / (1024.0 * 1024.0))
+            else -> String.format("%.2f GB", bytes / (1024.0 * 1024.0 * 1024.0))
+        }
     }
     
     private fun serializeEvent(event: DiagnosticEvent, dateFormat: SimpleDateFormat): JSONObject {

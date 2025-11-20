@@ -2,10 +2,16 @@ package com.lamontlabs.quantravision.ai.ensemble
 
 import android.content.Context
 import com.lamontlabs.quantravision.ai.ensemble.knowledge.QAKnowledgeBase
+import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealthMonitor
+import com.lamontlabs.quantravision.devbot.diagnostics.HealthStatus
+import com.lamontlabs.quantravision.devbot.diagnostics.ModelDiagnostics
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupDiagnosticCollector
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupStatus
 import com.lamontlabs.quantravision.intelligence.llm.ExplanationResult
 import com.lamontlabs.quantravision.intelligence.llm.InitializationError
 import com.lamontlabs.quantravision.intelligence.llm.ModelManager
 import com.lamontlabs.quantravision.intelligence.llm.ModelState
+import com.lamontlabs.quantravision.intelligence.llm.ModelType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -179,11 +185,27 @@ class EnsembleEngine private constructor(private val context: Context) {
     suspend fun initialize(): Result<Unit> = withContext(Dispatchers.IO) {
         initMutex.withLock {
             try {
+                StartupDiagnosticCollector.logEvent(
+                    component = "Ensemble AI Engine",
+                    event = "Starting initialization",
+                    status = StartupStatus.STARTED
+                )
+                
                 // If already ready, return success (idempotent)
                 if (modelState is ModelState.Ready && 
                     embeddingsRetriever != null && 
                     mobileBertQa != null) {
                     Timber.d("🎯 Ensemble already initialized and ready")
+                    StartupDiagnosticCollector.logEvent(
+                        component = "Ensemble AI Engine",
+                        event = "Already initialized",
+                        status = StartupStatus.SUCCESS
+                    )
+                    ComponentHealthMonitor.updateComponentHealth(
+                        componentName = "Ensemble AI Engine",
+                        status = HealthStatus.HEALTHY,
+                        message = "All models loaded"
+                    )
                     return@withContext Result.success(Unit)
                 }
                 
@@ -193,14 +215,38 @@ class EnsembleEngine private constructor(private val context: Context) {
                 when (val state = modelState) {
                     is ModelState.NotDownloaded -> {
                         Timber.w("🎯 No ensemble models found")
+                        val errorMsg = "No ensemble model files downloaded. See ENSEMBLE_MODEL_DOWNLOADS.md"
+                        StartupDiagnosticCollector.logEvent(
+                            component = "Ensemble AI Engine",
+                            event = "Initialization failed",
+                            status = StartupStatus.FAILED,
+                            error = errorMsg
+                        )
+                        ComponentHealthMonitor.updateComponentHealth(
+                            componentName = "Ensemble AI Engine",
+                            status = HealthStatus.FAILED,
+                            message = errorMsg
+                        )
                         return@withContext Result.failure(
-                            InitializationError.ModelNotFound("No ensemble model files downloaded. See ENSEMBLE_MODEL_DOWNLOADS.md")
+                            InitializationError.ModelNotFound(errorMsg)
                         )
                     }
                     
                     is ModelState.PartiallyDownloaded -> {
                         val missing = getMissingModels(state)
-                        Timber.w("🎯 Only ${state.importedCount}/${state.totalRequired} required models imported. Missing: $missing")
+                        val errorMsg = "Only ${state.importedCount}/${state.totalRequired} required models imported. Missing: $missing"
+                        Timber.w("🎯 $errorMsg")
+                        StartupDiagnosticCollector.logEvent(
+                            component = "Ensemble AI Engine",
+                            event = "Initialization failed",
+                            status = StartupStatus.FAILED,
+                            error = errorMsg
+                        )
+                        ComponentHealthMonitor.updateComponentHealth(
+                            componentName = "Ensemble AI Engine",
+                            status = HealthStatus.FAILED,
+                            message = errorMsg
+                        )
                         return@withContext Result.failure(
                             InitializationError.PartialModels(
                                 imported = state.importedCount,
@@ -220,37 +266,128 @@ class EnsembleEngine private constructor(private val context: Context) {
                             val mobileBertFile = modelManager.getMobileBertFile()
                             
                             if (embeddingsFile == null) {
-                                Timber.e("🎯 Embeddings model file missing despite Downloaded state")
+                                val errorMsg = "Embeddings model file missing despite Downloaded state"
+                                Timber.e("🎯 $errorMsg")
+                                StartupDiagnosticCollector.logEvent(
+                                    component = "Ensemble AI Engine",
+                                    event = "Embeddings model file missing",
+                                    status = StartupStatus.FAILED,
+                                    error = errorMsg
+                                )
+                                ComponentHealthMonitor.updateComponentHealth(
+                                    componentName = "Ensemble AI Engine",
+                                    status = HealthStatus.FAILED,
+                                    message = errorMsg
+                                )
+                                ModelDiagnostics.recordInitialization(
+                                    modelType = ModelType.SENTENCE_EMBEDDINGS,
+                                    success = false,
+                                    error = errorMsg
+                                )
                                 return@withContext Result.failure(
                                     InitializationError.ModelNotFound("Embeddings model file missing")
                                 )
                             }
                             
                             // Initialize required embeddings retriever
+                            StartupDiagnosticCollector.logEvent(
+                                component = "Ensemble AI Engine",
+                                event = "Loading embeddings retriever",
+                                status = StartupStatus.IN_PROGRESS
+                            )
                             Timber.i("🎯 Initializing EmbeddingsRetriever from ${embeddingsFile.absolutePath}")
+                            val embeddingsStartTime = System.currentTimeMillis()
                             embeddingsRetriever = EmbeddingsRetriever(embeddingsFile, knowledgeBase)
+                            val embeddingsTime = System.currentTimeMillis() - embeddingsStartTime
+                            
+                            StartupDiagnosticCollector.logEvent(
+                                component = "Ensemble AI Engine",
+                                event = "Embeddings loaded",
+                                status = StartupStatus.SUCCESS,
+                                details = "Loaded in ${embeddingsTime}ms"
+                            )
+                            ModelDiagnostics.recordInitialization(
+                                modelType = ModelType.SENTENCE_EMBEDDINGS,
+                                success = true,
+                                initTime = embeddingsTime
+                            )
                             
                             // Initialize MobileBERT if available (optional - will use retrieval-only if missing)
                             if (mobileBertFile != null) {
                                 try {
+                                    StartupDiagnosticCollector.logEvent(
+                                        component = "Ensemble AI Engine",
+                                        event = "Loading MobileBERT Q&A",
+                                        status = StartupStatus.IN_PROGRESS
+                                    )
                                     Timber.i("🎯 Initializing MobileBERTQaAdapter from ${mobileBertFile.absolutePath}")
+                                    val bertStartTime = System.currentTimeMillis()
                                     mobileBertQa = MobileBERTQaAdapter(mobileBertFile)
+                                    val bertTime = System.currentTimeMillis() - bertStartTime
+                                    
                                     Timber.i("🎯 MobileBERT Q&A available as fallback")
+                                    StartupDiagnosticCollector.logEvent(
+                                        component = "Ensemble AI Engine",
+                                        event = "MobileBERT loaded",
+                                        status = StartupStatus.SUCCESS,
+                                        details = "Loaded in ${bertTime}ms"
+                                    )
+                                    ModelDiagnostics.recordInitialization(
+                                        modelType = ModelType.MOBILEBERT_QA,
+                                        success = true,
+                                        initTime = bertTime
+                                    )
                                 } catch (bertError: Exception) {
                                     Timber.w(bertError, "🎯 MobileBERT initialization failed - will use retrieval-only mode")
                                     mobileBertQa = null
+                                    StartupDiagnosticCollector.logEvent(
+                                        component = "Ensemble AI Engine",
+                                        event = "MobileBERT load failed",
+                                        status = StartupStatus.WARNING,
+                                        error = bertError.message
+                                    )
+                                    ModelDiagnostics.recordInitialization(
+                                        modelType = ModelType.MOBILEBERT_QA,
+                                        success = false,
+                                        error = bertError.message,
+                                        stackTrace = bertError.stackTraceToString()
+                                    )
                                 }
                             } else {
                                 Timber.i("🎯 MobileBERT model not available - using retrieval-only mode")
                                 mobileBertQa = null
+                                StartupDiagnosticCollector.logEvent(
+                                    component = "Ensemble AI Engine",
+                                    event = "MobileBERT not available",
+                                    status = StartupStatus.WARNING,
+                                    details = "Using retrieval-only mode"
+                                )
                             }
                             
                             // Initialize optional intent classifier if available
                             val intentFile = modelManager.getIntentClassifierFile()
                             if (intentFile != null) {
-                                Timber.i("🎯 Initializing optional IntentClassifier from ${intentFile.absolutePath}")
-                                intentClassifier = IntentClassifier(context, intentFile)
-                                Timber.i("🎯 Intent classification enabled")
+                                try {
+                                    Timber.i("🎯 Initializing optional IntentClassifier from ${intentFile.absolutePath}")
+                                    val intentStartTime = System.currentTimeMillis()
+                                    intentClassifier = IntentClassifier(context, intentFile)
+                                    val intentTime = System.currentTimeMillis() - intentStartTime
+                                    Timber.i("🎯 Intent classification enabled")
+                                    ModelDiagnostics.recordInitialization(
+                                        modelType = ModelType.INTENT_CLASSIFIER,
+                                        success = true,
+                                        initTime = intentTime
+                                    )
+                                } catch (intentError: Exception) {
+                                    Timber.w(intentError, "🎯 Intent classifier initialization failed")
+                                    intentClassifier = null
+                                    ModelDiagnostics.recordInitialization(
+                                        modelType = ModelType.INTENT_CLASSIFIER,
+                                        success = false,
+                                        error = intentError.message,
+                                        stackTrace = intentError.stackTraceToString()
+                                    )
+                                }
                             } else {
                                 Timber.i("🎯 Intent classifier not available - running without intent classification")
                                 intentClassifier = null
@@ -263,6 +400,30 @@ class EnsembleEngine private constructor(private val context: Context) {
                                 if (intentClassifier != null) append(" + Intent classifier")
                             }
                             Timber.i("🎯 EnsembleEngine ready - $modelsLoaded loaded and ready for inference")
+                            
+                            StartupDiagnosticCollector.logEvent(
+                                component = "Ensemble AI Engine",
+                                event = "Ready for inference",
+                                status = StartupStatus.SUCCESS,
+                                details = modelsLoaded
+                            )
+                            
+                            // Update component health based on what loaded
+                            val healthStatus = when {
+                                mobileBertQa != null -> HealthStatus.HEALTHY
+                                else -> HealthStatus.DEGRADED
+                            }
+                            val healthMessage = when {
+                                mobileBertQa != null -> "All models loaded"
+                                else -> "MobileBERT unavailable - retrieval only"
+                            }
+                            ComponentHealthMonitor.updateComponentHealth(
+                                componentName = "Ensemble AI Engine",
+                                status = healthStatus,
+                                message = healthMessage,
+                                details = mapOf("models_loaded" to modelsLoaded)
+                            )
+                            
                             return@withContext Result.success(Unit)
                             
                         } catch (loadError: Exception) {
@@ -282,6 +443,19 @@ class EnsembleEngine private constructor(private val context: Context) {
                             )
                             val error = InitializationError.LoadFailed(loadError)
                             Timber.e(error, "🎯 Ensemble initialization failed")
+                            
+                            StartupDiagnosticCollector.logEvent(
+                                component = "Ensemble AI Engine",
+                                event = "Initialization failed",
+                                status = StartupStatus.FAILED,
+                                error = loadError.message
+                            )
+                            ComponentHealthMonitor.updateComponentHealth(
+                                componentName = "Ensemble AI Engine",
+                                status = HealthStatus.FAILED,
+                                message = loadError.message ?: "Initialization failed"
+                            )
+                            
                             return@withContext Result.failure(error)
                         }
                     }
@@ -306,6 +480,19 @@ class EnsembleEngine private constructor(private val context: Context) {
             } catch (e: Exception) {
                 modelState = ModelState.Error(e.message ?: "Initialization failed", recoverable = false)
                 Timber.e(e, "🎯 Fatal initialization error")
+                
+                StartupDiagnosticCollector.logEvent(
+                    component = "Ensemble AI Engine",
+                    event = "Fatal initialization error",
+                    status = StartupStatus.FAILED,
+                    error = e.message
+                )
+                ComponentHealthMonitor.updateComponentHealth(
+                    componentName = "Ensemble AI Engine",
+                    status = HealthStatus.FAILED,
+                    message = e.message ?: "Fatal initialization error"
+                )
+                
                 return@withContext Result.failure(InitializationError.LoadFailed(e))
             }
         }

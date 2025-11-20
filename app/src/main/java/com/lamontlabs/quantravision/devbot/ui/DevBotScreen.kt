@@ -116,6 +116,8 @@ fun DevBotScreen() {
     val isReady by viewModel.isReady.collectAsStateWithLifecycle()
     val errorStats by viewModel.errorStats.collectAsStateWithLifecycle()
     val exportStatus by viewModel.exportStatus.collectAsStateWithLifecycle()
+    val componentHealth by viewModel.componentHealth.collectAsStateWithLifecycle()
+    val startupTimeline by viewModel.startupTimeline.collectAsStateWithLifecycle()
     
     var showExportConfirmation by remember { mutableStateOf(false) }
     
@@ -227,6 +229,15 @@ fun DevBotScreen() {
             }
         }
         
+        // Build Info Card
+        BuildInfoCard(
+            fingerprint = viewModel.buildFingerprint,
+            timestamp = viewModel.buildTimestamp,
+            gitHash = viewModel.gitHash
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
         DevBotHeader(
             isReady = isReady,
             hasModel = hasModel,
@@ -236,6 +247,16 @@ fun DevBotScreen() {
             onClearErrors = { viewModel.clearErrorHistory() },
             onExport = { viewModel.requestExport() }
         )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // Component Health Section
+        ComponentHealthSection(componentHealth = componentHealth)
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // Startup Timeline Section
+        StartupTimelineSection(startupTimeline = startupTimeline)
         
         Spacer(modifier = Modifier.height(16.dp))
         
@@ -709,6 +730,349 @@ private fun DevBotInputArea(
                 imageVector = Icons.Default.Send,
                 contentDescription = "Send"
             )
+        }
+    }
+}
+
+@Composable
+private fun BuildInfoCard(
+    fingerprint: String,
+    timestamp: String,
+    gitHash: String
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1A2332)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "🏗️ Build Info",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = NeonGold
+            )
+            Divider(color = Color.White.copy(alpha = 0.2f))
+            
+            Text(
+                text = fingerprint,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = NeonCyan
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Timestamp",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = timestamp,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "Git Hash",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = gitHash.take(8),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = NeonGold
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ComponentHealthSection(
+    componentHealth: Map<String, com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealth>
+) {
+    var expanded by remember { mutableStateOf(false) }
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1A2332)
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "💚 Component Health",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = NeonGold
+                )
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (expanded) "Collapse" else "Expand",
+                        tint = Color.White.copy(alpha = 0.7f)
+                    )
+                }
+            }
+            
+            if (expanded) {
+                Divider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = Color.White.copy(alpha = 0.2f)
+                )
+                
+                if (componentHealth.isEmpty()) {
+                    Text(
+                        text = "No components monitored yet",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        componentHealth.forEach { (name, status) ->
+                            ComponentHealthItem(name, status)
+                        }
+                    }
+                }
+            } else {
+                // Show summary when collapsed
+                val healthyCount = componentHealth.values.count { it.status.name == "HEALTHY" }
+                val degradedCount = componentHealth.values.count { it.status.name == "DEGRADED" }
+                val failedCount = componentHealth.values.count { it.status.name == "FAILED" }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (healthyCount > 0) {
+                        HealthBadge("Healthy", healthyCount, Color.Green)
+                    }
+                    if (degradedCount > 0) {
+                        HealthBadge("Degraded", degradedCount, NeonGold)
+                    }
+                    if (failedCount > 0) {
+                        HealthBadge("Failed", failedCount, Color.Red)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ComponentHealthItem(
+    name: String,
+    status: com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealth
+) {
+    val statusColor = when (status.status.name) {
+        "HEALTHY" -> Color.Green
+        "DEGRADED" -> NeonGold
+        "FAILED" -> Color.Red
+        else -> Color.Gray
+    }
+    
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = statusColor.copy(alpha = 0.1f)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = statusColor.copy(alpha = 0.3f)
+                ) {
+                    Text(
+                        text = status.status.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = statusColor,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            Text(
+                text = status.message,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.8f),
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun HealthBadge(label: String, count: Int, color: Color) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = color.copy(alpha = 0.2f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = count.toString(),
+                style = MaterialTheme.typography.titleSmall,
+                color = color,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White.copy(alpha = 0.8f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun StartupTimelineSection(
+    startupTimeline: List<com.lamontlabs.quantravision.devbot.diagnostics.StartupEvent>
+) {
+    var expanded by remember { mutableStateOf(false) }
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1A2332)
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "⏱️ Startup Timeline",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = NeonGold
+                )
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (expanded) "Collapse" else "Expand",
+                        tint = Color.White.copy(alpha = 0.7f)
+                    )
+                }
+            }
+            
+            if (expanded) {
+                Divider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = Color.White.copy(alpha = 0.2f)
+                )
+                
+                if (startupTimeline.isEmpty()) {
+                    Text(
+                        text = "No startup events recorded yet",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        startupTimeline.forEach { event ->
+                            StartupEventItem(event)
+                        }
+                    }
+                }
+            } else {
+                // Show summary when collapsed
+                Text(
+                    text = "${startupTimeline.size} events recorded",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StartupEventItem(event: com.lamontlabs.quantravision.devbot.diagnostics.StartupEvent) {
+    val statusColor = when (event.status.name) {
+        "STARTED" -> NeonCyan
+        "IN_PROGRESS" -> NeonGold
+        "SUCCESS" -> Color.Green
+        "WARNING" -> NeonGold
+        "FAILED" -> Color.Red
+        else -> Color.Gray
+    }
+    
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        color = statusColor.copy(alpha = 0.1f)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "${event.component}: ${event.event}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium
+                )
+                event.details?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                }
+                event.error?.let {
+                    Text(
+                        text = "Error: $it",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Red.copy(alpha = 0.8f)
+                    )
+                }
+            }
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = statusColor.copy(alpha = 0.3f)
+            ) {
+                Text(
+                    text = event.status.name,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = statusColor,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                )
+            }
         }
     }
 }

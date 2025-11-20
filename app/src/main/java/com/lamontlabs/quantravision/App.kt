@@ -2,6 +2,8 @@ package com.lamontlabs.quantravision
 
 import android.app.Application
 import android.util.Log
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupDiagnosticCollector
+import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
 import org.opencv.android.OpenCVLoader
 
 class App : Application() {
@@ -19,6 +21,10 @@ class App : Application() {
     
     override fun onCreate() {
         super.onCreate()
+        
+        // Start comprehensive startup diagnostics (DevBot)
+        // Note: DiagnosticEngine will be initialized lazily by DevBot to avoid deadlocks
+        StartupDiagnosticCollector.start()
         
         // CRITICAL: Disable OverlayService IMMEDIATELY at app startup
         // This prevents Android from auto-starting it during model import
@@ -56,5 +62,8 @@ class App : Application() {
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }
+        
+        // Mark startup as complete
+        StartupDiagnosticCollector.completeStartup()
     }
 }

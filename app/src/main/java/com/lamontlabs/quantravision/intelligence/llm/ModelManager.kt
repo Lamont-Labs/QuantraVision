@@ -3,6 +3,10 @@ package com.lamontlabs.quantravision.intelligence.llm
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealthMonitor
+import com.lamontlabs.quantravision.devbot.diagnostics.HealthStatus
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupDiagnosticCollector
+import com.lamontlabs.quantravision.devbot.diagnostics.StartupStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -192,6 +196,11 @@ class ModelManager(private val context: Context) {
      */
     private fun autoProvisionFromAssets(): Map<ModelType, Result<File>> {
         Timber.i("🧠 ====== AUTO-PROVISION STARTING ======")
+        StartupDiagnosticCollector.logEvent(
+            component = "Model Manager",
+            event = "Auto-provision started",
+            status = StartupStatus.STARTED
+        )
         val results = mutableMapOf<ModelType, Result<File>>()
         
         // Provision all bundled models (embeddings required, others optional)
@@ -240,17 +249,67 @@ class ModelManager(private val context: Context) {
             
             // Copy from assets to internal storage
             Timber.i("🧠 Attempting to copy $modelType from assets...")
+            StartupDiagnosticCollector.logEvent(
+                component = "Model Manager",
+                event = "Provisioning $modelType from assets",
+                status = StartupStatus.IN_PROGRESS
+            )
+            
+            val startTime = System.currentTimeMillis()
             val result = copyModelFromAssets(modelType)
+            val provisionTime = System.currentTimeMillis() - startTime
             results[modelType] = result
             
             if (result.isSuccess) {
                 Timber.i("🧠 ✅ Auto-provisioned $modelType from bundled assets")
+                StartupDiagnosticCollector.logEvent(
+                    component = "Model Manager",
+                    event = "$modelType provisioned successfully",
+                    status = StartupStatus.SUCCESS,
+                    details = "Provisioned in ${provisionTime}ms"
+                )
             } else {
-                Timber.e("🧠 ❌ Failed to auto-provision $modelType: ${result.exceptionOrNull()?.message}")
+                val errorMsg = result.exceptionOrNull()?.message ?: "Unknown error"
+                Timber.e("🧠 ❌ Failed to auto-provision $modelType: $errorMsg")
+                StartupDiagnosticCollector.logEvent(
+                    component = "Model Manager",
+                    event = "$modelType provision failed",
+                    status = StartupStatus.FAILED,
+                    error = errorMsg
+                )
             }
         }
         
+        // Log completion summary
+        val successCount = results.values.count { it.isSuccess }
+        val totalAttempted = results.size
         Timber.i("🧠 ====== AUTO-PROVISION COMPLETE ======")
+        
+        StartupDiagnosticCollector.logEvent(
+            component = "Model Manager",
+            event = "Auto-provision complete",
+            status = if (successCount > 0) StartupStatus.SUCCESS else StartupStatus.FAILED,
+            details = "$successCount/$totalAttempted models provisioned"
+        )
+        
+        // Update component health based on results
+        val healthStatus = when {
+            results.values.all { it.isSuccess } -> HealthStatus.HEALTHY
+            results.values.any { it.isSuccess } -> HealthStatus.DEGRADED
+            else -> HealthStatus.FAILED
+        }
+        val healthMessage = when (healthStatus) {
+            HealthStatus.HEALTHY -> "All models auto-provisioned successfully"
+            HealthStatus.DEGRADED -> "Some models failed to provision: $successCount/$totalAttempted succeeded"
+            HealthStatus.FAILED -> "Auto-provision failed for all models"
+            else -> "Unknown status"
+        }
+        ComponentHealthMonitor.updateComponentHealth(
+            componentName = "Model Manager",
+            status = healthStatus,
+            message = healthMessage
+        )
+        
         return results
     }
     
