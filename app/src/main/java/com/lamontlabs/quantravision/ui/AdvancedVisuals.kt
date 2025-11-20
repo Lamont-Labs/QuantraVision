@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lamontlabs.quantravision.ui.theme.AppColors
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -49,9 +50,9 @@ fun StaticBrandBackground(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF010409), // Deep space blue-black (top)
-                        Color(0xFF0D1825), // Mid blue (center)
-                        Color(0xFF010409)  // Deep space blue-black (bottom)
+                        AppColors.Background,           // QuantraVision deep metallic dark (top)
+                        AppColors.Surface,              // QuantraVision metallic surface (center)
+                        AppColors.Background            // QuantraVision deep metallic dark (bottom)
                     )
                 )
             ),
@@ -83,13 +84,13 @@ fun QuantumGridBackground(
         val gridSpacing = AnimationSpecs.GRID_SPACING_DP.dp.toPx()
         val offset = 0f
         
-        // Dark quantum gradient background - matches branded logo image
+        // Dark quantum gradient background - QuantraVision brand
         drawRect(
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    Color(0xFF010409), // Deep space blue-black (top)
-                    Color(0xFF0D1825), // Mid blue (center)
-                    Color(0xFF010409)  // Deep space blue-black (bottom)
+                    AppColors.Background,           // QuantraVision deep metallic dark (top)
+                    AppColors.Surface,              // QuantraVision metallic surface (center)
+                    AppColors.Background            // QuantraVision deep metallic dark (bottom)
                 )
             )
         )
@@ -190,9 +191,9 @@ fun CandlestickParallax(
                 
                 val isGreen = candle.close > candle.open
                 val color = if (isGreen) 
-                    Color(0xFF00FF88).copy(alpha = 0.1f) 
+                    AppColors.Success.copy(alpha = 0.1f) 
                 else 
-                    Color(0xFFFF4444).copy(alpha = 0.1f)
+                    AppColors.Error.copy(alpha = 0.1f)
                 
                 // Wick
                 drawLine(
@@ -394,7 +395,7 @@ fun SignalTicker(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        Color(0xFF0A0E1A).copy(alpha = 0.8f),
+                        AppColors.Surface.copy(alpha = 0.8f),
                         Color.Transparent
                     )
                 )
@@ -518,10 +519,10 @@ fun NeonBoundingBox(
 fun RegimeTimelineBand(
     modifier: Modifier = Modifier,
     regimeData: List<RegimePeriod> = listOf(
-        RegimePeriod("Bull", Color(0xFF00FF88), 0.3f),
-        RegimePeriod("Ranging", Color(0xFFFFB347), 0.25f),
-        RegimePeriod("Bear", Color(0xFFFF4444), 0.2f),
-        RegimePeriod("Volatile", Color(0xFF00F0FF), 0.25f)
+        RegimePeriod("Bull", AppColors.Success, 0.3f),
+        RegimePeriod("Ranging", AppColors.NeonGold, 0.25f),
+        RegimePeriod("Bear", AppColors.Error, 0.2f),
+        RegimePeriod("Volatile", AppColors.NeonCyan, 0.25f)
     )
 ) {
     Box(
@@ -596,10 +597,10 @@ fun PredictiveHeatmap(
     val pulseAlpha = 0.7f
     
     val heatmapColor = when {
-        confidence >= 0.8f -> Color(0xFF00FF88) // High - Bright Green
-        confidence >= 0.6f -> Color(0xFFFFB347) // Medium - Orange
-        confidence >= 0.4f -> Color(0xFFFFFF00) // Low-Med - Yellow
-        else -> Color(0xFFFF4444) // Low - Red
+        confidence >= 0.8f -> AppColors.Success  // High - Bright Green
+        confidence >= 0.6f -> AppColors.NeonGold // Medium - Gold
+        confidence >= 0.4f -> AppColors.Warning  // Low-Med - Orange
+        else -> AppColors.Error                  // Low - Red
     }
     
     val alpha = 0.7f
@@ -644,7 +645,7 @@ fun MenuItemCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFF0D1219).copy(alpha = 0.7f),
+                color = AppColors.Surface.copy(alpha = 0.7f),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
             )
             .border(
