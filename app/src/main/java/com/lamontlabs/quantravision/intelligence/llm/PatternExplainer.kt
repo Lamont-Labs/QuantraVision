@@ -58,11 +58,11 @@ class PatternExplainer(private val context: Context) {
      * ## Initialization Contract
      * 
      * Returns **Result.failure** when:
-     * - GemmaEngine.initialize() fails (model missing or not loaded)
+     * - EnsembleEngine.initialize() fails (models missing or not loaded)
      * - This enables validation workflows to detect missing models
      * 
      * Returns **Result.success** ONLY when:
-     * - GemmaEngine successfully loads TFLite model (future implementation)
+     * - EnsembleEngine successfully loads bundled TFLite models
      * 
      * ## Graceful Degradation
      * 
@@ -74,8 +74,8 @@ class PatternExplainer(private val context: Context) {
      * This contract enables validation to detect missing models while ensuring
      * the user experience remains seamless through fallback explanations.
      * 
-     * @return Result.success when TFLite model is loaded and ready
-     * @return Result.failure when model is missing or cannot be loaded
+     * @return Result.success when TFLite models are loaded and ready
+     * @return Result.failure when models are missing or cannot be loaded
      */
     suspend fun initialize(): Result<Unit> {
         return try {
@@ -85,7 +85,7 @@ class PatternExplainer(private val context: Context) {
             if (result.isSuccess) {
                 initialized = true
                 initializationErrorReason = ""  // Clear any previous error
-                Timber.i("🧠 PatternExplainer initialized successfully - TFLite model ready")
+                Timber.i("🧠 PatternExplainer initialized successfully - TFLite models ready")
                 Result.success(Unit)
             } else {
                 // Initialization failed, but fallbacks will still work
@@ -93,7 +93,7 @@ class PatternExplainer(private val context: Context) {
                 val error = result.exceptionOrNull() ?: Exception("Engine initialization failed")
                 // Capture the specific error message for use in explanations
                 initializationErrorReason = error.message ?: "Unknown initialization error"
-                Timber.w(error, "🧠 GemmaEngine initialization failed: ${error.message}. Fallback explanations will be used.")
+                Timber.w(error, "🧠 EnsembleEngine initialization failed: ${error.message}. Fallback explanations will be used.")
                 Result.failure(error)
             }
         } catch (e: Exception) {
