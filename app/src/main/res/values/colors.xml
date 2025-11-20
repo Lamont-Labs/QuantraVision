@@ -1,11 +1,11 @@
 <resources>
-    <!-- Sharpened theme - matches icon aesthetic -->
-    <color name="qv_accent">#00E5FF</color>
-    <color name="qv_bg">#0A1218</color>
-    <color name="q_background">#0A1218</color>
+    <!-- QuantraVision Brand Colors - Neon Cyan & Metallic Dark Theme -->
+    <color name="qv_accent">#00F0FF</color>
+    <color name="qv_bg">#000814</color>
+    <color name="q_background">#000814</color>
     <color name="qv_fg">#FFFFFF</color>
-    <color name="qv_card">#14212C</color>
-    <color name="qv_warn">#FFAA00</color>
+    <color name="qv_card">#0F1B2E</color>
+    <color name="qv_warn">#FFB347</color>
     <color name="qv_ok">#00FF88</color>
     <color name="qv_err">#FF1744</color>
 </resources>

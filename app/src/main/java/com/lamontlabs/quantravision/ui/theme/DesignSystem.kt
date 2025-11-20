@@ -366,14 +366,14 @@ val AppTypography = Typography(
  */
 object AppColors {
     // ========================================================================
-    // BASE COLORS
+    // BASE COLORS - QuantraVision Dark Metallic Theme
     // ========================================================================
     
-    /** Pure black background (#000000) - Primary app background */
-    val Background = Color.Black
+    /** Deep metallic dark background (#000814) - Primary app background */
+    val Background = Color(0xFF000814)
     
-    /** Dark gray surface (#1A1A1A) - Cards, dialogs, elevated surfaces */
-    val Surface = Color(0xFF1A1A1A)
+    /** Metallic dark surface (#0F1B2E) - Cards, dialogs, elevated surfaces */
+    val Surface = Color(0xFF0F1B2E)
     
     /** Pure white text (#FFFFFF) - Primary text on dark backgrounds */
     val OnBackground = Color.White
@@ -392,14 +392,14 @@ object AppColors {
     val MetallicChrome = Color(0xFFE8E8E8)
     
     // ========================================================================
-    // NEON COLORS
+    // NEON COLORS - QuantraVision Brand
     // ========================================================================
     
     /** Neon cyan (#00F0FF) - Primary brand color, interactive elements */
     val NeonCyan = Color(0xFF00F0FF)
     
-    /** Neon cyan bright (#5FDDEB) - Lighter cyan, highlights, hover states */
-    val NeonCyanBright = Color(0xFF5FDDEB)
+    /** Neon cyan bright (#00FFFF) - Lighter cyan, highlights, hover states */
+    val NeonCyanBright = Color(0xFF00FFFF)
     
     /** Neon gold (#FFB347) - Secondary accent, premium features */
     val NeonGold = Color(0xFFFFB347)
