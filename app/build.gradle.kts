@@ -175,7 +175,12 @@ dependencies {
         exclude(group = "com.google.ai.edge.litert", module = "litert-support")
         exclude(group = "com.google.ai.edge.litert", module = "litert-support-api")
     }
-    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4") {
+        exclude(group = "org.tensorflow", module = "tensorflow-lite")
+        exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
+        exclude(group = "com.google.ai.edge.litert", module = "litert")
+        exclude(group = "com.google.ai.edge.litert", module = "litert-api")
+    }
     // GPU delegate disabled due to compatibility issues in 2.17.0
     // implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
     
