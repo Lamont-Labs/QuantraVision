@@ -38,7 +38,7 @@ sealed class InitializationError(message: String, cause: Throwable? = null) : Ex
      * Model files exist but failed to load
      * Could be due to memory, corruption, incompatible format, etc.
      */
-    data class LoadFailed(val cause: Throwable) : InitializationError(
+    class LoadFailed(cause: Throwable) : InitializationError(
         "Failed to load AI models: ${cause.message}",
         cause
     )
@@ -47,5 +47,5 @@ sealed class InitializationError(message: String, cause: Throwable? = null) : Ex
      * Model loader component not implemented or unavailable
      * Fallback to non-AI explanations
      */
-    data class LoaderNotImplemented(val reason: String = "Model loader not available") : InitializationError(reason)
+    class LoaderNotImplemented(reason: String = "Model loader not available") : InitializationError(reason)
 }
