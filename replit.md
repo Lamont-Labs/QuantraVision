@@ -4,6 +4,14 @@
 QuantraVision is an offline-first Android application for retail traders. It provides AI-powered, on-device chart pattern recognition using OpenCV to identify 109 technical analysis patterns. The app offers real-time detection, predictive analysis, multi-modal alerts, and explainable AI with audit trails, all while prioritizing user privacy through on-device processing. It operates without subscriptions or cloud dependencies, offering lifetime access via a one-time payment. Key features include an "Intelligence Stack" (Regime Navigator, Pattern-to-Plan Engine, Behavioral Guardrails, Proof Capsules) focused on offline functionality and educational support.
 
 ## Recent Changes
+- **2025-11-20 (Late Evening)**: Critical Embeddings-Only Mode Fixes:
+  - **Root Cause Fix**: Fixed path mismatch where ModelDiagnostics checked 'models' directory but ModelManager used 'llm_models' directory. This caused false-positive model missing errors. ModelDiagnostics now checks correct 'llm_models' path.
+  - **MobileBERT Removal**: Completely removed broken MobileBERT model from assets (file deleted). Model lacked TFLite Task Library metadata and would crash on initialization. Auto-provisioning now only provisions SENTENCE_EMBEDDINGS model.
+  - **Diagnostic Logic Fix**: Optional model failures (MobileBERT, Intent Classifier) no longer recorded as initialization failures. This eliminates 93 false-positive error recommendations that flooded DevBot diagnostics.
+  - **Component Health Fix**: System now correctly reports HEALTHY when embeddings load successfully, regardless of MobileBERT availability. Embeddings-only mode is now the production configuration.
+  - **Idempotent Initialization**: Fixed "already initialized" check to only require embeddings (not MobileBERT), preventing unnecessary re-initialization loops.
+  - **Documentation Updates**: Updated EnsembleEngine class-level KDoc to reflect embeddings-only architecture (22MB bundled vs 555MB Gemma = 25x smaller). Only embeddings required; MobileBERT and Intent Classifier are optional and not bundled.
+  - **Expected Result**: 93 initialization errors should be eliminated. DevBot diagnostics should stay green after embeddings load. AI responses work via retrieval-only mode with 198 Q&A knowledge base.
 - **2025-11-20 (Evening)**: DevBot Diagnostic System Enhancements:
   - **Build Fingerprinting**: Added BUILD_FINGERPRINT (v3.1.0-3100-abc123f), BUILD_TIMESTAMP, GIT_HASH, BUILD_ID to BuildConfig for version tracking. User can now instantly verify which build they're testing. Visible in DevBot UI Build Info card.
   - **Startup Diagnostics**: Created StartupDiagnosticCollector that captures complete app initialization timeline from App.onCreate() to completeStartup(). Exposes StartupTimeline StateFlow with metadata (total duration, failed/warning components, event list). DevBot UI shows expandable timeline with status badges.
