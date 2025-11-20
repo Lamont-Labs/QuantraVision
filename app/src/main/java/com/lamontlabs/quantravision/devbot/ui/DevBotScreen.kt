@@ -30,7 +30,7 @@ import com.lamontlabs.quantravision.ui.NeonCyan
 import com.lamontlabs.quantravision.ui.NeonGold
 
 @Composable
-fun DevBotScreen() {
+fun DevBotScreen(paddingValues: PaddingValues = PaddingValues(0.dp)) {
     val context = LocalContext.current
     val viewModel: DevBotViewModel = viewModel()
     
@@ -204,6 +204,7 @@ fun DevBotScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .padding(16.dp)
     ) {
         if (exportStatus is ExportStatus.Error) {
