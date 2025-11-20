@@ -30,7 +30,7 @@ import com.lamontlabs.quantravision.ui.NeonCyan
 import com.lamontlabs.quantravision.ui.NeonGold
 
 @Composable
-fun DevBotScreen(paddingValues: PaddingValues = PaddingValues(0.dp)) {
+fun DevBotScreen() {
     val context = LocalContext.current
     val viewModel: DevBotViewModel = viewModel()
     
@@ -201,80 +201,99 @@ fun DevBotScreen(paddingValues: PaddingValues = PaddingValues(0.dp)) {
         )
     }
     
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(16.dp)
-    ) {
-        if (exportStatus is ExportStatus.Error) {
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.Red.copy(alpha = 0.2f))
+    val listState = rememberLazyListState()
+    
+    Scaffold(
+        bottomBar = {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .imePadding()
+                    .navigationBarsPadding(),
+                color = Color(0xFF0F1419),
+                shadowElevation = 8.dp
             ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Export failed: ${(exportStatus as ExportStatus.Error).message}",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(onClick = { viewModel.resetExportStatus() }) {
-                        Icon(Icons.Default.Close, "Dismiss", tint = Color.Red)
+                DevBotInputArea(
+                    modifier = Modifier.padding(16.dp),
+                    inputText = inputText,
+                    onInputChange = { viewModel.updateInputText(it) },
+                    onSend = { viewModel.sendMessage() },
+                    enabled = isReady && !isProcessing
+                )
+            }
+        },
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+        containerColor = Color.Transparent
+    ) { scaffoldPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(scaffoldPadding)
+                .padding(horizontal = 16.dp),
+            state = listState,
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (exportStatus is ExportStatus.Error) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.Red.copy(alpha = 0.2f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Export failed: ${(exportStatus as ExportStatus.Error).message}",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(onClick = { viewModel.resetExportStatus() }) {
+                                Icon(Icons.Default.Close, "Dismiss", tint = Color.Red)
+                            }
+                        }
                     }
                 }
             }
-        }
-        
-        // Build Info Card
-        BuildInfoCard(
-            fingerprint = viewModel.buildFingerprint,
-            timestamp = viewModel.buildTimestamp,
-            gitHash = viewModel.gitHash
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        DevBotHeader(
-            isReady = isReady,
-            hasModel = hasModel,
-            errorStats = errorStats,
-            exportStatus = exportStatus,
-            onClearChat = { viewModel.clearChat() },
-            onClearErrors = { viewModel.clearErrorHistory() },
-            onExport = { viewModel.requestExport() }
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // Component Health Section
-        ComponentHealthSection(componentHealth = componentHealth)
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // Startup Timeline Section
-        StartupTimelineSection(startupTimeline = startupTimeline)
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        val listState = rememberLazyListState()
-        
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            state = listState,
-            contentPadding = PaddingValues(vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+            
+            item {
+                BuildInfoCard(
+                    fingerprint = viewModel.buildFingerprint,
+                    timestamp = viewModel.buildTimestamp,
+                    gitHash = viewModel.gitHash
+                )
+            }
+            
+            item {
+                DevBotHeader(
+                    isReady = isReady,
+                    hasModel = hasModel,
+                    errorStats = errorStats,
+                    exportStatus = exportStatus,
+                    onClearChat = { viewModel.clearChat() },
+                    onClearErrors = { viewModel.clearErrorHistory() },
+                    onExport = { viewModel.requestExport() }
+                )
+            }
+            
+            item {
+                ComponentHealthSection(componentHealth = componentHealth)
+            }
+            
+            item {
+                StartupTimelineSection(startupTimeline = startupTimeline)
+            }
+            
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            
             if (messages.isEmpty()) {
                 item {
                     if (!hasModel && isReady) {
-                        // Show import prompt when model not available
                         ModelNotFoundCard(
                             onImportClick = {
                                 timber.log.Timber.i("📥 DevBotScreen: Launching ImportActivity")
@@ -312,15 +331,6 @@ fun DevBotScreen(paddingValues: PaddingValues = PaddingValues(0.dp)) {
                 )
             }
         }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        DevBotInputArea(
-            inputText = inputText,
-            onInputChange = { viewModel.updateInputText(it) },
-            onSend = { viewModel.sendMessage() },
-            enabled = isReady && !isProcessing
-        )
     }
 }
 
@@ -694,13 +704,14 @@ private fun ModelNotFoundCard(onImportClick: () -> Unit) {
 
 @Composable
 private fun DevBotInputArea(
+    modifier: Modifier = Modifier,
     inputText: String,
     onInputChange: (String) -> Unit,
     onSend: () -> Unit,
     enabled: Boolean
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom
     ) {

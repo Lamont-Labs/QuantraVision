@@ -176,9 +176,7 @@ private fun AppNavigationHost(
         }
         
         composable("devbot") {
-            com.lamontlabs.quantravision.devbot.ui.DevBotScreen(
-                paddingValues = PaddingValues()
-            )
+            com.lamontlabs.quantravision.devbot.ui.DevBotScreen()
         }
         
         composable("settings") {
