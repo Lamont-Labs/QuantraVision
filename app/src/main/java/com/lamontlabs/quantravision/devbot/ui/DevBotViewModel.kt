@@ -13,7 +13,6 @@ import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealth
 import com.lamontlabs.quantravision.devbot.diagnostics.ComponentHealthMonitor
 import com.lamontlabs.quantravision.devbot.diagnostics.ModelDiagnostics
 import com.lamontlabs.quantravision.devbot.diagnostics.StartupDiagnosticCollector
-import com.lamontlabs.quantravision.devbot.diagnostics.StartupEvent
 import com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine
 import com.lamontlabs.quantravision.intelligence.llm.ModelImportController
 import com.lamontlabs.quantravision.intelligence.llm.ModelManager
@@ -57,8 +56,8 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
     val componentHealth: StateFlow<Map<String, ComponentHealth>> = _componentHealth.asStateFlow()
     
     // Startup Timeline Flow
-    private val _startupTimeline = MutableStateFlow<List<StartupEvent>>(emptyList())
-    val startupTimeline: StateFlow<List<StartupEvent>> = _startupTimeline.asStateFlow()
+    private val _startupTimeline = MutableStateFlow<com.lamontlabs.quantravision.devbot.diagnostics.StartupTimeline?>(null)
+    val startupTimeline: StateFlow<com.lamontlabs.quantravision.devbot.diagnostics.StartupTimeline?> = _startupTimeline.asStateFlow()
     
     init {
         viewModelScope.launch {
@@ -85,17 +84,15 @@ class DevBotViewModel(application: Application) : AndroidViewModel(application) 
         
         // Monitor component health updates
         viewModelScope.launch {
-            while (true) {
-                _componentHealth.value = ComponentHealthMonitor.getAllHealth()
-                kotlinx.coroutines.delay(1000) // Update every second
+            ComponentHealthMonitor.healthStates.collect { health ->
+                _componentHealth.value = health
             }
         }
         
         // Monitor startup timeline updates
         viewModelScope.launch {
-            while (true) {
-                _startupTimeline.value = StartupDiagnosticCollector.getTimeline()
-                kotlinx.coroutines.delay(1000) // Update every second
+            StartupDiagnosticCollector.timeline.collect { timeline ->
+                _startupTimeline.value = timeline
             }
         }
     }

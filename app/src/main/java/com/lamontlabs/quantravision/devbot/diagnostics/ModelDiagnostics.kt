@@ -23,6 +23,8 @@ data class ModelFileInfo(
 )
 
 data class ModelInitializationStatus(
+    val timestamp: Long = System.currentTimeMillis(),
+    val timestampReadable: String = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(java.util.Date()),
     val modelType: ModelType,
     val initialized: Boolean,
     val initializationTime: Long? = null,

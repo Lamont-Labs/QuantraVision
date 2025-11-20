@@ -9,6 +9,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 
 data class StartupEvent(
     val timestamp: Long,
@@ -41,7 +42,7 @@ object StartupDiagnosticCollector {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
     private val events = mutableListOf<StartupEvent>()
     private var appLaunchTime: Long = System.currentTimeMillis()
-    private var isCollecting = true
+    private var isCollecting = AtomicBoolean(false)
     
     private val _timeline = MutableStateFlow<StartupTimeline?>(null)
     val timeline: StateFlow<StartupTimeline?> = _timeline.asStateFlow()
@@ -49,7 +50,7 @@ object StartupDiagnosticCollector {
     fun start() {
         appLaunchTime = System.currentTimeMillis()
         events.clear()
-        isCollecting = true
+        isCollecting.set(true)
         
         logEvent(
             component = "Application",
@@ -68,7 +69,7 @@ object StartupDiagnosticCollector {
         details: String? = null,
         error: String? = null
     ) {
-        if (!isCollecting && status != StartupStatus.FAILED) return
+        if (!isCollecting.get() && status != StartupStatus.FAILED) return
         
         val timestamp = System.currentTimeMillis()
         val startupEvent = StartupEvent(
@@ -107,51 +108,70 @@ object StartupDiagnosticCollector {
     }
     
     fun completeStartup() {
-        isCollecting = false
         val totalDuration = System.currentTimeMillis() - appLaunchTime
         
+        // Read events under synchronization to prevent race conditions
+        val (hasFailures, hasWarnings) = synchronized(events) {
+            Pair(
+                events.any { it.status == StartupStatus.FAILED },
+                events.any { it.status == StartupStatus.WARNING }
+            )
+        }
+        
+        val finalStatus = when {
+            hasFailures -> StartupStatus.FAILED
+            hasWarnings -> StartupStatus.WARNING
+            else -> StartupStatus.SUCCESS
+        }
+        
+        // Log the final event BEFORE stopping collection
         logEvent(
             component = "Application",
             event = "Startup Complete",
-            status = StartupStatus.SUCCESS,
-            details = "Total duration: ${totalDuration}ms"
+            status = finalStatus,
+            details = "Startup finished with status: $finalStatus (${totalDuration}ms)"
         )
         
+        // Now stop collecting
+        isCollecting.set(false)
+        
         updateTimeline()
-        Timber.i("🔍 StartupDiagnosticCollector: Startup complete in ${totalDuration}ms")
+        Timber.i("🔍 StartupDiagnosticCollector: Startup complete in ${totalDuration}ms with status: $finalStatus")
     }
     
     private fun updateTimeline() {
-        val failed = events.filter { it.status == StartupStatus.FAILED }.map { it.component }.distinct()
-        val warnings = events.filter { it.status == StartupStatus.WARNING }.map { it.component }.distinct()
+        val totalDuration = System.currentTimeMillis() - appLaunchTime
+        
+        // Read and filter events under synchronization to prevent race conditions
+        val (eventsCopy, failedComponents, warningComponents) = synchronized(events) {
+            Triple(
+                events.toList(),
+                events.filter { it.status == StartupStatus.FAILED }.map { it.component }.distinct(),
+                events.filter { it.status == StartupStatus.WARNING }.map { it.component }.distinct()
+            )
+        }
         
         _timeline.value = StartupTimeline(
             appLaunchTime = appLaunchTime,
             buildFingerprint = BuildConfig.BUILD_FINGERPRINT,
-            events = events.toList(),
-            totalDuration = System.currentTimeMillis() - appLaunchTime,
-            failedComponents = failed,
-            warningComponents = warnings
-        )
-    }
-    
-    fun getTimeline(): StartupTimeline {
-        val failed = events.filter { it.status == StartupStatus.FAILED }.map { it.component }.distinct()
-        val warnings = events.filter { it.status == StartupStatus.WARNING }.map { it.component }.distinct()
-        
-        return StartupTimeline(
-            appLaunchTime = appLaunchTime,
-            buildFingerprint = BuildConfig.BUILD_FINGERPRINT,
-            events = events.toList(),
-            totalDuration = System.currentTimeMillis() - appLaunchTime,
-            failedComponents = failed,
-            warningComponents = warnings
+            events = eventsCopy,
+            totalDuration = totalDuration,
+            failedComponents = failedComponents,
+            warningComponents = warningComponents
         )
     }
     
     fun reset() {
-        events.clear()
+        if (isCollecting.get()) {
+            Timber.w("🔍 Cannot reset StartupDiagnosticCollector while collecting is in progress")
+            return
+        }
+        
+        synchronized(events) {
+            events.clear()
+        }
         appLaunchTime = System.currentTimeMillis()
         _timeline.value = null
+        Timber.i("🔍 StartupDiagnosticCollector reset complete")
     }
 }

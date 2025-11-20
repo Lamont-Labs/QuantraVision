@@ -22,22 +22,17 @@ android {
         }
         
         // Build fingerprint for DevBot diagnostics (configuration-cache safe)
-        val gitHash = try {
-            val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
-                .redirectErrorStream(true)
-                .start()
-            val result = process.inputStream.bufferedReader().readText().trim()
-            process.waitFor(2, java.util.concurrent.TimeUnit.SECONDS)
-            if (result.isEmpty() || process.exitValue() != 0) "no-git" else result
-        } catch (e: Exception) {
-            "no-git"
-        }
+        val gitHash = runCatching {
+            providers.exec {
+                commandLine("git", "rev-parse", "--short", "HEAD")
+            }.standardOutput.asText.map { it.trim() }.orElse("no-git").get()
+        }.getOrElse { "no-git" }
         
         val buildTimestamp = System.getenv("BUILD_TIMESTAMP") ?: java.time.Instant.now().toString()
-        val timestampShort = if (buildTimestamp.length >= 19) {
-            buildTimestamp.substring(0, 19)
-        } else {
-            buildTimestamp
+        val timestampShort = when {
+            buildTimestamp.isBlank() -> "unknown"
+            buildTimestamp.length >= 19 -> buildTimestamp.substring(0, 19)
+            else -> buildTimestamp
         }
         val buildId = "$timestampShort-$gitHash"
         

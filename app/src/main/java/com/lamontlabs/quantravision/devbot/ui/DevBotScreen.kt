@@ -955,7 +955,7 @@ private fun HealthBadge(label: String, count: Int, color: Color) {
 
 @Composable
 private fun StartupTimelineSection(
-    startupTimeline: List<com.lamontlabs.quantravision.devbot.diagnostics.StartupEvent>
+    startupTimeline: com.lamontlabs.quantravision.devbot.diagnostics.StartupTimeline?
 ) {
     var expanded by remember { mutableStateOf(false) }
     
@@ -992,15 +992,49 @@ private fun StartupTimelineSection(
                     color = Color.White.copy(alpha = 0.2f)
                 )
                 
-                if (startupTimeline.isEmpty()) {
+                if (startupTimeline == null || startupTimeline.events.isEmpty()) {
                     Text(
                         text = "No startup events recorded yet",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.6f)
                     )
                 } else {
+                    // Show timeline metadata
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Total Duration: ${startupTimeline.totalDuration}ms",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.8f),
+                            fontWeight = FontWeight.Medium
+                        )
+                        if (startupTimeline.failedComponents.isNotEmpty()) {
+                            Text(
+                                text = "❌ ${startupTimeline.failedComponents.size} failed",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Red
+                            )
+                        } else if (startupTimeline.warningComponents.isNotEmpty()) {
+                            Text(
+                                text = "⚠️ ${startupTimeline.warningComponents.size} warnings",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = NeonGold
+                            )
+                        } else {
+                            Text(
+                                text = "✅ All systems OK",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Green
+                            )
+                        }
+                    }
+                    
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        startupTimeline.forEach { event ->
+                        startupTimeline.events.forEach { event ->
                             StartupEventItem(event)
                         }
                     }
@@ -1008,7 +1042,7 @@ private fun StartupTimelineSection(
             } else {
                 // Show summary when collapsed
                 Text(
-                    text = "${startupTimeline.size} events recorded",
+                    text = if (startupTimeline != null) "${startupTimeline.events.size} events (${startupTimeline.totalDuration}ms)" else "No timeline data",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.7f)
                 )
