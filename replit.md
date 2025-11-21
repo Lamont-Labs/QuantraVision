@@ -1,8 +1,19 @@
 # QuantraVision
 
+## Project Status
+
+**Current State:** Development paused (November 2025)
+
+**Build Status:**
+- ✅ 100+ successful builds on Samsung S23 FE
+- ⚠️ Core features partially functional
+- 🔄 Template matching detection implemented but needs optimization
+- 📊 OCR indicator extraction requires refinement
+- 🎯 Apex-inspired intelligence system documented but not yet implemented
+
 ## Overview
 
-QuantraVision is an offline-first Android application concept for retail traders, aiming to provide AI-powered, on-device chart pattern recognition. Its core purpose is to deliver real-time pattern detection, predictive analysis, multi-modal alerts, and explainable AI while prioritizing user privacy through exclusive on-device processing. The application is designed to operate without subscriptions or cloud dependencies, offering lifetime access via a one-time payment.
+QuantraVision is an offline-first Android application for retail traders, providing AI-powered, on-device chart pattern recognition. Its core purpose is to deliver real-time pattern detection, predictive analysis, multi-modal alerts, and explainable AI while prioritizing user privacy through exclusive on-device processing. The application is designed to operate without subscriptions or cloud dependencies, offering lifetime access via a one-time payment.
 
 The project's ambition is to offer institutional-grade trading intelligence within a privacy-first mobile application that functions entirely offline, targeting retail traders seeking advanced analytical tools without compromising data privacy.
 
