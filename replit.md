@@ -73,6 +73,102 @@ This future vision aims to replace template matching with a sophisticated, multi
 - **Gemma 2B or Phi-2:** Small language models for the hybrid explanation system.
 ## Recent Changes
 
+**November 24, 2025 - Batch 10 Complete: Production Hardening & Green CI**
+
+**New Test Suites (4 files, 120+ tests):**
+1. **QuotaGateTest.kt** (40+ tests)
+   - Tier limits: FREE=0, PRO=10, ULTRA=25 calls/day with boundary tests
+   - Rate limiting: 8s minimum between calls, max 3 per 60 seconds
+   - Daily reset: Midnight reset with timezone awareness
+   - State persistence: JSON storage across app restarts
+   - Edge cases: Corrupted files, missing files, empty tier strings
+
+2. **LLMContractValidatorTest.kt** (35+ tests)
+   - Forbidden words: All 13 words/phrases with case-insensitive detection
+   - Partial matches: "buying" contains "buy", "selling" contains "sell"
+   - Schema validation: All 10 required fields, missing fields, empty fields
+   - Status echo: PASS/WAIT/FAIL matching with validation
+   - Token limits: PRO=180, ULTRA=380 with overflow detection
+   - Edge cases: Empty/blank responses, invalid JSON, multiple violations
+
+3. **LocalSummaryGeneratorTest.kt** (25+ tests)
+   - Golden tests: PASS, WAIT, FAIL, SUPPRESSED, OMEGA status templates
+   - Universal header: Status, QuantraScore, confidence, entropy, regime
+   - Template variables: Protocol trace, invalidation points
+   - Determinism: Identical inputs produce identical summaries
+
+4. **VerdictMappingTest.kt** (20+ tests)
+   - Execution order: Omega → Tier → Learning verification
+   - Protocol registry: 109 protocols registration
+   - Verdict aggregation: QuantraScore, entropy, confidence
+   - Proof hash: SHA-256 deterministic hashing
+
+**CI/CD Infrastructure:**
+1. **GitHub Actions Workflow** (.github/workflows/ci.yml)
+   - Automated: lint + tests + assembleDebug
+   - Gradle caching for fast builds
+   - APK artifact upload (7-day retention)
+   - Triggers: push/PR to main and develop branches
+
+2. **Test Fixtures** (TestFixtures.kt)
+   - Bitmap generators: createTestChartBitmap(), createValidChartBitmap()
+   - Mock ChartPrimitives: Generic, bullish, bearish, empty variants
+   - Realistic OHLCV candle data for testing
+
+**Crash Hardening (3 files):**
+1. **LiveOverlayController.kt**
+   - Comprehensive error handling in start() method
+   - ImageReader listener wrapped in try-catch
+   - Enhanced stop() with DeadObjectException handling
+   - recoverFromFailedStart() recovery method
+
+2. **SingleFrameCapture.kt**
+   - OutOfMemoryError handling in bitmap conversion
+   - Extensive validation: format, dimensions, buffer, row padding
+   - Wrapped frame acquisition in try-catch blocks
+   - Improved diagnostic logging
+
+3. **OverlayService.kt**
+   - Enhanced createPersistentVirtualDisplay() error handling
+   - Comprehensive cleanupMediaProjectionResources()
+   - DeadObjectException and RemoteException catching
+   - ScanThrottler reset integration
+
+**Performance Guardrails:**
+1. **ScanThrottler.kt** (new file)
+   - Enforces 2-4 FPS throttling (333ms target interval, ~3 FPS)
+   - shouldScan() method for scan gating
+   - Frame rate statistics logging (every 10 frames)
+   - Warns when FPS exceeds 4.5 or drops below 1.5
+   - reset() method for cleanup
+
+2. **Integration** (OverlayService.kt)
+   - Integrated into handleTap() method
+   - User-friendly toast when scan throttled
+   - Resets throttler during MediaProjection cleanup
+
+**Documentation:**
+1. **verify_demo.md** (docs/)
+   - Complete verification guide for build and testing
+   - Build instructions, test execution, functional testing
+   - Crash hardening validation, performance metrics
+   - Troubleshooting guide and success criteria
+
+2. **README.md** (updated)
+   - Quickstart section with prerequisites
+   - Build and test instructions
+   - GitHub Actions CI overview
+   - First launch steps and feature testing
+
+**Test Dependencies Added:**
+- Robolectric 4.13 for Android context tests
+- Kotlinx Coroutines Test 1.8.1
+- AndroidX Test Core 1.6.1
+
+**Architect Approval:** ⏳ Pending final review
+
+---
+
 **November 24, 2025 - Batch 9 Complete: Cloud Narration Pipeline + On-Device Wiring**
 
 **New Components (7 files):**
