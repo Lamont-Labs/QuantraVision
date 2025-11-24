@@ -1,4 +1,4 @@
-# QuantraVision Architecture
+# QuantraVision Apex Architecture
 
 <div align="center">
 
@@ -31,7 +31,7 @@
 
 ## 🏗️ System Overview
 
-QuantraVision is built on a **Clean Architecture** foundation with clear separation of concerns, testability, and maintainability as core principles.
+QuantraVision Apex is built on a **Clean Architecture** foundation with clear separation of concerns, testability, and maintainability as core principles.
 
 ### High-Level Architecture
 

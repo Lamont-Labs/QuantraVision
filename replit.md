@@ -1,8 +1,8 @@
-# QuantraVision
+# QuantraVision Apex
 
 ## Overview
 
-QuantraVision is an offline-first Android application for retail traders featuring AI-powered, on-device chart pattern recognition with real-time detection, predictive analysis, and explainable AI. Built on privacy-first principles with lifetime access via one-time payment, it delivers institutional-grade trading intelligence without subscriptions or cloud dependencies.
+QuantraVision Apex is an offline-first Android application for retail traders featuring AI-powered, on-device chart pattern recognition with real-time detection, predictive analysis, and explainable AI. Built on privacy-first principles with monthly subscription tiers (FREE/BASIC/PRO/APEX), it delivers institutional-grade trading intelligence with optional cloud-enhanced narration for paid tiers.
 
 ## User Preferences
 

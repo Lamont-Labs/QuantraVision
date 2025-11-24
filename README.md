@@ -1,9 +1,9 @@
 <div align="center">
 
-<img src="docs/quantravision-logo.png" alt="QuantraVision Logo" height="120"/>
+<img src="docs/quantravision-logo.png" alt="QuantraVision Apex Logo" height="120"/>
 
 <h1>
-  QuantraVision
+  QuantraVision Apex
 </h1>
 
 <h3>🚀 Production-Ready Android Trading Intelligence Platform</h3>
@@ -49,7 +49,7 @@
 
 ## 📊 Executive Summary
 
-**QuantraVision** is a production-ready Android application delivering institutional-grade trading intelligence through advanced on-device pattern recognition. Built with privacy-first principles, the platform operates 100% offline with zero cloud dependencies for FREE tier users, while offering optional cloud-enhanced narration for paid tiers.
+**QuantraVision Apex** is a production-ready Android application delivering institutional-grade trading intelligence through advanced on-device pattern recognition. Built with privacy-first principles, the platform operates 100% offline with zero cloud dependencies for FREE tier users, while offering optional cloud-enhanced narration for paid tiers.
 
 **Key Differentiators:**
 - **109 Apex Protocols**: Multi-layer validation system (Omega → Tier → Learning) ensuring high-confidence pattern detection with deterministic, auditable scoring (QuantraScore 0-100)

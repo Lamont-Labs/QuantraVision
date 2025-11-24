@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">QuantraVision</string>
+  <string name="app_name">QuantraVision Apex</string>
   <string name="qv_disclaimer">Solo ayuda para la toma de decisiones. No es asesoramiento financiero.</string>
   <string name="qv_brand">Lamont Labs</string>
   <string name="upgrade_title">Actualiza QuantraVision</string>

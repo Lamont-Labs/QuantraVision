@@ -21,5 +21,5 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "QuantraVision"
+rootProject.name = "QuantraVision Apex"
 include(":app")

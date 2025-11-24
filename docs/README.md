@@ -1,8 +1,8 @@
-# QuantraVision Documentation Hub
+# QuantraVision Apex Documentation Hub
 
-**Central documentation index for QuantraVision Android application**
+**Central documentation index for QuantraVision Apex Android application**
 
-Welcome to the QuantraVision documentation. This page provides quick navigation to all project documentation organized by category.
+Welcome to the QuantraVision Apex documentation. This page provides quick navigation to all project documentation organized by category.
 
 ---
 

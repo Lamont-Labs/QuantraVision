@@ -4,18 +4,22 @@
     <string name="app_name">QuantraVision Apex</string>
     <string name="app_brand">Lamont Labs • QuantraVision Apex™</string>
 
-    <!-- Tier Names & Pricing (from master spec) -->
+    <!-- Tier Names & Pricing (Batch B v1.0) -->
     <string name="tier_free_name">FREE</string>
     <string name="tier_free_price">$0.00/month</string>
-    <string name="tier_free_desc">Unlimited local scan • Apex verdict • QuantraScore • Local summaries</string>
+    <string name="tier_free_desc">3 scans/day • 1 AI explanation/day • Apex verdict • QuantraScore • Local summaries</string>
+
+    <string name="tier_basic_name">BASIC</string>
+    <string name="tier_basic_price">$4.99/month</string>
+    <string name="tier_basic_desc">25 scans/day • 5 AI explanations/day • 5 saved summaries • Cloud narration</string>
 
     <string name="tier_pro_name">PRO</string>
-    <string name="tier_pro_price">$4.99/month</string>
-    <string name="tier_pro_desc">Cloud Apex narration (short) • 10 cloud calls/day • Auto-Explain optional</string>
+    <string name="tier_pro_price">$14.99/month</string>
+    <string name="tier_pro_desc">75 scans/day • 20 AI explanations/day • 20 saved summaries • Batch mode</string>
 
-    <string name="tier_ultra_name">APEX ULTRA</string>
-    <string name="tier_ultra_price">$9.99/month</string>
-    <string name="tier_ultra_desc">Deep narration • Monster Runner • 25 cloud calls/day • PDF summaries</string>
+    <string name="tier_apex_name">APEX</string>
+    <string name="tier_apex_price">$29.99/month</string>
+    <string name="tier_apex_desc">200 scans/day • 60 AI explanations/day • 100 saved summaries • Advanced logic</string>
 
     <!-- Activities -->
     <string name="settings_title">Settings</string>
