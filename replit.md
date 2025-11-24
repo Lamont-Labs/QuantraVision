@@ -71,27 +71,89 @@ This future vision aims to replace template matching with a sophisticated, multi
 
 **Future Dependencies (if Apex Intelligence is implemented):**
 - **Gemma 2B or Phi-2:** Small language models for the hybrid explanation system.
-## Recent Changes - Batch 8
+## Recent Changes
+
+**November 24, 2025 - Batch 9 Complete: Cloud Narration Pipeline + On-Device Wiring**
+
+**New Components (7 files):**
+1. **QuotaGate.kt** - Tier-based cloud call quota enforcement (FREE=0, PRO=10/day, ULTRA=25/day)
+   - Daily reset at midnight with timezone-aware logic
+   - Rate limiting: 8s min between calls, max 3 per 60 seconds
+   - Persistent JSON state management (quota_state.json)
+2. **CloudReasoner.kt** - OpenAI API integration for paid-tier narration
+   - 15-second timeout enforcement
+   - Tier-based token limits (PRO=180, ULTRA=380)
+   - Only sends structured JSON packets (never screenshots)
+3. **LLMContractValidator.kt** - Response validation and safety enforcement
+   - Forbidden words check (buy, sell, long, short, enter, exit, etc.)
+   - JSON schema validation (10 required fields)
+   - Status echo verification and token limit enforcement
+4. **LocalSummaryGenerator.kt** - Deterministic template-based explanations
+   - Universal header (status, QuantraScore, confidence, entropy, regime)
+   - Status-specific templates (PASS, WAIT, FAIL, SUPPRESSED, OMEGA)
+   - Spec-compliant fallback for FREE tier and cloud failures
+5. **AutoExplainManager.kt** - Auto-trigger logic for smart explanations
+   - Eligibility: STARTER/STANDARD/PRO tiers (maps to spec PRO/ULTRA)
+   - Global preconditions (omega_lock, suppression, entropy, quota)
+   - Triggers: WAIT (confidence ≥0.55), PASS (mid-conf + low-entropy + user toggle)
+6. **PrimitiveExtractor.kt** - Vision extraction orchestration
+   - Deterministic pixel-based SHA-256 hash (no timestamp)
+   - Real OCR extraction using IndicatorExtractor
+   - Replaces ChartPrimitives.stub() usage
+7. **ExplainOrchestrator.kt** - Complete cloud pipeline wiring
+   - Tier check → QuotaGate → CloudReasoner → Validator → LocalSummary fallback
+   - Quota increments on ALL attempts (success, violation, failure)
+   - Fail-closed behavior throughout
+
+**Modified Components (3 files):**
+1. **OverlayRenderer.kt** - Auto-dim overlay logic for quota enforcement
+   - Dims to 50% opacity when FREE tier or quota exhausted
+   - Shows contextual upgrade messages
+2. **ApexModels.kt** - Removed ChartPrimitives.stub() method
+3. **ProtocolRegistryMobile.kt** - Fixed stub verdict to use real protocol results
+
+**Critical Fixes Applied:**
+- ✅ Tier mapping consistency across all 3 files (AutoExplainManager, ExplainOrchestrator, OverlayRenderer)
+- ✅ STARTER ($9.99) → PRO quota (10 calls/day)
+- ✅ STANDARD ($24.99) → ULTRA quota (25 calls/day)
+- ✅ PRO ($49.99) → ULTRA quota (25 calls/day)
+- ✅ Deterministic hashes for deduplication (pixel-based, no timestamp)
+- ✅ Quota counts ALL cloud attempts (spec line 320 compliance)
+- ✅ All paid tiers eligible for auto-explain
+
+**Architecture:**
+
+**On-Device Pipeline:**
+```
+Bitmap → PrimitiveExtractor.extract()
+      → ChartPrimitives (OCR, hash, type)
+      → ApexEngineMobile.runScan()
+      → ApexResult (109 protocols: Omega→Tier→Learning)
+      → OverlayRenderer (auto-dim on quota/tier)
+```
+
+**Paid Cloud Pipeline:**
+```
+ApexResult → AutoExplainManager.shouldAutoExplain()
+          → QuotaGate.canMakeCloudCall() [FREE→false]
+          → CloudReasoner.narrate() [OpenAI, 15s timeout]
+          → QuotaGate.incrementCallCount() [count all attempts]
+          → LLMContractValidator.validate()
+          → [VALID] Format explanation
+          → [INVALID/ERROR] LocalSummaryGenerator.generate()
+```
+
+**Architect Approval:** ✅ PASS - "Tier-to-quota mappings now align with the Batch 9 spec, so paid tiers reach cloud narration while FREE remains gated."
+
+---
 
 **November 24, 2025 - Batch 8 Complete: Omega Safety Protocols (Omega01-Omega04)**
 - Implemented all 4 Omega Safety Protocols as final hard locks before Tier protocols
 - Four critical safety categories:
-  - Omega01: Structural Anomaly Guard (weight 5.0) - Validates candle integrity (OHLC relationships, NaN/Infinity, negative prices, timestamp sequencing, volume anomalies)
-  - Omega02: Risk Cap Enforcer (weight 4.8) - Enforces risk limits (QuantraScore caps, confidence thresholds, position sizing, over-leverage detection)
-  - Omega03: Security & Authorization Validator (weight 4.9) - Validates user authorization, proof integrity (SHA-256 digests), tampered state detection
-  - Omega04: Compliance Guard (weight 4.7) - Enforces disclaimer acknowledgment, tier restrictions (FREE/PRO/ULTRA), geographic compliance
-- Fixed critical fail-closed violation through architect review:
-  - Omega02 RiskCapEnforcer: Now FAILS when ALL risk metrics missing (quantraScore, confidence, positionSize) instead of silently passing
-  - Validates metrics independently - only checks metrics that are present
-  - Explicit fail-closed message: "Missing all risk metrics - FAIL (fail-closed)"
-- Highest weights (4.7-5.0) for critical safety checks
-- Comprehensive state markers for audit trail:
-  - omega_X_passed (Boolean)
-  - omega_X_anomalyCount/violations (Int/List<String>)
-  - omega_X_reason (String with detailed diagnostics)
-- Created unit tests for Omega01 (8 test methods) and Omega02 (15 test methods, including fail-closed verification)
-- Updated ProtocolRegistryMobile.kt with Omega protocols registered BEFORE Tier protocols (strict execution order: Omega → Tier → Learning)
-- Created 4 façade files (Omega01.kt-Omega04.kt) following exact pattern from Tier/Learning protocols
-- **Total: 109 Protocols implemented (T01-T80 + LP01-LP25 + Omega01-Omega04)** with protocol-level fail-closed guarantees
-- **Execution order:** Omega safety checks execute FIRST, then Tier protocols, then Learning protocols
-- **Key requirement:** All Omega protocols fail-closed - missing prerequisites or safety violations → immediate FAIL verdict
+  - Omega01: Structural Anomaly Guard (weight 5.0) - Validates candle integrity
+  - Omega02: Risk Cap Enforcer (weight 4.8) - Enforces risk limits
+  - Omega03: Security & Authorization Validator (weight 4.9) - Validates authorization and proof integrity
+  - Omega04: Compliance Guard (weight 4.7) - Enforces disclaimers and tier restrictions
+- Fixed critical fail-closed violation in Omega02
+- **Total: 109 Protocols implemented (T01-T80 + LP01-LP25 + Omega01-Omega04)**
+- **Execution order:** Omega → Tier → Learning (strict safety-first)
