@@ -1,3 +1,6 @@
+# Note: Enable GitHub Dependabot for automated dependency vulnerability scanning
+# Settings → Security → Dependabot → Enable Dependabot security updates
+
 name: CI
 
 on:
@@ -42,10 +45,14 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug
         
-      - name: Upload APK
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 7
+      
+      # NOTE: Release APK build disabled - requires signing credentials
+      # To enable: Configure signing secrets in GitHub repository settings
+      # See RELEASE_PLAYBOOK.md for signing configuration details

@@ -4,7 +4,7 @@
 
 **Professional-Grade System Architecture Documentation**
 
-*Version 1.0.0 | Last Updated: November 2, 2025*
+*Version 2.0.0 | Last Updated: November 24, 2025*
 
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20MVVM-blue?style=flat-square)](https://developer.android.com/jetpack/guide)
 [![Design Patterns](https://img.shields.io/badge/Patterns-Repository%20%7C%20UseCase-green?style=flat-square)](#design-patterns)
@@ -413,13 +413,198 @@ data class DetectionConfig(
 
 ---
 
+## 🧠 Apex Intelligence System
+
+**Status**: Production implementation complete (Batch 10)
+
+The Apex Intelligence System provides deterministic, rule-based pattern validation with optional cloud-enhanced explanations.
+
+### Apex Protocol Architecture
+
+**109 Total Protocols** organized in three tiers:
+
+1. **Omega Protocols (25)** - Safety and integrity guardrails
+2. **Tier Protocols (60)** - Pattern detection and validation rules
+3. **Learning Protocols (24)** - Adaptive learning and suppression memory
+
+### System Diagram
+
+```
+User captures chart screenshot
+       ↓
+ApexEngineMobile orchestrates detection
+       ↓
+┌─────────────────────────────────────┐
+│   OMEGA PROTOCOLS (Safety Layer)   │
+│  - Health checks                    │
+│  - Quota validation (QuotaGate)     │
+│  - Permission verification          │
+│  - Integrity validation             │
+└──────────────┬──────────────────────┘
+               ↓
+┌─────────────────────────────────────┐
+│   TIER PROTOCOLS (Detection Layer)  │
+│  - Pattern matching (109 templates) │
+│  - Confidence scoring               │
+│  - Entropy detection                │
+│  - Protocol aggregation             │
+└──────────────┬──────────────────────┘
+               ↓
+┌─────────────────────────────────────┐
+│ LEARNING PROTOCOLS (Adaptive Layer) │
+│  - Suppression memory               │
+│  - Pattern invalidation tracking    │
+│  - Drift detection                  │
+│  - Real-time accuracy feedback      │
+└──────────────┬──────────────────────┘
+               ↓
+QuantraScore (0-100) + pattern metadata
+       ↓
+┌─────────────────────────────────────┐
+│    EXPLANATION LAYER (Optional)     │
+│  Local: Template-based (<1 second)  │
+│  Cloud: LLM-powered (10-30 seconds) │
+│    via CloudReasoner + QuotaGate    │
+└──────────────┬──────────────────────┘
+               ↓
+Result displayed to user + audit trail logged
+```
+
+### Quota Management System (QuotaGate)
+
+**Purpose**: Fail-closed cloud API rate limiting
+
+**Tier Limits**:
+- FREE: 0 cloud narrations/day (100% offline)
+- STARTER/PRO: 10 cloud narrations/day
+- STANDARD/ULTRA: 25 cloud narrations/day
+
+**Safety Features**:
+- Fail-closed logic: Deny if quota check fails
+- Min 8 seconds between API calls
+- Max 3 calls per 60 seconds rolling window
+- Persistent quota storage with daily reset
+
+**Implementation**: `QuotaGate.kt`
+
+### Cloud Narration Pipeline
+
+**Architecture**:
+
+```
+User requests explanation
+       ↓
+QuotaGate validates quota (fail-closed)
+       ↓
+ApexEngineMobile generates Apex packet
+  - QuantraScore
+  - Protocol trace
+  - Entropy metrics
+  - Detection metadata
+  (NO screenshots, NO chart data)
+       ↓
+CloudReasoner sends to OpenAI API
+  - Structured prompt template
+  - JSON schema enforcement
+  - 15 second timeout
+       ↓
+LLMContractValidator validates response
+  - Forbidden term detection (buy, sell, etc.)
+  - Schema compliance check
+  - Fail-closed: Reject if invalid
+       ↓
+If valid: Display cloud narration
+If invalid: Fallback to LocalSummaryGenerator
+       ↓
+Explanation displayed + usage logged
+```
+
+**Components**:
+- **CloudReasoner.kt**: OpenAI API integration
+- **LLMContractValidator.kt**: Response validation
+- **LocalSummaryGenerator.kt**: Offline fallback
+- **AutoExplainManager.kt**: Orchestration logic
+
+### Performance Guardrails (ScanThrottler)
+
+**Purpose**: Prevent battery drain and thermal throttling
+
+**FPS Limits**:
+- Default: 2-4 FPS for continuous scanning
+- Adaptive throttling based on battery/thermal state
+- Minimum 250ms between scans
+
+**PowerGuard Integration**:
+- Battery level monitoring
+- Thermal state detection
+- Automatic scan frequency reduction
+- User notification when throttling active
+
+**Implementation**: `ScanThrottler.kt`
+
+### Integrity Verification System
+
+**Components**:
+
+1. **ProofHasher** (`ProofHasher.kt`)
+   - SHA-256 hash of all scan results
+   - Tamper-evident audit trail
+   - Deterministic proof generation
+
+2. **IntegrityChecker** (`IntegrityChecker.kt`)
+   - APK signature validation
+   - Runtime integrity checks
+   - Anti-tampering detection
+
+3. **DetectionAuditTrail** (Room database)
+   - Complete provenance logging
+   - Hash verification chain
+   - Forensic replay capability
+
+---
+
+## 🧪 Testing Strategy
+
+**Test Coverage**: 120+ unit tests with 80%+ coverage
+
+### Test Organization
+
+**Unit Tests** (`app/src/test/`):
+- `ApexEngineMobileTest.kt` - Protocol execution
+- `QuotaGateTest.kt` - Quota validation logic
+- `CloudReasonerTest.kt` - API integration (mocked)
+- `LLMContractValidatorTest.kt` - Response validation
+- `LocalSummaryGeneratorTest.kt` - Offline fallback
+- `ProtocolRegistryMobileTest.kt` - Protocol management
+
+**Instrumentation Tests** (`app/src/androidTest/`):
+- `PerformanceBenchmarkTest.kt` - Detection latency benchmarks
+- `QuotaGatePersistenceTest.kt` - Database integration
+- End-to-end detection flow testing
+
+### CI/CD Integration
+
+**GitHub Actions** (`.github/workflows/ci.yml`):
+- Automated build on every push
+- Full test suite execution
+- Lint checks (Kotlin style)
+- Build APK artifacts
+
+**Coverage Reports**:
+- JaCoCo coverage reports generated
+- 80%+ coverage target for business logic
+- Coverage uploaded to GitHub Actions artifacts
+
+---
+
 ## 🚀 Future Architecture
 
 ### Planned Enhancements
+- **Geometric Detection**: ML-based pattern detection (70-85% accuracy target)
+- **On-Device LLM**: Gemma 2B/Phi-2 integration for offline explanations
 - **Modularization**: Multi-module Gradle setup
-- **Dependency Injection**: Hilt/Koin integration
-- **Cloud Sync**: Optional cloud backup (Pro tier)
-- **Wear OS**: Companion app for smartwatches
+- **Dependency Injection**: Hilt integration for scalability
+- **Cloud Sync**: Optional pattern history backup (Pro tier)
 
 ---
 

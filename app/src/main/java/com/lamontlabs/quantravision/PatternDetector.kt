@@ -34,7 +34,7 @@ class PatternDetector(private val context: Context) {
     private val db = PatternDatabase.getInstance(context)
     private val provenance = Provenance(context)
     
-    // QuantraCore components for multi-signal analysis
+    // QuantraVision components for multi-signal analysis
     private val indicatorExtractor = IndicatorExtractor(context)
     private val contextAnalyzer = ContextAnalyzer()
     private val quantraScorer = QuantraScorer()
@@ -457,7 +457,7 @@ class PatternDetector(private val context: Context) {
                     Timber.w("Pattern detected but bounding box unavailable: $patternName (no best match found)")
                 }
                 
-                // QuantraCore: Extract indicators and calculate composite score
+                // QuantraVision: Extract indicators and calculate composite score
                 // NOW WITH: Adaptive learning from historical scans!
                 val indicators = indicatorExtractor.extractIndicators(bitmap)
                 val analysis = contextAnalyzer.analyze(patternName, calibrated, indicators)

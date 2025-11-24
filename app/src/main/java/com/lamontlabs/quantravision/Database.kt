@@ -49,8 +49,8 @@ data class PatternMatch(
     val windowMs: Long,           // Temporal stability window contribution
     val originPath: String = "",  // Source image path (e.g., "validation/test_1234567890.png")
     val detectionBounds: String? = null,  // Bounding box as "x,y,w,h" or null if unavailable
-    val quantraScore: Int = 0,    // QuantraCore: 0-100 composite quality score
-    val indicatorsJson: String? = null  // QuantraCore: JSON of IndicatorContext (RSI, MACD, volume, etc.)
+    val quantraScore: Int = 0,    // QuantraVision: 0-100 composite quality score
+    val indicatorsJson: String? = null  // QuantraVision: JSON of IndicatorContext (RSI, MACD, volume, etc.)
 ) {
     @Ignore
     var tradeScenario: TradeScenarioInfo? = null  // Pattern-to-Plan trade info (Pro tier only, not persisted)
@@ -504,7 +504,7 @@ abstract class PatternDatabase : RoomDatabase() {
         
         val MIGRATION_12_13 = object : Migration(12, 13) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // QuantraCore: Add QuantraScore and indicator context fields
+                // QuantraVision: Add QuantraScore and indicator context fields
                 try {
                     database.execSQL("ALTER TABLE PatternMatch ADD COLUMN quantraScore INTEGER NOT NULL DEFAULT 0")
                 } catch (e: Exception) {
@@ -516,7 +516,7 @@ abstract class PatternDatabase : RoomDatabase() {
                     Log.w(TAG, "Column 'indicatorsJson' may already exist, skipping: ${e.message}")
                 }
                 
-                Log.i(TAG, "Migration 12 -> 13: QuantraCore fields added successfully")
+                Log.i(TAG, "Migration 12 -> 13: QuantraVision fields added successfully")
             }
         }
         

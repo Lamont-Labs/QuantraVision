@@ -41,7 +41,7 @@ object ComponentHealthMonitor {
             "ML Kit OCR",
             "Alert System",
             "Learning Engine",
-            "QuantraCore Intelligence"
+            "QuantraVision Intelligence"
         )
         
         initialComponents.forEach { componentName ->

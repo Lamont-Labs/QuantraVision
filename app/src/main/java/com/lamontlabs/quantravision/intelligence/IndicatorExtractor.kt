@@ -10,7 +10,7 @@ import timber.log.Timber
 import kotlin.math.abs
 
 /**
- * QuantraCore: Indicator Extractor
+ * QuantraVision: Indicator Extractor
  * 
  * Uses Google ML Kit Text Recognition (on-device OCR) to extract technical
  * indicators from chart screenshots. Privacy-preserving and offline.

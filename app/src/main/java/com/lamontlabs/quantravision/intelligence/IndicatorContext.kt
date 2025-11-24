@@ -3,7 +3,7 @@ package com.lamontlabs.quantravision.intelligence
 import com.google.gson.Gson
 
 /**
- * QuantraCore: Indicator Context
+ * QuantraVision: Indicator Context
  * 
  * Captures technical indicators extracted from chart screenshots via OCR.
  * Used for multi-signal confluence analysis with pattern detection.

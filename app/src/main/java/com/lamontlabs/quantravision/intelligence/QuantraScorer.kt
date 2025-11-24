@@ -5,7 +5,7 @@ import timber.log.Timber
 import kotlin.math.roundToInt
 
 /**
- * QuantraCore: QuantraScore Calculation Engine (ENHANCED with Adaptive Learning)
+ * QuantraVision: QuantraScore Calculation Engine (ENHANCED with Adaptive Learning)
  * 
  * Calculates a 0-100 composite quality score for each pattern detection.
  * Combines pattern confidence, indicator confluence, and signal strength.

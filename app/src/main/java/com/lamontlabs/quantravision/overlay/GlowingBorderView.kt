@@ -6,7 +6,7 @@ import android.view.View
 import com.lamontlabs.quantravision.ui.QuantraColors
 
 /**
- * QuantraCore HD SHARP glowing border overlay.
+ * QuantraVision HD SHARP glowing border overlay.
  * Features:
  * - CRISP cyan (#00F0FF) glow with REDUCED blur for sharpness
  * - 3-tier effect: soft outer bloom (≤10px) + SOLID mid layer + SHARP 1px white edge

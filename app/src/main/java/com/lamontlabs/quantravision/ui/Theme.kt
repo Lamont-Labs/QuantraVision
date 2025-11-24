@@ -61,7 +61,7 @@ private val QVColors = darkColorScheme(
     outlineVariant = QVCyan.copy(alpha = 0.45f)  // Still visible when inactive
 )
 
-// Extension colors for semantic use (QuantraCore palette)
+// Extension colors for semantic use (QuantraVision palette)
 val ColorScheme.success: Color
     get() = QVSuccess
 

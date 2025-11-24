@@ -289,14 +289,14 @@ private val METAL_CARD_CORNER_RADIUS = 16.dp
 // ============================================================================
 
 /**
- * Neon glow colors matching QuantraCore logo aesthetic
+ * Neon glow colors matching QuantraVision logo aesthetic
  */
 val NeonCyan = Color(0xFF00F0FF)         // Bright cyan
 val NeonCyanBright = Color(0xFF5FDDEB)   // Lighter cyan for highlights
 val NeonGold = Color(0xFFFFB347)         // Gold/orange accent
 
 /**
- * Futuristic neon text with layered blur effect - matches QuantraCore logo aesthetic
+ * Futuristic neon text with layered blur effect - matches QuantraVision logo aesthetic
  * 
  * Creates a glowing "bloom" effect by layering multiple blurred text copies with
  * progressively increasing blur radius, topped with a sharp foreground text.
@@ -634,7 +634,7 @@ data class LayeredShadow(
 
 /**
  * Adds layered depth shadows for 3D floating effect
- * Stacks multiple shadow layers to create realistic depth matching QuantraCore logo
+ * Stacks multiple shadow layers to create realistic depth matching QuantraVision logo
  * 
  * @param shadows List of shadow layers (bottom to top)
  * @param shape Shadow shape
@@ -986,7 +986,7 @@ fun MetallicAccordion(
 // ============================================================================
 
 /**
- * Circular HUD progress indicator with gradient arc - matches QuantraCore logo aesthetic
+ * Circular HUD progress indicator with gradient arc - matches QuantraVision logo aesthetic
  * 
  * Features:
  * - Animated gradient arc progress
@@ -1134,7 +1134,7 @@ fun CircularHUDProgress(
 
 /**
  * Circular data ring for HUD-style data visualization
- * Creates concentric rings with different data values - matches QuantraCore logo style
+ * Creates concentric rings with different data values - matches QuantraVision logo style
  * 
  * @param rings List of ring data (progress, color, label)
  * @param modifier Modifier for customization
@@ -1241,7 +1241,7 @@ data class RingData(
 // ============================================================================
 
 /**
- * Glass morphic card with backdrop blur effect - matches QuantraCore futuristic aesthetic
+ * Glass morphic card with backdrop blur effect - matches QuantraVision futuristic aesthetic
  * 
  * Uses RenderEffect blur on Android 12+ with fallback to semi-transparent background
  * 

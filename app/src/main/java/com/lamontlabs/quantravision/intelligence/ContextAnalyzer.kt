@@ -3,7 +3,7 @@ package com.lamontlabs.quantravision.intelligence
 import timber.log.Timber
 
 /**
- * QuantraCore: Context Analyzer
+ * QuantraVision: Context Analyzer
  * 
  * Analyzes confluence between pattern detection and technical indicators.
  * Determines if multiple signals align to create high-probability trade setups.
