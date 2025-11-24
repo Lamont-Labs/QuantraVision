@@ -2,14 +2,15 @@
 
 ## Project Status
 
-**Current State:** Development paused (November 2025)
+**Current State:** Active Development - Apex Engine Mobile Implementation (November 2025)
 
 **Build Status:**
 - ✅ 100+ successful builds on Samsung S23 FE
-- ⚠️ Core features partially functional
+- ✅ Batch 3 Complete: All T01-T20 Tier Protocols implemented with true determinism
+- ✅ Apex Engine Mobile core (ApexEngineMobile, QuantraScoreMobile, ProofHasher) operational
 - 🔄 Template matching detection implemented but needs optimization
 - 📊 OCR indicator extraction requires refinement
-- 🎯 Apex-inspired intelligence system documented but not yet implemented
+- 🚀 Apex Intelligence System implementation in progress (Batches 0-3 complete)
 
 ## Overview
 
@@ -26,6 +27,41 @@ Always Follow These Steps:
 2. Verify ALL related files - don't assume only one file needs changes
 3. Check git log before assuming changes aren't committed (Replit auto-commits)
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
+
+## Recent Changes
+
+**November 24, 2025 - Batch 3 Complete: Tier Protocols T01-T20**
+- Implemented all 20 Tier Protocols (T01-T20) with true determinism
+- Created TierProtocolsMobile/ façade pattern with exact numeric file naming
+- Fixed critical determinism violations (hash-based pseudo-random, locale-dependent formatting)
+- Added empty candle guards to all protocols for fail-closed safety
+- Updated ProtocolRegistryMobile.kt with explicit imports for strict execution order
+- Added unit tests for T01, T05, T10, T20 with deterministic fixtures
+- All protocols use ONLY actual ChartPrimitives fields (candles, detectedLines, ocrText)
+- kotlinx-coroutines-test dependency added for test infrastructure
+
+## Protocol Organization
+
+**Tier Protocol Façade Pattern (T01-T80):**
+QuantraVision uses a hybrid façade pattern for protocol organization that provides exact numeric file naming while preserving descriptive class names for readability.
+
+**Structure:**
+- **Implementation Files:** `app/src/main/java/com/lamontlabs/quantravision/apex/protocols/tier/`
+  - Files: `T01InputSanitization.kt`, `T02ChartGeometryValidation.kt`, etc.
+  - Classes: Descriptive names like `T01InputSanitization`
+  - Contains full protocol implementation logic
+
+- **Façade Files:** `app/src/main/java/com/lamontlabs/quantravision/apex/protocols/tier/mobile/`
+  - Files: `T01.kt`, `T02.kt`, ..., `T20.kt` (exact numeric naming)
+  - Content: Typealias re-exports from parent tier package
+  - Example: `typealias T01InputSanitization = com.lamontlabs.quantravision.apex.protocols.tier.T01InputSanitization`
+
+**Benefits:**
+- Exact numeric file naming for deterministic mobile file selection
+- Descriptive class names for IDE navigation and code readability
+- Minimal maintenance overhead (2-line façade files)
+- Explicit imports in ProtocolRegistryMobile enforce strict execution order
+- Scalable pattern for T21-T80 (future batches)
 
 ## System Architecture
 
