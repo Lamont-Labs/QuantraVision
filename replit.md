@@ -51,6 +51,31 @@ Android application built with Jetpack Compose, Material 3 Design System, dark t
 
 ## Recent Changes
 
+**November 24, 2025 - Critical Backward Compatibility Fix: APEX_ULTRA Tier Migration**
+
+**Problem:** Legacy tier values (STARTER/STANDARD/APEX_ULTRA) from pre-migration persistence could cause paying subscribers to downgrade to FREE tier limits.
+
+**Root Cause:** Missing backward compatibility mappings in tiers/Tier.fromString() - the critical QuotaGate quota resolution path.
+
+**Complete Solution (6 persistence points):**
+1. **tiers/Tier.kt** - Added STARTER→BASIC, STANDARD→PRO, APEX_ULTRA/ULTRA→APEX mappings to fromString()
+2. **EntitlementManager.kt** - SubscriptionTier.fromString maps legacy SKU strings
+3. **PatternUsageLimiter.kt** - currentTier() maps legacy SharedPreferences values
+4. **LLMContractValidator.kt** - checkTokenLimit() maps legacy tier strings for token limits
+5. **CloudReasoner.kt** - getMaxTokensForTier()/getModelForTier() map legacy values
+
+**User Impact:**
+- ✅ Users with persisted "apex_ultra" maintain APEX tier (60 AI explanations/day)
+- ✅ Users with persisted "starter" maintain BASIC tier (5 AI explanations/day)
+- ✅ Users with persisted "standard" maintain PRO tier (20 AI explanations/day)
+- ✅ Zero downgrade risk, all entitlements preserved
+
+**Architect Approval:** ✅ PASS - All persistence paths verified, no regressions detected
+
+**Next Steps:** Monitor production telemetry for unexpected FREE-tier fallbacks post-release
+
+---
+
 **November 24, 2025 - GitHub Actions Build Fix: KSP Plugin Resolution (Final)**
 
 **Problem:** GitHub Actions builds failed with `Plugin [id: 'com.google.devtools.ksp'] was not found` despite correct version in build.gradle.kts
