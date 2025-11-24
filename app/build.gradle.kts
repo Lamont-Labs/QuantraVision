@@ -167,6 +167,8 @@ configurations.all {
         force("androidx.activity:activity:1.9.3")
         force("androidx.activity:activity-ktx:1.9.3")
         force("androidx.activity:activity-compose:1.9.3")
+        // Force OpenCV to use Maven Central version (available since 4.9.0)
+        force("org.opencv:opencv:4.12.0")
     }
 }
 
@@ -236,8 +238,8 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.5.0")
     implementation("androidx.camera:camera-view:1.5.0")
     
-    // OpenCV - Latest official Maven Central release
-    implementation("org.opencv:opencv:4.10.0")
+    // OpenCV - Latest official Maven Central release (available since 4.9.0)
+    implementation("org.opencv:opencv:4.12.0")
     
     // ML Kit Text Recognition - Latest stable
     implementation("com.google.mlkit:text-recognition:16.0.1")
