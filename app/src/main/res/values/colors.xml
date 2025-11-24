@@ -8,6 +8,7 @@
     <color name="core_blue">#0B1E33</color>
     <color name="deep_graphite_black">#020508</color>
     <color name="neutral_steel">#A7B4C3</color>
+    <color name="qv_bg">@color/deep_graphite_black</color>
 
     <!-- Theme Colors -->
     <color name="primary">@color/teal</color>
