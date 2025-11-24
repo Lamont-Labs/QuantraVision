@@ -470,22 +470,46 @@ QuantraScore (0-100) + pattern metadata
 Result displayed to user + audit trail logged
 ```
 
-### Quota Management System (QuotaGate)
+### Subscription Tiers & Quota Enforcement
 
-**Purpose**: Fail-closed cloud API rate limiting
+QuantraVision uses a monthly subscription model with four tiers:
 
-**Tier Limits**:
-- FREE: 0 cloud narrations/day (100% offline)
-- STARTER/PRO: 10 cloud narrations/day
-- STANDARD/ULTRA: 25 cloud narrations/day
+**FREE Tier** ($0/mo)
+- 3 scans per day
+- 1 AI explanation per day
+- 0 saved summaries
+- 10 pattern protocols
+- Local template-based narration only
 
-**Safety Features**:
-- Fail-closed logic: Deny if quota check fails
-- Min 8 seconds between API calls
-- Max 3 calls per 60 seconds rolling window
-- Persistent quota storage with daily reset
+**BASIC Tier** ($4.99/mo)
+- 25 scans per day
+- 5 AI explanations per day
+- 5 saved summaries
+- 25 pattern protocols
+- Cloud narration via OpenAI API
 
-**Implementation**: `QuotaGate.kt`
+**PRO Tier** ($14.99/mo)
+- 75 scans per day
+- 20 AI explanations per day
+- 20 saved summaries
+- 50 pattern protocols
+- Cloud narration + batch mode enabled
+
+**APEX Tier** ($29.99/mo)
+- 200 scans per day
+- 60 AI explanations per day
+- 100 saved summaries
+- 109 pattern protocols (full suite)
+- Cloud narration + batch mode + advanced logic
+
+**Quota System:**
+- **TierRegistry:** Single source of truth for all tier limits (tiers/TierRegistry.kt)
+- **QuotaGate:** AI explanation quota enforcement (quota/QuotaGate.kt)
+- **ScanQuota:** Scan quota enforcement (quota/ScanQuota.kt)
+- **SummaryQuota:** Saved summary limits (quota/SummaryQuota.kt)
+- **Daily Reset:** All quotas reset at exactly 00:00 UTC using LocalDate.now(ZoneOffset.UTC)
+- **Fail-Closed:** Hard-capped limits with immediate enforcement
+- **Tier Persistence:** User tier persisted before limit checks for immediate upgrade effect
 
 ### Cloud Narration Pipeline
 

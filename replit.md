@@ -21,10 +21,14 @@ Android application built with Jetpack Compose, Material 3 Design System, dark t
 **Key Systems:**
 - **Apex Intelligence Engine:** Geometric pattern detection with 109 validation protocols (Omega Safety + Tier Rules + Learning), trait/microtrait analysis, entropy detection, suppression memory
 - **QuantraScore Pipeline:** 0-100 composite scoring combining pattern confidence, indicator confluence, adaptive learning adjustments
-- **Cloud Narration:** OpenAI API integration for paid tiers (PRO/ULTRA) with quota enforcement, LLM contract validation, local template-based fallback
+- **Cloud Narration:** OpenAI API integration for paid tiers (BASIC/PRO/APEX) with quota enforcement, LLM contract validation, local template-based fallback
 - **Multi-Signal Analysis:** OCR-extracted indicators (RSI, MACD, volume) via Google ML Kit, context analysis for signal confluence
 - **Real-Time Overlay:** MediaProjection API with 2-4 FPS throttling, tap-to-scan functionality
-- **Data & Auth:** Room database (encrypted local storage), four-tier lifetime access via Google Play Billing/Integrity API
+- **Data & Auth:** Room database (encrypted local storage), **four-tier monthly subscription model** via Google Play Billing/Integrity API:
+  - FREE: 3 scans/day, 1 AI explanation/day, 0 saves
+  - BASIC ($4.99/mo): 25 scans/day, 5 AI explanations/day, 5 saves
+  - PRO ($14.99/mo): 75 scans/day, 20 AI explanations/day, 20 saves, batch mode
+  - APEX ($29.99/mo): 200 scans/day, 60 AI explanations/day, 100 saves, batch + advanced
 
 ## External Dependencies
 
@@ -46,6 +50,50 @@ Android application built with Jetpack Compose, Material 3 Design System, dark t
 -   **Excluded:** AGPL models (YOLOv5/v8, FastSAM) due to copyleft restrictions incompatible with commercial distribution
 
 ## Recent Changes
+
+**November 24, 2025 - Batch B v1.0 Complete: Comprehensive Tier & Quota Refactoring**
+
+**Business Model Change: One-Time → Monthly Subscriptions**
+- Migrated from 4-tier one-time purchase (FREE/STARTER/STANDARD/PRO) to 4-tier monthly subscriptions (FREE/BASIC/PRO/APEX)
+- New pricing: Basic $4.99/mo, Pro $14.99/mo, Apex $29.99/mo
+- BillingManager converted from INAPP to SUBS product type
+
+**TierRegistry: Single Source of Truth (NEW)**
+Created centralized tier management system:
+- FREE: 3 scans/day, 1 AI explanation/day, 0 saved summaries
+- BASIC: 25 scans/day, 5 AI explanations/day, 5 saved summaries
+- PRO: 75 scans/day, 20 AI explanations/day, 20 saved summaries, batch mode
+- APEX: 200 scans/day, 60 AI explanations/day, 100 saved summaries, batch mode + advanced logic
+
+**Quota Enforcement Fixes (3 Critical Bugs Resolved)**
+1. **UTC Reset Bug:** All quota systems (QuotaGate, ScanQuota, HighlightQuota) now reset at exactly 00:00 UTC using LocalDate.now(ZoneOffset.UTC)
+2. **Tier Persistence Bug:** QuotaGate now persists tier in QuotaState and uses it for limit enforcement
+3. **Upgrade While Throttled Bug:** Tier persisted BEFORE limit check, so upgrades take effect immediately
+
+**Infrastructure Created:**
+- `tiers/TierRegistry.kt` - Centralized quota limits
+- `quota/ScanQuota.kt` - Scan quota enforcement
+- `quota/SummaryQuota.kt` - Saved summary limits
+- `licensing/BasicFeatureGate.kt`, `licensing/ApexFeatureGate.kt` - New feature gates
+
+**Billing & UI Updates:**
+- Updated SKUs: qv_basic_monthly, qv_pro_monthly, qv_apex_monthly
+- Updated PaywallViewModel, PaywallScreen, UpgradeScreen with monthly pricing
+- Updated PatternLibraryGate: FREE=10, BASIC=25, PRO=50, APEX=109 patterns
+
+**Test Coverage:**
+- TierRegistryTest.kt: 16 tests verifying exact quota values
+- QuotaGateTest.kt: 31 tests (6 new for tier upgrades, persistence, UTC reset)
+- ScanQuotaTest.kt: 18 tests for scan quota enforcement
+
+**Cleanup:**
+- Removed all legacy tier references (STARTER, STANDARD, ULTRA, APEX_ULTRA)
+- Deleted StandardFeatureGate.kt
+- Zero branding inconsistencies
+
+**Architect Approval:** ✅ PASS - All 3 critical bugs resolved, exact quotas verified
+
+---
 
 **November 24, 2025 - Repository Professionalism Update: Acquisition-Grade Quality**
 
