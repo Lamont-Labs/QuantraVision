@@ -56,55 +56,14 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Metallic Hero Badge with Logo
-            Box(
+            // QuantraVision Hero Logo (full branding with text)
+            Image(
+                painter = painterResource(id = R.drawable.quantravision_hero_logo),
+                contentDescription = "QuantraVision AI Trading Overlay",
                 modifier = Modifier
-                    .size(200.dp)
+                    .fillMaxWidth(0.85f)
                     .scale(logoScale)
                     .alpha(logoAlpha)
-            ) {
-                MetallicHeroBadge(
-                    pulseSync = startAnimation
-                ) {
-                    // Logo image (if exists, otherwise placeholder)
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_qv_logo),
-                        contentDescription = "QuantraVision Logo",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(32.dp)
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(40.dp))
-            
-            // App name with neon glow
-            NeonText(
-                text = "QUANTRAVISION",
-                modifier = Modifier.alpha(textAlpha),
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 4.sp
-                ),
-                glowColor = NeonCyan,
-                textColor = Color.White,
-                glowIntensity = 0.9f,
-                enablePulse = startAnimation
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Tagline
-            Text(
-                text = "AI TRADING OVERLAY",
-                modifier = Modifier.alpha(textAlpha),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
-                ),
-                color = NeonCyanBright.copy(alpha = 0.8f)
             )
             
             Spacer(modifier = Modifier.height(60.dp))

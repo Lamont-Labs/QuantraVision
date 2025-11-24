@@ -1,5 +1,6 @@
 package com.lamontlabs.quantravision.ui.screens.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.entitlements.Feature
 import com.lamontlabs.quantravision.ui.MetallicCard
@@ -137,7 +140,22 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(AppSpacing.md))
             
             MetallicCard(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(AppSpacing.md)) {
+                Column(
+                    modifier = Modifier.padding(AppSpacing.md),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Lamont Labs Branding
+                    Image(
+                        painter = painterResource(id = R.drawable.lamont_labs_logo_new),
+                        contentDescription = "Lamont Labs - Obsession turned into systems",
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .padding(vertical = AppSpacing.md)
+                    )
+                    
+                    Divider(color = Color.White.copy(alpha = 0.2f))
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    
                     InfoRow("Version", uiState.appVersion)
                     Divider(color = Color.White.copy(alpha = 0.2f))
                     InfoRow("Overlay Permission", if (uiState.hasOverlayPermission) "Granted" else "Not Granted")
