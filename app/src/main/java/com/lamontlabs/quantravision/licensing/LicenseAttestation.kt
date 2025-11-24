@@ -100,7 +100,7 @@ object LicenseAttestation {
             name = "OpenCV",
             groupId = "org.opencv",
             artifactId = "opencv",
-            version = "4.8.0",
+            version = "4.12.0",
             license = "Apache-2.0",
             url = "https://opencv.org",
             compatible = true

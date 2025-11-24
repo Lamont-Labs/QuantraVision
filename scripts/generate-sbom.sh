@@ -86,7 +86,7 @@ org.tensorflow:tensorflow-lite-support:0.4.4 - Apache 2.0
 org.tensorflow:tensorflow-lite-metadata:0.4.4 - Apache 2.0
 
 ### OpenCV (Apache 2.0)
-org.opencv:opencv:4.8.0 - Apache 2.0
+org.opencv:opencv:4.12.0 - Apache 2.0
 
 ### Google Play Billing (Apache 2.0)
 com.android.billingclient:billing-ktx:6.1.0 - Apache 2.0
@@ -189,7 +189,7 @@ generate_spdx_json() {
     {
       "SPDXID": "SPDXRef-Package-OpenCV",
       "name": "org.opencv:opencv",
-      "versionInfo": "4.8.0",
+      "versionInfo": "4.12.0",
       "supplier": "Organization: OpenCV Foundation",
       "downloadLocation": "https://opencv.org",
       "filesAnalyzed": false,

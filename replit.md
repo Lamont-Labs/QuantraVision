@@ -51,23 +51,27 @@ Android application built with Jetpack Compose, Material 3 Design System, dark t
 
 ## Recent Changes
 
-**November 24, 2025 - GitHub Actions Build Fix: OpenCV Dependency Resolution**
+**November 24, 2025 - GitHub Actions Build Fix: OpenCV Version Conflict Resolved**
 
-**Problem:** GitHub Actions builds failed with `Could not find org.opencv:opencv:4.8.0` despite build.gradle.kts specifying 4.12.0
+**Problem:** GitHub Actions builds failed twice with `Could not find org.opencv:opencv:4.8.0` despite build.gradle.kts specifying 4.12.0
 
-**Root Cause:** Gradle configuration cache created conflicts when resolving OpenCV dependency, attempting to resolve phantom 4.8.0 version
+**Root Cause:** Dual build files - project had BOTH `app/build.gradle` (old Groovy with OpenCV 4.8.0) AND `app/build.gradle.kts` (current Kotlin DSL with OpenCV 4.12.0). Gradle was reading both files, creating version conflicts amplified by configuration cache.
 
 **Solution Implemented:**
-1. Disabled Gradle configuration cache in `gradle.properties` (prevents OpenCV resolution errors on CI)
-2. Updated `android-complete.yml` workflow to explicitly disable config cache and clean metadata cache
-3. Added `GITHUB_BUILD_FIX.md` with complete troubleshooting guide
+1. **Deleted conflicting file:** Removed `app/build.gradle` (old Groovy build file with OpenCV 4.8.0)
+2. **Updated all version references:** Changed OpenCV version from 4.8.0 → 4.12.0 in:
+   - `app/src/main/java/com/lamontlabs/quantravision/licensing/LicenseAttestation.kt`
+   - `scripts/generate-sbom.sh` (2 locations)
+   - `app/libs/README.txt`
+3. **Disabled configuration cache:** Updated `gradle.properties` to disable config cache (prevents caching conflicts)
+4. **Enhanced workflow:** Updated `android-complete.yml` to clean Gradle cache and explicitly disable config cache
+5. **Added documentation:** Created `OPENCV_VERSION_FIX.md` with complete troubleshooting details
 
 **Workflow Cleanup:**
 - Consolidated to single workflow: `android-complete.yml` (comprehensive build + test + lint)
 - Legacy workflows (ci.yml, android-build.yml, android-ci.yml) should be deleted/disabled
-- Configuration cache can be re-enabled for local development if desired
 
-**Result:** ✅ Reliable GitHub Actions builds in ~12-15 minutes with debug APK artifacts
+**Result:** ✅ All conflicting version references eliminated - ready for reliable GitHub Actions builds in ~12-15 minutes with debug APK artifacts
 
 ---
 
