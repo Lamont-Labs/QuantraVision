@@ -1,10 +1,19 @@
-# QuantraVision release shrink rules - Optimized for maximum code shrinking
+# QuantraVision Apex™ ProGuard Rules
+# Optimized for maximum code shrinking while preserving Apex Engine integrity
+
 # Aggressive optimization passes
 -optimizationpasses 7
 -allowaccessmodification
 -mergeinterfacesaggressively
 -dontpreverify
 -dontskipnonpubliclibraryclassmembers
+
+# ============================================================
+# APEX ENGINE PROTECTION (Critical - Do Not Shrink)
+# ============================================================
+-keep class com.lamontlabs.quantravision.apex.** { *; }
+-keep class com.lamontlabs.quantravision.apex.protocols.** { *; }
+-keepclassmembers class com.lamontlabs.quantravision.apex.** { *; }
 
 # Keep TFLite & reflection (only what's needed)
 -keep class org.tensorflow.lite.** { *; }

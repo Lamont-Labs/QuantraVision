@@ -1,11 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- QuantraVision Brand Colors - Neon Cyan & Metallic Dark Theme -->
-    <color name="qv_accent">#00F0FF</color>
-    <color name="qv_bg">#000814</color>
-    <color name="q_background">#000814</color>
-    <color name="qv_fg">#FFFFFF</color>
-    <color name="qv_card">#0F1B2E</color>
-    <color name="qv_warn">#FFB347</color>
-    <color name="qv_ok">#00FF88</color>
-    <color name="qv_err">#FF1744</color>
+    <!-- Apex Color Palette (from master spec) -->
+    <color name="teal">#30D6F5</color>
+    <color name="amber">#FFB237</color>
+    <color name="violet">#9A76FF</color>
+    <color name="red">#E84545</color>
+    <color name="core_blue">#0B1E33</color>
+    <color name="deep_graphite_black">#020508</color>
+    <color name="neutral_steel">#A7B4C3</color>
+
+    <!-- Theme Colors -->
+    <color name="primary">@color/teal</color>
+    <color name="primary_variant">@color/core_blue</color>
+    <color name="secondary">@color/amber</color>
+    <color name="background">@color/deep_graphite_black</color>
+    <color name="surface">@color/core_blue</color>
+    <color name="error">@color/red</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_secondary">#000000</color>
+    <color name="on_background">@color/neutral_steel</color>
+    <color name="on_surface">#FFFFFF</color>
+    <color name="on_error">#FFFFFF</color>
+
+    <!-- Status Colors -->
+    <color name="status_pass">@color/teal</color>
+    <color name="status_wait">@color/amber</color>
+    <color name="status_fail">@color/red</color>
+    <color name="status_suppressed">@color/violet</color>
+
+    <!-- Transparency variants -->
+    <color name="teal_70">#B330D6F5</color>
+    <color name="amber_60">#99FFB237</color>
+    <color name="violet_55">#8C9A76FF</color>
 </resources>

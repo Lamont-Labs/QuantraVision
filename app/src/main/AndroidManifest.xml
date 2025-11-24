@@ -1,76 +1,73 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-  <uses-feature android:name="android.hardware.camera.any" android:required="false"/>
-  <uses-permission android:name="android.permission.CAMERA"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
-  <uses-permission android:name="com.android.vending.BILLING"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-  <application 
-      android:name=".App"
-      android:debuggable="false"
-      android:enableOnBackInvokedCallback="true"
-      android:networkSecurityConfig="@xml/network_security_config"
-      android:allowBackup="true"
-      android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:supportsRtl="true"
-      android:theme="@style/Theme.QuantraVision">
-    <activity
-        android:name=".MainActivity"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
+    <!-- Permissions - Apex Spec Compliant -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
-    <!-- Model Import Activity - stable lifecycle for file picker -->
-    <activity
-        android:name=".intelligence.llm.ImportActivity"
-        android:exported="false"
-        android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+    <application
+        android:name=".QuantraVisionApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.QuantraVision"
+        tools:targetApi="31">
 
-    <service
-        android:name=".overlay.OverlayService"
-        android:exported="false"
-        android:foregroundServiceType="mediaProjection|camera"/>
-    
-    <receiver
-        android:name=".widget.PatternWidgetProvider"
-        android:exported="true"
-        android:enabled="true">
-      <intent-filter>
-        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-      </intent-filter>
-      <meta-data
-          android:name="android.appwidget.provider"
-          android:resource="@xml/widget_info"/>
-    </receiver>
-    
-    <!-- AI Explanation Receiver -->
-    <receiver
-        android:name=".intelligence.llm.ExplanationReceiver"
-        android:exported="false"
-        android:enabled="true">
-      <intent-filter>
-        <action android:name="com.lamontlabs.quantravision.ACTION_EXPLAIN_PATTERN"/>
-      </intent-filter>
-    </receiver>
-    
-    <!-- FileProvider for DevBot diagnostics export -->
-    <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.fileprovider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-      <meta-data
-          android:name="android.support.FILE_PROVIDER_PATHS"
-          android:resource="@xml/filepaths"/>
-    </provider>
-  </application>
+        <!-- Main Activity (Onboarding/Settings) -->
+        <activity
+            android:name=".ui.OnboardingActivity"
+            android:exported="true"
+            android:theme="@style/Theme.QuantraVision.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Settings Activity -->
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false"
+            android:label="@string/settings_title"
+            android:theme="@style/Theme.QuantraVision" />
+
+        <!-- Subscription Activity -->
+        <activity
+            android:name=".ui.SubscriptionActivity"
+            android:exported="false"
+            android:label="@string/subscription_title"
+            android:theme="@style/Theme.QuantraVision" />
+
+        <!-- About Activity -->
+        <activity
+            android:name=".ui.AboutActivity"
+            android:exported="false"
+            android:label="@string/about_title"
+            android:theme="@style/Theme.QuantraVision" />
+
+        <!-- Screen Capture Service -->
+        <service
+            android:name=".services.ScreenCaptureService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <!-- Q Toggle Service -->
+        <service
+            android:name=".services.QToggleService"
+            android:enabled="true"
+            android:exported="false" />
+
+    </application>
+
 </manifest>

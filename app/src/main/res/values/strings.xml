@@ -1,49 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">QuantraVision Overlay</string>
-    <string name="qv_buy_once">Buy once. Own forever.</string>
-    <string name="qv_no_subs">No subscriptions. No renewals.</string>
-    <string name="qv_unlock_standard">Unlock Standard</string>
-    <string name="qv_unlock_pro">Unlock Pro</string>
-    <string name="qv_loading_prices">Loading prices…</string>
-    <string name="qv_restore_purchases">Restore Purchases</string>
+    <!-- App Identity -->
+    <string name="app_name">QuantraVision Apex</string>
+    <string name="app_brand">Lamont Labs • QuantraVision Apex™</string>
+
+    <!-- Tier Names & Pricing (from master spec) -->
+    <string name="tier_free_name">FREE</string>
+    <string name="tier_free_price">$0.00/month</string>
+    <string name="tier_free_desc">Unlimited local scan • Apex verdict • QuantraScore • Local summaries</string>
+
+    <string name="tier_pro_name">PRO</string>
+    <string name="tier_pro_price">$4.99/month</string>
+    <string name="tier_pro_desc">Cloud Apex narration (short) • 10 cloud calls/day • Auto-Explain optional</string>
+
+    <string name="tier_ultra_name">APEX ULTRA</string>
+    <string name="tier_ultra_price">$9.99/month</string>
+    <string name="tier_ultra_desc">Deep narration • Monster Runner • 25 cloud calls/day • PDF summaries</string>
+
+    <!-- Activities -->
+    <string name="settings_title">Settings</string>
+    <string name="subscription_title">Subscription</string>
+    <string name="about_title">About</string>
+
+    <!-- Legal Disclaimers (from master spec) -->
+    <string name="disclaimer_short">Not financial advice. Educational chart analysis only. Trading involves risk.</string>
     
-    <string name="button_back">Back</string>
-    <string name="close">Close</string>
-    <string name="confidence">Confidence</string>
-    <string name="confluence">Confluence</string>
-    <string name="how_to_steps">How to Use</string>
-    <string name="how_to_title">How to Use QuantraVision</string>
-    <string name="market_conditions">Market Conditions</string>
-    <string name="qv_brand">Lamont Labs • QuantraVision</string>
-    <string name="qv_disclaimer">⚠️ NOT FINANCIAL ADVICE - Educational visualization only. Trading is risky. You can lose money.</string>
-    <string name="qv_full_disclaimer">QuantraVision is an educational tool for technical analysis pattern recognition only. It is NOT financial advice. All trading decisions and their outcomes are your sole responsibility. AI pattern detection may produce false positives/negatives. Past performance does not predict future results. Consult a licensed financial advisor before investing. Lamont Labs is NOT liable for any trading losses or financial damages.</string>
-    <string name="qv_watermark">⚠ Illustrative Only — Not Financial Advice</string>
-    <string name="qv_risk_warning">⚠️ WARNING: Trading involves substantial risk of loss. Only invest capital you can afford to lose.</string>
-    <string name="tier_pro_desc">All 109 patterns • Voice alerts • Predictive detection • Backtesting • Advanced analytics • No watermarks</string>
-    <string name="tier_pro_name">Pro Edition</string>
-    <string name="tier_pro_price">$24.99</string>
-    <string name="tier_standard_desc">30 core patterns • Unlimited highlights • Remove watermarks • Export PDFs • 25 lessons</string>
-    <string name="tier_standard_name">Standard Edition</string>
-    <string name="tier_standard_price">$9.99</string>
-    <string name="tradeability_breakdown">Tradeability Breakdown</string>
-    <string name="upgrade_title">Upgrade QuantraVision</string>
-    <string name="widget_description">Quick stats for QuantraVision pattern detection</string>
-    
-    <string name="floating_logo_description">QuantraVision floating logo button</string>
-    <string name="floating_logo_menu_scan">Scan Now</string>
-    <string name="floating_logo_menu_scan_desc">Trigger immediate pattern scan</string>
-    <string name="floating_logo_menu_dashboard">Dashboard</string>
-    <string name="floating_logo_menu_dashboard_desc">Open full app dashboard</string>
-    <string name="floating_logo_menu_alerts">Alerts</string>
-    <string name="floating_logo_menu_learning">Learning Stats</string>
-    <string name="floating_logo_menu_learning_desc">View pattern learning progress</string>
-    <string name="floating_logo_menu_settings">Settings</string>
-    <string name="floating_logo_menu_settings_desc">Configure overlay preferences</string>
-    <string name="floating_logo_menu_stop">Stop Detection</string>
-    <string name="floating_logo_menu_stop_desc">Stop overlay and return to app</string>
-    <string name="floating_logo_size_small">Small (50dp)</string>
-    <string name="floating_logo_size_medium">Medium (60dp)</string>
-    <string name="floating_logo_size_large">Large (70dp)</string>
-    <string name="floating_logo_opacity_label">Logo Opacity</string>
-    <string name="floating_logo_badge_toggle">Show pattern count badge</string>
+    <string name="disclaimer_full">QuantraVision Apex™ and QuantraCore Apex™ are analytical and educational tools only. They do not provide financial, investment, trading, or securities advice. Outputs, overlays, scores, explanations, and Apex reasoning are algorithmic interpretations and must not be interpreted as recommendations to buy, sell, enter, exit, or take any position. All decisions are solely your responsibility. Past performance does not guarantee future results. Lamont Labs is not a registered investment advisor, broker-dealer, or CTA. Use is "as-is" without warranty. Lamont Labs is not liable for losses or damages arising from use.</string>
+
+    <string name="first_launch_disclaimer">QuantraVision Apex™ is not a trading system or financial advisor. Outputs are for educational purposes only and must not be interpreted as trade recommendations. By continuing, you accept full responsibility for decisions and agree Lamont Labs is not liable for financial outcomes.</string>
+
+    <string name="ai_explanation_warning">AI explanations narrate Apex Engine reasoning for educational use only. They are not trading instructions or advice. Never trade solely on AI explanations.</string>
+
+    <string name="quantrascore_disclosure">QuantraScore (0–100) is internal Apex confidence in detected structure, not a prediction.</string>
+
+    <!-- UI Elements -->
+    <string name="button_continue">Continue</string>
+    <string name="button_accept">Accept</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_upgrade">Upgrade</string>
+    <string name="button_subscribe">Subscribe</string>
+
+    <!-- Q Toggle -->
+    <string name="q_toggle_scan">Toggle Scanning</string>
+    <string name="q_toggle_drawer">AI Drawer</string>
+
+    <!-- Apex Status Labels -->
+    <string name="status_pass">PASS</string>
+    <string name="status_wait">WAIT</string>
+    <string name="status_fail">FAIL</string>
+    <string name="status_suppressed">SUPPRESSED</string>
+    <string name="status_omega">OMEGA</string>
+
+    <!-- Quota Messages -->
+    <string name="quota_exceeded">Daily cloud quota exceeded. Upgrade for more calls.</string>
+    <string name="quota_remaining">%1$d cloud calls remaining today</string>
 </resources>
