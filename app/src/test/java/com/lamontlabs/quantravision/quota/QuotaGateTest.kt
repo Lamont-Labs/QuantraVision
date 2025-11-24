@@ -20,10 +20,10 @@ import com.lamontlabs.quantravision.tiers.TierRegistry
  * Tests tier limits, rate limiting, daily reset, and state persistence.
  * 
  * Test Coverage:
- * 1. Tier Limits: FREE=0, PRO=10, ULTRA=25 calls/day
+ * 1. Tier Limits: FREE=1, BASIC=5, PRO=20, APEX=60 calls/day
  * 2. Rate Limiting: min 8s between calls, max 3 per 60s
- * 3. Daily Reset: midnight reset, timezone-aware, persists across restarts
- * 4. Quota Increment: atomic increment, remaining calls, timestamp tracking
+ * 3. Daily Reset: midnight reset at 00:00 UTC
+ * 4. Legacy tier mapping: STARTER→BASIC, STANDARD→PRO, APEX_ULTRA/ULTRA→APEX
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.TIRAMISU])
@@ -62,55 +62,46 @@ class QuotaGateTest {
     }
     
     @Test
-    fun `PRO tier allows exactly 10 calls per day`() {
-        repeat(10) { callNumber ->
+    fun `PRO tier allows exactly 20 calls per day`() {
+        repeat(20) { callNumber ->
             assertTrue(
-                "Call ${callNumber + 1} should be allowed (PRO limit is 10)",
+                "Call ${callNumber + 1} should be allowed (PRO limit is 20)",
                 QuotaGate.canMakeCloudCall(context, "PRO")
-            )
-            assertTrue(
-                "Should successfully increment call count",
-                QuotaGate.incrementCallCount(context)
             )
         }
         
         assertFalse(
-            "11th call should be blocked (PRO limit is 10)",
+            "21st call should be blocked (PRO limit is 20)",
             QuotaGate.canMakeCloudCall(context, "PRO")
         )
     }
     
     @Test
-    fun `ULTRA tier allows exactly 25 calls per day`() {
-        repeat(25) { callNumber ->
+    fun `APEX tier allows exactly 60 calls per day`() {
+        repeat(60) { callNumber ->
             assertTrue(
-                "Call ${callNumber + 1} should be allowed (ULTRA limit is 25)",
-                QuotaGate.canMakeCloudCall(context, "ULTRA")
-            )
-            assertTrue(
-                "Should successfully increment call count",
-                QuotaGate.incrementCallCount(context)
+                "Call ${callNumber + 1} should be allowed (APEX limit is 60)",
+                QuotaGate.canMakeCloudCall(context, "APEX")
             )
         }
         
         assertFalse(
-            "26th call should be blocked (ULTRA limit is 25)",
-            QuotaGate.canMakeCloudCall(context, "ULTRA")
+            "61st call should be blocked (APEX limit is 60)",
+            QuotaGate.canMakeCloudCall(context, "APEX")
         )
     }
     
     @Test
-    fun `APEX_ULTRA tier maps to ULTRA limit of 25`() {
-        repeat(25) { callNumber ->
+    fun `APEX_ULTRA legacy tier maps to APEX limit of 60`() {
+        repeat(60) { callNumber ->
             assertTrue(
-                "Call ${callNumber + 1} should be allowed (APEX_ULTRA maps to 25)",
+                "Call ${callNumber + 1} should be allowed (APEX_ULTRA maps to APEX=60)",
                 QuotaGate.canMakeCloudCall(context, "APEX_ULTRA")
             )
-            assertTrue(QuotaGate.incrementCallCount(context))
         }
         
         assertFalse(
-            "26th call should be blocked (APEX_ULTRA limit is 25)",
+            "61st call should be blocked (APEX_ULTRA maps to APEX limit of 60)",
             QuotaGate.canMakeCloudCall(context, "APEX_ULTRA")
         )
     }
@@ -125,30 +116,30 @@ class QuotaGateTest {
     
     @Test
     fun `getRemainingCalls returns correct count for PRO tier`() {
-        assertEquals(10, QuotaGate.getRemainingCalls(context, "PRO"))
+        assertEquals(20, QuotaGate.getRemainingCalls(context, "PRO"))
         
-        QuotaGate.incrementCallCount(context)
-        QuotaGate.incrementCallCount(context)
-        QuotaGate.incrementCallCount(context)
+        QuotaGate.canMakeCloudCall(context, "PRO")
+        QuotaGate.canMakeCloudCall(context, "PRO")
+        QuotaGate.canMakeCloudCall(context, "PRO")
         
-        assertEquals(7, QuotaGate.getRemainingCalls(context, "PRO"))
+        assertEquals(17, QuotaGate.getRemainingCalls(context, "PRO"))
     }
     
     @Test
-    fun `getRemainingCalls returns correct count for ULTRA tier`() {
-        assertEquals(25, QuotaGate.getRemainingCalls(context, "ULTRA"))
+    fun `getRemainingCalls returns correct count for APEX tier`() {
+        assertEquals(60, QuotaGate.getRemainingCalls(context, "APEX"))
         
         repeat(10) {
-            QuotaGate.incrementCallCount(context)
+            QuotaGate.canMakeCloudCall(context, "APEX")
         }
         
-        assertEquals(15, QuotaGate.getRemainingCalls(context, "ULTRA"))
+        assertEquals(50, QuotaGate.getRemainingCalls(context, "APEX"))
     }
     
     @Test
     fun `getRemainingCalls never goes negative`() {
-        repeat(30) {
-            QuotaGate.incrementCallCount(context)
+        repeat(25) {
+            QuotaGate.canMakeCloudCall(context, "PRO")
         }
         
         val remaining = QuotaGate.getRemainingCalls(context, "PRO")
@@ -163,7 +154,6 @@ class QuotaGateTest {
     @Test
     fun `rate limiting enforces 8 second minimum between calls`() {
         assertTrue("First call should succeed", QuotaGate.canMakeCloudCall(context, "PRO"))
-        assertTrue(QuotaGate.incrementCallCount(context))
         
         assertFalse(
             "Immediate second call should fail (< 8 seconds)",
@@ -232,7 +222,7 @@ class QuotaGateTest {
         quotaFile.writeText(json)
         
         val remaining = QuotaGate.getRemainingCalls(context, "PRO")
-        assertEquals("Counter should reset to full quota after 24+ hours", 10, remaining)
+        assertEquals("Counter should reset to full quota after 24+ hours", 20, remaining)
     }
     
     @Test
@@ -256,7 +246,7 @@ class QuotaGateTest {
         QuotaGate.resetIfNeeded(context)
         
         val remaining = QuotaGate.getRemainingCalls(context, "PRO")
-        assertEquals(10, remaining)
+        assertEquals(20, remaining)
     }
     
     // ============================================================
@@ -265,16 +255,16 @@ class QuotaGateTest {
     
     @Test
     fun `quota state persists across app restarts`() {
-        assertTrue(QuotaGate.canMakeCloudCall(context, "PRO"))
-        QuotaGate.incrementCallCount(context)
-        QuotaGate.incrementCallCount(context)
-        QuotaGate.incrementCallCount(context)
+        QuotaGate.canMakeCloudCall(context, "PRO")
+        QuotaGate.canMakeCloudCall(context, "PRO")
+        QuotaGate.canMakeCloudCall(context, "PRO")
+        QuotaGate.canMakeCloudCall(context, "PRO")
         
         val remaining1 = QuotaGate.getRemainingCalls(context, "PRO")
-        assertEquals(7, remaining1)
+        assertEquals(16, remaining1)
         
         val remaining2 = QuotaGate.getRemainingCalls(context, "PRO")
-        assertEquals("State should persist", 7, remaining2)
+        assertEquals("State should persist", 16, remaining2)
     }
     
     @Test
@@ -286,7 +276,7 @@ class QuotaGateTest {
         
         assertEquals(
             "Corrupted file should be reset to default state",
-            10,
+            20,
             remaining
         )
     }
@@ -297,41 +287,41 @@ class QuotaGateTest {
         
         val remaining = QuotaGate.getRemainingCalls(context, "PRO")
         
-        assertEquals("Missing file should create default state", 10, remaining)
+        assertEquals("Missing file should create default state", 20, remaining)
     }
     
     // ============================================================
-    // INCREMENT TESTS
+    // INCREMENT TESTS (via canMakeCloudCall which increments internally)
     // ============================================================
     
     @Test
-    fun `incrementCallCount atomically increments counter`() {
-        assertEquals(10, QuotaGate.getRemainingCalls(context, "PRO"))
+    fun `canMakeCloudCall atomically increments counter`() {
+        assertEquals(20, QuotaGate.getRemainingCalls(context, "PRO"))
         
-        assertTrue(QuotaGate.incrementCallCount(context))
-        assertEquals(9, QuotaGate.getRemainingCalls(context, "PRO"))
+        assertTrue(QuotaGate.canMakeCloudCall(context, "PRO"))
+        assertEquals(19, QuotaGate.getRemainingCalls(context, "PRO"))
         
-        assertTrue(QuotaGate.incrementCallCount(context))
-        assertEquals(8, QuotaGate.getRemainingCalls(context, "PRO"))
+        assertTrue(QuotaGate.canMakeCloudCall(context, "PRO"))
+        assertEquals(18, QuotaGate.getRemainingCalls(context, "PRO"))
     }
     
     @Test
-    fun `incrementCallCount fails when limit reached`() {
-        repeat(10) {
-            QuotaGate.incrementCallCount(context)
+    fun `canMakeCloudCall fails when limit reached`() {
+        repeat(20) {
+            QuotaGate.canMakeCloudCall(context, "PRO")
         }
         
         assertFalse(
-            "Increment should fail when limit reached",
-            QuotaGate.incrementCallCount(context)
+            "Call should fail when limit reached",
+            QuotaGate.canMakeCloudCall(context, "PRO")
         )
     }
     
     @Test
-    fun `incrementCallCount updates timestamp`() {
+    fun `canMakeCloudCall updates timestamp`() {
         val before = System.currentTimeMillis()
         
-        QuotaGate.incrementCallCount(context)
+        QuotaGate.canMakeCloudCall(context, "PRO")
         
         val timeSinceLast = QuotaGate.getTimeSinceLastCall()
         val after = System.currentTimeMillis()
@@ -377,37 +367,35 @@ class QuotaGateTest {
     
     @Test
     fun `PRO tier boundary test - exactly at limit`() {
-        repeat(9) {
-            QuotaGate.incrementCallCount(context)
+        repeat(19) {
+            QuotaGate.canMakeCloudCall(context, "PRO")
         }
         
         assertTrue(
-            "10th call should be allowed (exactly at limit)",
+            "20th call should be allowed (exactly at limit)",
             QuotaGate.canMakeCloudCall(context, "PRO")
         )
-        QuotaGate.incrementCallCount(context)
         
         assertFalse(
-            "11th call should be blocked (over limit)",
+            "21st call should be blocked (over limit)",
             QuotaGate.canMakeCloudCall(context, "PRO")
         )
     }
     
     @Test
-    fun `ULTRA tier boundary test - exactly at limit`() {
-        repeat(24) {
-            QuotaGate.incrementCallCount(context)
+    fun `APEX tier boundary test - exactly at limit`() {
+        repeat(59) {
+            QuotaGate.canMakeCloudCall(context, "APEX")
         }
         
         assertTrue(
-            "25th call should be allowed (exactly at limit)",
-            QuotaGate.canMakeCloudCall(context, "ULTRA")
+            "60th call should be allowed (exactly at limit)",
+            QuotaGate.canMakeCloudCall(context, "APEX")
         )
-        QuotaGate.incrementCallCount(context)
         
         assertFalse(
-            "26th call should be blocked (over limit)",
-            QuotaGate.canMakeCloudCall(context, "ULTRA")
+            "61st call should be blocked (over limit)",
+            QuotaGate.canMakeCloudCall(context, "APEX")
         )
     }
     
