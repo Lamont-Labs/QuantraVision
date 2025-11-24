@@ -3,9 +3,10 @@ package com.lamontlabs.quantravision.apex
 import com.lamontlabs.quantravision.apex.models.ApexScanContext
 import com.lamontlabs.quantravision.apex.models.ChartPrimitives
 import com.lamontlabs.quantravision.apex.models.ProtocolVerdict
+import com.lamontlabs.quantravision.apex.protocols.tier.*
 
 /**
- * BATCH 2: Protocol Registry Mobile
+ * BATCH 2-3: Protocol Registry Mobile
  * 
  * Central registry for Apex Engine protocols.
  * Protocols are organized into three categories:
@@ -17,7 +18,7 @@ import com.lamontlabs.quantravision.apex.models.ProtocolVerdict
  * - Sealed interface ensures type safety
  * - Deterministic iteration order (LinkedHashMap)
  * - Side-effect free evaluation
- * - TODO markers for future batch implementation
+ * - State sharing via MutableMap parameter
  * 
  * Execution order (from master spec):
  * 1. Omega protocols (safety checks)
@@ -55,11 +56,13 @@ sealed interface ApexProtocol {
      * 
      * @param context Scan context (ticker, timeframe, tier, etc.)
      * @param primitives Vision model outputs
+     * @param state Mutable state map for protocol coordination and data sharing
      * @return Protocol verdict with pass/fail, confidence, and reason
      */
     suspend fun evaluate(
         context: ApexScanContext,
-        primitives: ChartPrimitives
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
     ): ProtocolVerdict
 }
 
@@ -67,7 +70,10 @@ sealed interface ApexProtocol {
  * Protocol Registry singleton.
  * Manages registration and retrieval of all Apex protocols.
  * 
- * TODO BATCH 3-8: Implement actual protocol classes and register them here.
+ * BATCH 3: T01-T20 implemented and registered.
+ * BATCH 4-6: T21-T80 to be implemented.
+ * BATCH 7: LP01-LP25 to be implemented.
+ * BATCH 8: Omega01-04 to be implemented.
  */
 object ProtocolRegistryMobile {
     
@@ -75,15 +81,39 @@ object ProtocolRegistryMobile {
      * Tier protocols registry (T01-T80).
      * Deterministic iteration order via LinkedHashMap.
      * 
-     * TODO BATCH 3-6: Implement T01-T80 and register here.
-     * Expected protocols include:
-     * - T01: Trend alignment
-     * - T02: Volume confirmation
-     * - T03: Volatility gate
-     * - T04: Support/resistance validation
-     * - T05-T80: Additional pattern-specific gates
+     * BATCH 3: T01-T20 implemented
+     * - T01-T05: Input Validation & Sanitization
+     * - T06-T10: Structural Quality
+     * - T11-T15: Momentum & Alignment
+     * - T16-T20: Entropy & Conflict Detection
      */
     private val tierProtocols = linkedMapOf<String, ApexProtocol>()
+    
+    init {
+        // BATCH 3: Register T01-T20 protocols in strict order
+        registerTierProtocol(T01InputSanitization())
+        registerTierProtocol(T02ChartGeometryValidation())
+        registerTierProtocol(T03CandleDataQuality())
+        registerTierProtocol(T04TimeframeConsistency())
+        registerTierProtocol(T05PriceRangeNormalization())
+        registerTierProtocol(T06VolatilityAssessment())
+        registerTierProtocol(T07TrendStrengthGate())
+        registerTierProtocol(T08VolumeProfileCheck())
+        registerTierProtocol(T09SupportResistanceDetection())
+        registerTierProtocol(T10StructureCompleteness())
+        registerTierProtocol(T11MomentumAlignment())
+        registerTierProtocol(T12VolumeConfirmation())
+        registerTierProtocol(T13VolatilityAlignment())
+        registerTierProtocol(T14PriceActionQuality())
+        registerTierProtocol(T15MultiTimeframeCoherence())
+        registerTierProtocol(T16EntropyGateEarly())
+        registerTierProtocol(T17ConflictDetection())
+        registerTierProtocol(T18RegimeValidation())
+        registerTierProtocol(T19NoiseCancellation())
+        registerTierProtocol(T20FinalEntropyCheck())
+        
+        // TODO BATCH 4-6: Register T21-T80 protocols here
+    }
     
     /**
      * Learning protocols registry (LP01-LP25).
@@ -235,7 +265,8 @@ class StubProtocol(
     
     override suspend fun evaluate(
         context: ApexScanContext,
-        primitives: ChartPrimitives
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
     ): ProtocolVerdict {
         return ProtocolVerdict(
             protocolId = protocolId,

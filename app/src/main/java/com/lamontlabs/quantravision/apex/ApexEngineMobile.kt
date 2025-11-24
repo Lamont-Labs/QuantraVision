@@ -165,16 +165,18 @@ object ApexEngineMobile {
     /**
      * Execute deterministic protocol pipeline in strict order.
      * 
-     * TODO BATCH 3-8: Implement actual protocol execution.
-     * For now, returns stub results.
+     * BATCH 3: T01-T20 protocol execution implemented.
      */
     private suspend fun executePipeline(
         context: ApexScanContext,
         primitives: ChartPrimitives
     ): PipelineResult {
         
+        // Create shared state map for protocol coordination
+        val state = mutableMapOf<String, Any>()
+        
         // TODO BATCH 8: Execute Omega protocols first (safety checks)
-        val omegaVerdicts = executeOmegaProtocols(context, primitives)
+        val omegaVerdicts = executeOmegaProtocols(context, primitives, state)
         val omegaLock = checkOmegaLock(omegaVerdicts)
         
         if (omegaLock) {
@@ -190,23 +192,25 @@ object ApexEngineMobile {
             )
         }
         
-        // TODO BATCH 3-6: Execute Tier protocols (pattern validation)
-        val tierVerdicts = executeTierProtocols(context, primitives)
+        // BATCH 3: Execute Tier protocols (pattern validation)
+        val tierVerdicts = executeTierProtocols(context, primitives, state)
         
         // TODO BATCH 7: Execute Learning protocols (adaptive refinement)
-        val learningVerdicts = executeLearningProtocols(context, primitives)
+        val learningVerdicts = executeLearningProtocols(context, primitives, state)
         
         // Combine all verdicts in execution order
         val allVerdicts = omegaVerdicts + tierVerdicts + learningVerdicts
         
-        // TODO BATCH 9: Implement actual entropy calculation
-        val entropyScore = calculateEntropy(allVerdicts)
+        // Extract entropy from state (set by T16 and T20)
+        val entropyScore = state["finalEntropy"] as? Double 
+            ?: state["entropyScore"] as? Double 
+            ?: calculateEntropy(allVerdicts)
         
         // TODO BATCH 9: Implement actual suppression check
         val suppressionActive = checkSuppression(context, primitives)
         
-        // TODO BATCH 9: Implement actual regime check
-        val regimeOk = checkRegime(context, primitives)
+        // Extract regime validation from state (set by T18)
+        val regimeOk = state["regimeMatch"] as? Boolean ?: checkRegime(context, primitives)
         
         // TODO BATCH 9: Extract invalidation points from protocols
         val invalidationPoints = extractInvalidationPoints(allVerdicts)
@@ -241,22 +245,29 @@ object ApexEngineMobile {
      */
     private suspend fun executeOmegaProtocols(
         context: ApexScanContext,
-        primitives: ChartPrimitives
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
     ): List<ProtocolVerdict> {
         // TODO BATCH 8: Execute registered Omega protocols
-        return emptyList()
+        val protocols = ProtocolRegistryMobile.getOmegaProtocols()
+        return protocols.map { protocol ->
+            protocol.evaluate(context, primitives, state)
+        }
     }
     
     /**
      * Execute Tier protocols (pattern validation).
-     * TODO BATCH 3-6: Implement T01-T80.
+     * BATCH 3: T01-T20 implemented.
      */
     private suspend fun executeTierProtocols(
         context: ApexScanContext,
-        primitives: ChartPrimitives
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
     ): List<ProtocolVerdict> {
-        // TODO BATCH 3-6: Execute registered Tier protocols
-        return emptyList()
+        val protocols = ProtocolRegistryMobile.getTierProtocols()
+        return protocols.map { protocol ->
+            protocol.evaluate(context, primitives, state)
+        }
     }
     
     /**
@@ -265,10 +276,14 @@ object ApexEngineMobile {
      */
     private suspend fun executeLearningProtocols(
         context: ApexScanContext,
-        primitives: ChartPrimitives
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
     ): List<ProtocolVerdict> {
         // TODO BATCH 7: Execute registered Learning protocols
-        return emptyList()
+        val protocols = ProtocolRegistryMobile.getLearningProtocols()
+        return protocols.map { protocol ->
+            protocol.evaluate(context, primitives, state)
+        }
     }
     
     /**

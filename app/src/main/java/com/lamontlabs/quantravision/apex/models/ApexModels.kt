@@ -40,34 +40,71 @@ enum class SubscriptionTier {
 /**
  * Vision model outputs - primitive chart elements extracted locally.
  * 
- * TODO BATCH 3+: Add fields for:
- * - Detected candlesticks/bars/lines
- * - Trendlines and channels
- * - Support/resistance levels
- * - Volume profile
- * - Indicator readings
- * - Price action geometry
+ * BATCH 8: Updated to use actual vision data structures.
+ * Since real vision models aren't implemented yet (Batch 9), protocols should:
+ * - Use ONLY fields that actually exist
+ * - Perform minimal validation based on actual data
+ * - Return conservative scores until real vision data is available
  * 
  * @property rawImageHash Perceptual hash of input image for deduplication
- * @property detectedObjects Placeholder for YOLO detection results
- * @property extractedLines Placeholder for Canny/Hough line results
- * @property ocrResults Placeholder for ticker/timeframe OCR results
+ * @property candles Detected/parsed OHLCV candles from chart
+ * @property detectedLines Detected trendlines and channels
+ * @property ocrText Extracted text from chart (ticker, prices, etc.)
+ * @property chartType Type of chart detected (candlestick, line, bar, etc.)
  */
 data class ChartPrimitives(
     val rawImageHash: String,
-    val detectedObjects: List<String> = emptyList(),
-    val extractedLines: List<String> = emptyList(),
-    val ocrResults: Map<String, String> = emptyMap()
+    val candles: List<Candle> = emptyList(),
+    val detectedLines: List<TrendLine> = emptyList(),
+    val ocrText: String = "",
+    val chartType: String = "Unknown"
 ) {
     companion object {
         fun stub(): ChartPrimitives = ChartPrimitives(
             rawImageHash = "STUB_HASH_BATCH2",
-            detectedObjects = emptyList(),
-            extractedLines = emptyList(),
-            ocrResults = emptyMap()
+            candles = emptyList(),
+            detectedLines = emptyList(),
+            ocrText = "",
+            chartType = "Unknown"
         )
     }
 }
+
+/**
+ * Candle data structure for OHLCV price bars.
+ * 
+ * @property timestamp Unix timestamp in milliseconds
+ * @property open Opening price
+ * @property high Highest price in period
+ * @property low Lowest price in period
+ * @property close Closing price
+ * @property volume Trading volume (default 0.0 if not available)
+ */
+data class Candle(
+    val timestamp: Long,
+    val open: Double,
+    val high: Double,
+    val low: Double,
+    val close: Double,
+    val volume: Double = 0.0
+)
+
+/**
+ * Detected trendline structure.
+ * 
+ * @property x1 X coordinate of start point (timestamp or candle index)
+ * @property y1 Y coordinate of start point (price level)
+ * @property x2 X coordinate of end point
+ * @property y2 Y coordinate of end point
+ * @property confidence Detection confidence (0.0-1.0)
+ */
+data class TrendLine(
+    val x1: Double,
+    val y1: Double,
+    val x2: Double,
+    val y2: Double,
+    val confidence: Double = 1.0
+)
 
 /**
  * Complete Apex Engine scan result.
