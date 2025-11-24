@@ -124,6 +124,18 @@ signature.txt
 *.hprof
 *.trace
 
+# AI Model Files (downloaded via scripts/fetch-models.sh)
+# These are large binary files that should not be committed
+app/src/main/assets/models/*.tflite
+app/src/main/assets/models/*.pt
+app/src/main/assets/models/*.onnx
+app/src/main/assets/models/*.pth
+app/src/main/assets/labels/detector_labels.txt
+.tmp_models/
+
+# Keep manifest for integrity verification
+!app/src/main/assets/models/MODEL_MANIFEST.json
+
 # Proguard
 proguard/
 mapping.txt

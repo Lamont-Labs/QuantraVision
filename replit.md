@@ -48,6 +48,7 @@ The architecture is shifting to a sophisticated, multi-layer validation system, 
 
 ## External Dependencies
 
+**Current Production Dependencies:**
 -   **OpenCV:** For computer vision tasks and geometric pattern detection.
 -   **TensorFlow Lite:** On-device ML inference.
 -   **TensorFlow Lite Task Text:** Provides NLClassifier and BertQuestionAnswerer APIs.
@@ -56,5 +57,101 @@ The architecture is shifting to a sophisticated, multi-layer validation system, 
 -   **Google Play Integrity API:** For application security.
 -   **Gson:** For JSON parsing.
 -   **OpenAI API:** Integrated via `CloudReasoner` for advanced cloud narration in paid tiers.
--   **Gemma 2B or Phi-2:** Small language models considered for the hybrid explanation system.
 -   **Offline Assets:** Includes legal documents and educational content.
+
+**Future On-Device AI Models (Apache-2.0 Licensed):**
+-   **COCO SSD MobileNet v1 (Quantized):** Object detection for chart element recognition (4-6 MB TFLite)
+-   **MobileSAM v2:** Segmentation for precise chart region masking (40-50 MB, PyTorch weights)
+-   **Model Fetcher:** `scripts/fetch-models.sh` downloads permissive-licensed models with SHA-256 verification
+-   **Excluded:** AGPL models (YOLOv5/v8, FastSAM) due to copyleft restrictions incompatible with commercial distribution
+
+## Recent Changes
+
+**November 24, 2025 - Post-Batch 10: Open-License Model Fetcher**
+
+**New Infrastructure:**
+1. **scripts/fetch-models.sh** - Automated model downloader
+   - Downloads Apache-2.0 licensed AI models (COCO SSD MobileNet v1, MobileSAM v2)
+   - SHA-256 integrity verification (fail-closed)
+   - Excludes AGPL models (YOLOv5/v8, FastSAM)
+   - Generates MODEL_MANIFEST.json with checksums
+
+2. **docs/MODEL_FETCHER_GUIDE.md** - Comprehensive documentation
+   - Model descriptions and use cases
+   - License compliance details
+   - Runtime loading examples
+   - Troubleshooting guide
+
+3. **.gitignore** - Model file exclusions
+   - Large binary model files (.tflite, .pt, .onnx) ignored
+   - MODEL_MANIFEST.json kept for integrity verification
+
+**Purpose:**
+- Prepares infrastructure for future Apex Intelligence System (Batch 11+)
+- Enables geometric pattern detection with on-device vision models
+- Maintains strict open-source licensing compliance (Apache-2.0 only)
+- Provides fail-closed SHA-256 verification for model integrity
+
+**Usage:**
+```bash
+# Download permissive-licensed models
+bash scripts/fetch-models.sh
+
+# Models installed to app/src/main/assets/models/
+# - detector_ssd_mobilenet_v1_quant.tflite (4-6 MB)
+# - mobile_sam_v2.pt (40-50 MB)
+# - MODEL_MANIFEST.json (metadata + checksums)
+```
+
+---
+
+**November 24, 2025 - Batch 10 Complete: Production Hardening & Green CI**
+
+**Test Suites (120+ tests):**
+- QuotaGateTest.kt (40+ tests): Tier limits, rate limiting, daily reset, state persistence
+- LLMContractValidatorTest.kt (35+ tests): Forbidden words, schema validation, token limits
+- LocalSummaryGeneratorTest.kt (25+ tests): Golden tests for all 5 Apex statuses
+- VerdictMappingTest.kt (20+ tests): Protocol execution order verification
+
+**CI/CD Infrastructure:**
+- GitHub Actions workflow (.github/workflows/ci.yml): lint + tests + assembleDebug
+- Strict quality gates (lint failures fail the build)
+- APK artifact upload, Gradle caching
+- TestFixtures.kt with mock bitmap generators
+
+**Crash Hardening:**
+- LiveOverlayController.kt: Enhanced error handling, recovery methods
+- SingleFrameCapture.kt: OutOfMemoryError handling, extensive validation
+- OverlayService.kt: MediaProjection cleanup, DeadObjectException handling
+
+**Performance Guardrails:**
+- ScanThrottler.kt: 2-4 FPS enforcement (333ms target interval)
+- Frame rate statistics logging
+- User-friendly throttle notifications
+
+**Documentation:**
+- docs/verify_demo.md: Complete verification guide
+- README.md: Quickstart section
+
+**Architect Approval:** ✅ PASS - Acquisition-grade readiness achieved
+
+---
+
+**November 24, 2025 - Batch 9 Complete: Cloud Narration Pipeline**
+
+**New Components (7 files):**
+- QuotaGate.kt: Tier-based quota enforcement (FREE=0, PRO=10/day, ULTRA=25/day)
+- CloudReasoner.kt: OpenAI API integration with 15s timeout
+- LLMContractValidator.kt: Forbidden words filtering, schema validation
+- LocalSummaryGenerator.kt: Deterministic template-based explanations
+- AutoExplainManager.kt: Auto-trigger logic for smart explanations
+- PrimitiveExtractor.kt: Vision extraction with deterministic hashing
+- ExplainOrchestrator.kt: Complete cloud pipeline wiring
+
+**Critical Fixes:**
+- Tier mapping consistency (STARTER→PRO, STANDARD/PRO→ULTRA)
+- Deterministic pixel-based SHA-256 hashing
+- Quota counts ALL cloud attempts (fail-closed)
+- All paid tiers eligible for auto-explain
+
+**Architect Approval:** ✅ PASS
