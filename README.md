@@ -64,6 +64,91 @@
 
 ---
 
+## 🚀 Quickstart
+
+### Prerequisites
+
+- **Android Studio**: Ladybug (2024.2.1) or newer
+- **JDK**: Version 17
+- **Gradle**: 8.7+ (included via wrapper)
+- **Test Device**: Physical Android device (API 28+) or emulator
+
+### Build Instructions
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/quantravision.git
+cd quantravision
+
+# Verify project structure
+bash scripts/validate-project.sh
+
+# Grant execute permission
+chmod +x gradlew
+
+# Build debug APK
+./gradlew assembleDebug
+
+# Install on connected device
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
+
+### Run Tests
+
+```bash
+# Run all unit tests (120+ tests)
+./gradlew test
+
+# Run lint checks
+./gradlew lint
+
+# View test report
+open app/build/reports/tests/testDebugUnitTest/index.html
+```
+
+### GitHub Actions CI
+
+The project includes automated CI/CD:
+- **Lint**: Code quality checks
+- **Unit Tests**: 120+ comprehensive tests
+- **Build**: Debug APK assembly
+- **Artifacts**: APK available for download (7-day retention)
+
+Workflow: `.github/workflows/ci.yml`
+
+### First Launch
+
+1. Install APK on device
+2. Grant MediaProjection permission when prompted
+3. Navigate to **Scan** tab
+4. Enable overlay to capture chart screenshots
+5. Open any trading app (TradingView, Webull, etc.)
+6. Tap overlay icon to trigger pattern detection
+
+### Testing Features
+
+**Local Pattern Detection (FREE Tier):**
+- ✅ 109 Apex protocols (Omega → Tier → Learning)
+- ✅ QuantraScore calculation (0-100)
+- ✅ Deterministic local summaries
+- ✅ 2-4 FPS performance throttling
+- ✅ Zero cloud calls
+
+**Cloud Narration (Paid Tiers):**
+- ⚙️ PRO tier: 10 cloud explanations/day
+- ⚙️ ULTRA tier: 25 cloud explanations/day
+- ⚙️ OpenAI API integration (requires API key)
+- ⚙️ LLM contract validation (forbidden words filtered)
+
+### Documentation
+
+- **Verification Guide**: [docs/verify_demo.md](docs/verify_demo.md)
+- **Architecture**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **Development**: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
+- **User Guide**: [docs/USER_GUIDE.md](docs/USER_GUIDE.md)
+
+---
+
 ## 🎯 Vision
 
 QuantraVision aspires to be a privacy-first Android app providing institutional-grade trading intelligence to retail traders through 100% offline, on-device AI pattern recognition.
