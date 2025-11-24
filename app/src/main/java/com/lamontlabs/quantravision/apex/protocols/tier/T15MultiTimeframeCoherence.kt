@@ -15,7 +15,7 @@ class T15MultiTimeframeCoherence : ApexProtocol {
     override val protocolName = "MultiTimeframeCoherence"
     override val weight = 1.5
     
-    $1
+    override fun execute(primitives: ApexPrimitives, state: MutableMap<String, Any>): ProtocolVerdict {
         if (primitives.candles.isEmpty()) {
             state["mtfCoherent"] = false
             state["mtfCoherenceScore"] = 0.0

@@ -17,7 +17,7 @@ class T20FinalEntropyCheck : ApexProtocol {
     override val protocolName = "FinalEntropyCheck"
     override val weight = 2.0
     
-    $1
+    override fun execute(primitives: ApexPrimitives, state: MutableMap<String, Any>): ProtocolVerdict {
         if (primitives.candles.isEmpty()) {
             state["finalEntropy"] = 1.0
             state["finalEntropyOk"] = false

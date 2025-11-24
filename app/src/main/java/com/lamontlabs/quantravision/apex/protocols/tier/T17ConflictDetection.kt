@@ -15,7 +15,7 @@ class T17ConflictDetection : ApexProtocol {
     override val protocolName = "ConflictDetection"
     override val weight = 1.5
     
-    $1
+    override fun execute(primitives: ApexPrimitives, state: MutableMap<String, Any>): ProtocolVerdict {
         if (primitives.candles.isEmpty()) {
             state["conflictFlags"] = emptyList<String>()
             state["conflictCount"] = 0
@@ -46,15 +46,21 @@ class T17ConflictDetection : ApexProtocol {
             conflictFlags.add("strong-trend-low-volatility")
         } else if (trendStrength < 0.3 && volatilityState == "high") {
             conflictFlags.add("weak-trend-high-volatility")
+        }
+        
         // Safe state access - check MTF coherence conflict
         val mtfCoherent = state["mtfCoherent"] as? Boolean
         if (mtfCoherent == false) {
             conflictFlags.add("multi-timeframe-conflict")
+        }
+        
         // Safe state access - check price action vs structure conflict
         val priceActionQuality = state["priceActionQuality"] as? Double ?: 0.5
         val structureComplete = state["structureComplete"] as? Boolean ?: true
         if (priceActionQuality < 0.4 && structureComplete == true) {
             conflictFlags.add("poor-price-action-complete-structure")
+        }
+        
         state["conflictFlags"] = conflictFlags
         state["conflictCount"] = conflictFlags.size
         val majorConflictCount = conflictFlags.size
@@ -64,6 +70,8 @@ class T17ConflictDetection : ApexProtocol {
             conflictFlags.take(3).joinToString(", ")
         } else {
             "none"
+        }
+        
         val reason = "Conflicts: $majorConflictCount - $details"
         return ProtocolVerdict(
             protocolId = protocolId,
