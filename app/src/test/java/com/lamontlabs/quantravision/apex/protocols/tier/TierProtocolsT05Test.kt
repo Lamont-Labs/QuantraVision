@@ -1,6 +1,7 @@
 package com.lamontlabs.quantravision.apex.protocols.tier
 
 import com.lamontlabs.quantravision.apex.models.*
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T05PriceRangeNormalization
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before

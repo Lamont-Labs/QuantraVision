@@ -3,7 +3,26 @@ package com.lamontlabs.quantravision.apex
 import com.lamontlabs.quantravision.apex.models.ApexScanContext
 import com.lamontlabs.quantravision.apex.models.ChartPrimitives
 import com.lamontlabs.quantravision.apex.models.ProtocolVerdict
-import com.lamontlabs.quantravision.apex.protocols.tier.*
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T01InputSanitization
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T02ChartGeometryValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T03CandleDataQuality
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T04TimeframeConsistency
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T05PriceRangeNormalization
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T06VolatilityAssessment
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T07TrendStrengthGate
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T08VolumeProfileCheck
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T09SupportResistanceDetection
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T10StructureCompleteness
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T11MomentumAlignment
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T12VolumeConfirmation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T13VolatilityAlignment
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T14PriceActionQuality
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T15MultiTimeframeCoherence
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T16EntropyGateEarly
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T17ConflictDetection
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T18RegimeValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T19NoiseCancellation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T20FinalEntropyCheck
 
 /**
  * BATCH 2-3: Protocol Registry Mobile
