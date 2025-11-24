@@ -95,13 +95,16 @@ jobs:
       # BUILD DEBUG APK
       # ============================================================
       
-      - name: Clean build
-        run: ./gradlew clean --no-daemon
+      - name: Clean build and Gradle cache
+        run: |
+          ./gradlew clean --no-daemon
+          rm -rf ~/.gradle/caches/modules-2/metadata-*
+          rm -rf ~/.gradle/configuration-cache
       
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace --warning-mode=all 2>&1 | tee build-debug.log
+        run: ./gradlew assembleDebug --no-daemon --no-configuration-cache --stacktrace --warning-mode=all 2>&1 | tee build-debug.log
         env:
-          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dkotlin.daemon.jvm.options=-Xmx4g"
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dkotlin.daemon.jvm.options=-Xmx4g -Dorg.gradle.configuration-cache=false"
       
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4

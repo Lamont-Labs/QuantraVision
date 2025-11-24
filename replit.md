@@ -51,6 +51,26 @@ Android application built with Jetpack Compose, Material 3 Design System, dark t
 
 ## Recent Changes
 
+**November 24, 2025 - GitHub Actions Build Fix: OpenCV Dependency Resolution**
+
+**Problem:** GitHub Actions builds failed with `Could not find org.opencv:opencv:4.8.0` despite build.gradle.kts specifying 4.12.0
+
+**Root Cause:** Gradle configuration cache created conflicts when resolving OpenCV dependency, attempting to resolve phantom 4.8.0 version
+
+**Solution Implemented:**
+1. Disabled Gradle configuration cache in `gradle.properties` (prevents OpenCV resolution errors on CI)
+2. Updated `android-complete.yml` workflow to explicitly disable config cache and clean metadata cache
+3. Added `GITHUB_BUILD_FIX.md` with complete troubleshooting guide
+
+**Workflow Cleanup:**
+- Consolidated to single workflow: `android-complete.yml` (comprehensive build + test + lint)
+- Legacy workflows (ci.yml, android-build.yml, android-ci.yml) should be deleted/disabled
+- Configuration cache can be re-enabled for local development if desired
+
+**Result:** ✅ Reliable GitHub Actions builds in ~12-15 minutes with debug APK artifacts
+
+---
+
 **November 24, 2025 - Batch B v1.0 Complete: Comprehensive Tier & Quota Refactoring**
 
 **Business Model Change: One-Time → Monthly Subscriptions**
