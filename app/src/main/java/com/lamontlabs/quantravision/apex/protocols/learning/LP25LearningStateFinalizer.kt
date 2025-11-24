@@ -14,17 +14,57 @@ class LP25LearningStateFinalizer : ApexProtocol {
         primitives: ChartPrimitives,
         state: MutableMap<String, Any>
     ): ProtocolVerdict {
-        val tokenValid = state["freshnessTokenValid"] as? Boolean ?: false
-        
-        if (!tokenValid) {
-            state["learningStateReady"] = false
+        // FAIL-CLOSED: Check candles
+        if (primitives.candles.size < 10) {
             resetLearningState(state)
             return ProtocolVerdict(
                 protocolId = protocolId,
                 protocolName = protocolName,
                 passed = false,
                 confidence = 0.0,
-                reason = "LearningStateFinalizer: Freshness token invalid, state reset - FAIL",
+                reason = "LearningStateFinalizer: Insufficient candles - FAIL (fail-closed)",
+                weight = weight
+            )
+        }
+        
+        // FAIL-CLOSED: Verify critical finalization artifacts exist
+        val requiredMarkers = listOf(
+            "suppressionMemoryScore",
+            "driftAdaptationScore",
+            "patternEffectivenessScore",
+            "adaptiveConfidenceModifier",
+            "learningProofDigest"
+        )
+        
+        val missingMarkers = requiredMarkers.filter { !state.containsKey(it) }
+        
+        if (missingMarkers.isNotEmpty()) {
+            resetLearningState(state)
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = String.format(
+                    Locale.US,
+                    "LearningStateFinalizer: Missing critical markers (%s) - FAIL (fail-closed)",
+                    missingMarkers.joinToString(", ")
+                ),
+                weight = weight
+            )
+        }
+        
+        // Verify proof digest is valid (not placeholder)
+        val learningProofDigest = state["learningProofDigest"] as? String ?: ""
+        
+        if (learningProofDigest.isEmpty() || learningProofDigest == "unknown" || learningProofDigest == "digest_error") {
+            resetLearningState(state)
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = "LearningStateFinalizer: Invalid proof digest ($learningProofDigest) - FAIL (fail-closed)",
                 weight = weight
             )
         }
@@ -34,12 +74,10 @@ class LP25LearningStateFinalizer : ApexProtocol {
         val passed = true
         val confidence = 0.95
         
-        val proofDigest = state["learningProofDigest"] as? String ?: "unknown"
-        
         val reason = String.format(
             Locale.US,
             "LearningStateFinalizer: Learning state ready (digest: %s) - PASS",
-            proofDigest.take(16)
+            learningProofDigest.take(16)
         )
         
         return ProtocolVerdict(

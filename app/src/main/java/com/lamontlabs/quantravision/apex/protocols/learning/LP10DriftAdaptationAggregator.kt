@@ -14,24 +14,45 @@ class LP10DriftAdaptationAggregator : ApexProtocol {
         primitives: ChartPrimitives,
         state: MutableMap<String, Any>
     ): ProtocolVerdict {
-        val trendCalculated = state["trendDriftCalculated"] as? Boolean ?: false
-        
-        if (!trendCalculated) {
+        // FAIL-CLOSED: Check candles
+        if (primitives.candles.size < 10) {
             state["driftAdaptationScore"] = 0.0
-            state["driftTrendVector"] = ""
+            state["driftTrendVector"] = "UNKNOWN"
             return ProtocolVerdict(
                 protocolId = protocolId,
                 protocolName = protocolName,
                 passed = false,
-                confidence = 0.2,
-                reason = "DriftAdaptationAggregator: Trend drift not calculated - FAIL",
+                confidence = 0.0,
+                reason = "DriftAdaptationAggregator: Insufficient candles - FAIL (fail-closed)",
                 weight = weight
             )
         }
         
-        val regimeShiftScore = state["regimeShiftScore"] as? Double ?: 0.5
-        val volatilityDrift = state["volatilityDriftMagnitude"] as? Double ?: 0.5
-        val trendDrift = state["trendDriftScore"] as? Double ?: 0.5
+        // FAIL-CLOSED: Verify required upstream drift state exists
+        val requiredKeys = listOf("regimeShiftScore", "volatilityDriftMagnitude", "trendDriftScore")
+        val missingKeys = requiredKeys.filter { !state.containsKey(it) }
+        
+        if (missingKeys.isNotEmpty()) {
+            state["driftAdaptationScore"] = 0.0
+            state["driftTrendVector"] = "MISSING_PREREQUISITES"
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = String.format(
+                    Locale.US,
+                    "DriftAdaptationAggregator: Missing prerequisites (%s) - FAIL (fail-closed)",
+                    missingKeys.joinToString(", ")
+                ),
+                weight = weight
+            )
+        }
+        
+        // Read values (now guaranteed to exist)
+        val regimeShiftScore = state["regimeShiftScore"] as? Double ?: 0.0
+        val volatilityDrift = state["volatilityDriftMagnitude"] as? Double ?: 0.0
+        val trendDrift = state["trendDriftScore"] as? Double ?: 0.0
         
         val aggregatedScore = (regimeShiftScore + (1.0 - volatilityDrift) + trendDrift) / 3.0
         val trendVector = deriveTrendVector(trendDrift, volatilityDrift)
