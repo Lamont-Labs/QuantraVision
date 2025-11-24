@@ -41,7 +41,8 @@ class LearnViewModel(private val context: Context) : ViewModel() {
     }
     
     private fun checkBookAccess() {
-        val hasAccess = EntitlementManager.hasFeatureAccess(Feature.TRADING_BOOK)
+        // TRADING_BOOK feature doesn't exist - using ADVANCED_EDUCATION instead
+        val hasAccess = EntitlementManager.hasFeatureAccess(Feature.ADVANCED_EDUCATION)
         _uiState.update { it.copy(hasBookAccess = hasAccess) }
     }
     
@@ -63,9 +64,9 @@ class LearnViewModel(private val context: Context) : ViewModel() {
                         completed = completedLessonIds.contains(lesson.id.toString()),
                         requiredTier = when {
                             lesson.id <= 5 -> SubscriptionTier.FREE
-                            lesson.id <= 15 -> SubscriptionTier.STARTER
-                            lesson.id <= 20 -> SubscriptionTier.STANDARD
-                            else -> SubscriptionTier.PRO
+                            lesson.id <= 15 -> SubscriptionTier.BASIC
+                            lesson.id <= 20 -> SubscriptionTier.PRO
+                            else -> SubscriptionTier.APEX
                         }
                     )
                 }

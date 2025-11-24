@@ -40,12 +40,11 @@ class OverlayRenderer(
 
         val tier = EntitlementManager.currentTier.value
         // Map EntitlementManager tiers to QuotaGate tier strings
-        // STARTER ($9.99) → PRO (10 calls), STANDARD ($24.99) → ULTRA (25 calls), PRO ($49.99) → ULTRA
         val tierString = when (tier) {
-            SubscriptionTier.STARTER -> "PRO"
-            SubscriptionTier.STANDARD -> "ULTRA"
-            SubscriptionTier.PRO -> "ULTRA"
             SubscriptionTier.FREE -> "FREE"
+            SubscriptionTier.BASIC -> "BASIC"
+            SubscriptionTier.PRO -> "PRO"
+            SubscriptionTier.APEX -> "APEX"
         }
         val shouldDim = tier == SubscriptionTier.FREE || 
                        QuotaGate.getRemainingCalls(appContext, tierString) <= 0

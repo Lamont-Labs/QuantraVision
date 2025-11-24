@@ -34,7 +34,7 @@ class Omega03SecurityValidator : ApexProtocol {
             violations.add("User ID is empty")
         }
         
-        val validTiers = setOf(SubscriptionTier.FREE, SubscriptionTier.PRO, SubscriptionTier.APEX_ULTRA)
+        val validTiers = setOf(SubscriptionTier.FREE, SubscriptionTier.BASIC, SubscriptionTier.PRO, SubscriptionTier.APEX)
         if (context.tier !in validTiers) {
             violations.add("Invalid subscription tier: ${context.tier}")
         }

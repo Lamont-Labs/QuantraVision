@@ -17,7 +17,7 @@ package com.lamontlabs.quantravision.apex.models
  * @property chartType Type of chart (candlestick, line, bar, etc.)
  * @property timestamp Scan timestamp in milliseconds
  * @property userId Anonymous user identifier for quota tracking
- * @property tier User subscription tier (FREE, PRO, APEX_ULTRA)
+ * @property tier User subscription tier (FREE, BASIC, PRO, APEX)
  */
 data class ApexScanContext(
     val ticker: String?,
@@ -33,8 +33,9 @@ data class ApexScanContext(
  */
 enum class SubscriptionTier {
     FREE,
+    BASIC,
     PRO,
-    APEX_ULTRA
+    APEX
 }
 
 /**

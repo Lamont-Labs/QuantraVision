@@ -54,8 +54,6 @@ class ExplainOrchestrator(private val context: Context) {
                 is CloudReasoner.NarrationResult.Success -> {
                     Timber.d("$TAG: Cloud narration received, validating...")
                     
-                    QuotaGate.incrementCallCount(context)
-                    
                     val validation = LLMContractValidator.validate(
                         response = result.explanation,
                         expectedStatus = apexResult.status.name,
@@ -71,13 +69,11 @@ class ExplainOrchestrator(private val context: Context) {
                     }
                 }
                 is CloudReasoner.NarrationResult.Failure -> {
-                    QuotaGate.incrementCallCount(context)
                     Timber.w("$TAG: Cloud reasoning failed: ${result.reason}")
                     null
                 }
             }
         } catch (e: Exception) {
-            QuotaGate.incrementCallCount(context)
             Timber.e(e, "$TAG: Cloud explanation error")
             null
         }
@@ -108,14 +104,11 @@ class ExplainOrchestrator(private val context: Context) {
     }
     
     private fun getTierString(): String {
-        // Map EntitlementManager tiers to QuotaGate tier strings
-        // EntitlementManager: STARTER ($9.99), STANDARD ($24.99), PRO ($49.99)
-        // Spec/QuotaGate: FREE (0 calls), PRO (10 calls/day), ULTRA (25 calls/day)
         return when (EntitlementManager.currentTier.value) {
-            SubscriptionTier.STARTER -> "PRO"      // $9.99 → PRO tier (10 calls/day)
-            SubscriptionTier.STANDARD -> "ULTRA"   // $24.99 → ULTRA tier (25 calls/day)
-            SubscriptionTier.PRO -> "ULTRA"        // $49.99 → ULTRA tier (25 calls/day)
-            SubscriptionTier.FREE -> "FREE"        // Free → FREE tier (0 calls/day)
+            SubscriptionTier.FREE -> "FREE"
+            SubscriptionTier.BASIC -> "BASIC"
+            SubscriptionTier.PRO -> "PRO"
+            SubscriptionTier.APEX -> "APEX"
         }
     }
 }

@@ -304,9 +304,9 @@ fun InlineFeatureGate(
 private fun getTierColor(tier: SubscriptionTier): Color {
     return when (tier) {
         SubscriptionTier.FREE -> AppColors.TierFree
-        SubscriptionTier.STARTER -> AppColors.TierStarter
-        SubscriptionTier.STANDARD -> AppColors.TierStandard
-        SubscriptionTier.PRO -> AppColors.TierPro
+        SubscriptionTier.BASIC -> AppColors.TierStarter
+        SubscriptionTier.PRO -> AppColors.TierStandard
+        SubscriptionTier.APEX -> AppColors.TierPro
     }
 }
 
@@ -319,8 +319,8 @@ private fun getTierColor(tier: SubscriptionTier): Color {
 private fun getTierIcon(tier: SubscriptionTier): ImageVector {
     return when (tier) {
         SubscriptionTier.FREE -> Icons.Default.Person
-        SubscriptionTier.STARTER -> Icons.Default.Star
-        SubscriptionTier.STANDARD -> Icons.Default.StarBorder
-        SubscriptionTier.PRO -> Icons.Default.Favorite
+        SubscriptionTier.BASIC -> Icons.Default.Star
+        SubscriptionTier.PRO -> Icons.Default.StarBorder
+        SubscriptionTier.APEX -> Icons.Default.Favorite
     }
 }

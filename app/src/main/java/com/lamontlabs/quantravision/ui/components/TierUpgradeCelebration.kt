@@ -218,7 +218,7 @@ private data class TierUnlock(
 
 private fun getTierUnlocks(tier: SubscriptionTier): List<TierUnlock> {
     return when (tier) {
-        SubscriptionTier.STARTER -> listOf(
+        SubscriptionTier.BASIC -> listOf(
             TierUnlock(
                 title = "25 Core Patterns",
                 description = "15 additional patterns for more comprehensive chart analysis",
@@ -249,7 +249,7 @@ private fun getTierUnlocks(tier: SubscriptionTier): List<TierUnlock> {
             )
         )
         
-        SubscriptionTier.STANDARD -> listOf(
+        SubscriptionTier.PRO -> listOf(
             TierUnlock(
                 title = "50 Advanced Patterns",
                 description = "25 more patterns including complex formations and rare setups",
@@ -280,7 +280,7 @@ private fun getTierUnlocks(tier: SubscriptionTier): List<TierUnlock> {
             )
         )
         
-        SubscriptionTier.PRO -> listOf(
+        SubscriptionTier.APEX -> listOf(
             TierUnlock(
                 title = "All 109 Patterns",
                 description = "Complete pattern library with every formation in the catalog",
@@ -325,8 +325,8 @@ private fun getTierUnlocks(tier: SubscriptionTier): List<TierUnlock> {
 private fun getTierColor(tier: SubscriptionTier): Color {
     return when (tier) {
         SubscriptionTier.FREE -> AppColors.TierFree
-        SubscriptionTier.STARTER -> AppColors.TierStarter
-        SubscriptionTier.STANDARD -> AppColors.TierStandard
-        SubscriptionTier.PRO -> AppColors.TierPro
+        SubscriptionTier.BASIC -> AppColors.TierStarter
+        SubscriptionTier.PRO -> AppColors.TierStandard
+        SubscriptionTier.APEX -> AppColors.TierPro
     }
 }

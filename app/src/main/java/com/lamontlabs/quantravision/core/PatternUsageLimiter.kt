@@ -17,7 +17,7 @@ class PatternUsageLimiter(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("qv_usage", Context.MODE_PRIVATE)
 
-    enum class Tier { FREE, STANDARD, PRO }
+    enum class Tier { FREE, BASIC, PRO, APEX }
 
     data class State(
         val tier: Tier,
@@ -26,11 +26,20 @@ class PatternUsageLimiter(context: Context) {
     )
 
     private val freeLimit = 5
-    private val standardLimit = 9999
 
     fun currentTier(): Tier {
         val t = prefs.getString("tier", "FREE") ?: "FREE"
-        return Tier.valueOf(t)
+        return try {
+            Tier.valueOf(t)
+        } catch (e: IllegalArgumentException) {
+            // Handle legacy tier names for backward compatibility
+            when (t.uppercase()) {
+                "STARTER" -> Tier.BASIC
+                "STANDARD" -> Tier.PRO
+                "APEX_ULTRA", "ULTRA" -> Tier.APEX
+                else -> Tier.FREE
+            }
+        }
     }
 
     fun incrementUsage() {
@@ -41,7 +50,7 @@ class PatternUsageLimiter(context: Context) {
     fun remaining(): Int {
         return when (currentTier()) {
             Tier.FREE -> (freeLimit - prefs.getInt("used", 0)).coerceAtLeast(0)
-            Tier.STANDARD, Tier.PRO -> Int.MAX_VALUE
+            Tier.BASIC, Tier.PRO, Tier.APEX -> Int.MAX_VALUE
         }
     }
 

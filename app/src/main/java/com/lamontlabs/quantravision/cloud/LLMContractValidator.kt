@@ -175,8 +175,8 @@ object LLMContractValidator {
         val estimatedTokens = (wordCount * WORDS_TO_TOKENS_MULTIPLIER).toInt()
         
         val limit = when (tier.uppercase(Locale.US)) {
+            "APEX", "ULTRA", "APEX_ULTRA" -> ULTRA_TOKEN_LIMIT
             "PRO" -> PRO_TOKEN_LIMIT
-            "ULTRA", "APEX_ULTRA" -> ULTRA_TOKEN_LIMIT
             else -> PRO_TOKEN_LIMIT
         }
         

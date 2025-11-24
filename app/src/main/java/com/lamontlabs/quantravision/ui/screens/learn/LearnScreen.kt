@@ -86,8 +86,8 @@ fun LearnScreen(
             Spacer(modifier = Modifier.height(AppSpacing.lg))
             
             FeatureDiscoveryBanner(
-                feature = Feature.TRADING_BOOK,
-                title = "Trading Book Unlocked!",
+                feature = Feature.ADVANCED_EDUCATION,
+                title = "Advanced Education Unlocked!",
                 description = "Comprehensive guide to technical analysis and risk management",
                 icon = Icons.Default.Book,
                 actionLabel = "Read Now",
@@ -98,11 +98,11 @@ fun LearnScreen(
             Spacer(modifier = Modifier.height(AppSpacing.md))
             
             FeatureGate(
-                feature = Feature.TRADING_BOOK,
+                feature = Feature.ADVANCED_EDUCATION,
                 onUpgradeClick = onNavigateToPaywall,
                 lockedContent = {
                     InlineFeatureGate(
-                        feature = Feature.TRADING_BOOK,
+                        feature = Feature.ADVANCED_EDUCATION,
                         onUpgradeClick = onNavigateToPaywall
                     ) {
                         BookCard(onClick = {})

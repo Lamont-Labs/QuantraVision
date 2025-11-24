@@ -221,16 +221,16 @@ Required JSON schema:
 
     private fun getMaxTokensForTier(tier: String): Int {
         return when (tier.uppercase(Locale.US)) {
+            "APEX", "ULTRA", "APEX_ULTRA" -> ULTRA_MAX_TOKENS
             "PRO" -> PRO_MAX_TOKENS
-            "ULTRA", "APEX_ULTRA" -> ULTRA_MAX_TOKENS
             else -> PRO_MAX_TOKENS
         }
     }
 
     private fun getModelForTier(tier: String): String {
         return when (tier.uppercase(Locale.US)) {
+            "APEX", "ULTRA", "APEX_ULTRA" -> MODEL_ULTRA
             "PRO" -> MODEL_PRO
-            "ULTRA", "APEX_ULTRA" -> MODEL_ULTRA
             else -> MODEL_PRO
         }
     }

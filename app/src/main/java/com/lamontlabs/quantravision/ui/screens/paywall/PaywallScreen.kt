@@ -600,8 +600,8 @@ private fun SuccessBanner(
 private fun getTierColor(tier: SubscriptionTier): Color {
     return when (tier) {
         SubscriptionTier.FREE -> AppColors.TierFree
-        SubscriptionTier.STARTER -> AppColors.TierStarter
-        SubscriptionTier.STANDARD -> AppColors.TierStandard
-        SubscriptionTier.PRO -> AppColors.TierPro
+        SubscriptionTier.BASIC -> AppColors.TierStarter
+        SubscriptionTier.PRO -> AppColors.TierStandard
+        SubscriptionTier.APEX -> AppColors.TierPro
     }
 }

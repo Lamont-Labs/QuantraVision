@@ -24,6 +24,7 @@ enum class SubscriptionTier(val tierName: String, val displayName: String) {
                 "apex" -> APEX
                 "starter" -> BASIC
                 "standard" -> PRO
+                "apex_ultra" -> APEX
                 else -> FREE
             }
         }
@@ -184,7 +185,7 @@ object EntitlementManager {
     }
     
     fun isFree(): Boolean = _currentTier.value == SubscriptionTier.FREE
-    fun isStarter(): Boolean = _currentTier.value.ordinal >= SubscriptionTier.STARTER.ordinal
-    fun isStandard(): Boolean = _currentTier.value.ordinal >= SubscriptionTier.STANDARD.ordinal
-    fun isPro(): Boolean = _currentTier.value == SubscriptionTier.PRO
+    fun isBasic(): Boolean = _currentTier.value.ordinal >= SubscriptionTier.BASIC.ordinal
+    fun isPro(): Boolean = _currentTier.value.ordinal >= SubscriptionTier.PRO.ordinal
+    fun isApex(): Boolean = _currentTier.value == SubscriptionTier.APEX
 }

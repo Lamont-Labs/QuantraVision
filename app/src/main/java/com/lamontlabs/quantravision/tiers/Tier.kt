@@ -28,6 +28,9 @@ enum class Tier {
                 "BASIC" -> BASIC
                 "PRO" -> PRO
                 "APEX" -> APEX
+                "STARTER" -> BASIC
+                "STANDARD" -> PRO
+                "APEX_ULTRA", "ULTRA" -> APEX
                 else -> FREE
             }
         }
