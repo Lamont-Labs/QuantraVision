@@ -128,8 +128,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                     isPurchased = bm.isApex(),
                     isUpgrade = false,
                     onPurchase = { bm.purchaseApex() }
-                    )
-                }
+                )
                 
                 Spacer(Modifier.height(16.dp))
                 
