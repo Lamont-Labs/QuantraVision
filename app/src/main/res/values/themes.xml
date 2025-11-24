@@ -3,4 +3,10 @@
         <item name="android:statusBarColor">@color/qv_bg</item>
         <item name="android:navigationBarColor">@color/qv_bg</item>
     </style>
+
+    <style name="Theme.QuantraVision.Splash" parent="Theme.QuantraVision">
+        <item name="android:windowBackground">@color/qv_bg</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
