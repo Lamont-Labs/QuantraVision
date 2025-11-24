@@ -1,0 +1,22 @@
+{
+  "models": [
+    {
+      "id": "detector_ssd_mobilenet_v1_quant",
+      "file": "detector_ssd_mobilenet_v1_quant.tflite",
+      "task": "object_detection",
+      "license": "Apache-2.0",
+      "source_url": "https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip",
+      "sha256": "e4b118e5e4531945de2e659742c7c590f7536f8d0ed26d135abcfe83b4779d13"
+    },
+    {
+      "id": "mobile_sam_v2_weights",
+      "file": "mobile_sam_v2.pt",
+      "task": "segmentation_weights",
+      "license": "Apache-2.0",
+      "source_url": "https://huggingface.co/RogerQi/MobileSAMV2/resolve/main/mobile_sam.pt",
+      "sha256": "6dbb90523a35330fedd7f1d3dfc66f995213d81b29a5ca8108dbcdd4e37d6c2f"
+    }
+  ],
+  "generated_by": "QuantraVision Open-License Model Fetcher v1.0",
+  "fail_closed": true
+}
