@@ -23,9 +23,29 @@ import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T17ConflictDetect
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T18RegimeValidation
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T19NoiseCancellation
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T20FinalEntropyCheck
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T21EntropyThreshold
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T22SignalClarity
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T23ConflictResolution
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T24EntropyDecay
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T25SignalStrength
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T26PatternContinuation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T27TrendContinuation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T28MomentumContinuation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T29VolumeContinuation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T30BreakoutValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T31DriftDetectionEarly
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T32RegimeShift
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T33AdaptiveThreshold
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T34HistoricalContext
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T35MarketCondition
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T36TimeframeAlignment
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T37CrossTimeframeValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T38ScaleInvariance
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T39TemporalCoherence
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T40MultiFrameEntropy
 
 /**
- * BATCH 2-3: Protocol Registry Mobile
+ * BATCH 2-4: Protocol Registry Mobile
  * 
  * Central registry for Apex Engine protocols.
  * Protocols are organized into three categories:
@@ -105,6 +125,12 @@ object ProtocolRegistryMobile {
      * - T06-T10: Structural Quality
      * - T11-T15: Momentum & Alignment
      * - T16-T20: Entropy & Conflict Detection
+     * 
+     * BATCH 4: T21-T40 implemented
+     * - T21-T25: Entropy Control Expansion
+     * - T26-T30: Continuation Validation
+     * - T31-T35: Drift Preliminary Gates
+     * - T36-T40: Multi-Frame Scaffolding
      */
     private val tierProtocols = linkedMapOf<String, ApexProtocol>()
     
@@ -131,7 +157,29 @@ object ProtocolRegistryMobile {
         registerTierProtocol(T19NoiseCancellation())
         registerTierProtocol(T20FinalEntropyCheck())
         
-        // TODO BATCH 4-6: Register T21-T80 protocols here
+        // BATCH 4: Register T21-T40 protocols in strict order
+        registerTierProtocol(T21EntropyThreshold())
+        registerTierProtocol(T22SignalClarity())
+        registerTierProtocol(T23ConflictResolution())
+        registerTierProtocol(T24EntropyDecay())
+        registerTierProtocol(T25SignalStrength())
+        registerTierProtocol(T26PatternContinuation())
+        registerTierProtocol(T27TrendContinuation())
+        registerTierProtocol(T28MomentumContinuation())
+        registerTierProtocol(T29VolumeContinuation())
+        registerTierProtocol(T30BreakoutValidation())
+        registerTierProtocol(T31DriftDetectionEarly())
+        registerTierProtocol(T32RegimeShift())
+        registerTierProtocol(T33AdaptiveThreshold())
+        registerTierProtocol(T34HistoricalContext())
+        registerTierProtocol(T35MarketCondition())
+        registerTierProtocol(T36TimeframeAlignment())
+        registerTierProtocol(T37CrossTimeframeValidation())
+        registerTierProtocol(T38ScaleInvariance())
+        registerTierProtocol(T39TemporalCoherence())
+        registerTierProtocol(T40MultiFrameEntropy())
+        
+        // TODO BATCH 5-6: Register T41-T80 protocols here
     }
     
     /**
