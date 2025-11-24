@@ -108,9 +108,13 @@ import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP22Integrity
 import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP23ProofDigestGenerator
 import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP24FreshnessTokenValidator
 import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP25LearningStateFinalizer
+import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega01StructuralAnomalyGuard
+import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega02RiskCapEnforcer
+import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega03SecurityValidator
+import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega04ComplianceGuard
 
 /**
- * BATCH 2-7: Protocol Registry Mobile
+ * BATCH 2-8: Protocol Registry Mobile
  * 
  * Central registry for Apex Engine protocols.
  * Protocols are organized into three categories:
@@ -211,6 +215,13 @@ object ProtocolRegistryMobile {
     private val tierProtocols = linkedMapOf<String, ApexProtocol>()
     
     init {
+        // BATCH 8: Register Omega01-Omega04 protocols in strict order (BEFORE Tier protocols)
+        // Omega Protocols (Omega01-Omega04): Safety hard locks
+        registerOmegaProtocol(Omega01StructuralAnomalyGuard())
+        registerOmegaProtocol(Omega02RiskCapEnforcer())
+        registerOmegaProtocol(Omega03SecurityValidator())
+        registerOmegaProtocol(Omega04ComplianceGuard())
+        
         // BATCH 3: Register T01-T20 protocols in strict order
         registerTierProtocol(T01InputSanitization())
         registerTierProtocol(T02ChartGeometryValidation())
