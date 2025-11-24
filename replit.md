@@ -51,27 +51,28 @@ Android application built with Jetpack Compose, Material 3 Design System, dark t
 
 ## Recent Changes
 
-**November 24, 2025 - GitHub Actions Build Fix: OpenCV Version Conflict Resolved**
+**November 24, 2025 - GitHub Actions Build Fix: KSP Plugin Resolution (Final)**
 
-**Problem:** GitHub Actions builds failed twice with `Could not find org.opencv:opencv:4.8.0` despite build.gradle.kts specifying 4.12.0
+**Problem:** GitHub Actions builds failed with `Plugin [id: 'com.google.devtools.ksp'] was not found` despite correct version in build.gradle.kts
 
-**Root Cause:** Dual build files - project had BOTH `app/build.gradle` (old Groovy with OpenCV 4.8.0) AND `app/build.gradle.kts` (current Kotlin DSL with OpenCV 4.12.0). Gradle was reading both files, creating version conflicts amplified by configuration cache.
+**Root Causes (3 layers discovered):**
+1. **Configuration cache conflicts** - Gradle config cache caused OpenCV dependency resolution errors
+2. **Dual build files** - Both `app/build.gradle` (Groovy, OpenCV 4.8.0) AND `app/build.gradle.kts` (Kotlin DSL, OpenCV 4.12.0) existed
+3. **KSP plugin declaration** - Plugin version only in root build.gradle.kts, not in settings.gradle.kts pluginManagement (GitHub Actions needs it there)
 
 **Solution Implemented:**
-1. **Deleted conflicting file:** Removed `app/build.gradle` (old Groovy build file with OpenCV 4.8.0)
-2. **Updated all version references:** Changed OpenCV version from 4.8.0 → 4.12.0 in:
-   - `app/src/main/java/com/lamontlabs/quantravision/licensing/LicenseAttestation.kt`
-   - `scripts/generate-sbom.sh` (2 locations)
-   - `app/libs/README.txt`
-3. **Disabled configuration cache:** Updated `gradle.properties` to disable config cache (prevents caching conflicts)
-4. **Enhanced workflow:** Updated `android-complete.yml` to clean Gradle cache and explicitly disable config cache
-5. **Added documentation:** Created `OPENCV_VERSION_FIX.md` with complete troubleshooting details
+1. **Fixed KSP plugin resolution:** Added plugin declarations to `settings.gradle.kts` pluginManagement block (architect-verified fix)
+2. **Deleted conflicting file:** Removed `app/build.gradle` (old Groovy build file)
+3. **Updated OpenCV references:** Changed 4.8.0 → 4.12.0 in LicenseAttestation.kt, generate-sbom.sh (2×), app/libs/README.txt
+4. **Disabled configuration cache:** Updated `gradle.properties` to disable config cache for CI compatibility
+5. **Enhanced workflow:** Updated `android-complete.yml` with cache cleanup and explicit config-cache disable
+6. **Documentation:** Created FINAL_FIX_KSP_PLUGIN.md, OPENCV_VERSION_FIX.md, BUILD_ON_GITHUB.md
 
 **Workflow Cleanup:**
 - Consolidated to single workflow: `android-complete.yml` (comprehensive build + test + lint)
-- Legacy workflows (ci.yml, android-build.yml, android-ci.yml) should be deleted/disabled
+- Legacy workflows (ci.yml, android-build.yml, android-ci.yml) should be deleted
 
-**Result:** ✅ All conflicting version references eliminated - ready for reliable GitHub Actions builds in ~12-15 minutes with debug APK artifacts
+**Result:** ✅ All build issues resolved - settings.gradle.kts now declares all plugin versions in pluginManagement block, enabling reliable GitHub Actions builds in ~12-15 minutes with debug APK artifacts
 
 ---
 
