@@ -268,11 +268,12 @@ class RetrainingWorker(
                 )
             }
             
-            // TODO: Implement actual retraining logic
+            // TODO BATCH 11: Implement actual retraining logic
             // This would involve:
-            // 1. Fine-tuning pattern descriptors
-            // 2. Updating prior probabilities
-            // 3. Adjusting confidence calibration
+            // 1. Fine-tuning pattern descriptors with TensorFlow Lite Model Maker
+            // 2. Updating prior probabilities based on user feedback
+            // 3. Adjusting confidence calibration using isotonic regression
+            // 4. Persisting updated model weights to device storage
             
             Timber.i("Retraining complete with ${examples.size} examples")
             Result.success()

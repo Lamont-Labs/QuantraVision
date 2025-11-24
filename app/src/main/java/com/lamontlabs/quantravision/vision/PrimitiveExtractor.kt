@@ -9,6 +9,7 @@ import com.lamontlabs.quantravision.intelligence.IndicatorExtractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.nio.ByteBuffer
 import java.security.MessageDigest
 
 class PrimitiveExtractor(private val context: Context) {
@@ -87,19 +88,28 @@ class PrimitiveExtractor(private val context: Context) {
 
     private fun computeImageHash(bitmap: Bitmap): String {
         return try {
+            // Create MessageDigest for SHA-256
+            val digest = MessageDigest.getInstance("SHA-256")
+            
+            // Get pixel data from bitmap
             val width = bitmap.width
             val height = bitmap.height
-            val timestamp = System.currentTimeMillis()
+            val pixels = IntArray(width * height)
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
             
-            val input = "$width:$height:$timestamp"
-            val bytes = input.toByteArray()
-            val digest = MessageDigest.getInstance("SHA-256")
-            val hashBytes = digest.digest(bytes)
+            // Hash the pixel data
+            val buffer = ByteBuffer.allocate(pixels.size * 4)
+            pixels.forEach { buffer.putInt(it) }
+            digest.update(buffer.array())
             
+            // Convert to hex string (first 16 chars)
+            val hashBytes = digest.digest()
             hashBytes.joinToString("") { "%02x".format(it) }.take(16)
+            
         } catch (e: Exception) {
-            Timber.e(e, "$TAG: Hash computation failed, using fallback")
-            "${bitmap.width}x${bitmap.height}_${System.currentTimeMillis()}"
+            Timber.e(e, "Failed to compute image hash")
+            // Fallback to dimensions-based hash (deterministic)
+            "${bitmap.width}x${bitmap.height}_${bitmap.config?.name ?: "UNKNOWN"}"
         }
     }
 }

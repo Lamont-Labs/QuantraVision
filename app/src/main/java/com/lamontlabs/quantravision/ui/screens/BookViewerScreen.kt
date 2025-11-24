@@ -138,7 +138,7 @@ fun BookLockedScreen(onNavigateBack: () -> Unit) {
             
             Button(
                 onClick = { 
-                    // TODO: Navigate to upgrade/billing screen once integrated with AppScaffold
+                    // TODO BATCH 10: Navigate to upgrade/billing screen once integrated with AppScaffold
                     // For now, users can access upgrades through Settings or Dashboard
                 },
                 modifier = Modifier.fillMaxWidth()

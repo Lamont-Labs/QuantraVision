@@ -58,10 +58,14 @@ class AutoExplainManager(private val context: Context) {
 
     private fun checkEligibility(): Boolean {
         val tier = EntitlementManager.currentTier.value
-        val eligible = tier == SubscriptionTier.PRO || tier == SubscriptionTier.STANDARD
+        // Spec lines 245-246: "eligibility: PRO and APEX_ULTRA only"
+        // EntitlementManager mapping: STARTER=PRO($4.99), STANDARD=ULTRA($9.99), PRO=highest($49.99)
+        val eligible = tier == SubscriptionTier.STARTER ||  // Maps to spec PRO
+                       tier == SubscriptionTier.STANDARD || // Maps to spec APEX_ULTRA
+                       tier == SubscriptionTier.PRO         // Highest tier also eligible
         
         if (!eligible) {
-            Timber.v("$TAG: Tier $tier not eligible for auto-explain (PRO/STANDARD required)")
+            Timber.v("$TAG: Tier $tier not eligible for auto-explain (paid tiers required)")
         }
         
         return eligible
@@ -159,6 +163,8 @@ class AutoExplainManager(private val context: Context) {
                 is CloudReasoner.NarrationResult.Success -> {
                     Timber.d("$TAG: Cloud narration received, validating...")
                     
+                    QuotaGate.incrementCallCount(context)
+                    
                     val validation = LLMContractValidator.validate(
                         response = result.explanation,
                         expectedStatus = apexResult.status.name,
@@ -167,8 +173,6 @@ class AutoExplainManager(private val context: Context) {
                     
                     if (validation.isValid) {
                         Timber.i("$TAG: Cloud narration validated successfully")
-                        QuotaGate.incrementCallCount(context, tier)
-                        
                         formatCloudResponse(validation.parsedData)
                     } else {
                         Timber.w("$TAG: Cloud narration validation failed: ${validation.violations.joinToString()}")
@@ -178,12 +182,14 @@ class AutoExplainManager(private val context: Context) {
                 }
                 
                 is CloudReasoner.NarrationResult.Failure -> {
+                    QuotaGate.incrementCallCount(context)
                     Timber.w("$TAG: Cloud narration failed: ${result.reason}")
                     Timber.d("$TAG: Falling back to local summary")
                     LocalSummaryGenerator.generate(apexResult)
                 }
             }
         } catch (e: Exception) {
+            QuotaGate.incrementCallCount(context)
             Timber.e(e, "$TAG: Auto-explain failed, using local fallback")
             LocalSummaryGenerator.generate(apexResult)
         }
@@ -227,11 +233,14 @@ class AutoExplainManager(private val context: Context) {
     }
 
     private fun getTierString(): String {
+        // Map EntitlementManager tiers to QuotaGate tier strings
+        // EntitlementManager: STARTER ($9.99), STANDARD ($24.99), PRO ($49.99)
+        // Spec/QuotaGate: FREE (0 calls), PRO (10 calls/day), ULTRA (25 calls/day)
         return when (EntitlementManager.currentTier.value) {
-            SubscriptionTier.PRO -> "PRO"
-            SubscriptionTier.STANDARD -> "PRO"
-            SubscriptionTier.STARTER -> "FREE"
-            SubscriptionTier.FREE -> "FREE"
+            SubscriptionTier.STARTER -> "PRO"      // $9.99 → PRO tier (10 calls/day)
+            SubscriptionTier.STANDARD -> "ULTRA"   // $24.99 → ULTRA tier (25 calls/day)
+            SubscriptionTier.PRO -> "ULTRA"        // $49.99 → ULTRA tier (25 calls/day)
+            SubscriptionTier.FREE -> "FREE"        // Free → FREE tier (0 calls/day)
         }
     }
 }

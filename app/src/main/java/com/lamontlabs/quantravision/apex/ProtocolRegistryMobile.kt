@@ -480,33 +480,3 @@ object ProtocolRegistryMobile {
         omegaProtocols.clear()
     }
 }
-
-/**
- * Stub protocol for Batch 2 testing.
- * Returns a passing verdict with fixed confidence.
- * 
- * TODO BATCH 3+: Remove this stub once real protocols are implemented.
- */
-class StubProtocol(
-    override val protocolId: String,
-    override val protocolName: String,
-    override val weight: Double = 1.0,
-    private val shouldPass: Boolean = true,
-    private val stubConfidence: Double = 0.75
-) : ApexProtocol {
-    
-    override suspend fun evaluate(
-        context: ApexScanContext,
-        primitives: ChartPrimitives,
-        state: MutableMap<String, Any>
-    ): ProtocolVerdict {
-        return ProtocolVerdict(
-            protocolId = protocolId,
-            protocolName = protocolName,
-            passed = shouldPass,
-            confidence = stubConfidence,
-            reason = "STUB: Batch 2 placeholder verdict",
-            weight = weight
-        )
-    }
-}

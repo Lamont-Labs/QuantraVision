@@ -535,7 +535,7 @@ private fun ModelNotFoundCard(onImportClick: () -> Unit) {
                 Text("Import Model from Phone", fontWeight = FontWeight.Bold)
             }
             
-            TextButton(onClick = { /* TODO: Open download instructions */ }) {
+            TextButton(onClick = { /* TODO BATCH 10: Open download instructions in browser or help dialog */ }) {
                 Text(
                     text = "Where do I download the model?",
                     color = NeonGold.copy(alpha = 0.8f),

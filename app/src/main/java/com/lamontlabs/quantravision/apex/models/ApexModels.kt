@@ -58,17 +58,7 @@ data class ChartPrimitives(
     val detectedLines: List<TrendLine> = emptyList(),
     val ocrText: String = "",
     val chartType: String = "Unknown"
-) {
-    companion object {
-        fun stub(): ChartPrimitives = ChartPrimitives(
-            rawImageHash = "STUB_HASH_BATCH2",
-            candles = emptyList(),
-            detectedLines = emptyList(),
-            ocrText = "",
-            chartType = "Unknown"
-        )
-    }
-}
+)
 
 /**
  * Candle data structure for OHLCV price bars.

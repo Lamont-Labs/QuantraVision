@@ -120,7 +120,7 @@ class ExplanationCache(context: Context) {
         return CacheStats(
             totalEntries = totalEntries,
             memoryEntries = memoryEntries,
-            hitRate = 0.0  // TODO: Track hit/miss ratio
+            hitRate = 0.0  // TODO BATCH 10: Track hit/miss ratio with analytics integration
         )
     }
     
