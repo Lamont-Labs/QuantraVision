@@ -20,12 +20,11 @@ class Omega02RiskCapEnforcer : ApexProtocol {
         primitives: ChartPrimitives,
         state: MutableMap<String, Any>
     ): ProtocolVerdict {
-        val violations = mutableListOf<String>()
-        
+        // FAIL-CLOSED: Check candles
         if (primitives.candles.size < 10) {
             state["omega02_passed"] = false
-            state["omega02_riskViolations"] = listOf("Insufficient candles")
-            state["omega02_reason"] = "Insufficient candles for risk analysis"
+            state["omega02_riskViolations"] = emptyList<String>()
+            state["omega02_reason"] = "RiskCapEnforcer: Insufficient candles - FAIL"
             
             return ProtocolVerdict(
                 protocolId = protocolId,
@@ -37,47 +36,70 @@ class Omega02RiskCapEnforcer : ApexProtocol {
             )
         }
         
+        // FAIL-CLOSED: Verify at least one risk metric exists for validation
         val quantraScore = state["quantraScore"] as? Double
-        if (quantraScore != null && quantraScore > MAX_QUANTRA_SCORE) {
-            violations.add("QuantraScore exceeds max ($quantraScore > $MAX_QUANTRA_SCORE)")
-        }
-        
         val confidence = state["confidence"] as? Double
-        if (confidence != null) {
-            if (confidence > MAX_CONFIDENCE) {
-                violations.add("Confidence exceeds max ($confidence > $MAX_CONFIDENCE)")
-            }
-            if (confidence > OVER_LEVERAGED_THRESHOLD) {
-                violations.add("Over-leveraged confidence ($confidence > $OVER_LEVERAGED_THRESHOLD)")
-            }
+        val positionSize = state["positionSize"] as? Double
+        
+        // If NO risk metrics available, FAIL (cannot validate risk without data)
+        if (quantraScore == null && confidence == null && positionSize == null) {
+            val violations = listOf("No risk metrics available for validation")
+            state["omega02_passed"] = false
+            state["omega02_riskViolations"] = violations
+            state["omega02_reason"] = "RiskCapEnforcer: Missing all risk metrics (quantraScore, confidence, positionSize) - FAIL (fail-closed)"
+            
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = "Omega02: FAIL - Missing all risk metrics (quantraScore, confidence, positionSize) - fail-closed",
+                weight = weight
+            )
         }
         
-        val positionSize = state["positionSize"] as? Double
+        // Now validate available metrics
+        val violations = mutableListOf<String>()
+        
+        // Check QuantraScore if present
+        if (quantraScore != null && quantraScore > MAX_QUANTRA_SCORE) {
+            violations.add("QuantraScore exceeds limit: $quantraScore > $MAX_QUANTRA_SCORE")
+        }
+        
+        // Check confidence if present
+        if (confidence != null && confidence > MAX_CONFIDENCE) {
+            violations.add("Confidence exceeds limit: $confidence > $MAX_CONFIDENCE")
+        }
+        if (confidence != null && confidence > OVER_LEVERAGED_THRESHOLD) {
+            violations.add("Over-leveraged signal detected: confidence=$confidence")
+        }
+        
+        // Check position size if present
         if (positionSize != null && positionSize > MAX_POSITION_SIZE_PCT) {
-            violations.add("Position sizing exceeds 10% limit ($positionSize%)")
+            violations.add("Position size exceeds limit: $positionSize > $MAX_POSITION_SIZE_PCT")
         }
         
         val passed = violations.isEmpty()
         state["omega02_passed"] = passed
         state["omega02_riskViolations"] = violations
-        state["omega02_reason"] = if (passed) {
-            "All risk caps satisfied"
-        } else {
-            violations.joinToString("; ")
-        }
         
         val reason = if (passed) {
-            "Omega02: PASS - All risk limits within acceptable bounds"
+            "RiskCapEnforcer: All risk caps validated - PASS"
         } else {
-            "Omega02: FAIL - ${violations.size} risk violations: ${violations.joinToString(", ")}"
+            "RiskCapEnforcer: Risk violations detected (${violations.size}) - FAIL"
         }
+        state["omega02_reason"] = reason
         
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,
             passed = passed,
             confidence = if (passed) 1.0 else 0.0,
-            reason = reason,
+            reason = if (passed) {
+                "Omega02: PASS - All risk limits within acceptable bounds"
+            } else {
+                "Omega02: FAIL - ${violations.size} risk violations: ${violations.joinToString(", ")}"
+            },
             weight = weight
         )
     }
