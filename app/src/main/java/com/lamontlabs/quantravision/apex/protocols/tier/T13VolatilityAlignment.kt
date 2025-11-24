@@ -15,7 +15,7 @@ class T13VolatilityAlignment : ApexProtocol {
     override val protocolName = "VolatilityAlignment"
     override val weight = 1.5
     
-    $1
+    override fun execute(primitives: ApexPrimitives, state: MutableMap<String, Any>): ProtocolVerdict {
         if (primitives.candles.isEmpty()) {
             state["volatilityAligned"] = false
             return ProtocolVerdict(
