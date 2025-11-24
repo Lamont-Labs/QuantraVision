@@ -279,9 +279,9 @@ fun getStepFeatures(step: OnboardingStep): List<String> {
         )
         OnboardingStep.PRO_FEATURES -> listOf(
             "🆓 FREE: 10 patterns + basic overlay",
-            "⭐ STARTER: 25 patterns + analytics",
-            "🔥 STANDARD: 50 patterns + lessons + book",
-            "💎 PRO: All 109 patterns + Intelligence Stack"
+            "⭐ BASIC: 25 patterns + analytics",
+            "🔥 PRO: 50 patterns + lessons + book",
+            "💎 APEX: All 109 patterns + Intelligence Stack"
         )
     }
 }

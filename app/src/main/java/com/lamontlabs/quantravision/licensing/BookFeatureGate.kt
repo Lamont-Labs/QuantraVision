@@ -10,8 +10,8 @@ import androidx.security.crypto.MasterKey
  * 
  * Pricing:
  * - Standalone: $4.99 (separate purchase)
- * - Free with Standard tier ($24.99+)
- * - Free with Pro tier ($49.99+)
+ * - Free with PRO tier ($14.99/mo)
+ * - Free with APEX tier ($29.99/mo)
  * 
  * Book Content: Your complete trading book bundled in assets/book/
  * Format: HTML/Markdown for in-app viewing
@@ -49,8 +49,8 @@ object BookFeatureGate {
      * 
      * Access granted if:
      * 1. User purchased Book ($4.99) separately, OR
-     * 2. User has Standard tier ($24.99+), OR
-     * 3. User has Pro tier ($49.99+)
+     * 2. User has PRO tier ($14.99/mo), OR
+     * 3. User has APEX tier ($29.99/mo)
      */
     fun hasAccess(context: Context): Boolean {
         // 🧪 TESTING: Bypass paywall
@@ -62,10 +62,12 @@ object BookFeatureGate {
         val bookPurchased = prefs.getBoolean("qv_book_purchased", false)
         if (bookPurchased) return true
         
-        // Check if Standard or Pro tier (book included free)
+        // Check if PRO or APEX tier (book included free)
+        // Backward compatibility: STANDARD maps to PRO, APEX_ULTRA/ULTRA map to APEX
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
         val normalizedTier = tier.uppercase()
-        return normalizedTier == "STANDARD" || normalizedTier == "PRO"  // Normalize for backward compatibility
+        return normalizedTier == "PRO" || normalizedTier == "STANDARD" || 
+               normalizedTier == "APEX" || normalizedTier == "APEX_ULTRA" || normalizedTier == "ULTRA"
     }
     
     /**

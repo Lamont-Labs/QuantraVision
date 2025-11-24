@@ -39,7 +39,7 @@ import androidx.navigation.compose.rememberNavController
  * 
  * Beautiful tier comparison screen with BillingManager integration.
  * Features:
- * - 4 subscription tiers (FREE/STARTER/STANDARD/PRO)
+ * - 4 monthly subscription tiers (FREE/BASIC/PRO/APEX)
  * - Upgrade pricing for existing subscribers
  * - Feature comparison table
  * - Google Play Billing integration
