@@ -28,15 +28,32 @@ class T66SectorTrendValidator : ApexProtocol {
             )
         }
         
-        val sectorCompatible = state["sectorCompatible"] as? Boolean ?: true
-        val trendDirection = state["trendDirection"] as? Double ?: 0.0
+        val sectorCompatible = state["sectorCompatible"] as? Boolean
+        val trendDirection = state["trendDirection"] as? Double
         
+        // DETECT missing upstream state - FAIL CLOSED
+        if (sectorCompatible == null || trendDirection == null) {
+            state["sectorTrendValid"] = false
+            state["sectorTrendScore"] = 0.0
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = "SectorTrendValidator: Missing upstream state (sectorCompatible or trendDirection) - FAIL (fail-closed)",
+                weight = weight
+            )
+        }
+        
+        // NOW can use non-null values
         val sectorTrendValid: Boolean
         val sectorTrendScore: Double
         
         if (primitives.detectedLines.isEmpty()) {
-            sectorTrendScore = 0.6
-            sectorTrendValid = true
+            // No lines available - use neutral but allow analysis
+            // This is OK because we have sector compatibility data
+            sectorTrendScore = if (sectorCompatible) 0.6 else 0.2
+            sectorTrendValid = sectorCompatible  // Respect sector compatibility
         } else {
             val avgSlope = primitives.detectedLines.map { line ->
                 if (abs(line.x2 - line.x1) < 0.001) {
@@ -51,7 +68,7 @@ class T66SectorTrendValidator : ApexProtocol {
                                   (abs(avgSlope) < 0.01 && abs(trendDirection) < 0.01)
             
             sectorTrendScore = if (slopesMatchTrend && sectorCompatible) 0.85 else 0.3
-            sectorTrendValid = true
+            sectorTrendValid = sectorTrendScore >= 0.6
         }
         
         state["sectorTrendValid"] = sectorTrendValid

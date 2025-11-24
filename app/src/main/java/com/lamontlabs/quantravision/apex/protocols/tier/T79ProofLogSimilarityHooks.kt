@@ -15,29 +15,87 @@ class T79ProofLogSimilarityHooks : ApexProtocol {
         primitives: ChartPrimitives,
         state: MutableMap<String, Any>
     ): ProtocolVerdict {
+        // FAIL-CLOSED: Insufficient candles = proof NOT ready
         if (primitives.candles.size < 30) {
-            state["proofSimilarityScore"] = 0.5
-            state["proofReady"] = true
+            state["proofSimilarityScore"] = 0.0
+            state["proofReady"] = false  // CRITICAL: NOT ready when insufficient data
             return ProtocolVerdict(
                 protocolId = protocolId,
                 protocolName = protocolName,
-                passed = true,
-                confidence = 0.5,
-                reason = "ProofLogSimilarityHooks: Insufficient candles (need >=30, got ${primitives.candles.size}), neutral score",
+                passed = false,
+                confidence = 0.0,
+                reason = "ProofLogSimilarityHooks: Insufficient candles for proof (need >=30, got ${primitives.candles.size}) - FAIL",
                 weight = weight
             )
         }
         
+        // FAIL-CLOSED: Verify required proof dependencies exist in state
+        val requiredKeys = listOf(
+            "finalContinuationScore",  // T45
+            "regimeCoherenceScore",    // T50
+            "finalSuppressionScore",   // T55
+            "marketStressLevel",       // T60
+            "crossLayerScore",         // T61
+            "normalizedScore"          // T78
+        )
+        
+        val missingKeys = requiredKeys.filter { !state.containsKey(it) }
+        
+        if (missingKeys.isNotEmpty()) {
+            state["proofSimilarityScore"] = 0.0
+            state["proofReady"] = false
+            state["proofFingerprint"] = "missing_dependencies"
+            state["proofHash"] = "incomplete_state"
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = String.format(
+                    Locale.US,
+                    "ProofLogSimilarityHooks: Missing proof dependencies (%s) - FAIL (fail-closed)",
+                    missingKeys.joinToString(", ")
+                ),
+                weight = weight
+            )
+        }
+        
+        // Generate proof artifacts (only after verifying dependencies)
         val fingerprint = createPatternFingerprint(primitives.candles, context)
         val proofHash = createProofHash(state)
         
+        // FAIL-CLOSED: Detect proof generation failures
+        if (proofHash == "hash_error" || fingerprint == "empty") {
+            state["proofSimilarityScore"] = 0.0
+            state["proofReady"] = false
+            state["proofFingerprint"] = fingerprint
+            state["proofHash"] = proofHash
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = String.format(
+                    Locale.US,
+                    "ProofLogSimilarityHooks: Proof generation failed (hash=%s, fingerprint=%s) - FAIL (fail-closed)",
+                    if (proofHash == "hash_error") "ERROR" else "OK",
+                    if (fingerprint == "empty") "EMPTY" else "OK"
+                ),
+                weight = weight
+            )
+        }
+        
+        // SUCCESS: Proof generated successfully (stub mode)
         val proofSimilarityScore = 0.5
         val proofReady = true
+        
+        val proofGenerationToken = System.currentTimeMillis().toString()
         
         state["proofSimilarityScore"] = proofSimilarityScore
         state["proofReady"] = proofReady
         state["proofFingerprint"] = fingerprint
         state["proofHash"] = proofHash
+        state["proofGenerationToken"] = proofGenerationToken
         
         val passed = proofReady
         val confidence = proofSimilarityScore

@@ -34,6 +34,40 @@ class T80FinalVerdictFusion : ApexProtocol {
         val suppressionActive = state["suppressionActive"] as? Boolean ?: true
         val cascadingFailureRisk = state["cascadingFailureRisk"] as? Double ?: 1.0
         
+        // FAIL-CLOSED: Verify proof artifacts exist and are not placeholders
+        val proofHash = state["proofHash"] as? String ?: ""
+        val proofFingerprint = state["proofFingerprint"] as? String ?: ""
+        val proofGenerationToken = state["proofGenerationToken"] as? String ?: ""
+        
+        val invalidProofArtifacts = proofHash.isEmpty() || 
+                                    proofFingerprint.isEmpty() ||
+                                    proofGenerationToken.isEmpty() ||
+                                    proofHash == "hash_error" ||
+                                    proofHash == "incomplete_state" ||
+                                    proofFingerprint == "empty" ||
+                                    proofFingerprint == "missing_dependencies"
+        
+        if (invalidProofArtifacts) {
+            state["finalVerdict"] = false
+            state["finalConfidence"] = 0.0
+            state["finalScore"] = 0.0
+            return ProtocolVerdict(
+                protocolId = protocolId,
+                protocolName = protocolName,
+                passed = false,
+                confidence = 0.0,
+                reason = String.format(
+                    Locale.US,
+                    "FinalVerdictFusion: Invalid proof artifacts (hash=%s, fingerprint=%s, token=%s) - FAIL (fail-closed)",
+                    if (proofHash.isEmpty() || proofHash == "hash_error" || proofHash == "incomplete_state") "INVALID" else "OK",
+                    if (proofFingerprint.isEmpty() || proofFingerprint == "empty" || proofFingerprint == "missing_dependencies") "INVALID" else "OK",
+                    if (proofGenerationToken.isEmpty()) "MISSING" else "OK"
+                ),
+                weight = weight
+            )
+        }
+        
+        // Final verdict with all gates
         val finalVerdict = preVerdictPassed && proofReady &&
                           !suppressionActive && cascadingFailureRisk < 0.5
         
