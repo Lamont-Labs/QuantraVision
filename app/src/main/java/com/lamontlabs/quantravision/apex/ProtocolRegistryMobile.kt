@@ -63,9 +63,29 @@ import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T57VolatilitySpik
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T58AbnormalMovementDetection
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T59VolumeAnomalyGuard
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T60MarketStressIndicator
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T61CrossLayerFusion
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T62RegimeContinuationBridge
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T63SuppressionVolatilityGate
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T64MultiSignalIntegration
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T65CoherenceValidator
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T66SectorTrendValidator
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T67MultiFrameContinuationFusion
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T68SectorTimeframeConsistency
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T69CrossSectorValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T70TemporalSectorAlignment
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T71ExoticVolatilityRejection
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T72RiskAmplificationDetector
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T73FlashCrashGuard
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T74LiquidityStressDetector
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T75CascadingFailureGuard
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T76PreVerdictValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T77ConfidenceAggregator
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T78ScoreNormalizer
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T79ProofLogSimilarityHooks
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T80FinalVerdictFusion
 
 /**
- * BATCH 2-5: Protocol Registry Mobile
+ * BATCH 2-6: Protocol Registry Mobile
  * 
  * Central registry for Apex Engine protocols.
  * Protocols are organized into three categories:
@@ -129,8 +149,7 @@ sealed interface ApexProtocol {
  * Protocol Registry singleton.
  * Manages registration and retrieval of all Apex protocols.
  * 
- * BATCH 3: T01-T20 implemented and registered.
- * BATCH 4-6: T21-T80 to be implemented.
+ * BATCH 3-6: T01-T80 implemented and registered.
  * BATCH 7: LP01-LP25 to be implemented.
  * BATCH 8: Omega01-04 to be implemented.
  */
@@ -157,6 +176,12 @@ object ProtocolRegistryMobile {
      * - T46-T50: Regime Alignment Hooks
      * - T51-T55: Suppression Triggers
      * - T56-T60: Volatility Exception Guards
+     * 
+     * BATCH 6: T61-T80 implemented
+     * - T61-T65: Advanced Fusion Layer
+     * - T66-T70: Sector & Multi-Frame Analysis
+     * - T71-T75: Exotic Volatility & Risk Detection
+     * - T76-T80: Final Validation & Verdict
      */
     private val tierProtocols = linkedMapOf<String, ApexProtocol>()
     
@@ -227,7 +252,27 @@ object ProtocolRegistryMobile {
         registerTierProtocol(T59VolumeAnomalyGuard())
         registerTierProtocol(T60MarketStressIndicator())
         
-        // TODO BATCH 6: Register T61-T80 protocols here
+        // BATCH 6: Register T61-T80 protocols in strict order
+        registerTierProtocol(T61CrossLayerFusion())
+        registerTierProtocol(T62RegimeContinuationBridge())
+        registerTierProtocol(T63SuppressionVolatilityGate())
+        registerTierProtocol(T64MultiSignalIntegration())
+        registerTierProtocol(T65CoherenceValidator())
+        registerTierProtocol(T66SectorTrendValidator())
+        registerTierProtocol(T67MultiFrameContinuationFusion())
+        registerTierProtocol(T68SectorTimeframeConsistency())
+        registerTierProtocol(T69CrossSectorValidation())
+        registerTierProtocol(T70TemporalSectorAlignment())
+        registerTierProtocol(T71ExoticVolatilityRejection())
+        registerTierProtocol(T72RiskAmplificationDetector())
+        registerTierProtocol(T73FlashCrashGuard())
+        registerTierProtocol(T74LiquidityStressDetector())
+        registerTierProtocol(T75CascadingFailureGuard())
+        registerTierProtocol(T76PreVerdictValidation())
+        registerTierProtocol(T77ConfidenceAggregator())
+        registerTierProtocol(T78ScoreNormalizer())
+        registerTierProtocol(T79ProofLogSimilarityHooks())
+        registerTierProtocol(T80FinalVerdictFusion())
     }
     
     /**
