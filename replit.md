@@ -6,11 +6,11 @@
 
 **Build Status:**
 - ✅ 100+ successful builds on Samsung S23 FE
-- ✅ Batch 3 Complete: All T01-T20 Tier Protocols implemented with true determinism
+- ✅ Batch 4 Complete: All T01-T40 Tier Protocols implemented with determinism & fail-closed safety
 - ✅ Apex Engine Mobile core (ApexEngineMobile, QuantraScoreMobile, ProofHasher) operational
 - 🔄 Template matching detection implemented but needs optimization
 - 📊 OCR indicator extraction requires refinement
-- 🚀 Apex Intelligence System implementation in progress (Batches 0-3 complete)
+- 🚀 Apex Intelligence System implementation in progress (Batches 0-4 complete)
 
 ## Overview
 
@@ -29,6 +29,20 @@ Always Follow These Steps:
 4. Use GitHub Actions for builds - Replit environment lacks Android SDK/tooling
 
 ## Recent Changes
+
+**November 24, 2025 - Batch 4 Complete: Tier Protocols T21-T40**
+- Implemented all 20 Tier Protocols (T21-T40) in four themed categories:
+  - T21-T25: Entropy Control Expansion (weights 1.6-2.0)
+  - T26-T30: Continuation Validation (weights 1.7-2.1)
+  - T31-T35: Drift Preliminary Gates (weights 1.8-2.3)
+  - T36-T40: Multi-Frame Consistency Scaffolding (weights 2.0-2.4)
+- Fixed critical state alignment issues (protocols now read correct keys from T01-T20)
+- Added comprehensive defensive programming: 47+ isEmpty checks, 15+ division-by-zero guards
+- Implemented multi-frame stride validation guards to prevent empty list processing
+- Created unit tests for T30, T35, T40 with deterministic fixtures
+- Updated ProtocolRegistryMobile.kt with T21-T40 in strict order
+- All protocols maintain fail-closed behavior (return FAIL, never crash)
+- Total: 40 Tier Protocols implemented (T01-T40) with 100% determinism
 
 **November 24, 2025 - Batch 3 Complete: Tier Protocols T01-T20**
 - Implemented all 20 Tier Protocols (T01-T20) with true determinism
@@ -52,7 +66,7 @@ QuantraVision uses a hybrid façade pattern for protocol organization that provi
   - Contains full protocol implementation logic
 
 - **Façade Files:** `app/src/main/java/com/lamontlabs/quantravision/apex/protocols/tier/mobile/`
-  - Files: `T01.kt`, `T02.kt`, ..., `T20.kt` (exact numeric naming)
+  - Files: `T01.kt`, `T02.kt`, ..., `T40.kt` (exact numeric naming)
   - Content: Typealias re-exports from parent tier package
   - Example: `typealias T01InputSanitization = com.lamontlabs.quantravision.apex.protocols.tier.T01InputSanitization`
 
@@ -61,7 +75,14 @@ QuantraVision uses a hybrid façade pattern for protocol organization that provi
 - Descriptive class names for IDE navigation and code readability
 - Minimal maintenance overhead (2-line façade files)
 - Explicit imports in ProtocolRegistryMobile enforce strict execution order
-- Scalable pattern for T21-T80 (future batches)
+- Scalable pattern for T41-T80 (future batches)
+
+**State Key Dependencies (T21-T40):**
+T21-T40 protocols read state keys written by T01-T20:
+- Entropy metrics: `aggregatedEntropyScore` (T20), `entropyEarlyScore` (T16), `conflictCount` (T17)
+- Trend/momentum: `trendStrength`, `trendDirection` (T07), `momentumScore`, `momentumAligned` (T11)
+- Volume: `volumeConfirmed`, `volumeConfirmationScore` (T12)
+- Structure: `structureComplete` (T10), `volatility`, `atr` (T06)
 
 ## System Architecture
 
