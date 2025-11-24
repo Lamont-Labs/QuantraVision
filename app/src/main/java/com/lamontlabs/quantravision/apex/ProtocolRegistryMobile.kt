@@ -83,9 +83,34 @@ import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T77ConfidenceAggr
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T78ScoreNormalizer
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T79ProofLogSimilarityHooks
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T80FinalVerdictFusion
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP01SuppressionMemoryLoader
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP02FalsePositiveReconciler
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP03SuppressionDecayCalculator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP04SuppressionScoreAggregator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP05SuppressionStateWriter
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP06DriftHistoryLoader
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP07RegimeShiftAnalyzer
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP08VolatilityDriftTracker
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP09TrendDriftCalculator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP10DriftAdaptationAggregator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP11PatternHistoryLoader
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP12EffectivenessAggregator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP13ContextualReliabilityMapper
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP14TierWeightedAdjuster
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP15PatternLearningFinalizer
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP16ConfidenceModifierCalculator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP17AdaptiveClampEnforcer
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP18OverrideFlagSetter
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP19SensitivityAdjuster
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP20AdaptiveRefinementFinalizer
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP21LearningStateValidator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP22IntegrityChecker
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP23ProofDigestGenerator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP24FreshnessTokenValidator
+import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP25LearningStateFinalizer
 
 /**
- * BATCH 2-6: Protocol Registry Mobile
+ * BATCH 2-7: Protocol Registry Mobile
  * 
  * Central registry for Apex Engine protocols.
  * Protocols are organized into three categories:
@@ -273,18 +298,54 @@ object ProtocolRegistryMobile {
         registerTierProtocol(T78ScoreNormalizer())
         registerTierProtocol(T79ProofLogSimilarityHooks())
         registerTierProtocol(T80FinalVerdictFusion())
+        
+        // BATCH 7: Register LP01-LP25 protocols in strict order
+        // LP01-LP05: Suppression Memory Foundation
+        registerLearningProtocol(LP01SuppressionMemoryLoader())
+        registerLearningProtocol(LP02FalsePositiveReconciler())
+        registerLearningProtocol(LP03SuppressionDecayCalculator())
+        registerLearningProtocol(LP04SuppressionScoreAggregator())
+        registerLearningProtocol(LP05SuppressionStateWriter())
+        
+        // LP06-LP10: Drift Detection
+        registerLearningProtocol(LP06DriftHistoryLoader())
+        registerLearningProtocol(LP07RegimeShiftAnalyzer())
+        registerLearningProtocol(LP08VolatilityDriftTracker())
+        registerLearningProtocol(LP09TrendDriftCalculator())
+        registerLearningProtocol(LP10DriftAdaptationAggregator())
+        
+        // LP11-LP15: Pattern Learning
+        registerLearningProtocol(LP11PatternHistoryLoader())
+        registerLearningProtocol(LP12EffectivenessAggregator())
+        registerLearningProtocol(LP13ContextualReliabilityMapper())
+        registerLearningProtocol(LP14TierWeightedAdjuster())
+        registerLearningProtocol(LP15PatternLearningFinalizer())
+        
+        // LP16-LP20: Adaptive Refinement
+        registerLearningProtocol(LP16ConfidenceModifierCalculator())
+        registerLearningProtocol(LP17AdaptiveClampEnforcer())
+        registerLearningProtocol(LP18OverrideFlagSetter())
+        registerLearningProtocol(LP19SensitivityAdjuster())
+        registerLearningProtocol(LP20AdaptiveRefinementFinalizer())
+        
+        // LP21-LP25: Learning State Finalization
+        registerLearningProtocol(LP21LearningStateValidator())
+        registerLearningProtocol(LP22IntegrityChecker())
+        registerLearningProtocol(LP23ProofDigestGenerator())
+        registerLearningProtocol(LP24FreshnessTokenValidator())
+        registerLearningProtocol(LP25LearningStateFinalizer())
     }
     
     /**
      * Learning protocols registry (LP01-LP25).
      * Adaptive learning and context-aware gates.
      * 
-     * TODO BATCH 7: Implement LP01-LP25 and register here.
-     * Expected protocols include:
-     * - LP01: Historical pattern success rate
-     * - LP02: User feedback integration
-     * - LP03: Market regime adaptation
-     * - LP04-LP25: Additional adaptive gates
+     * BATCH 7: LP01-LP25 implemented and registered.
+     * - LP01-LP05: Suppression Memory Foundation
+     * - LP06-LP10: Drift Detection
+     * - LP11-LP15: Pattern Learning
+     * - LP16-LP20: Adaptive Refinement
+     * - LP21-LP25: Learning State Finalization
      */
     private val learningProtocols = linkedMapOf<String, ApexProtocol>()
     
