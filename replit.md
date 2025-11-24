@@ -6,6 +6,18 @@ QuantraVision is an offline-first Android application for retail traders, provid
 
 The project's ambition is to offer institutional-grade trading intelligence within a privacy-first mobile application that functions entirely offline, targeting retail traders seeking advanced analytical tools without compromising data privacy.
 
+## Project Status
+
+**Current State:** Active Development - Apex Engine Mobile Implementation (November 2025)
+
+**Build Status:**
+- ✅ 100+ successful builds on Samsung S23 FE
+- ✅ **Batch 8 Complete: All 109 Protocols implemented (T01-T80 + LP01-LP25 + Omega01-Omega04)**
+- ✅ Apex Engine Mobile core (ApexEngineMobile, QuantraScoreMobile, ProofHasher) operational
+- 🔄 Template matching detection implemented but needs optimization
+- 📊 OCR indicator extraction requires refinement
+- 🚀 Apex Intelligence System complete (Batches 0-8: Tier + Learning + Omega Safety)
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -27,7 +39,7 @@ The current system uses OpenCV for template matching with 109 PNG reference imag
 This future vision aims to replace template matching with a sophisticated, multi-layer validation system.
 - **Geometric Pattern Detection Engine:** Will use OpenCV for geometry-based structural analysis (peaks, troughs, trendlines) to detect 15-20 core patterns with higher accuracy.
 - **Trait & Microtrait System:** Categorizes high-level signals into "Traits" and decomposes them into granular "Microtraits" for nuanced analysis and weighted scoring.
-- **Mobile Protocol Stack:** A set of 105 deterministic validation rules (T01-T80 Tier Protocols + LP01-LP25 Learning Protocols) adapted from the Apex desktop system. These protocols apply specific logic, modify scores, and contribute to an audit trail, ensuring fail-closed behavior.
+- **Mobile Protocol Stack:** A set of 109 deterministic validation rules (Omega01-Omega04 Safety + T01-T80 Tier + LP01-LP25 Learning) adapted from the Apex desktop system. These protocols apply specific logic, modify scores, and contribute to an audit trail, ensuring fail-closed behavior.
 - **Entropy, Suppression & Drift Systems:** Mechanisms to detect conflicting signals (Entropy), learn from past false positives (Suppression Memory), and adapt to changing market conditions (Drift Detection).
 - **Enhanced QuantraScore Methodology:** A sophisticated pipeline for calculating a 0-100 score, incorporating base trait scoring, microtrait contributions, and penalties/modifiers from entropy, suppression, drift, and all protocols.
 - **Hybrid Explanation System:** A two-tier approach using fast template-based explanations and a small LLM (Gemma 2B or Phi-2) for complex cases.
@@ -59,3 +71,27 @@ This future vision aims to replace template matching with a sophisticated, multi
 
 **Future Dependencies (if Apex Intelligence is implemented):**
 - **Gemma 2B or Phi-2:** Small language models for the hybrid explanation system.
+## Recent Changes - Batch 8
+
+**November 24, 2025 - Batch 8 Complete: Omega Safety Protocols (Omega01-Omega04)**
+- Implemented all 4 Omega Safety Protocols as final hard locks before Tier protocols
+- Four critical safety categories:
+  - Omega01: Structural Anomaly Guard (weight 5.0) - Validates candle integrity (OHLC relationships, NaN/Infinity, negative prices, timestamp sequencing, volume anomalies)
+  - Omega02: Risk Cap Enforcer (weight 4.8) - Enforces risk limits (QuantraScore caps, confidence thresholds, position sizing, over-leverage detection)
+  - Omega03: Security & Authorization Validator (weight 4.9) - Validates user authorization, proof integrity (SHA-256 digests), tampered state detection
+  - Omega04: Compliance Guard (weight 4.7) - Enforces disclaimer acknowledgment, tier restrictions (FREE/PRO/ULTRA), geographic compliance
+- Fixed critical fail-closed violation through architect review:
+  - Omega02 RiskCapEnforcer: Now FAILS when ALL risk metrics missing (quantraScore, confidence, positionSize) instead of silently passing
+  - Validates metrics independently - only checks metrics that are present
+  - Explicit fail-closed message: "Missing all risk metrics - FAIL (fail-closed)"
+- Highest weights (4.7-5.0) for critical safety checks
+- Comprehensive state markers for audit trail:
+  - omega_X_passed (Boolean)
+  - omega_X_anomalyCount/violations (Int/List<String>)
+  - omega_X_reason (String with detailed diagnostics)
+- Created unit tests for Omega01 (8 test methods) and Omega02 (15 test methods, including fail-closed verification)
+- Updated ProtocolRegistryMobile.kt with Omega protocols registered BEFORE Tier protocols (strict execution order: Omega → Tier → Learning)
+- Created 4 façade files (Omega01.kt-Omega04.kt) following exact pattern from Tier/Learning protocols
+- **Total: 109 Protocols implemented (T01-T80 + LP01-LP25 + Omega01-Omega04)** with protocol-level fail-closed guarantees
+- **Execution order:** Omega safety checks execute FIRST, then Tier protocols, then Learning protocols
+- **Key requirement:** All Omega protocols fail-closed - missing prerequisites or safety violations → immediate FAIL verdict
