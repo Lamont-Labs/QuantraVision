@@ -10,6 +10,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
+import com.lamontlabs.quantravision.tiers.Tier
+import com.lamontlabs.quantravision.tiers.TierRegistry
 
 /**
  * BATCH 10: QuotaGate Unit Tests
@@ -406,6 +408,185 @@ class QuotaGateTest {
         assertFalse(
             "26th call should be blocked (over limit)",
             QuotaGate.canMakeCloudCall(context, "ULTRA")
+        )
+    }
+    
+    // ============================================================
+    // BATCH B v1.0: TIER UPGRADE AND PERSISTENCE TESTS
+    // ============================================================
+    
+    @Test
+    fun `tier upgrade from FREE to BASIC takes effect immediately even when throttled`() {
+        // Start with FREE tier, exhaust quota (1/day)
+        assertTrue(
+            "First FREE call should succeed",
+            QuotaGate.canMakeCloudCall(context, "FREE")
+        )
+        assertFalse(
+            "Second FREE call should be blocked (limit is 1)",
+            QuotaGate.canMakeCloudCall(context, "FREE")
+        )
+        
+        // Upgrade to BASIC (5/day) - tier change takes effect immediately
+        // User already used 1 call, so should have 4 more available on BASIC tier
+        assertTrue(
+            "First BASIC call should succeed (2/5)",
+            QuotaGate.canMakeCloudCall(context, "BASIC")
+        )
+        assertTrue(
+            "Second BASIC call should succeed (3/5)",
+            QuotaGate.canMakeCloudCall(context, "BASIC")
+        )
+        assertTrue(
+            "Third BASIC call should succeed (4/5)",
+            QuotaGate.canMakeCloudCall(context, "BASIC")
+        )
+        assertTrue(
+            "Fourth BASIC call should succeed (5/5)",
+            QuotaGate.canMakeCloudCall(context, "BASIC")
+        )
+        assertFalse(
+            "Fifth BASIC call should be blocked (limit reached at 5)",
+            QuotaGate.canMakeCloudCall(context, "BASIC")
+        )
+    }
+    
+    @Test
+    fun `tier persisted correctly across state reloads`() {
+        // Make a call on PRO tier
+        assertTrue(
+            "First PRO call should succeed",
+            QuotaGate.canMakeCloudCall(context, "PRO")
+        )
+        
+        // Force state reload by calling resetIfNeeded
+        QuotaGate.resetIfNeeded(context)
+        
+        // Should remember PRO tier with 1 call already used (19 remaining)
+        val limit = com.lamontlabs.quantravision.tiers.TierRegistry.getAIExplanationLimit(
+            com.lamontlabs.quantravision.tiers.Tier.PRO
+        )  // 20
+        val remaining = QuotaGate.getRemainingCalls(context, "PRO")
+        assertEquals(
+            "Should have ${limit - 1} calls remaining after state reload",
+            limit - 1,
+            remaining
+        )
+    }
+    
+    @Test
+    fun `tier preserved during daily UTC reset`() {
+        // Make calls on PRO tier
+        assertTrue("First PRO call should succeed", QuotaGate.canMakeCloudCall(context, "PRO"))
+        assertTrue("Second PRO call should succeed", QuotaGate.canMakeCloudCall(context, "PRO"))
+        
+        // Simulate UTC midnight reset by manipulating quota file with yesterday's date
+        val quotaFile = File(context.filesDir, "quota_state.json")
+        val yesterday = java.time.LocalDate.now(java.time.ZoneOffset.UTC).minusDays(1).toString()
+        val json = """
+            {
+                "callsToday": 2,
+                "lastCallTimestamp": ${System.currentTimeMillis()},
+                "lastResetDate": "$yesterday",
+                "lastResetMs": ${System.currentTimeMillis()},
+                "tier": "PRO",
+                "recentCallTimestamps": []
+            }
+        """.trimIndent()
+        quotaFile.writeText(json)
+        
+        // Trigger reset by loading state
+        QuotaGate.resetIfNeeded(context)
+        
+        // Should still be on PRO tier with full quota (20 calls) after reset
+        val limit = com.lamontlabs.quantravision.tiers.TierRegistry.getAIExplanationLimit(
+            com.lamontlabs.quantravision.tiers.Tier.PRO
+        )
+        val remaining = QuotaGate.getRemainingCalls(context, "PRO")
+        assertEquals(
+            "Should have full PRO quota after UTC reset",
+            limit,
+            remaining
+        )
+        
+        // Verify we can make the full quota of calls
+        repeat(limit) { callNumber ->
+            assertTrue(
+                "Call ${callNumber + 1}/$limit should succeed after reset",
+                QuotaGate.canMakeCloudCall(context, "PRO")
+            )
+        }
+        assertFalse(
+            "Should be blocked after using full quota",
+            QuotaGate.canMakeCloudCall(context, "PRO")
+        )
+    }
+    
+    @Test
+    fun `all tier limits match TierRegistry exactly`() {
+        assertEquals(
+            "FREE tier AI explanation limit should match TierRegistry",
+            1,
+            TierRegistry.getAIExplanationLimit(Tier.FREE)
+        )
+        assertEquals(
+            "BASIC tier AI explanation limit should match TierRegistry",
+            5,
+            TierRegistry.getAIExplanationLimit(Tier.BASIC)
+        )
+        assertEquals(
+            "PRO tier AI explanation limit should match TierRegistry",
+            20,
+            TierRegistry.getAIExplanationLimit(Tier.PRO)
+        )
+        assertEquals(
+            "APEX tier AI explanation limit should match TierRegistry",
+            60,
+            TierRegistry.getAIExplanationLimit(Tier.APEX)
+        )
+    }
+    
+    @Test
+    fun `tier upgrade from BASIC to PRO increases quota immediately`() {
+        // Use 3 calls on BASIC (5/day limit)
+        repeat(3) {
+            assertTrue(QuotaGate.canMakeCloudCall(context, "BASIC"))
+        }
+        
+        // Upgrade to PRO (20/day limit) - should have 17 more calls available
+        val basicUsed = 3
+        val proLimit = com.lamontlabs.quantravision.tiers.TierRegistry.getAIExplanationLimit(
+            com.lamontlabs.quantravision.tiers.Tier.PRO
+        )
+        val expectedRemaining = proLimit - basicUsed
+        
+        val remaining = QuotaGate.getRemainingCalls(context, "PRO")
+        assertEquals(
+            "Should have $expectedRemaining calls after upgrade from BASIC to PRO",
+            expectedRemaining,
+            remaining
+        )
+    }
+    
+    @Test
+    fun `tier upgrade from PRO to APEX increases quota immediately`() {
+        // Use 10 calls on PRO (20/day limit)
+        repeat(10) {
+            assertTrue(QuotaGate.canMakeCloudCall(context, "PRO"))
+        }
+        
+        // Upgrade to APEX (60/day limit) - should have 50 more calls available
+        val proUsed = 10
+        val apexLimit = com.lamontlabs.quantravision.tiers.TierRegistry.getAIExplanationLimit(
+            com.lamontlabs.quantravision.tiers.Tier.APEX
+        )
+        val expectedRemaining = apexLimit - proUsed
+        
+        val remaining = QuotaGate.getRemainingCalls(context, "APEX")
+        assertEquals(
+            "Should have $expectedRemaining calls after upgrade from PRO to APEX",
+            expectedRemaining,
+            remaining
         )
     }
 }
