@@ -43,9 +43,29 @@ import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T37CrossTimeframe
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T38ScaleInvariance
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T39TemporalCoherence
 import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T40MultiFrameEntropy
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T41ContinuationFusion
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T42ContinuationSmoothing
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T43ContinuationConsistency
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T44ContinuationStrength
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T45ContinuationValidation
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T46RegimeAlignment
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T47SectorCompatibility
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T48VolatilityRegimeCheck
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T49TemporalRegimeStability
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T50CrossRegimeCoherence
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T51FalsePositiveSuppression
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T52PatternSuppression
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T53NoiseSuppression
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T54ConflictSuppression
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T55AdaptiveSuppressionThreshold
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T56ExtremeVolatilityDetection
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T57VolatilitySpikeGuard
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T58AbnormalMovementDetection
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T59VolumeAnomalyGuard
+import com.lamontlabs.quantravision.apex.protocols.tier.mobile.T60MarketStressIndicator
 
 /**
- * BATCH 2-4: Protocol Registry Mobile
+ * BATCH 2-5: Protocol Registry Mobile
  * 
  * Central registry for Apex Engine protocols.
  * Protocols are organized into three categories:
@@ -131,6 +151,12 @@ object ProtocolRegistryMobile {
      * - T26-T30: Continuation Validation
      * - T31-T35: Drift Preliminary Gates
      * - T36-T40: Multi-Frame Scaffolding
+     * 
+     * BATCH 5: T41-T60 implemented
+     * - T41-T45: Continuation Fusion
+     * - T46-T50: Regime Alignment Hooks
+     * - T51-T55: Suppression Triggers
+     * - T56-T60: Volatility Exception Guards
      */
     private val tierProtocols = linkedMapOf<String, ApexProtocol>()
     
@@ -179,7 +205,29 @@ object ProtocolRegistryMobile {
         registerTierProtocol(T39TemporalCoherence())
         registerTierProtocol(T40MultiFrameEntropy())
         
-        // TODO BATCH 5-6: Register T41-T80 protocols here
+        // BATCH 5: Register T41-T60 protocols in strict order
+        registerTierProtocol(T41ContinuationFusion())
+        registerTierProtocol(T42ContinuationSmoothing())
+        registerTierProtocol(T43ContinuationConsistency())
+        registerTierProtocol(T44ContinuationStrength())
+        registerTierProtocol(T45ContinuationValidation())
+        registerTierProtocol(T46RegimeAlignment())
+        registerTierProtocol(T47SectorCompatibility())
+        registerTierProtocol(T48VolatilityRegimeCheck())
+        registerTierProtocol(T49TemporalRegimeStability())
+        registerTierProtocol(T50CrossRegimeCoherence())
+        registerTierProtocol(T51FalsePositiveSuppression())
+        registerTierProtocol(T52PatternSuppression())
+        registerTierProtocol(T53NoiseSuppression())
+        registerTierProtocol(T54ConflictSuppression())
+        registerTierProtocol(T55AdaptiveSuppressionThreshold())
+        registerTierProtocol(T56ExtremeVolatilityDetection())
+        registerTierProtocol(T57VolatilitySpikeGuard())
+        registerTierProtocol(T58AbnormalMovementDetection())
+        registerTierProtocol(T59VolumeAnomalyGuard())
+        registerTierProtocol(T60MarketStressIndicator())
+        
+        // TODO BATCH 6: Register T61-T80 protocols here
     }
     
     /**
