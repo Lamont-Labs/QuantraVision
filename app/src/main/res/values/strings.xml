@@ -58,4 +58,8 @@
     <!-- Quota Messages -->
     <string name="quota_exceeded">Daily cloud quota exceeded. Upgrade for more calls.</string>
     <string name="quota_remaining">%1$d cloud calls remaining today</string>
+
+    <!-- Widget & Floating Logo -->
+    <string name="floating_logo_description">QuantraVision floating logo</string>
+    <string name="widget_description">QuantraVision Apex widget</string>
 </resources>
