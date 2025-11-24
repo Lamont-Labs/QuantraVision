@@ -43,7 +43,7 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "One-time payment • Lifetime access • No subscriptions",
+                    "Monthly subscription • Cancel anytime • Auto-renews",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -54,125 +54,80 @@ fun UpgradeScreen(activity: Activity, bm: BillingManager) {
                 TierCard(
                     title = "FREE",
                     price = "Current Plan",
-                    features = listOf("10 patterns", "Basic overlay"),
+                    features = listOf(
+                        "10 basic patterns",
+                        "3 scans/day",
+                        "1 AI explanation/day",
+                        "Basic overlay"
+                    ),
                     isCurrentTier = tier == "",
                     isPurchased = false,
                     onPurchase = {}
                 )
                 
-                // STARTER tier
-                val starterProduct = bm.getProductDetails("qv_starter_one")
+                // BASIC tier
+                val basicProduct = bm.getProductDetails("qv_basic_monthly")
                 TierCard(
-                    title = "STARTER",
-                    price = starterProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$9.99",
-                    features = listOf(
-                        "25 patterns",
-                        "Multi-timeframe support",
-                        "Basic analytics"
-                    ),
-                    isCurrentTier = tier == "STARTER",
-                    isPurchased = bm.isStarter(),
-                    isUpgrade = false,
-                    onPurchase = { bm.purchaseStarter() }
-                )
-                
-                // STANDARD tier
-                val currentTier = when (tier) {
-                    "PRO" -> Tier.PRO
-                    "STANDARD" -> Tier.STANDARD
-                    "STARTER" -> Tier.STARTER
-                    else -> Tier.FREE
-                }
-                
-                val standardUpgradeSku = bm.getUpgradeSku(currentTier, Tier.STANDARD)
-                val isStandardUpgrade = standardUpgradeSku != null
-                val standardUpgradeProduct = standardUpgradeSku?.let { bm.getProductDetails(it) }
-                val standardProduct = bm.getProductDetails("qv_standard_one")
-                
-                TierCard(
-                    title = "STANDARD",
-                    price = if (isStandardUpgrade) {
-                        standardUpgradeProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$15.00"
-                    } else {
-                        standardProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$24.99"
-                    },
-                    originalPrice = if (isStandardUpgrade) {
-                        standardProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$24.99"
-                    } else null,
+                    title = "BASIC",
+                    price = basicProduct?.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice ?: "$4.99/mo",
                     badge = "MOST POPULAR",
                     features = listOf(
-                        "50 patterns",
-                        "Full analytics dashboard",
-                        "50 achievements + 25 lessons",
-                        "Trading book + exports"
+                        "25 core patterns",
+                        "25 scans/day",
+                        "5 AI explanations/day",
+                        "5 saved summaries",
+                        "Core overlay"
                     ),
-                    isCurrentTier = tier == "STANDARD",
-                    isPurchased = bm.isStandard(),
-                    isUpgrade = isStandardUpgrade,
-                    onPurchase = { bm.purchaseStandard() }
+                    isCurrentTier = tier == "BASIC",
+                    isPurchased = bm.isBasic(),
+                    isUpgrade = false,
+                    onPurchase = { bm.purchaseBasic() }
                 )
                 
                 // PRO tier
-                val proUpgradeSku = bm.getUpgradeSku(currentTier, Tier.PRO)
-                val isProUpgrade = proUpgradeSku != null
-                val proUpgradeProduct = proUpgradeSku?.let { bm.getProductDetails(it) }
-                val proProduct = bm.getProductDetails("qv_pro_one")
+                val currentTier = when (tier) {
+                    "APEX" -> Tier.APEX
+                    "PRO" -> Tier.PRO
+                    "BASIC" -> Tier.BASIC
+                    else -> Tier.FREE
+                }
                 
+                val proProduct = bm.getProductDetails("qv_pro_monthly")
                 TierCard(
                     title = "PRO",
-                    price = if (isProUpgrade) {
-                        proUpgradeProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: when (currentTier) {
-                            Tier.STARTER -> "$40.00"
-                            Tier.STANDARD -> "$25.00"
-                            else -> "$49.99"
-                        }
-                    } else {
-                        proProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99"
-                    },
-                    originalPrice = if (isProUpgrade) {
-                        proProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$49.99"
-                    } else null,
+                    price = proProduct?.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice ?: "$14.99/mo",
                     features = listOf(
-                        "ALL 109 patterns",
-                        "Intelligence Stack",
-                        "AI Learning (10 algorithms)",
-                        "Behavioral Guardrails",
-                        "Proof Capsules",
-                        "Everything unlocked"
+                        "50 advanced patterns",
+                        "75 scans/day",
+                        "20 AI explanations/day",
+                        "20 saved summaries",
+                        "Batch mode",
+                        "Full apex overlay"
                     ),
                     isCurrentTier = tier == "PRO",
                     isPurchased = bm.isPro(),
-                    isUpgrade = isProUpgrade,
+                    isUpgrade = false,
                     onPurchase = { bm.purchasePro() }
                 )
                 
-                // Show standalone book purchase for FREE and STARTER users only
-                if ((tier == "" || tier == "STARTER") && !bm.hasBook()) {
-                    Spacer(Modifier.height(24.dp))
-                    
-                    // Separator
-                    Text(
-                        "Add-Ons",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    
-                    // Standalone book card
-                    val bookProduct = bm.getProductDetails("qv_book_standalone")
-                    TierCard(
-                        title = "The Friendly Trader Book",
-                        price = bookProduct?.oneTimePurchaseOfferDetails?.formattedPrice ?: "$4.99",
-                        features = listOf(
-                            "10-chapter trading guide",
-                            "Offline reading",
-                            "Progress tracking",
-                            "Complete beginner curriculum"
-                        ),
-                        isCurrentTier = false,
-                        isPurchased = false,
-                        onPurchase = { bm.purchaseBook() }
+                // APEX tier
+                val apexProduct = bm.getProductDetails("qv_apex_monthly")
+                TierCard(
+                    title = "APEX",
+                    price = apexProduct?.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice ?: "$29.99/mo",
+                    features = listOf(
+                        "ALL 109 patterns",
+                        "200 scans/day",
+                        "60 AI explanations/day",
+                        "100 saved summaries",
+                        "Advanced logic",
+                        "AI scan learning",
+                        "Everything unlocked"
+                    ),
+                    isCurrentTier = tier == "APEX",
+                    isPurchased = bm.isApex(),
+                    isUpgrade = false,
+                    onPurchase = { bm.purchaseApex() }
                     )
                 }
                 

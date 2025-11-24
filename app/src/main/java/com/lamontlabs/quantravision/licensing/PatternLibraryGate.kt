@@ -11,10 +11,10 @@ import com.lamontlabs.quantravision.PatternMatch
  * Controls which patterns are available based on license tier.
  * 
  * Tier Structure (4 Tiers):
- * - Free: $0 - 10 patterns, basic overlay
- * - Starter ($9.99): 25 patterns, multi-timeframe, basic analytics
- * - Standard ($24.99): 50 patterns, full analytics, 50 achievements, 25 lessons, book, exports
- * - Pro ($49.99): 109 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
+ * - Free: $0/mo - 10 patterns, basic overlay
+ * - Basic ($4.99/mo): 25 patterns, core overlay
+ * - Pro ($14.99/mo): 50 patterns, full apex overlay, batch mode
+ * - Apex ($29.99/mo): 109 patterns, advanced logic, AI learning
  */
 object PatternLibraryGate {
 
@@ -41,10 +41,10 @@ object PatternLibraryGate {
     )
 
     /**
-     * Starter Tier Patterns (25 patterns total = Free 10 + 15 more)
+     * Basic Tier Patterns (25 patterns total = Free 10 + 15 more)
      * IDs match actual YAML filenames (lowercase snake_case)
      */
-    val STARTER_TIER_PATTERNS = FREE_TIER_PATTERNS + setOf(
+    val BASIC_TIER_PATTERNS = FREE_TIER_PATTERNS + setOf(
         // Additional Reversals (6)
         "triple_top",
         "triple_bottom",
@@ -68,10 +68,10 @@ object PatternLibraryGate {
     )
 
     /**
-     * Standard Tier Patterns (50 patterns total = Starter 25 + 25 more)
+     * Pro Tier Patterns (50 patterns total = Basic 25 + 25 more)
      * IDs match actual YAML filenames (lowercase snake_case)
      */
-    val STANDARD_TIER_PATTERNS = STARTER_TIER_PATTERNS + setOf(
+    val PRO_TIER_PATTERNS = BASIC_TIER_PATTERNS + setOf(
         // Advanced Candlesticks (13)
         "hanging_man",
         "shooting_star",
@@ -130,9 +130,9 @@ object PatternLibraryGate {
      */
     fun getCurrentTier(context: Context): Tier {
         return when {
+            ApexFeatureGate.isActive(context) -> Tier.APEX
             ProFeatureGate.isActive(context) -> Tier.PRO
-            StandardFeatureGate.isActive(context) -> Tier.STANDARD
-            StarterFeatureGate.isActive(context) -> Tier.STARTER
+            BasicFeatureGate.isActive(context) -> Tier.BASIC
             else -> Tier.FREE
         }
     }
@@ -142,9 +142,9 @@ object PatternLibraryGate {
      */
     fun isPatternAvailable(context: Context, patternId: String): Boolean {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> true // All 109 patterns
-            Tier.STANDARD -> STANDARD_TIER_PATTERNS.contains(patternId)
-            Tier.STARTER -> STARTER_TIER_PATTERNS.contains(patternId)
+            Tier.APEX -> true // All 109 patterns
+            Tier.PRO -> PRO_TIER_PATTERNS.contains(patternId)
+            Tier.BASIC -> BASIC_TIER_PATTERNS.contains(patternId)
             Tier.FREE -> FREE_TIER_PATTERNS.contains(patternId)
         }
     }
@@ -154,9 +154,9 @@ object PatternLibraryGate {
      */
     fun filterByTier(context: Context, matches: List<PatternMatch>): List<PatternMatch> {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> matches // All 109 patterns available
-            Tier.STANDARD -> matches.filter { STANDARD_TIER_PATTERNS.contains(it.patternName) }
-            Tier.STARTER -> matches.filter { STARTER_TIER_PATTERNS.contains(it.patternName) }
+            Tier.APEX -> matches // All 109 patterns available
+            Tier.PRO -> matches.filter { PRO_TIER_PATTERNS.contains(it.patternName) }
+            Tier.BASIC -> matches.filter { BASIC_TIER_PATTERNS.contains(it.patternName) }
             Tier.FREE -> matches.filter { FREE_TIER_PATTERNS.contains(it.patternName) }
         }
     }
@@ -166,9 +166,9 @@ object PatternLibraryGate {
      */
     fun getAvailablePatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> 109
-            Tier.STANDARD -> STANDARD_TIER_PATTERNS.size // 50
-            Tier.STARTER -> STARTER_TIER_PATTERNS.size // 25
+            Tier.APEX -> 109
+            Tier.PRO -> PRO_TIER_PATTERNS.size // 50
+            Tier.BASIC -> BASIC_TIER_PATTERNS.size // 25
             Tier.FREE -> FREE_TIER_PATTERNS.size // 10
         }
     }
@@ -178,17 +178,17 @@ object PatternLibraryGate {
      */
     fun getLockedPatternCount(context: Context): Int {
         return when (getCurrentTier(context)) {
-            Tier.PRO -> 0
-            Tier.STANDARD -> 109 - STANDARD_TIER_PATTERNS.size // 59
-            Tier.STARTER -> 109 - STARTER_TIER_PATTERNS.size // 84
+            Tier.APEX -> 0
+            Tier.PRO -> 109 - PRO_TIER_PATTERNS.size // 59
+            Tier.BASIC -> 109 - BASIC_TIER_PATTERNS.size // 84
             Tier.FREE -> 109 - FREE_TIER_PATTERNS.size // 99
         }
     }
 
     enum class Tier {
-        FREE,      // $0 - 10 patterns, basic overlay
-        STARTER,   // $9.99 - 25 patterns, multi-timeframe, basic analytics
-        STANDARD,  // $24.99 - 50 patterns, full analytics, achievements, lessons, book, exports
-        PRO        // $49.99 - 109 patterns, Intelligence Stack, AI Learning, Behavioral Guardrails, Proof Capsules
+        FREE,   // $0/mo - 10 patterns, basic overlay
+        BASIC,  // $4.99/mo - 25 patterns, core overlay
+        PRO,    // $14.99/mo - 50 patterns, full apex overlay, batch mode
+        APEX    // $29.99/mo - 109 patterns, advanced logic, AI learning
     }
 }

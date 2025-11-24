@@ -17,33 +17,26 @@
 package com.lamontlabs.quantravision.quota
 
 import android.content.Context
+import com.lamontlabs.quantravision.tiers.Tier
+import com.lamontlabs.quantravision.tiers.TierRegistry
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 /**
  * QuotaGate
  * Enforces daily cloud API call quota based on subscription tier.
- * Tier limits: FREE=0, PRO=10/day, ULTRA=25/day
+ * Tier limits: FREE=1/day, BASIC=5/day, PRO=20/day, APEX=60/day
  * Rate limits: min 8s between calls, max 3 per 60s
- * Persistent, device-local JSON: quota_state.json
+ * Resets daily at 00:00 UTC
+ * Persistent JSON: quota_state.json
  */
 object QuotaGate {
 
     private const val FILE = "quota_state.json"
     private const val TAG = "QuotaGate"
-    
-    private const val TIER_FREE = "FREE"
-    private const val TIER_PRO = "PRO"
-    private const val TIER_ULTRA = "ULTRA"
-    private const val TIER_APEX_ULTRA = "APEX_ULTRA"
-    
-    private const val FREE_LIMIT = 0
-    private const val PRO_LIMIT = 10
-    private const val ULTRA_LIMIT = 25
     
     private const val MIN_SECONDS_BETWEEN_CALLS = 8L
     private const val MAX_CALLS_PER_60_SECONDS = 3
@@ -59,19 +52,20 @@ object QuotaGate {
 
     /**
      * Check if a cloud call can be made given the current tier and quota state.
+     * If allowed, automatically increments the call count and persists the tier.
      * @param context Android context for file access
-     * @param tier Current subscription tier (FREE, PRO, ULTRA, APEX_ULTRA)
-     * @return true if call is allowed, false otherwise
+     * @param tier Current subscription tier (FREE, BASIC, PRO, APEX)
+     * @return true if call is allowed and count incremented, false otherwise
      */
     fun canMakeCloudCall(context: Context, tier: String): Boolean {
         val normalizedTier = normalizeTier(tier)
+        var state = loadState(context)
         
-        if (normalizedTier == TIER_FREE) {
-            Timber.d("$TAG: FREE tier has no cloud access")
-            return false
-        }
+        // Always persist the current tier before checking limits
+        // This ensures tier upgrades take effect immediately even when throttled
+        state = state.copy(tier = normalizedTier)
+        saveState(context, state)
         
-        val state = loadState(context)
         val limit = getLimitForTier(normalizedTier)
         
         if (state.callsToday >= limit) {
@@ -98,24 +92,20 @@ object QuotaGate {
             return false
         }
         
+        incrementCallCount(context, normalizedTier)
         Timber.v("$TAG: Cloud call allowed (${state.callsToday + 1}/$limit today)")
         return true
     }
 
     /**
-     * Increment the call count and update timestamp.
+     * Increment the call count, update timestamp, and persist tier.
      * @param context Android context for file access
+     * @param tier Current subscription tier to persist
      * @return true if increment succeeded, false if quota would be exceeded
      */
-    fun incrementCallCount(context: Context): Boolean {
+    private fun incrementCallCount(context: Context, tier: String): Boolean {
         try {
             val state = loadState(context)
-            val limit = getLimitForTier(state.tier)
-            
-            if (state.callsToday >= limit) {
-                Timber.w("$TAG: Cannot increment - limit reached")
-                return false
-            }
             
             val now = System.currentTimeMillis()
             val updatedRecentCalls = (state.recentCallTimestamps + now)
@@ -125,11 +115,13 @@ object QuotaGate {
             val newState = state.copy(
                 callsToday = state.callsToday + 1,
                 lastCallTimestamp = now,
+                tier = tier,
                 recentCallTimestamps = updatedRecentCalls
             )
             
             saveState(context, newState)
-            Timber.d("$TAG: Call count incremented: ${newState.callsToday}/$limit")
+            val limit = getLimitForTier(tier)
+            Timber.d("$TAG: Call count incremented: ${newState.callsToday}/$limit (tier: $tier)")
             return true
         } catch (e: Exception) {
             Timber.e(e, "$TAG: Failed to increment call count")
@@ -176,15 +168,14 @@ object QuotaGate {
 
     private fun loadState(context: Context): QuotaState {
         val file = File(context.filesDir, FILE)
-        val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-        val nowMs = System.currentTimeMillis()
+        val todayUTC = LocalDate.now(ZoneOffset.UTC).toString()
         
         if (!file.exists()) {
             val initialState = QuotaState(
                 callsToday = 0,
                 lastCallTimestamp = 0L,
-                lastResetDate = today,
-                tier = TIER_FREE,
+                lastResetDate = todayUTC,
+                tier = "FREE",
                 recentCallTimestamps = emptyList()
             )
             saveState(context, initialState)
@@ -200,8 +191,8 @@ object QuotaGate {
             val newState = QuotaState(
                 callsToday = 0,
                 lastCallTimestamp = 0L,
-                lastResetDate = today,
-                tier = TIER_FREE,
+                lastResetDate = todayUTC,
+                tier = "FREE",
                 recentCallTimestamps = emptyList()
             )
             saveState(context, newState)
@@ -209,20 +200,15 @@ object QuotaGate {
             return newState
         }
         
-        val lastReset = json.optString("lastResetDate", today)
-        val lastResetMs = json.optLong("lastResetMs", nowMs)
-        val millisIn24Hours = 24 * 60 * 60 * 1000L
+        val lastResetDateUTC = json.optString("lastResetDate", todayUTC)
         
-        val dateChanged = lastReset != today
-        val dayElapsed = (nowMs - lastResetMs) >= millisIn24Hours
-        
-        if (dateChanged && dayElapsed) {
-            Timber.d("$TAG: Daily reset triggered (date: $lastReset -> $today)")
+        if (lastResetDateUTC != todayUTC) {
+            Timber.d("$TAG: Daily reset triggered at 00:00 UTC (date: $lastResetDateUTC -> $todayUTC)")
             val resetState = QuotaState(
                 callsToday = 0,
                 lastCallTimestamp = json.optLong("lastCallTimestamp", 0L),
-                lastResetDate = today,
-                tier = json.optString("tier", TIER_FREE),
+                lastResetDate = todayUTC,
+                tier = json.optString("tier", "FREE"),
                 recentCallTimestamps = emptyList()
             )
             saveState(context, resetState)
@@ -241,8 +227,8 @@ object QuotaGate {
         val state = QuotaState(
             callsToday = json.optInt("callsToday", 0),
             lastCallTimestamp = json.optLong("lastCallTimestamp", 0L),
-            lastResetDate = lastReset,
-            tier = json.optString("tier", TIER_FREE),
+            lastResetDate = lastResetDateUTC,
+            tier = json.optString("tier", "FREE"),
             recentCallTimestamps = recentCalls
         )
         
@@ -270,23 +256,20 @@ object QuotaGate {
     }
 
     private fun normalizeTier(tier: String): String {
-        return when (tier.uppercase(Locale.US)) {
-            "FREE" -> TIER_FREE
-            "PRO" -> TIER_PRO
-            "ULTRA", "APEX_ULTRA" -> TIER_ULTRA
+        return when (tier.uppercase(java.util.Locale.US)) {
+            "FREE" -> "FREE"
+            "BASIC" -> "BASIC"
+            "PRO" -> "PRO"
+            "APEX" -> "APEX"
             else -> {
                 Timber.w("$TAG: Unknown tier '$tier', defaulting to FREE")
-                TIER_FREE
+                "FREE"
             }
         }
     }
 
     private fun getLimitForTier(tier: String): Int {
-        return when (tier) {
-            TIER_FREE -> FREE_LIMIT
-            TIER_PRO -> PRO_LIMIT
-            TIER_ULTRA -> ULTRA_LIMIT
-            else -> FREE_LIMIT
-        }
+        val tierEnum = Tier.fromString(tier)
+        return TierRegistry.getAIExplanationLimit(tierEnum)
     }
 }

@@ -3,8 +3,8 @@ package com.lamontlabs.quantravision.detection
 import android.content.Context
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.licensing.PatternLibraryGate
+import com.lamontlabs.quantravision.licensing.BasicFeatureGate
 import com.lamontlabs.quantravision.licensing.ProFeatureGate
-import com.lamontlabs.quantravision.licensing.StandardFeatureGate
 import com.lamontlabs.quantravision.quota.HighlightQuota
 
 /**
@@ -13,16 +13,16 @@ import com.lamontlabs.quantravision.quota.HighlightQuota
  * 
  * Tier Pricing:
  * Free: 3 highlights/day, 10 basic patterns
- * Starter ($9.99): Unlimited highlights, 25 core patterns
- * Standard ($24.99): Unlimited highlights, 50 patterns
- * Pro ($49.99): Unlimited highlights, all 109 patterns
+ * Basic ($4.99/mo): Unlimited highlights, 25 core patterns
+ * Pro ($14.99/mo): Unlimited highlights, 50 patterns
+ * Apex ($29.99/mo): Unlimited highlights, all 109 patterns
  */
 object HighlightGate {
 
     /** Call before rendering each highlight. Increments counter on allowed. */
     fun allowAndCount(context: Context): Boolean {
-        // Pro/Standard get unlimited highlights
-        if (ProFeatureGate.isActive(context) || StandardFeatureGate.isActive(context)) {
+        // Basic/Pro/Apex get unlimited highlights
+        if (BasicFeatureGate.isActive(context) || ProFeatureGate.isActive(context)) {
             return true
         }
         
@@ -49,8 +49,8 @@ object HighlightGate {
         val tierFilteredMatches = PatternLibraryGate.filterByTier(context, matches)
         
         // Step 2: Filter by highlight quota
-        // Pro/Standard get all their tier patterns, Free gets quota-limited
-        if (ProFeatureGate.isActive(context) || StandardFeatureGate.isActive(context)) {
+        // Basic/Pro/Apex get all their tier patterns, Free gets quota-limited
+        if (BasicFeatureGate.isActive(context) || ProFeatureGate.isActive(context)) {
             return tierFilteredMatches // Unlimited highlights
         }
         

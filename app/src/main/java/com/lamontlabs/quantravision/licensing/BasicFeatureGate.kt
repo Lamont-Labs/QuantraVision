@@ -1,27 +1,31 @@
+/*
+ * Copyright (c) 2025 Lamont Labs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.lamontlabs.quantravision.licensing
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
-/**
- * ProFeatureGate
- * Single source of truth for Pro unlock.
- * SECURE: Reads from BillingManager's encrypted SharedPreferences.
- * Cannot be spoofed without Google Play purchase.
- */
-object ProFeatureGate {
+object BasicFeatureGate {
     
-    // DEBUG: Bypass all paywalls for testing (set to false for production)
     private const val BYPASS_PAYWALLS = false
     
-    // Lock object for synchronized access to prevent race conditions (~0.01% of calls)
     private val lock = Any()
     
-    /**
-     * Get SharedPreferences with fallback to regular prefs if encrypted fails
-     * CRITICAL: Prevents users from losing Pro access on encryption failure
-     */
     private fun getSecurePrefs(context: Context): android.content.SharedPreferences? {
         return try {
             val masterKey = MasterKey.Builder(context)
@@ -35,22 +39,16 @@ object ProFeatureGate {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            android.util.Log.w("ProFeatureGate", "Encrypted prefs failed, falling back to regular prefs", e)
-            // CRITICAL: Fallback to regular SharedPreferences to prevent locking out paying users
+            android.util.Log.w("BasicFeatureGate", "Encrypted prefs failed, falling back to regular prefs", e)
             context.getSharedPreferences("qv_billing_prefs", Context.MODE_PRIVATE)
         }
     }
 
-    /**
-     * Check if Pro tier is active (verified by BillingManager)
-     * Returns true for both PRO and APEX tiers (Apex includes Pro features)
-     * SYNCHRONIZED: Prevents concurrent access race conditions
-     */
     fun isActive(context: Context): Boolean = synchronized(lock) {
         if (BYPASS_PAYWALLS) return true
         
         val prefs = getSecurePrefs(context) ?: return false
         val tier = prefs.getString("qv_unlocked_tier", "") ?: ""
-        return tier.uppercase() in setOf("PRO", "APEX")
+        return tier.uppercase() in setOf("BASIC", "PRO", "APEX")
     }
 }

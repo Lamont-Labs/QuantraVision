@@ -3,15 +3,15 @@ package com.lamontlabs.quantravision.quota
 import android.content.Context
 import org.json.JSONObject
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.Date
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 /**
  * HighlightQuota
  * Enforces daily pattern highlight quota for Free tier.
- * Option 1 Pricing: 3 highlights per day, resets daily at midnight.
- * Persistent, device-local, deterministic JSON: highlight_quota.json
+ * Option 1 Pricing: 3 highlights per day
+ * Resets daily at 00:00 UTC
+ * Persistent JSON: highlight_quota.json
  */
 object HighlightQuota {
 
@@ -28,22 +28,21 @@ object HighlightQuota {
 
     fun state(context: Context): State {
         val f = File(context.filesDir, FILE)
-        val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+        val todayUTC = LocalDate.now(ZoneOffset.UTC).toString()
         val nowMs = System.currentTimeMillis()
         
         if (!f.exists()) {
             val o = JSONObject().apply {
                 put("count", 0)
                 put("limit", DAILY_LIMIT)
-                put("lastResetDate", today)
+                put("lastResetDate", todayUTC)
                 put("lastResetMs", nowMs)
-                put("firstUse", today)
+                put("firstUse", todayUTC)
             }
             f.writeText(o.toString(2))
-            return State(0, DAILY_LIMIT, today, today, nowMs)
+            return State(0, DAILY_LIMIT, todayUTC, todayUTC, nowMs)
         }
         
-        // CRITICAL: Wrap JSON parsing in try-catch to handle corruption (~0.1% of files)
         val o = try {
             JSONObject(f.readText())
         } catch (e: Exception) {
@@ -52,41 +51,34 @@ object HighlightQuota {
             val newO = JSONObject().apply {
                 put("count", 0)
                 put("limit", DAILY_LIMIT)
-                put("lastResetDate", today)
+                put("lastResetDate", todayUTC)
                 put("lastResetMs", nowMs)
-                put("firstUse", today)
+                put("firstUse", todayUTC)
             }
             f.writeText(newO.toString(2))
-            return State(0, DAILY_LIMIT, today, today, nowMs)
+            return State(0, DAILY_LIMIT, todayUTC, todayUTC, nowMs)
         }
         
-        val lastReset = o.optString("lastResetDate", today)
+        val lastResetDateUTC = o.optString("lastResetDate", todayUTC)
         val lastResetMs = o.optLong("lastResetMs", nowMs)
-        val millisIn24Hours = 24 * 60 * 60 * 1000L
         
-        // CRITICAL: Check both date change AND 24-hour elapsed to handle timezone changes
-        // This fixes the "time travel bug" where users crossing timezones lose their quota
-        val dateChanged = lastReset != today
-        val dayElapsed = (nowMs - lastResetMs) >= millisIn24Hours
-        
-        if (dateChanged && dayElapsed) {
-            // New day - reset counter
+        if (lastResetDateUTC != todayUTC) {
             val updatedO = JSONObject().apply {
                 put("count", 0)
                 put("limit", DAILY_LIMIT)
-                put("lastResetDate", today)
+                put("lastResetDate", todayUTC)
                 put("lastResetMs", nowMs)
-                put("firstUse", o.optString("firstUse", today))
+                put("firstUse", o.optString("firstUse", todayUTC))
             }
             f.writeText(updatedO.toString(2))
-            return State(0, DAILY_LIMIT, today, o.optString("firstUse", today), nowMs)
+            return State(0, DAILY_LIMIT, todayUTC, o.optString("firstUse", todayUTC), nowMs)
         }
         
         return State(
             o.optInt("count", 0),
             o.optInt("limit", DAILY_LIMIT),
-            lastReset,
-            o.optString("firstUse", today),
+            lastResetDateUTC,
+            o.optString("firstUse", todayUTC),
             lastResetMs
         )
     }

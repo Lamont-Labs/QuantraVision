@@ -189,7 +189,7 @@ fun PaywallScreen(
                 item {
                     Spacer(modifier = Modifier.height(AppSpacing.md))
                     Text(
-                        text = "One-time payment • Lifetime access • No subscriptions",
+                        text = "Monthly subscription • Cancel anytime • Auto-renews",
                         style = AppTypography.bodySmall,
                         color = Color.White.copy(alpha = 0.6f),
                         modifier = Modifier.fillMaxWidth(),
@@ -432,19 +432,19 @@ private fun FeatureComparisonTable() {
                     color = AppColors.TierFree
                 )
                 Text(
-                    text = "START",
+                    text = "BASIC",
                     modifier = Modifier.weight(1f),
                     style = AppTypography.labelSmall,
                     color = AppColors.TierStarter
                 )
                 Text(
-                    text = "STD",
+                    text = "PRO",
                     modifier = Modifier.weight(1f),
                     style = AppTypography.labelSmall,
                     color = AppColors.TierStandard
                 )
                 Text(
-                    text = "PRO",
+                    text = "APEX",
                     modifier = Modifier.weight(1f),
                     style = AppTypography.labelSmall,
                     color = AppColors.TierPro
@@ -456,14 +456,14 @@ private fun FeatureComparisonTable() {
             Spacer(modifier = Modifier.height(AppSpacing.sm))
             
             ComparisonRow("Patterns", "10", "25", "50", "109")
-            ComparisonRow("Highlights", "3/day", "∞", "∞", "∞")
+            ComparisonRow("Scans/Day", "3", "25", "75", "200")
+            ComparisonRow("AI Explain/Day", "1", "5", "20", "60")
+            ComparisonRow("Saved Summaries", "0", "5", "20", "100")
+            ComparisonRow("Batch Mode", "—", "—", "✓", "✓")
             ComparisonRow("Regime Nav", "—", "—", "✓", "✓")
-            ComparisonRow("Guardrails", "—", "—", "✓", "✓")
-            ComparisonRow("Trading Book", "—", "—", "✓", "✓")
             ComparisonRow("Pattern→Plan", "—", "—", "—", "✓")
-            ComparisonRow("Scan Learning", "—", "—", "—", "✓")
-            ComparisonRow("Voice Alerts", "—", "—", "—", "✓")
-            ComparisonRow("Proof Capsules", "—", "—", "—", "✓")
+            ComparisonRow("AI Learning", "—", "—", "—", "✓")
+            ComparisonRow("Voice Alerts", "—", "—", "✓", "✓")
         }
     }
 }
@@ -475,9 +475,9 @@ private fun FeatureComparisonTable() {
 private fun ComparisonRow(
     feature: String,
     free: String,
-    starter: String,
-    standard: String,
-    pro: String
+    basic: String,
+    pro: String,
+    apex: String
 ) {
     Row(
         modifier = Modifier
@@ -497,19 +497,19 @@ private fun ComparisonRow(
             color = Color.White.copy(alpha = 0.7f)
         )
         Text(
-            text = starter,
-            modifier = Modifier.weight(1f),
-            style = AppTypography.bodySmall,
-            color = Color.White.copy(alpha = 0.7f)
-        )
-        Text(
-            text = standard,
+            text = basic,
             modifier = Modifier.weight(1f),
             style = AppTypography.bodySmall,
             color = Color.White.copy(alpha = 0.7f)
         )
         Text(
             text = pro,
+            modifier = Modifier.weight(1f),
+            style = AppTypography.bodySmall,
+            color = Color.White.copy(alpha = 0.7f)
+        )
+        Text(
+            text = apex,
             modifier = Modifier.weight(1f),
             style = AppTypography.bodySmall,
             color = Color.White.copy(alpha = 0.7f)

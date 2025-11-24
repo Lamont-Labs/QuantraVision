@@ -62,7 +62,6 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
 
     private val unlockedKey = "qv_unlocked_tier"
     private val purchaseTokenKey = "qv_purchase_token"
-    private val bookPurchasedKey = "qv_book_purchased"
 
     var onTierChanged: ((String) -> Unit)? = null
 
@@ -111,17 +110,13 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
 
     private fun queryProducts() {
         val products = listOf(
-            "qv_starter_one", 
-            "qv_standard_one", 
-            "qv_pro_one",
-            "qv_book_standalone",
-            "qv_starter_to_standard_upgrade",
-            "qv_starter_to_pro_upgrade",
-            "qv_standard_to_pro_upgrade"
+            "qv_basic_monthly",
+            "qv_pro_monthly",
+            "qv_apex_monthly"
         ).map {
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(it)
-                .setProductType(BillingClient.ProductType.INAPP)
+                .setProductType(BillingClient.ProductType.SUBS)
                 .build()
         }
         val params = QueryProductDetailsParams.newBuilder().setProductList(products).build()
@@ -129,9 +124,9 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         client.queryProductDetailsAsync(params) { res, list ->
             if (res.responseCode == BillingClient.BillingResponseCode.OK) {
                 productMap = list.associateBy { it.productId }
-                Log.d("BillingManager", "Products loaded: ${productMap.keys}")
+                Log.d("BillingManager", "Subscription products loaded: ${productMap.keys}")
             } else {
-                Log.e("BillingManager", "Failed to query products: ${res.debugMessage}")
+                Log.e("BillingManager", "Failed to query subscription products: ${res.debugMessage}")
             }
         }
     }
@@ -143,7 +138,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
      */
     fun restorePurchases(onComplete: () -> Unit = {}) {
         val params = QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.INAPP)
+            .setProductType(BillingClient.ProductType.SUBS)
             .build()
 
         scope.launch {
@@ -204,27 +199,11 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                 prefs.edit()
                     .remove(unlockedKey)
                     .remove(purchaseTokenKey)
-                    .remove(bookPurchasedKey)
                     .apply()
                 onTierChanged?.invoke("")
                 Log.w("BillingManager", "Entitlements cleared")
             } catch (e: Exception) {
                 Log.e("BillingManager", "Failed to clear entitlements", e)
-                // Non-fatal - worst case user keeps access when they shouldn't
-            }
-        }
-    }
-    
-    private fun setBookPurchased(token: String) {
-        synchronized(this) {
-            try {
-                prefs.edit()
-                    .putBoolean(bookPurchasedKey, true)
-                    .putString("${bookPurchasedKey}_token", token)
-                    .apply()
-                Log.d("BillingManager", "Book purchase recorded")
-            } catch (e: Exception) {
-                Log.e("BillingManager", "Failed to save book purchase", e)
             }
         }
     }
@@ -240,65 +219,29 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
 
-    fun purchaseStarter() = launchPurchase("qv_starter_one")
-    fun purchaseStandard() {
-        val currentTier = getCurrentTierEnum()
-        val upgradeSku = getUpgradeSku(currentTier, Tier.STANDARD)
-        launchPurchase(upgradeSku ?: "qv_standard_one")
-    }
-    fun purchasePro() {
-        val currentTier = getCurrentTierEnum()
-        val upgradeSku = getUpgradeSku(currentTier, Tier.PRO)
-        launchPurchase(upgradeSku ?: "qv_pro_one")
-    }
-    fun purchaseBook() = launchPurchase("qv_book_standalone")
+    fun purchaseBasic() = launchPurchase("qv_basic_monthly")
+    fun purchasePro() = launchPurchase("qv_pro_monthly")
+    fun purchaseApex() = launchPurchase("qv_apex_monthly")
 
-    /**
-     * Get current tier as Tier enum
-     */
     private fun getCurrentTierEnum(): Tier {
         return when (getUnlockedTier()) {
+            "APEX" -> Tier.APEX
             "PRO" -> Tier.PRO
-            "STANDARD" -> Tier.STANDARD
-            "STARTER" -> Tier.STARTER
+            "BASIC" -> Tier.BASIC
             else -> Tier.FREE
-        }
-    }
-
-    /**
-     * Check if moving from currentTier to targetTier is an upgrade
-     */
-    fun isUpgrade(currentTier: Tier, targetTier: Tier): Boolean {
-        val tierOrder = listOf(Tier.FREE, Tier.STARTER, Tier.STANDARD, Tier.PRO)
-        val currentIndex = tierOrder.indexOf(currentTier)
-        val targetIndex = tierOrder.indexOf(targetTier)
-        return currentIndex >= 0 && targetIndex > currentIndex
-    }
-
-    /**
-     * Get the appropriate upgrade SKU based on tier transition
-     * Returns null if not an upgrade (e.g., FREE → STARTER uses regular SKU)
-     * 
-     * Upgrade SKUs available:
-     * - STARTER → STANDARD: qv_starter_to_standard_upgrade ($15.00)
-     * - STARTER → PRO: qv_starter_to_pro_upgrade ($40.00)
-     * - STANDARD → PRO: qv_standard_to_pro_upgrade ($25.00)
-     */
-    fun getUpgradeSku(currentTier: Tier, targetTier: Tier): String? {
-        if (!isUpgrade(currentTier, targetTier)) return null
-        
-        return when {
-            currentTier == Tier.STARTER && targetTier == Tier.STANDARD -> "qv_starter_to_standard_upgrade"
-            currentTier == Tier.STARTER && targetTier == Tier.PRO -> "qv_starter_to_pro_upgrade"
-            currentTier == Tier.STANDARD && targetTier == Tier.PRO -> "qv_standard_to_pro_upgrade"
-            else -> null
         }
     }
 
     fun launchPurchase(sku: String) {
         val pd = productMap[sku]
         if (pd == null) {
-            Log.e("BillingManager", "Product not found: $sku")
+            Log.e("BillingManager", "Subscription product not found: $sku")
+            return
+        }
+        
+        val offerToken = pd.subscriptionOfferDetails?.firstOrNull()?.offerToken
+        if (offerToken == null) {
+            Log.e("BillingManager", "No subscription offers available for: $sku")
             return
         }
         
@@ -306,6 +249,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
             .setProductDetailsParamsList(listOf(
                 BillingFlowParams.ProductDetailsParams.newBuilder()
                     .setProductDetails(pd)
+                    .setOfferToken(offerToken)
                     .build()
             )).build()
         
@@ -330,61 +274,32 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
     }
 
     private fun processPurchase(purchase: Purchase, isRestoration: Boolean) {
-        // Acknowledge purchase if needed
         if (!purchase.isAcknowledged) {
             acknowledgePurchaseWithRetry(purchase.purchaseToken, retryCount = 0)
         }
 
-        // Grant entitlement based on verified purchase
         val sku = purchase.products.firstOrNull()
         when (sku) {
-            "qv_pro_one" -> {
-                setUnlockedSecure("PRO", purchase.purchaseToken)
+            "qv_apex_monthly" -> {
+                setUnlockedSecure("APEX", purchase.purchaseToken)
                 if (!isRestoration) {
-                    Log.d("BillingManager", "Pro unlock granted")
+                    Log.d("BillingManager", "Apex subscription activated")
                 }
             }
-            "qv_standard_one" -> {
-                if (getUnlockedTier() != "PRO") {
-                    setUnlockedSecure("STANDARD", purchase.purchaseToken)
+            "qv_pro_monthly" -> {
+                if (getUnlockedTier() != "APEX") {
+                    setUnlockedSecure("PRO", purchase.purchaseToken)
                     if (!isRestoration) {
-                        Log.d("BillingManager", "Standard unlock granted")
+                        Log.d("BillingManager", "Pro subscription activated")
                     }
                 }
             }
-            "qv_starter_one" -> {
-                if (getUnlockedTier() != "PRO" && getUnlockedTier() != "STANDARD") {
-                    setUnlockedSecure("STARTER", purchase.purchaseToken)
+            "qv_basic_monthly" -> {
+                if (getUnlockedTier() != "PRO" && getUnlockedTier() != "APEX") {
+                    setUnlockedSecure("BASIC", purchase.purchaseToken)
                     if (!isRestoration) {
-                        Log.d("BillingManager", "Starter unlock granted")
+                        Log.d("BillingManager", "Basic subscription activated")
                     }
-                }
-            }
-            "qv_starter_to_standard_upgrade" -> {
-                if (getUnlockedTier() != "PRO") {
-                    setUnlockedSecure("STANDARD", purchase.purchaseToken)
-                    if (!isRestoration) {
-                        Log.d("BillingManager", "Standard upgrade from Starter granted")
-                    }
-                }
-            }
-            "qv_starter_to_pro_upgrade" -> {
-                setUnlockedSecure("PRO", purchase.purchaseToken)
-                if (!isRestoration) {
-                    Log.d("BillingManager", "Pro upgrade from Starter granted")
-                }
-            }
-            "qv_standard_to_pro_upgrade" -> {
-                setUnlockedSecure("PRO", purchase.purchaseToken)
-                if (!isRestoration) {
-                    Log.d("BillingManager", "Pro upgrade from Standard granted")
-                }
-            }
-            "qv_book_standalone" -> {
-                // Book purchase doesn't change tier, but we track it separately
-                setBookPurchased(purchase.purchaseToken)
-                if (!isRestoration) {
-                    Log.d("BillingManager", "Standalone book purchase granted")
                 }
             }
         }
@@ -428,31 +343,9 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
     
-    fun isStarter(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "STARTER" || isStandard() || isPro()
-    fun isStandard(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "STANDARD" || isPro()
-    fun isPro(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "PRO"
-    
-    /**
-     * Check if user has access to the book
-     * Book is included with STANDARD/PRO or can be purchased standalone
-     */
-    fun hasBook(): Boolean {
-        // DEBUG: Bypass paywalls
-        if (BYPASS_PAYWALLS) return true
-        
-        // STANDARD and PRO tiers include the book
-        if (isStandard() || isPro()) return true
-        
-        // Check for standalone book purchase
-        return synchronized(this) {
-            try {
-                prefs.getBoolean(bookPurchasedKey, false)
-            } catch (e: Exception) {
-                Log.e("BillingManager", "Failed to read book purchase status", e)
-                false
-            }
-        }
-    }
+    fun isBasic(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "BASIC" || isPro() || isApex()
+    fun isPro(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "PRO" || isApex()
+    fun isApex(): Boolean = BYPASS_PAYWALLS || getUnlockedTier() == "APEX"
     
     fun getProductDetails(sku: String): ProductDetails? = productMap[sku]
     

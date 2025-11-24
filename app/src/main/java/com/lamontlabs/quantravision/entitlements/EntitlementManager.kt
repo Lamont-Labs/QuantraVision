@@ -12,16 +12,18 @@ import kotlinx.coroutines.flow.asStateFlow
 
 enum class SubscriptionTier(val tierName: String, val displayName: String) {
     FREE("free", "Free"),
-    STARTER("starter", "Starter - $9.99"),
-    STANDARD("standard", "Standard - $24.99"),
-    PRO("pro", "Pro - $49.99");
+    BASIC("basic", "Basic - $4.99/mo"),
+    PRO("pro", "Pro - $14.99/mo"),
+    APEX("apex", "Apex - $29.99/mo");
     
     companion object {
         fun fromString(tier: String?): SubscriptionTier {
             return when (tier?.lowercase()) {
-                "starter" -> STARTER
-                "standard" -> STANDARD
+                "basic" -> BASIC
                 "pro" -> PRO
+                "apex" -> APEX
+                "starter" -> BASIC
+                "standard" -> PRO
                 else -> FREE
             }
         }
@@ -30,12 +32,12 @@ enum class SubscriptionTier(val tierName: String, val displayName: String) {
 
 enum class Feature(val requiredTier: SubscriptionTier, val displayName: String) {
     BASIC_PATTERNS(SubscriptionTier.FREE, "10 Basic Patterns"),
-    STARTER_PATTERNS(SubscriptionTier.STARTER, "25 Core Patterns"),
-    STANDARD_PATTERNS(SubscriptionTier.STANDARD, "50 Advanced Patterns"),
-    ALL_PATTERNS(SubscriptionTier.PRO, "All 109 Patterns"),
+    BASIC_TIER_PATTERNS(SubscriptionTier.BASIC, "25 Core Patterns"),
+    PRO_TIER_PATTERNS(SubscriptionTier.PRO, "50 Advanced Patterns"),
+    ALL_PATTERNS(SubscriptionTier.APEX, "All 109 Patterns"),
     
     LIMITED_HIGHLIGHTS(SubscriptionTier.FREE, "3 Highlights/Day"),
-    UNLIMITED_HIGHLIGHTS(SubscriptionTier.STARTER, "Unlimited Highlights"),
+    UNLIMITED_HIGHLIGHTS(SubscriptionTier.BASIC, "Unlimited Highlights"),
     
     REGIME_NAVIGATOR(SubscriptionTier.PRO, "Market Regime Detection"),
     PATTERN_TO_PLAN(SubscriptionTier.PRO, "Trade Scenario Generator"),
@@ -43,19 +45,21 @@ enum class Feature(val requiredTier: SubscriptionTier, val displayName: String) 
     PROOF_CAPSULES(SubscriptionTier.PRO, "Detection Audit Trail"),
     
     BASIC_OVERLAY(SubscriptionTier.FREE, "Basic Pattern Overlay"),
-    TRADE_SCENARIOS(SubscriptionTier.PRO, "Trade Scenario Overlay"),
+    CORE_OVERLAY(SubscriptionTier.BASIC, "Core Pattern Overlay"),
+    FULL_APEX_OVERLAY(SubscriptionTier.PRO, "Full Apex Overlay"),
+    TRADE_SCENARIOS(SubscriptionTier.APEX, "Trade Scenario Overlay"),
     
-    SCAN_LEARNING(SubscriptionTier.PRO, "AI Scan Learning Engine"),
+    BATCH_MODE(SubscriptionTier.PRO, "Batch Processing"),
+    SCAN_LEARNING(SubscriptionTier.APEX, "AI Scan Learning Engine"),
     
     VISUAL_ALERTS(SubscriptionTier.FREE, "Visual Alerts"),
-    HAPTIC_ALERTS(SubscriptionTier.STARTER, "Haptic Alerts"),
+    HAPTIC_ALERTS(SubscriptionTier.BASIC, "Haptic Alerts"),
     VOICE_ALERTS(SubscriptionTier.PRO, "Voice Alerts"),
     
     BASIC_EDUCATION(SubscriptionTier.FREE, "Basic Lessons"),
-    TRADING_BOOK(SubscriptionTier.STANDARD, "Trading Book Access"),
     ADVANCED_EDUCATION(SubscriptionTier.PRO, "Advanced Interactive Lessons"),
     
-    MARKET_DATA(SubscriptionTier.STANDARD, "Real-Time Market Data")
+    MARKET_DATA(SubscriptionTier.PRO, "Real-Time Market Data")
 }
 
 object EntitlementManager {

@@ -95,7 +95,8 @@ class PaywallViewModel(context: Context) : ViewModel() {
                     price = "Free",
                     features = listOf(
                         "10 Basic Patterns",
-                        "3 Highlights/Day",
+                        "3 Scans/Day",
+                        "1 AI Explanation/Day",
                         "Basic Overlay",
                         "Visual Alerts"
                     ),
@@ -103,52 +104,50 @@ class PaywallViewModel(context: Context) : ViewModel() {
                     isRecommended = false
                 ),
                 TierOption(
-                    tier = SubscriptionTier.STARTER,
-                    price = "$9.99",
+                    tier = SubscriptionTier.BASIC,
+                    price = "$4.99/mo",
                     features = listOf(
                         "25 Core Patterns",
-                        "Unlimited Highlights",
-                        "Haptic Alerts",
-                        "All FREE features"
+                        "25 Scans/Day",
+                        "5 AI Explanations/Day",
+                        "5 Saved Summaries",
+                        "Core Overlay",
+                        "Haptic Alerts"
                     ),
-                    isCurrent = currentTier == SubscriptionTier.STARTER,
+                    isCurrent = currentTier == SubscriptionTier.BASIC,
                     isRecommended = true
                 ),
                 TierOption(
-                    tier = SubscriptionTier.STANDARD,
-                    price = if (currentTier == SubscriptionTier.STARTER) "$15.00" else "$24.99",
-                    originalPrice = if (currentTier == SubscriptionTier.STARTER) "$24.99" else null,
+                    tier = SubscriptionTier.PRO,
+                    price = "$14.99/mo",
                     features = listOf(
                         "50 Advanced Patterns",
+                        "75 Scans/Day",
+                        "20 AI Explanations/Day",
+                        "20 Saved Summaries",
+                        "Batch Mode",
+                        "Full Apex Overlay",
                         "Regime Navigator",
-                        "Behavioral Guardrails",
-                        "Trading Book Access",
-                        "All STARTER features"
-                    ),
-                    isCurrent = currentTier == SubscriptionTier.STANDARD,
-                    isRecommended = false,
-                    isUpgrade = currentTier == SubscriptionTier.STARTER
-                ),
-                TierOption(
-                    tier = SubscriptionTier.PRO,
-                    price = when (currentTier) {
-                        SubscriptionTier.STARTER -> "$40.00"
-                        SubscriptionTier.STANDARD -> "$25.00"
-                        else -> "$49.99"
-                    },
-                    originalPrice = if (currentTier == SubscriptionTier.STARTER || currentTier == SubscriptionTier.STANDARD) "$49.99" else null,
-                    features = listOf(
-                        "All 109 Patterns",
-                        "Pattern-to-Plan Engine",
-                        "AI Scan Learning",
-                        "Voice Alerts",
-                        "Proof Capsules",
-                        "Trade Scenario Overlay",
-                        "All STANDARD features"
+                        "Voice Alerts"
                     ),
                     isCurrent = currentTier == SubscriptionTier.PRO,
-                    isRecommended = false,
-                    isUpgrade = currentTier == SubscriptionTier.STARTER || currentTier == SubscriptionTier.STANDARD
+                    isRecommended = false
+                ),
+                TierOption(
+                    tier = SubscriptionTier.APEX,
+                    price = "$29.99/mo",
+                    features = listOf(
+                        "All 109 Patterns",
+                        "200 Scans/Day",
+                        "60 AI Explanations/Day",
+                        "100 Saved Summaries",
+                        "Advanced Logic",
+                        "AI Scan Learning",
+                        "Trade Scenario Overlay",
+                        "Pattern-to-Plan Engine"
+                    ),
+                    isCurrent = currentTier == SubscriptionTier.APEX,
+                    isRecommended = false
                 )
             )
             
@@ -229,9 +228,9 @@ class PaywallViewModel(context: Context) : ViewModel() {
                 billing.initialize {
                     try {
                         when (tier) {
-                            SubscriptionTier.STARTER -> billing.purchaseStarter()
-                            SubscriptionTier.STANDARD -> billing.purchaseStandard()
+                            SubscriptionTier.BASIC -> billing.purchaseBasic()
                             SubscriptionTier.PRO -> billing.purchasePro()
+                            SubscriptionTier.APEX -> billing.purchaseApex()
                             else -> {
                                 _uiState.update { it.copy(
                                     isPurchasing = false,
