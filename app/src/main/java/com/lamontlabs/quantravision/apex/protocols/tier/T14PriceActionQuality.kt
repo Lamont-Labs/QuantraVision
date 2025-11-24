@@ -41,6 +41,7 @@ class T14PriceActionQuality : ApexProtocol {
             val bodySize = abs(candle.close - candle.open)
             val totalRange = candle.high - candle.low
             if (totalRange > 0) bodySize / totalRange else 0.0
+        }
         val avgBodyRatio = bodyRatios.average()
         // Penalize for too many doji/spinning tops (small bodies)
         val dojiCount = bodyRatios.count { it < 0.2 }
@@ -55,6 +56,7 @@ class T14PriceActionQuality : ApexProtocol {
             if ((prev > 0 && curr < 0) || (prev < 0 && curr > 0)) {
                 directionChanges++
             }
+        }
         val changeRatio = directionChanges.toDouble() / (prices.size - 2).toDouble()
         qualityScore -= changeRatio * 0.4
         qualityScore = max(0.0, min(1.0, qualityScore))
@@ -66,6 +68,7 @@ class T14PriceActionQuality : ApexProtocol {
             qualityScore >= 0.6 -> "acceptable"
             qualityScore >= 0.4 -> "choppy"
             else -> "poor"
+        }
         val reason = "Price action quality: ${"%.2f".format(Locale.US, qualityScore)} - $quality"
         return ProtocolVerdict(
             protocolId = protocolId,

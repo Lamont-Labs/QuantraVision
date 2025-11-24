@@ -29,13 +29,16 @@ class T01InputSanitization : ApexProtocol {
         // Check timeframe is valid
         if (context.timeframe.isNullOrBlank()) {
             issues.add("timeframe missing")
+        }
         // Check primitives hash exists
         if (primitives.rawImageHash.isBlank()) {
             issues.add("image hash missing")
+        }
         // Check for minimum candle data (use actual candles field)
         val candleCount = primitives.candles.size
         if (candleCount < 10) {
             issues.add("insufficient candles (need >=10, got $candleCount)")
+        }
         val inputValid = issues.isEmpty()
         state["inputValid"] = inputValid
         state["ticker"] = context.ticker ?: ""
@@ -48,6 +51,7 @@ class T01InputSanitization : ApexProtocol {
             "Input validation: PASS"
         } else {
             "Input validation: FAIL - ${issues.joinToString(", ")}"
+        }
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,

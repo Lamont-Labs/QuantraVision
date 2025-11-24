@@ -75,17 +75,25 @@ class T18RegimeValidation : ApexProtocol {
             trend < -0.02 && stdDev < 0.02 -> "trending-down-stable"
             trend < -0.02 && stdDev >= 0.02 -> "trending-down-volatile"
             else -> "transitional"
+        }
+    }
     private fun determineExpectedRegime(state: Map<String, Any>): String {
         // Safe state access - use state information to infer expected regime
         val trendStrength = state["trendStrength"] as? Double ?: 0.5
         val volatilityState = state["volatility"] as? String ?: "normal"
+        return when {
             trendStrength > 0.6 && volatilityState in listOf("low", "normal") -> "trending-up-stable"
             trendStrength > 0.6 && volatilityState in listOf("high", "extreme") -> "trending-up-volatile"
             trendStrength < 0.4 && volatilityState in listOf("low", "normal") -> "ranging-low-vol"
             trendStrength < 0.4 && volatilityState in listOf("high", "extreme") -> "ranging-high-vol"
+            else -> "any"
+        }
+    }
     private fun isRegimeMatch(current: String, expected: String): Boolean {
         // Exact match
         if (current == expected) return true
+        // "any" matches everything
+        if (expected == "any") return true
         // Compatible regimes
         val compatibleRegimes = mapOf(
             "trending-up-stable" to listOf("trending-up-volatile", "transitional"),
@@ -93,11 +101,14 @@ class T18RegimeValidation : ApexProtocol {
             "ranging-low-vol" to listOf("transitional"),
             "ranging-high-vol" to listOf("transitional"),
             "transitional" to listOf("ranging-low-vol", "ranging-high-vol")
+        )
         return compatibleRegimes[current]?.contains(expected) == true ||
                compatibleRegimes[expected]?.contains(current) == true
+    }
     private fun calculateStdDev(values: List<Double>): Double {
         if (values.isEmpty()) return 0.0
         val mean = values.average()
         val variance = values.map { (it - mean) * (it - mean) }.average()
         return kotlin.math.sqrt(variance)
+    }
 }

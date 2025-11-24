@@ -43,6 +43,7 @@ class T04TimeframeConsistency : ApexProtocol {
             if (gap <= 0) {
                 nonChronologicalCount++
             }
+        }
         val isConsistent = nonChronologicalCount == 0
         state["timeframeConsistent"] = isConsistent
         state["gapsDetected"] = gapCount
@@ -53,6 +54,7 @@ class T04TimeframeConsistency : ApexProtocol {
             "Timeframe consistency: PASS"
         } else {
             "Timeframe consistency: FAIL - $nonChronologicalCount non-chronological candles"
+        }
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,

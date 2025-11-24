@@ -52,6 +52,7 @@ class T12VolumeConfirmation : ApexProtocol {
             volumeRatio >= 1.0 -> 0.8  // Average or above
             volumeRatio >= 0.8 -> 0.6  // Slightly below average
             else -> 0.4                // Weak volume
+        }
         val isConfirmed = confirmationScore >= 0.6
         state["volumeConfirmed"] = isConfirmed
         state["volumeConfirmationScore"] = confirmationScore
@@ -61,6 +62,7 @@ class T12VolumeConfirmation : ApexProtocol {
             confirmationScore >= 0.8 -> "strong"
             confirmationScore >= 0.6 -> "moderate"
             else -> "weak"
+        }
         val reason = "Volume confirmation: ${"%.2f".format(Locale.US, confirmationScore)} - $strength"
         return ProtocolVerdict(
             protocolId = protocolId,

@@ -36,12 +36,15 @@ class T10StructureCompleteness : ApexProtocol {
         }
         if (swingPoints < 3) {
             missingElements.add("swingPoints($swingPoints/3)")
+        }
         // Check trendlines
         if (primitives.detectedLines.isEmpty()) {
             missingElements.add("trendlines")
+        }
         // Check price action data
         if (primitives.candles.size < 10) {
             missingElements.add("priceAction")
+        }
         val structureComplete = missingElements.isEmpty()
         state["structureComplete"] = structureComplete
         state["swingPointCount"] = swingPoints
@@ -53,9 +56,12 @@ class T10StructureCompleteness : ApexProtocol {
             "swings=$swingPoints, lines=${primitives.detectedLines.size}, candles=${primitives.candles.size}"
         } else {
             "missing: ${missingElements.joinToString(", ")}"
+        }
         val reason = if (passed) {
             "Structure: COMPLETE - $elementsSummary"
+        } else {
             "Structure: INCOMPLETE - $elementsSummary"
+        }
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,

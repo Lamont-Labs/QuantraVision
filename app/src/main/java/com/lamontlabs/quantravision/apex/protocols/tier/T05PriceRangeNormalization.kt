@@ -43,14 +43,17 @@ class T05PriceRangeNormalization : ApexProtocol {
         // Check: Price range > 0.01%
         if (rangePercent < 0.01) {
             issues.add("range too small (${"%.3f".format(Locale.US, rangePercent)}%)")
+        }
         // Check: Price range < 500% of average
         if (rangePercent > 500.0) {
             issues.add("range too large (${"%.1f".format(Locale.US, rangePercent)}%)")
+        }
         // Normalize to 0.0-1.0
         val normalizedRange = if (priceRange > 0) {
             min(1.0, rangePercent / 100.0)
         } else {
             0.0
+        }
         val priceRangeValid = issues.isEmpty()
         state["priceRangeValid"] = priceRangeValid
         state["normalizedRange"] = normalizedRange
@@ -60,7 +63,9 @@ class T05PriceRangeNormalization : ApexProtocol {
         val confidence = if (passed) 1.0 else 0.0
         val reason = if (passed) {
             "Price range: ${"%.2f".format(Locale.US, minPrice)}-${"%.2f".format(Locale.US, maxPrice)}, normalized: ${"%.3f".format(Locale.US, normalizedRange)}"
+        } else {
             "Price range: FAIL - ${issues.joinToString(", ")}"
+        }
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,

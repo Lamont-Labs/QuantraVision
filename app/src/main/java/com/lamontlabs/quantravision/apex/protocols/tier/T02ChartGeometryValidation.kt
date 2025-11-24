@@ -47,6 +47,7 @@ class T02ChartGeometryValidation : ApexProtocol {
             !hasCandles -> "Geometry validation: FAIL - no candle data"
             !candlesValid -> "Geometry validation: FAIL - invalid candle OHLC relationships"
             else -> "Geometry validation: PASS (${primitives.candles.size} candles)"
+        }
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,

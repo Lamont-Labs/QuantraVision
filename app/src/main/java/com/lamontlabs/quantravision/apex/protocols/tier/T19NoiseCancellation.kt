@@ -69,18 +69,22 @@ class T19NoiseCancellation : ApexProtocol {
         for (i in 0..(prices.size - windowSize)) {
             val avg = prices.subList(i, i + windowSize).average()
             smoothedPrices.add(avg)
+        }
         // Calculate trend strength of smoothed signal
         if (smoothedPrices.size < 2) return 0.0
         val changes = smoothedPrices.zipWithNext { a, b -> abs(b - a) }
         return changes.average() * 100.0
+    }
     private fun calculateNoiseLevel(prices: List<Double>): Double {
         // Use high-frequency fluctuations as noise
         val highFreqChanges = mutableListOf<Double>()
         for (i in 0 until prices.size - 1) {
             val change = abs(prices[i + 1] - prices[i])
             highFreqChanges.add(change)
+        }
         // Calculate standard deviation of changes (noise measure)
         val mean = highFreqChanges.average()
         val variance = highFreqChanges.map { (it - mean) * (it - mean) }.average()
         return kotlin.math.sqrt(variance) * 100.0
+    }
 }

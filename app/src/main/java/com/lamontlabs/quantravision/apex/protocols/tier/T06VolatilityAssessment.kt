@@ -48,7 +48,9 @@ class T06VolatilityAssessment : ApexProtocol {
             val tr = max(
                 high - low,
                 max(abs(high - prevClose), abs(low - prevClose))
+            )
             trueRanges.add(tr)
+        }
         val atr = if (trueRanges.isNotEmpty()) trueRanges.average() else 0.0
         val avgPrice = primitives.candles.map { it.close }.average()
         val atrPercent = (atr / avgPrice) * 100.0
@@ -58,12 +60,14 @@ class T06VolatilityAssessment : ApexProtocol {
             atrPercent < 2.0 -> "normal"
             atrPercent < 5.0 -> "high"
             else -> "extreme"
+        }
         val volatilityPercentile = when (volatilityState) {
             "low" -> 25.0
             "normal" -> 50.0
             "high" -> 75.0
             "extreme" -> 95.0
             else -> 50.0
+        }
         state["volatility"] = volatilityState
         state["atr"] = atr
         state["volatilityPercentile"] = volatilityPercentile
@@ -71,6 +75,7 @@ class T06VolatilityAssessment : ApexProtocol {
             "extreme" -> Pair(false, 0.3)
             "normal" -> Pair(true, 1.0)
             else -> Pair(true, 0.7)
+        }
         val reason = "Volatility: $volatilityState, ATR: ${"%.2f".format(Locale.US, atr)} (${"%.2f".format(Locale.US, atrPercent)}%)"
         return ProtocolVerdict(
             protocolId = protocolId,

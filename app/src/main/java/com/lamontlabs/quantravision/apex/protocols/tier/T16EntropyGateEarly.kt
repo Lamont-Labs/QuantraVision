@@ -46,11 +46,13 @@ class T16EntropyGateEarly : ApexProtocol {
             min(1.0, entropyScore * 1.3)
         } else {
             entropyScore
+        }
         // Classify entropy level
         val (status, passed, confidence) = when {
             adjustedEntropy > 0.60 -> Triple("FAIL", false, 0.2)
             adjustedEntropy > 0.40 -> Triple("WARN", true, 0.5)
             else -> Triple("PASS", true, 1.0 - adjustedEntropy)
+        }
         state["entropyScore"] = adjustedEntropy
         state["entropyStatus"] = status
         val reason = "Entropy: ${"%.2f".format(Locale.US, adjustedEntropy)} - $status"
@@ -79,6 +81,7 @@ class T16EntropyGateEarly : ApexProtocol {
             val normalized = (ret - minReturn) / range
             val binIndex = (normalized * (bins - 1)).toInt().coerceIn(0, bins - 1)
             histogram[binIndex]++
+        }
         // Calculate Shannon entropy
         var entropy = 0.0
         val total = returns.size.toDouble()
@@ -87,12 +90,15 @@ class T16EntropyGateEarly : ApexProtocol {
                 val p = count / total
                 entropy -= p * ln(p)
             }
+        }
         // Normalize to 0-1 (max entropy for 10 bins is ln(10) ≈ 2.3)
         return min(1.0, entropy / 2.3)
+    }
     private fun checkConflicts(state: Map<String, Any>): Boolean {
         // Safe state access - check if previous protocols detected conflicts
         val momentumAligned = state["momentumAligned"] as? Boolean ?: true
         val volumeConfirmed = state["volumeConfirmed"] as? Boolean ?: true
         val volatilityAligned = state["volatilityAligned"] as? Boolean ?: true
         return !momentumAligned || !volumeConfirmed || !volatilityAligned
+    }
 }

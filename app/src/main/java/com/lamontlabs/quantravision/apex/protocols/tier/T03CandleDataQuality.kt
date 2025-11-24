@@ -47,12 +47,16 @@ class T03CandleDataQuality : ApexProtocol {
             // Check: Close within [Low, High]
             if (candle.close < candle.low || candle.close > candle.high) {
                 issues.add("candle $index: close out of range")
+            }
             // Check: Open within [Low, High]
             if (candle.open < candle.low || candle.open > candle.high) {
                 issues.add("candle $index: open out of range")
+            }
             // Check: No negative prices
             if (candle.open <= 0.0 || candle.high <= 0.0 || candle.low <= 0.0 || candle.close <= 0.0) {
                 issues.add("candle $index: invalid price (<= 0)")
+            }
+        }
         qualityScore = qualityScore.coerceIn(0.0, 1.0)
         state["candleQualityScore"] = qualityScore
         state["ohlcValid"] = ohlcValid
@@ -64,6 +68,7 @@ class T03CandleDataQuality : ApexProtocol {
             "Candle quality: ${"%.2f".format(Locale.US, qualityScore)} - acceptable"
         } else {
             "Candle quality: ${"%.2f".format(Locale.US, qualityScore)} - poor (${issues.take(3).joinToString(", ")})"
+        }
         return ProtocolVerdict(
             protocolId = protocolId,
             protocolName = protocolName,

@@ -52,6 +52,7 @@ class T09SupportResistanceDetection : ApexProtocol {
                     keyLevels.add(prices[i])
                 }
             }
+        }
         state["keyLevels"] = keyLevels.take(10)
         state["supportResistanceCount"] = keyLevels.size
         val passed = keyLevels.isNotEmpty()
@@ -59,6 +60,7 @@ class T09SupportResistanceDetection : ApexProtocol {
             max(0.5, min(1.0, keyLevels.size / 5.0))
         } else {
             0.3
+        }
         val reason = "Key levels: ${keyLevels.size} identified"
         return ProtocolVerdict(
             protocolId = protocolId,
