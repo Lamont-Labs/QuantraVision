@@ -278,8 +278,19 @@ class OverlayService : Service() {
         
         when (currentState) {
             is OverlayState.Idle -> {
-                Log.i(TAG, "✅ Idle state → Triggering capture")
-                triggerCapture()
+                if (ScanThrottler.shouldScan()) {
+                    Log.i(TAG, "✅ Idle state → Triggering capture (throttle passed)")
+                    triggerCapture()
+                } else {
+                    Log.i(TAG, "⏱️ Scan throttled - too soon after last scan")
+                    scope.launch(Dispatchers.Main) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Please wait before scanning again...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
             is OverlayState.ShowingResult -> {
                 Log.i(TAG, "📋 ShowingResult state → Clearing highlights")
@@ -634,24 +645,43 @@ class OverlayService : Service() {
             val densityDpi = displayMetrics.densityDpi
             
             // Create ImageReader that will be reused for all frame captures
-            imageReader = android.media.ImageReader.newInstance(
-                width,
-                height,
-                android.graphics.PixelFormat.RGBA_8888,
-                2
-            )
+            imageReader = try {
+                android.media.ImageReader.newInstance(
+                    width,
+                    height,
+                    android.graphics.PixelFormat.RGBA_8888,
+                    2
+                )
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "❌ Invalid ImageReader parameters: ${width}x${height}", e)
+                throw RuntimeException("Invalid screen capture dimensions", e)
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to create ImageReader", e)
+                throw RuntimeException("Failed to create ImageReader", e)
+            }
             
             // Create VirtualDisplay ONCE - Android 14 requirement
-            virtualDisplay = mediaProjection?.createVirtualDisplay(
-                "QuantraVision_Persistent",
-                width,
-                height,
-                densityDpi,
-                android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                imageReader?.surface,
-                null,
-                null
-            )
+            virtualDisplay = try {
+                mediaProjection?.createVirtualDisplay(
+                    "QuantraVision_Persistent",
+                    width,
+                    height,
+                    densityDpi,
+                    android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    imageReader?.surface,
+                    null,
+                    null
+                )
+            } catch (e: SecurityException) {
+                Log.e(TAG, "❌ SecurityException creating VirtualDisplay - permission denied", e)
+                throw RuntimeException("Screen capture permission denied", e)
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "❌ IllegalStateException - MediaProjection stopped or in invalid state", e)
+                throw RuntimeException("MediaProjection stopped", e)
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to create VirtualDisplay", e)
+                throw RuntimeException("Failed to create VirtualDisplay", e)
+            }
             
             if (virtualDisplay == null) {
                 Log.e(TAG, "❌ Failed to create VirtualDisplay")
@@ -746,24 +776,49 @@ class OverlayService : Service() {
     }
 
     private fun cleanupMediaProjectionResources() {
+        Log.i(TAG, "Cleaning up MediaProjection resources...")
+        
         // Mark as not ready during cleanup
         isMediaProjectionReady = false
-        scope.launch(Dispatchers.Main) {
-            floatingLogo?.setEnabled(false)
+        try {
+            scope.launch(Dispatchers.Main) {
+                floatingLogo?.setEnabled(false)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error disabling floating logo during cleanup", e)
+        }
+        
+        // Reset scan throttler
+        try {
+            ScanThrottler.reset()
+            Log.d(TAG, "ScanThrottler reset")
+        } catch (e: Exception) {
+            Log.w(TAG, "Error resetting ScanThrottler", e)
         }
         
         // Release detector bridge (frees cached templates)
-        detectorBridge = null
-        templateCount = 0
-        Log.d(TAG, "Detector bridge released")
+        try {
+            detectorBridge = null
+            templateCount = 0
+            Log.d(TAG, "Detector bridge released")
+        } catch (e: Exception) {
+            Log.w(TAG, "Error releasing detector bridge", e)
+        }
         
         // Clean up VirtualDisplay and ImageReader first
         try {
             virtualDisplay?.release()
             virtualDisplay = null
             Log.d(TAG, "VirtualDisplay released")
+        } catch (e: android.os.DeadObjectException) {
+            Log.w(TAG, "VirtualDisplay already dead")
+            virtualDisplay = null
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, "VirtualDisplay in illegal state during release")
+            virtualDisplay = null
         } catch (e: Exception) {
             Log.w(TAG, "Error releasing VirtualDisplay", e)
+            virtualDisplay = null
         }
         
         try {
@@ -772,6 +827,7 @@ class OverlayService : Service() {
             Log.d(TAG, "ImageReader closed")
         } catch (e: Exception) {
             Log.w(TAG, "Error closing ImageReader", e)
+            imageReader = null
         }
         
         // Then clean up MediaProjection
@@ -791,6 +847,7 @@ class OverlayService : Service() {
         
         try {
             mediaProjection?.stop()
+            Log.d(TAG, "MediaProjection stopped")
         } catch (e: android.os.DeadObjectException) {
             Log.w(TAG, "MediaProjection already dead, skipping stop()")
         } catch (e: android.os.RemoteException) {
@@ -799,6 +856,8 @@ class OverlayService : Service() {
             Log.e(TAG, "Error stopping MediaProjection", e)
         }
         mediaProjection = null
+        
+        Log.i(TAG, "MediaProjection cleanup complete")
     }
 
     override fun onDestroy() {

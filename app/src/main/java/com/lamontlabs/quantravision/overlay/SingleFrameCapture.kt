@@ -36,16 +36,29 @@ class SingleFrameCapture {
             val existingImage = imageReader.acquireLatestImage()
             if (existingImage != null) {
                 Timber.d("✓ Found existing frame in ImageReader, using it immediately")
-                val bitmap = existingImage.toBitmap()
-                existingImage.close()
+                val bitmap = try {
+                    existingImage.toBitmap()
+                } catch (e: Exception) {
+                    Timber.e(e, "Error converting existing image to bitmap")
+                    null
+                } finally {
+                    try { existingImage.close() } catch (e: Exception) {
+                        Timber.w(e, "Error closing existing image")
+                    }
+                }
+                
                 if (bitmap != null && isValidBitmap(bitmap)) {
                     Timber.i("✅ Primed frame captured: ${bitmap.width}x${bitmap.height}")
                     return@withLock bitmap
                 } else {
                     Timber.w("Existing frame was invalid, waiting for new frame...")
-                    bitmap?.recycle()
+                    try { bitmap?.recycle() } catch (e: Exception) {
+                        Timber.w(e, "Error recycling invalid bitmap")
+                    }
                 }
             }
+        } catch (e: IllegalStateException) {
+            Timber.w(e, "ImageReader in illegal state when checking for existing frame")
         } catch (e: Exception) {
             Timber.d("No existing frame available, waiting for new one: ${e.message}")
         }
@@ -164,27 +177,61 @@ class SingleFrameCapture {
     }
     
     private fun Image.toBitmap(): Bitmap? {
-        if (format != PixelFormat.RGBA_8888) {
-            Timber.e("Unexpected image format: $format")
-            return null
+        return try {
+            if (format != PixelFormat.RGBA_8888) {
+                Timber.e("Unexpected image format: $format (expected RGBA_8888)")
+                return null
+            }
+            
+            if (width <= 0 || height <= 0) {
+                Timber.e("Invalid image dimensions: ${width}x${height}")
+                return null
+            }
+            
+            val plane = planes.firstOrNull()
+            if (plane == null) {
+                Timber.e("No planes available in image")
+                return null
+            }
+            
+            val buffer: ByteBuffer = plane.buffer
+            if (!buffer.hasRemaining()) {
+                Timber.e("Image buffer is empty")
+                return null
+            }
+            
+            val pixelStride = plane.pixelStride
+            val rowStride = plane.rowStride
+            val rowPadding = rowStride - pixelStride * width
+            
+            if (rowPadding < 0) {
+                Timber.e("Invalid row padding: $rowPadding (rowStride=$rowStride, pixelStride=$pixelStride, width=$width)")
+                return null
+            }
+            
+            val bitmap = Bitmap.createBitmap(
+                width + rowPadding / pixelStride,
+                height,
+                Bitmap.Config.ARGB_8888
+            )
+            
+            buffer.rewind()
+            bitmap.copyPixelsFromBuffer(buffer)
+            
+            val cropped = Bitmap.createBitmap(bitmap, 0, 0, width, height)
+            bitmap.recycle()
+            
+            Timber.v("Bitmap converted successfully: ${cropped.width}x${cropped.height}")
+            return cropped
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "IllegalArgumentException creating bitmap - invalid dimensions or buffer")
+            null
+        } catch (e: OutOfMemoryError) {
+            Timber.e(e, "OutOfMemoryError creating bitmap - image too large (${width}x${height})")
+            null
+        } catch (e: Exception) {
+            Timber.e(e, "Unexpected error converting image to bitmap")
+            null
         }
-        
-        val plane = planes.firstOrNull() ?: return null
-        val buffer: ByteBuffer = plane.buffer
-        val pixelStride = plane.pixelStride
-        val rowStride = plane.rowStride
-        val rowPadding = rowStride - pixelStride * width
-        
-        val bitmap = Bitmap.createBitmap(
-            width + rowPadding / pixelStride,
-            height,
-            Bitmap.Config.ARGB_8888
-        )
-        bitmap.copyPixelsFromBuffer(buffer)
-        
-        val cropped = Bitmap.createBitmap(bitmap, 0, 0, width, height)
-        bitmap.recycle()
-        
-        return cropped
     }
 }

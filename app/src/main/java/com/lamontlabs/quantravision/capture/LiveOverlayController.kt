@@ -60,6 +60,29 @@ class LiveOverlayController(
                 android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 surface, null, null
             )
+            
+            if (virtualDisplay == null) {
+                android.util.Log.e("LiveOverlayController", "CRITICAL: createVirtualDisplay returned null")
+                running.set(false)
+                try { imageReader?.close() } catch (_: Exception) {}
+                imageReader = null
+                throw RuntimeException("Failed to create VirtualDisplay. Please restart the overlay service.")
+            }
+            
+            android.util.Log.i("LiveOverlayController", "VirtualDisplay created successfully: ${width}x${height}")
+        } catch (e: SecurityException) {
+            android.util.Log.e("LiveOverlayController", "CRITICAL: SecurityException - MediaProjection permission denied", e)
+            running.set(false)
+            try { imageReader?.close() } catch (_: Exception) {}
+            imageReader = null
+            throw RuntimeException("Screen capture permission denied. Please grant permission and restart.", e)
+        } catch (e: IllegalStateException) {
+            android.util.Log.e("LiveOverlayController", "CRITICAL: IllegalStateException - MediaProjection in invalid state", e)
+            running.set(false)
+            try { imageReader?.close() } catch (_: Exception) {}
+            imageReader = null
+            recoverFromFailedStart()
+            throw RuntimeException("MediaProjection stopped or in invalid state. Please restart scanner.", e)
         } catch (e: Exception) {
             android.util.Log.e("LiveOverlayController", "CRITICAL: Failed to create virtual display (MediaProjection may have been stopped)", e)
             // Clean up partially initialized resources
@@ -70,36 +93,114 @@ class LiveOverlayController(
         }
 
         imageReader!!.setOnImageAvailableListener({ imgReader ->
-            val now = System.currentTimeMillis()
-            
-            if (now - lastPolicyCheckMs > 5000) {
-                framePeriodMs = (1000.0 / getEffectiveFps()).toLong().coerceAtLeast(30)
-                lastPolicyCheckMs = now
-            }
-            
-            if (now - lastEmitMs < framePeriodMs) {
-                // Drop frame deterministically to meet targetFps
-                imgReader.acquireLatestImage()?.close()
-                return@setOnImageAvailableListener
-            }
-            val image = imgReader.acquireLatestImage() ?: return@setOnImageAvailableListener
-            val bmp = image.toBitmap()
-            image.close()
-            if (bmp != null) {
-                lastEmitMs = now
-                scope.launch(Dispatchers.Default) { onFrame(bmp) }
+            try {
+                val now = System.currentTimeMillis()
+                
+                if (now - lastPolicyCheckMs > 5000) {
+                    framePeriodMs = (1000.0 / getEffectiveFps()).toLong().coerceAtLeast(30)
+                    lastPolicyCheckMs = now
+                }
+                
+                if (now - lastEmitMs < framePeriodMs) {
+                    // Drop frame deterministically to meet targetFps
+                    try {
+                        imgReader.acquireLatestImage()?.close()
+                    } catch (e: Exception) {
+                        android.util.Log.w("LiveOverlayController", "Error dropping frame: ${e.message}")
+                    }
+                    return@setOnImageAvailableListener
+                }
+                
+                val image = imgReader.acquireLatestImage()
+                if (image == null) {
+                    android.util.Log.v("LiveOverlayController", "No image available from ImageReader")
+                    return@setOnImageAvailableListener
+                }
+                
+                val bmp = try {
+                    image.toBitmap()
+                } catch (e: Exception) {
+                    android.util.Log.e("LiveOverlayController", "Error converting image to bitmap", e)
+                    null
+                } finally {
+                    try { image.close() } catch (_: Exception) {}
+                }
+                
+                if (bmp != null) {
+                    lastEmitMs = now
+                    scope.launch(Dispatchers.Default) { 
+                        try {
+                            onFrame(bmp)
+                        } catch (e: Exception) {
+                            android.util.Log.e("LiveOverlayController", "Error in onFrame callback", e)
+                        }
+                    }
+                } else {
+                    android.util.Log.w("LiveOverlayController", "Failed to convert image to bitmap")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("LiveOverlayController", "Critical error in image available listener", e)
             }
         }, android.os.Handler(android.os.Looper.getMainLooper()))
     }
 
     fun stop() {
         if (!running.getAndSet(false)) return
-        try { virtualDisplay?.release() } catch (_: Exception) {}
-        try { imageReader?.close() } catch (_: Exception) {}
-        try { mediaProjection?.stop() } catch (_: Exception) {}
+        
+        android.util.Log.i("LiveOverlayController", "Stopping capture pipeline...")
+        
+        try {
+            virtualDisplay?.release()
+            android.util.Log.d("LiveOverlayController", "VirtualDisplay released")
+        } catch (e: android.os.DeadObjectException) {
+            android.util.Log.w("LiveOverlayController", "VirtualDisplay already dead")
+        } catch (e: IllegalStateException) {
+            android.util.Log.w("LiveOverlayController", "VirtualDisplay in illegal state during release")
+        } catch (e: Exception) {
+            android.util.Log.e("LiveOverlayController", "Error releasing VirtualDisplay", e)
+        }
         virtualDisplay = null
+        
+        try {
+            imageReader?.close()
+            android.util.Log.d("LiveOverlayController", "ImageReader closed")
+        } catch (e: Exception) {
+            android.util.Log.e("LiveOverlayController", "Error closing ImageReader", e)
+        }
         imageReader = null
+        
+        try {
+            mediaProjection?.stop()
+            android.util.Log.d("LiveOverlayController", "MediaProjection stopped")
+        } catch (e: android.os.DeadObjectException) {
+            android.util.Log.w("LiveOverlayController", "MediaProjection already dead")
+        } catch (e: IllegalStateException) {
+            android.util.Log.w("LiveOverlayController", "MediaProjection in illegal state during stop")
+        } catch (e: Exception) {
+            android.util.Log.e("LiveOverlayController", "Error stopping MediaProjection", e)
+        }
         mediaProjection = null
+        
+        android.util.Log.i("LiveOverlayController", "Capture pipeline stopped successfully")
+    }
+    
+    private fun recoverFromFailedStart() {
+        android.util.Log.w("LiveOverlayController", "Attempting recovery from failed start...")
+        try {
+            virtualDisplay?.release()
+        } catch (e: Exception) {
+            android.util.Log.d("LiveOverlayController", "Error during recovery VirtualDisplay release: ${e.message}")
+        }
+        virtualDisplay = null
+        
+        try {
+            imageReader?.close()
+        } catch (e: Exception) {
+            android.util.Log.d("LiveOverlayController", "Error during recovery ImageReader close: ${e.message}")
+        }
+        imageReader = null
+        
+        android.util.Log.i("LiveOverlayController", "Recovery complete - resources cleaned up")
     }
 
     private fun Image.toBitmap(): Bitmap? {
