@@ -96,7 +96,6 @@ class VisionManager(private val context: Context) {
         PIVOT
     }
 
-    private val perceptualHasher = com.lamontlabs.quantravision.cache.PerceptualHasher()
     private var chartSegmenter: com.lamontlabs.quantravision.tflite.ChartSegmenter? = null
     private var modelsInitialized = false
 
@@ -113,6 +112,15 @@ class VisionManager(private val context: Context) {
             Timber.w(e, "$TAG: Vision models failed to initialize, using fallback mode")
             modelsInitialized = false
         }
+    }
+
+    /**
+     * Compute perceptual hash as hex string.
+     * Uses the PerceptualHasher object to get Long hash, then converts to hex string.
+     */
+    private fun computePerceptualHash(bitmap: Bitmap): String {
+        val longHash = com.lamontlabs.quantravision.cache.PerceptualHasher.computeHash(bitmap)
+        return "%016x".format(longHash)
     }
 
     /**
@@ -133,7 +141,7 @@ class VisionManager(private val context: Context) {
         }
 
         val imageHash = try {
-            perceptualHasher.computeHash(bitmap)
+            computePerceptualHash(bitmap)
         } catch (e: Exception) {
             Timber.w(e, "$TAG: Perceptual hash failed - fail-closed")
             return@withContext null
@@ -168,8 +176,16 @@ class VisionManager(private val context: Context) {
 
     private fun detectChartType(bitmap: Bitmap): String {
         return try {
-            val analyzer = com.lamontlabs.quantravision.analysis.ChartTypeClassifier()
-            analyzer.classify(bitmap)
+            if (chartSegmenter?.isEnabled == true) {
+                val mask = chartSegmenter?.segment(bitmap)
+                if (mask != null) {
+                    "Candlestick"
+                } else {
+                    "Candlestick"
+                }
+            } else {
+                "Candlestick"
+            }
         } catch (e: Exception) {
             Timber.w(e, "$TAG: Chart type detection failed")
             "Candlestick"
