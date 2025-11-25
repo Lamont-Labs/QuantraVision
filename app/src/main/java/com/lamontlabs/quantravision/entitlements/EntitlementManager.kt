@@ -188,4 +188,35 @@ object EntitlementManager {
     fun isBasic(): Boolean = _currentTier.value.ordinal >= SubscriptionTier.BASIC.ordinal
     fun isPro(): Boolean = _currentTier.value.ordinal >= SubscriptionTier.PRO.ordinal
     fun isApex(): Boolean = _currentTier.value == SubscriptionTier.APEX
+    
+    /**
+     * Get current tier as tiers.Tier enum for pipeline compatibility.
+     */
+    fun getCurrentTier(context: Context): com.lamontlabs.quantravision.tiers.Tier {
+        initialize(context)
+        return when (_currentTier.value) {
+            SubscriptionTier.FREE -> com.lamontlabs.quantravision.tiers.Tier.FREE
+            SubscriptionTier.BASIC -> com.lamontlabs.quantravision.tiers.Tier.BASIC
+            SubscriptionTier.PRO -> com.lamontlabs.quantravision.tiers.Tier.PRO
+            SubscriptionTier.APEX -> com.lamontlabs.quantravision.tiers.Tier.APEX
+        }
+    }
+    
+    /**
+     * Get anonymous user ID for quota tracking.
+     * Uses a stable device-derived identifier.
+     */
+    fun getAnonymousUserId(context: Context): String {
+        val prefs = getSecurePrefs(context)
+        val existingId = prefs?.getString("anonymous_user_id", null)
+        
+        if (existingId != null) {
+            return existingId
+        }
+        
+        val newId = "user_${System.currentTimeMillis()}_${java.util.UUID.randomUUID().toString().take(8)}"
+        prefs?.edit()?.putString("anonymous_user_id", newId)?.apply()
+        
+        return newId
+    }
 }

@@ -20,6 +20,7 @@ import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.PatternMatch
 import com.lamontlabs.quantravision.TradeScenarioInfo
+import com.lamontlabs.quantravision.pipeline.QuantraPipelineCoordinator
 import com.lamontlabs.quantravision.planner.PatternToPlanEngine
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -75,6 +76,9 @@ class OverlayService : Service() {
     // Templates are cached inside detector, loading once saves ~200ms and memory on each scan
     private var detectorBridge: HybridDetectorBridge? = null
     
+    // v2.0 Pipeline Coordinator for enhanced scan flow
+    private var pipelineCoordinator: QuantraPipelineCoordinator? = null
+    
     // Cache template count to avoid repeated verification
     private var templateCount: Int = 0
     
@@ -120,6 +124,10 @@ class OverlayService : Service() {
             return
         }
         Log.i(TAG, "✓ AI model is imported")
+        
+        // Initialize v2.0 Pipeline Coordinator
+        pipelineCoordinator = QuantraPipelineCoordinator(this)
+        Log.i(TAG, "✓ Pipeline coordinator initialized")
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
@@ -469,6 +477,92 @@ class OverlayService : Service() {
     
     private suspend fun processFrameForPatterns(bitmap: android.graphics.Bitmap) {
         try {
+            // v2.0 Pipeline: Try new pipeline first, fallback to legacy detection
+            val coordinator = pipelineCoordinator
+            if (coordinator != null) {
+                Timber.i("🚀 Attempting v2.0 pipeline scan...")
+                val pipelineResult = coordinator.executePipeline(bitmap)
+                
+                when (pipelineResult) {
+                    is QuantraPipelineCoordinator.PipelineResult.QuotaExhausted -> {
+                        Timber.w("⚠️ v2.0 pipeline: Quota exhausted (scans: ${pipelineResult.scanLimit}, tier: ${pipelineResult.tier})")
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                applicationContext,
+                                "⚠️ Scan quota reached for ${pipelineResult.tier} tier.\nUpgrade for more scans!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        // Don't fall back - quota is a hard limit
+                        stateMachine.transitionToIdle()
+                        return
+                    }
+                    is QuantraPipelineCoordinator.PipelineResult.FailClosed -> {
+                        Timber.w("⚠️ v2.0 pipeline: FailClosed at stage '${pipelineResult.stage}' - ${pipelineResult.reason}")
+                        Timber.w("   ProofHash: ${pipelineResult.proofHash}")
+                        // Fall through to legacy detection
+                        Timber.i("🔄 Falling back to legacy detection...")
+                    }
+                    is QuantraPipelineCoordinator.PipelineResult.Success -> {
+                        Timber.i("✅ v2.0 pipeline: Success! Score: ${pipelineResult.overlayData.score}, Status: ${pipelineResult.overlayData.status}")
+                        
+                        // Use overlay data to determine rendering
+                        val overlayData = pipelineResult.overlayData
+                        val apexResult = pipelineResult.apexResult
+                        
+                        if (overlayData.shouldRender) {
+                            Timber.i("📊 v2.0 pipeline: Rendering overlay (style: ${overlayData.overlayStyle})")
+                            
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "✅ ${overlayData.verdict} (Score: ${overlayData.score})",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                
+                                floatingLogo?.updatePatternCount(1)
+                                
+                                when (overlayData.overlayStyle) {
+                                    QuantraPipelineCoordinator.OverlayStyle.SOLID_TEAL -> 
+                                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
+                                    QuantraPipelineCoordinator.OverlayStyle.AMBER_DASHED,
+                                    QuantraPipelineCoordinator.OverlayStyle.VIOLET_BROKEN -> 
+                                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                                    QuantraPipelineCoordinator.OverlayStyle.NONE -> 
+                                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                                }
+                            }
+                            
+                            // Log narration if available
+                            pipelineResult.narration?.let { narration ->
+                                Timber.i("📝 Narration: ${narration.headline}")
+                                Timber.d("   What: ${narration.whatWasSeen}")
+                                Timber.d("   Why: ${narration.whyApexSaidThis}")
+                            }
+                            
+                            stateMachine.transitionToIdle()
+                            return
+                        } else {
+                            Timber.i("📊 v2.0 pipeline: No overlay to render (status: ${overlayData.status})")
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "No patterns detected",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+                                floatingLogo?.updatePatternCount(0)
+                            }
+                            stateMachine.transitionToIdle()
+                            return
+                        }
+                    }
+                }
+            } else {
+                Timber.d("v2.0 pipeline coordinator not initialized, using legacy detection")
+            }
+            
+            // Legacy detection flow (fallback)
             // Use cached detector bridge (initialized once on service start)
             val detector = detectorBridge
             if (detector == null) {
@@ -483,13 +577,13 @@ class OverlayService : Service() {
                 return
             }
             
-            Timber.i("🔬 Running pattern detection using cached detector ($templateCount templates)...")
+            Timber.i("🔬 Running legacy pattern detection using cached detector ($templateCount templates)...")
             val patternToPlanEngine = PatternToPlanEngine(applicationContext)
             val isProActive = ProFeatureGate.isActive(applicationContext)
             
             Timber.i("🔍 Running optimized pattern detection (1-2.5s expected)...")
             val results = detector.detectPatternsOptimized(bitmap)
-            Timber.i("✅ Pattern detection complete - found ${results.size} raw patterns")
+            Timber.i("✅ Legacy pattern detection complete - found ${results.size} raw patterns")
             
             val allDetectedPatterns = mutableListOf<PatternMatch>()
                 
@@ -892,6 +986,9 @@ class OverlayService : Service() {
         runBlocking {
             cleanupMediaProjectionResources()
         }
+        
+        // Cleanup v2.0 Pipeline Coordinator
+        pipelineCoordinator = null
         
         try {
             resultController.cleanup()

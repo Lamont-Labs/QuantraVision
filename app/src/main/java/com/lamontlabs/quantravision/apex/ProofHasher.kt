@@ -162,4 +162,32 @@ object ProofHasher {
         
         return "APEX_${timestamp}_$deterministicSuffix"
     }
+    
+    /**
+     * Generate proof hash for fail-closed pipeline errors.
+     * Provides audit trail even when pipeline fails safely.
+     * 
+     * @param pipelineId Pipeline execution identifier
+     * @param stage Stage where failure occurred (vision, primitives, apex, etc.)
+     * @param reason Failure reason
+     * @param timestamp Failure timestamp
+     * @return Hex-encoded SHA-256 hash of fail-closed event
+     */
+    fun hashFailClosed(
+        pipelineId: String,
+        stage: String,
+        reason: String,
+        timestamp: Long
+    ): String {
+        val canonical = buildString {
+            append("{")
+            append("type:FAIL_CLOSED,")
+            append("pipelineId:$pipelineId,")
+            append("stage:$stage,")
+            append("reason:$reason,")
+            append("timestamp:$timestamp")
+            append("}")
+        }
+        return sha256Hex(canonical)
+    }
 }

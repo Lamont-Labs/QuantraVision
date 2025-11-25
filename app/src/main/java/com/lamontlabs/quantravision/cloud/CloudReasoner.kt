@@ -17,7 +17,6 @@
 package com.lamontlabs.quantravision.cloud
 
 import android.content.Context
-import com.lamontlabs.quantravision.apex.models.ApexResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -55,17 +54,22 @@ class CloudReasoner(private val context: Context) {
     }
 
     /**
-     * Generate cloud narration for Apex result.
-     * @param apexResult The Apex Engine output to narrate
+     * Generate cloud narration for sanitized Apex packet.
+     * 
+     * SECURITY: Only accepts pre-sanitized packet with approved fields.
+     * Never receives full ApexResult to prevent accidental data leakage.
+     * 
+     * @param primitivePacket Sanitized packet from CloudNarrationOrchestrator.buildPrimitivePacket()
      * @param tier User subscription tier (PRO or ULTRA)
      * @return NarrationResult with explanation or failure reason
      */
     suspend fun narrate(
-        apexResult: ApexResult,
+        primitivePacket: Map<String, Any>,
         tier: String
     ): NarrationResult = withContext(Dispatchers.IO) {
         try {
-            Timber.d("$TAG: Starting cloud narration for tier=$tier, status=${apexResult.status}")
+            val status = primitivePacket["status"] as? String ?: "UNKNOWN"
+            Timber.d("$TAG: Starting cloud narration for tier=$tier, status=$status")
             
             val apiKey = getOpenAIApiKey()
             if (apiKey.isNullOrBlank()) {
@@ -75,7 +79,7 @@ class CloudReasoner(private val context: Context) {
             
             val maxTokens = getMaxTokensForTier(tier)
             val model = getModelForTier(tier)
-            val payload = buildPayload(apexResult, tier, model, maxTokens)
+            val payload = buildPayloadFromPacket(primitivePacket, tier, model, maxTokens)
             
             Timber.v("$TAG: Calling OpenAI API (model=$model, maxTokens=$maxTokens)")
             
@@ -142,27 +146,27 @@ class CloudReasoner(private val context: Context) {
         }
     }
 
-    private fun buildPayload(
-        apexResult: ApexResult,
+    @Suppress("UNCHECKED_CAST")
+    private fun buildPayloadFromPacket(
+        primitivePacket: Map<String, Any>,
         tier: String,
         model: String,
         maxTokens: Int
     ): String {
-        val topProtocols = apexResult.protocolTrace
-            .take(5)
-            .map { it.protocolId }
+        val topProtocols = (primitivePacket["top_protocols"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+        val invalidationPoints = (primitivePacket["invalidation_points"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
         
         val inputData = JSONObject().apply {
-            put("scan_id", apexResult.scanId)
+            put("scan_id", primitivePacket["scan_id"] ?: "")
             put("tier", tier.uppercase(Locale.US))
-            put("status", apexResult.status.name)
-            put("quantra_score", apexResult.quantraScore.normalizedScore)
-            put("confidence_apex", apexResult.confidenceApex)
-            put("entropy_score", apexResult.entropyScore)
-            put("suppression_active", apexResult.suppressionActive)
-            put("regime_ok", apexResult.regimeOk)
+            put("status", primitivePacket["status"] ?: "UNKNOWN")
+            put("quantra_score", primitivePacket["quantra_score"] ?: 0)
+            put("confidence_apex", primitivePacket["confidence"] ?: 0.0)
+            put("entropy_score", primitivePacket["entropy"] ?: 0.0)
+            put("suppression_active", primitivePacket["suppression_active"] ?: false)
+            put("regime_ok", primitivePacket["regime_ok"] ?: true)
             put("trace_top", JSONArray(topProtocols))
-            put("invalidation_points", JSONArray(apexResult.invalidationPoints))
+            put("invalidation_points", JSONArray(invalidationPoints))
         }
         
         val systemPrompt = """You are ApexNarrator, an educational chart analysis assistant. Your role is to explain the Apex Engine's reasoning in clear, educational language.
