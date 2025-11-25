@@ -1,8 +1,9 @@
 package com.lamontlabs.quantravision.apex.protocols.tier
 
 import com.lamontlabs.quantravision.apex.ApexProtocol
-import java.util.Locale
 import com.lamontlabs.quantravision.apex.models.*
+import java.util.Locale
+
 /**
  * T13: VolatilityAlignment
  * Purpose: Checks if volatility level matches pattern requirements
@@ -15,7 +16,11 @@ class T13VolatilityAlignment : ApexProtocol {
     override val protocolName = "VolatilityAlignment"
     override val weight = 1.5
     
-    override fun execute(primitives: ApexPrimitives, state: MutableMap<String, Any>): ProtocolVerdict {
+    override suspend fun evaluate(
+        context: ApexScanContext,
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
+    ): ProtocolVerdict {
         if (primitives.candles.isEmpty()) {
             state["volatilityAligned"] = false
             return ProtocolVerdict(
@@ -28,15 +33,13 @@ class T13VolatilityAlignment : ApexProtocol {
             )
         }
         
-        // Safe state access
         val volatilityState = state["volatility"] as? String ?: "normal"
         val trendStrength = state["trendStrength"] as? Double ?: 0.5
         
-        // Determine if volatility aligns with trend
         val volatilityAligned = when {
             trendStrength > 0.7 && volatilityState in listOf("normal", "high") -> true
             trendStrength < 0.3 && volatilityState in listOf("low", "normal") -> true
-            trendStrength in 0.3..0.7 -> true  // Any volatility acceptable for sideways
+            trendStrength in 0.3..0.7 -> true
             else -> false
         }
         state["volatilityAligned"] = volatilityAligned

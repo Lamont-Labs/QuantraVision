@@ -135,13 +135,16 @@ import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega04Complianc
  */
 
 /**
- * Apex Protocol sealed interface.
+ * Apex Protocol interface.
  * All protocols must implement this interface.
  * 
  * Protocols are pure functions: given context and primitives, return a verdict.
  * No side effects, no external state mutation.
+ * 
+ * NOTE: Changed from sealed interface to regular interface to allow
+ * implementations in different packages (tier, learning, omega).
  */
-sealed interface ApexProtocol {
+interface ApexProtocol {
     
     /**
      * Protocol unique identifier (e.g., "T01", "LP05", "Omega02").

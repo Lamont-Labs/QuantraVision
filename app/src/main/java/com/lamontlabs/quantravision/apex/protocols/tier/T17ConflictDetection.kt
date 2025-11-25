@@ -3,6 +3,7 @@ package com.lamontlabs.quantravision.apex.protocols.tier
 import com.lamontlabs.quantravision.apex.ApexProtocol
 import com.lamontlabs.quantravision.apex.models.*
 import kotlin.math.max
+
 /**
  * T17: ConflictDetection
  * Purpose: Detects conflicting signals across indicators
@@ -15,7 +16,11 @@ class T17ConflictDetection : ApexProtocol {
     override val protocolName = "ConflictDetection"
     override val weight = 1.5
     
-    override fun execute(primitives: ApexPrimitives, state: MutableMap<String, Any>): ProtocolVerdict {
+    override suspend fun evaluate(
+        context: ApexScanContext,
+        primitives: ChartPrimitives,
+        state: MutableMap<String, Any>
+    ): ProtocolVerdict {
         if (primitives.candles.isEmpty()) {
             state["conflictFlags"] = emptyList<String>()
             state["conflictCount"] = 0
@@ -31,7 +36,6 @@ class T17ConflictDetection : ApexProtocol {
         
         val conflictFlags = mutableListOf<String>()
         
-        // Safe state access - check momentum vs volume conflict
         val momentumAligned = state["momentumAligned"] as? Boolean
         val volumeConfirmed = state["volumeConfirmed"] as? Boolean
         if (momentumAligned == true && volumeConfirmed == false) {
@@ -39,7 +43,7 @@ class T17ConflictDetection : ApexProtocol {
         } else if (momentumAligned == false && volumeConfirmed == true) {
             conflictFlags.add("volume-momentum-conflict")
         }
-        // Safe state access - check trend vs volatility conflict
+        
         val trendStrength = state["trendStrength"] as? Double ?: 0.5
         val volatilityState = state["volatility"] as? String ?: "normal"
         if (trendStrength > 0.7 && volatilityState == "low") {
@@ -48,13 +52,11 @@ class T17ConflictDetection : ApexProtocol {
             conflictFlags.add("weak-trend-high-volatility")
         }
         
-        // Safe state access - check MTF coherence conflict
         val mtfCoherent = state["mtfCoherent"] as? Boolean
         if (mtfCoherent == false) {
             conflictFlags.add("multi-timeframe-conflict")
         }
         
-        // Safe state access - check price action vs structure conflict
         val priceActionQuality = state["priceActionQuality"] as? Double ?: 0.5
         val structureComplete = state["structureComplete"] as? Boolean ?: true
         if (priceActionQuality < 0.4 && structureComplete == true) {
