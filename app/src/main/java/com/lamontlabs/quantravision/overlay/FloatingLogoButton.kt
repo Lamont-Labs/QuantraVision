@@ -41,8 +41,13 @@ class FloatingLogoButton(
     private var dragStartTime = 0L
     
     private val longPressThreshold = 500L
+    private val doubleTapThreshold = 250L
+    private var lastTapTime = 0L
+    private var pendingSingleTapRunnable: Runnable? = null
+    private val handler = android.os.Handler(android.os.Looper.getMainLooper())
     
     var onClickListener: (() -> Unit)? = null
+    var onDoubleTapListener: (() -> Unit)? = null
     var onLongPressListener: (() -> Unit)? = null
 
     init {
@@ -189,10 +194,11 @@ class FloatingLogoButton(
                         android.util.Log.d("FloatingLogoButton", "⏱️ Press duration: ${pressDuration}ms")
                         if (pressDuration >= longPressThreshold) {
                             android.util.Log.i("FloatingLogoButton", "🔴 LONG PRESS detected - invoking onLongPressListener")
+                            cancelPendingSingleTap()
                             onLongPressListener?.invoke()
                         } else {
-                            android.util.Log.i("FloatingLogoButton", "✅ TAP detected - invoking onClickListener")
-                            onClickListener?.invoke()
+                            // Handle tap with double-tap detection
+                            handleTapWithDoubleTapDetection()
                         }
                     }
                     isDragging = false
@@ -235,7 +241,38 @@ class FloatingLogoButton(
         windowManager.updateViewLayout(logoView, params)
     }
 
+    private fun handleTapWithDoubleTapDetection() {
+        val currentTime = System.currentTimeMillis()
+        val timeSinceLastTap = currentTime - lastTapTime
+        
+        if (timeSinceLastTap < doubleTapThreshold) {
+            // Double tap detected - cancel pending single tap and fire double tap
+            android.util.Log.i("FloatingLogoButton", "👆👆 DOUBLE TAP detected - invoking onDoubleTapListener")
+            cancelPendingSingleTap()
+            lastTapTime = 0L
+            onDoubleTapListener?.invoke()
+        } else {
+            // First tap - schedule single tap with delay
+            lastTapTime = currentTime
+            pendingSingleTapRunnable = Runnable {
+                android.util.Log.i("FloatingLogoButton", "✅ SINGLE TAP confirmed - invoking onClickListener")
+                onClickListener?.invoke()
+                pendingSingleTapRunnable = null
+            }
+            handler.postDelayed(pendingSingleTapRunnable!!, doubleTapThreshold)
+        }
+    }
+
+    private fun cancelPendingSingleTap() {
+        pendingSingleTapRunnable?.let { runnable ->
+            handler.removeCallbacks(runnable)
+            pendingSingleTapRunnable = null
+            android.util.Log.d("FloatingLogoButton", "🚫 Pending single tap canceled")
+        }
+    }
+
     fun cleanup() {
+        cancelPendingSingleTap()
         logoImage.alpha = 1f
         hide()
     }

@@ -72,6 +72,10 @@ class OverlayService : Service() {
     @Volatile
     private var isMediaProjectionReady: Boolean = false
     
+    // Overlay-only mode: When true, only the floating Q is visible (chart overlay mode)
+    @Volatile
+    private var overlayOnlyMode: Boolean = false
+    
     // CRITICAL: Reuse detector bridge to avoid repeated template loading
     // Templates are cached inside detector, loading once saves ~200ms and memory on each scan
     private var detectorBridge: HybridDetectorBridge? = null
@@ -206,6 +210,9 @@ class OverlayService : Service() {
                 onClickListener = {
                     handleTap()
                 }
+                onDoubleTapListener = {
+                    handleDoubleTap()
+                }
                 onLongPressListener = {
                     handleLongPress()
                 }
@@ -329,8 +336,41 @@ class OverlayService : Service() {
         }
     }
     
+    private fun handleDoubleTap() {
+        Log.i(TAG, "👆👆 DOUBLE TAP DETECTED in OverlayService.handleDoubleTap()")
+        overlayOnlyMode = !overlayOnlyMode
+        Log.i(TAG, "Overlay-only mode toggled to: $overlayOnlyMode")
+        
+        scope.launch(Dispatchers.Main) {
+            if (overlayOnlyMode) {
+                // Enter overlay-only mode - show toast feedback
+                Toast.makeText(
+                    applicationContext,
+                    "📊 Overlay mode ON - Double-tap to exit, long-press for full UI",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.i(TAG, "✅ Entered overlay-only mode")
+            } else {
+                // Exit overlay-only mode
+                Toast.makeText(
+                    applicationContext,
+                    "🔙 Overlay mode OFF - Normal mode restored",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.i(TAG, "✅ Exited overlay-only mode")
+            }
+        }
+    }
+    
     private fun handleLongPress() {
         Log.i(TAG, "🔴 LONG PRESS DETECTED in OverlayService.handleLongPress()")
+        
+        // Long press always exits overlay-only mode and returns to main UI
+        if (overlayOnlyMode) {
+            overlayOnlyMode = false
+            Log.i(TAG, "Force-exiting overlay-only mode via long press")
+        }
+        
         Log.i(TAG, "Returning to main UI...")
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
