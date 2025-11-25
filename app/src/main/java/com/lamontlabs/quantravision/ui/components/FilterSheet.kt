@@ -79,7 +79,7 @@ fun FilterSheet(
                 PatternType.values().forEach { type ->
                     val isSelected = filter.patternTypes.contains(type)
                     MenuItemCard(
-                        title = type.name.lowercase().replaceFirstChar { it.uppercase() },
+                        title = type.name.lowercase().replaceFirstChar { it.uppercaseChar() },
                         onClick = {
                             filter = if (isSelected) {
                                 filter.copy(patternTypes = filter.patternTypes - type)
@@ -114,7 +114,7 @@ fun FilterSheet(
                 ConfidenceLevel.values().forEach { level ->
                     val isSelected = filter.confidenceLevels.contains(level)
                     MenuItemCard(
-                        title = level.name.lowercase().replaceFirstChar { it.uppercase() },
+                        title = level.name.lowercase().replaceFirstChar { it.uppercaseChar() },
                         onClick = {
                             filter = if (isSelected) {
                                 filter.copy(confidenceLevels = filter.confidenceLevels - level)
