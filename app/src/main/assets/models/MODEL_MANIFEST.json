@@ -15,6 +15,14 @@
       "license": "Apache-2.0",
       "source_url": "https://huggingface.co/RogerQi/MobileSAMV2/resolve/main/mobile_sam.pt",
       "sha256": "6dbb90523a35330fedd7f1d3dfc66f995213d81b29a5ca8108dbcdd4e37d6c2f"
+    },
+    {
+      "id": "sentence_embeddings",
+      "file": "sentence_embeddings.tflite",
+      "task": "text_embedding",
+      "license": "Apache-2.0",
+      "source_url": "https://tfhub.dev/google/lite-model/universal-sentence-encoder-qa-ondevice/1",
+      "sha256": "placeholder_hash_update_after_verification"
     }
   ],
   "generated_by": "QuantraVision Open-License Model Fetcher v1.0",

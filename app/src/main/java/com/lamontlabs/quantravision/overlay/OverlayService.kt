@@ -126,10 +126,28 @@ class OverlayService : Service() {
                 Log.e(TAG, "CRITICAL: SYSTEM_ALERT_WINDOW permission not granted, stopping service")
                 Toast.makeText(
                     this,
-                    "Overlay permission required. Please enable it in settings.",
+                    "Overlay permission required. Tap notification to open settings.",
                     Toast.LENGTH_LONG
                 ).show()
-                // Properly stop foreground service to avoid crash
+                
+                try {
+                    val settingsIntent = Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        android.net.Uri.parse("package:$packageName")
+                    ).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    startActivity(settingsIntent)
+                    Log.i(TAG, "Opened overlay permission settings for user")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to open overlay settings: ${e.message}", e)
+                    Toast.makeText(
+                        this,
+                        "Please enable 'Draw over other apps' in Settings > Apps > QuantraVision",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                
                 stopForeground(true)
                 stopSelf()
                 return
@@ -586,8 +604,12 @@ class OverlayService : Service() {
             mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
             
             if (mediaProjection == null) {
-                Log.e(TAG, "Failed to get MediaProjection")
-                Toast.makeText(this, "Screen capture permission denied", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "Failed to get MediaProjection - user denied permission or system error")
+                Toast.makeText(
+                    this, 
+                    "❌ Screen capture permission denied.\n\nTo use the scanner:\n1. Tap the floating button again\n2. Grant screen capture permission when prompted\n\nNote: This is required for chart pattern detection.",
+                    Toast.LENGTH_LONG
+                ).show()
                 stopForeground(true)
                 stopSelf()
                 return

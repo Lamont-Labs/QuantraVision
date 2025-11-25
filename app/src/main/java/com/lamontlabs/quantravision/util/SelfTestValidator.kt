@@ -15,8 +15,8 @@ object SelfTestValidator {
 
     private data class Target(val path: String, val expectedSha: String)
     private val criticalFiles = listOf(
-        Target("app/src/main/assets/pattern_detector.tflite", "EXPECTED_HASH_TFLITE"),
-        Target("app/src/main/assets/patterns.json", "EXPECTED_HASH_JSON")
+        Target("models/detector_ssd_mobilenet_v1_quant.tflite", "EXPECTED_HASH_TFLITE"),
+        Target("patterns.json", "EXPECTED_HASH_JSON")
     )
 
     fun run(context: Context) {
