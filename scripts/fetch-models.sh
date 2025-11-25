@@ -8,11 +8,12 @@
 #
 # Models:
 #   1) coco_ssd_mobilenet_v1 quant (Apache-2.0)  -> detector.tflite + labels.txt
-#   2) MobileSAM v2 weights (Apache-2.0)        -> mobile_sam_v2.pt (conversion handled by existing pipeline)
+#   2) DeepLabv3 MobileNetV2 (Apache-2.0)        -> deeplabv3_segmentation.tflite
 #
 # Excludes (AGPL / non-permissive):
 #   - Ultralytics YOLOv5/YOLOv8 weights
 #   - FastSAM weights
+#   - MobileSAM (original is Apache-2.0, but no TFLite available without AGPL tools)
 # ==========================================================
 
 set -euo pipefail
@@ -50,8 +51,8 @@ mkdir -p "$MODELS_DIR" "$LABELS_DIR" "$TMP_DIR"
 # 1) TensorFlow Lite COCO SSD MobileNet v1 quant (Apache-2.0)
 SSD_ZIP_URL="https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip"
 
-# 2) MobileSAM v2 weights mirror (Apache-2.0 on HF)
-MOBILESAM_PT_URL="https://huggingface.co/RogerQi/MobileSAMV2/resolve/main/mobile_sam.pt"
+# 2) DeepLabv3 MobileNetV2 segmentation (Apache-2.0 from Kaggle/TensorFlow)
+DEEPLABV3_URL="https://www.kaggle.com/api/v1/models/tensorflow/deeplabv3/tfLite/metadata/1/download"
 
 # ---- Download helper ----
 fetch() {
@@ -112,17 +113,27 @@ echo "[models] SSD detector ready: $SSD_TFLITE_DST"
 echo "[models] SSD sha256: $SSD_SHA"
 
 # ==========================================================
-# MODEL 2: MobileSAM v2 weights (Apache-2.0)
-# NOTE:
-#   Your existing pipeline converts PT -> ONNX -> TFLite.
-#   This script only fetches the permissive weights.
+# MODEL 2: DeepLabv3 MobileNetV2 segmentation (Apache-2.0)
+# Pre-trained on PASCAL VOC, 21 classes, 257x257 input
 # ==========================================================
-MOBILESAM_PT_DST="$MODELS_DIR/mobile_sam_v2.pt"
-fetch "$MOBILESAM_PT_URL" "$MOBILESAM_PT_DST"
+DEEPLABV3_TAR="$TMP_DIR/deeplabv3.tar.gz"
+fetch "$DEEPLABV3_URL" "$DEEPLABV3_TAR"
 
-MOBILESAM_SHA="$(sha256_of "$MOBILESAM_PT_DST")"
-echo "[models] MobileSAM v2 weights ready: $MOBILESAM_PT_DST"
-echo "[models] MobileSAM sha256: $MOBILESAM_SHA"
+echo "[models] extracting DeepLabv3..."
+tar -xzf "$DEEPLABV3_TAR" -C "$TMP_DIR"
+
+DEEPLABV3_SRC="$(find "$TMP_DIR" -name '*.tflite' ! -name 'detector*' ! -name 'sentence*' | head -n 1)"
+if [[ ! -f "$DEEPLABV3_SRC" ]]; then
+  echo "[models][FAIL] DeepLabv3 tflite not found after extract."
+  exit 1
+fi
+
+DEEPLABV3_DST="$MODELS_DIR/deeplabv3_segmentation.tflite"
+cp "$DEEPLABV3_SRC" "$DEEPLABV3_DST"
+
+DEEPLABV3_SHA="$(sha256_of "$DEEPLABV3_DST")"
+echo "[models] DeepLabv3 segmentation ready: $DEEPLABV3_DST"
+echo "[models] DeepLabv3 sha256: $DEEPLABV3_SHA"
 
 # ==========================================================
 # Emit deterministic manifest for runtime loaders
@@ -141,15 +152,25 @@ cat > "$MANIFEST_PATH" <<JSON
       "sha256": "$SSD_SHA"
     },
     {
-      "id": "mobile_sam_v2_weights",
-      "file": "mobile_sam_v2.pt",
-      "task": "segmentation_weights",
+      "id": "deeplabv3_segmentation",
+      "file": "deeplabv3_segmentation.tflite",
+      "task": "semantic_segmentation",
       "license": "Apache-2.0",
-      "source_url": "$MOBILESAM_PT_URL",
-      "sha256": "$MOBILESAM_SHA"
+      "source_url": "$DEEPLABV3_URL",
+      "sha256": "$DEEPLABV3_SHA",
+      "input_size": "257x257",
+      "classes": 21
+    },
+    {
+      "id": "sentence_embeddings",
+      "file": "sentence_embeddings.tflite",
+      "task": "text_embedding",
+      "license": "Apache-2.0",
+      "source_url": "https://tfhub.dev/google/lite-model/universal-sentence-encoder-qa-ondevice/1",
+      "sha256": "0aac5b0b76be23ab94f065a7fab6e0daead5e57f6ff7d55e19a2641d6a81f276"
     }
   ],
-  "generated_by": "QuantraVision Open-License Model Fetcher v1.0",
+  "generated_by": "QuantraVision Open-License Model Fetcher v1.1",
   "fail_closed": true
 }
 JSON

@@ -9,12 +9,14 @@
       "sha256": "e4b118e5e4531945de2e659742c7c590f7536f8d0ed26d135abcfe83b4779d13"
     },
     {
-      "id": "mobile_sam_v2_weights",
-      "file": "mobile_sam_v2.pt",
-      "task": "segmentation_weights",
+      "id": "deeplabv3_segmentation",
+      "file": "deeplabv3_segmentation.tflite",
+      "task": "semantic_segmentation",
       "license": "Apache-2.0",
-      "source_url": "https://huggingface.co/RogerQi/MobileSAMV2/resolve/main/mobile_sam.pt",
-      "sha256": "6dbb90523a35330fedd7f1d3dfc66f995213d81b29a5ca8108dbcdd4e37d6c2f"
+      "source_url": "https://www.kaggle.com/api/v1/models/tensorflow/deeplabv3/tfLite/metadata/1/download",
+      "sha256": "4b4ffb179fad07890342d281c9082a80e57122a1952da853d3c2e73a4f2e723e",
+      "input_size": "257x257",
+      "classes": 21
     },
     {
       "id": "sentence_embeddings",
@@ -22,9 +24,9 @@
       "task": "text_embedding",
       "license": "Apache-2.0",
       "source_url": "https://tfhub.dev/google/lite-model/universal-sentence-encoder-qa-ondevice/1",
-      "sha256": "placeholder_hash_update_after_verification"
+      "sha256": "0aac5b0b76be23ab94f065a7fab6e0daead5e57f6ff7d55e19a2641d6a81f276"
     }
   ],
-  "generated_by": "QuantraVision Open-License Model Fetcher v1.0",
+  "generated_by": "QuantraVision Open-License Model Fetcher v1.1",
   "fail_closed": true
 }
