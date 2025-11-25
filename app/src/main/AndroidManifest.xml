@@ -23,16 +23,22 @@
         android:theme="@style/Theme.QuantraVision"
         tools:targetApi="31">
 
-        <!-- Main Activity (Onboarding/Settings) -->
+        <!-- Main Activity - App Entry Point -->
         <activity
-            android:name=".ui.OnboardingActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.QuantraVision.Splash">
+            android:theme="@style/Theme.QuantraVision">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- Standalone Onboarding Activity (legacy/standalone use) -->
+        <activity
+            android:name=".ui.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuantraVision.Splash" />
 
         <!-- Settings Activity -->
         <activity
