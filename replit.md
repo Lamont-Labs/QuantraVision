@@ -131,12 +131,17 @@ android/app/src/main/java/com/lamontlabs/quantravision/
 ```
 
 ## Recent Changes (November 2025)
+- **v2.0 Pipeline Implementation**: QuantraPipelineCoordinator now enforces Screen→Vision→Primitives→Apex→Score→Overlay→QuotaGate→Cloud→Validator pipeline
+- **Deterministic Proof Hashing**: Candle timestamps derived from perceptual image hash (not wall-clock time) - same input = same output = same hash
+- **Fail-Closed at Every Junction**: VisionManager and PrimitivesBuilder return null on failures, minimum 10 candles enforced
+- **Cloud Privacy**: CloudNarrationOrchestrator sends only sanitized primitive packets (never full ApexResult or images)
+- **Quota Enforcement**: checkScanQuota() enforced BEFORE processing, recordScan() only after success
 - Replaced MobileSAM PyTorch (39MB) with DeepLabv3 TFLite (2.7MB) - acquisition safe
 - Fixed all "Unlimited" quota messaging - now shows hard caps
 - Added branding: "Powered by QuantraCore Apex™ logic" and "Built by Lamont Labs"
 - Terminology: "Scans" (not "Highlights") throughout UI
-- Removed DevBot from navigation
 - Created ChartSegmenter.kt wrapper for TFLite segmentation
+- Created ModelFallback.kt with no-op stubs for Section 8.10 model migration
 
 ## Critical Design Rules
 - **No unlimited features**: All tiers have hard-capped daily limits
