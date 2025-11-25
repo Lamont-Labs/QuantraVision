@@ -23,7 +23,6 @@ fun QuantraVisionApp(context: Context) {
         LaunchedEffect(Unit) {
             com.lamontlabs.quantravision.entitlements.EntitlementManager.initialize(context)
             com.lamontlabs.quantravision.onboarding.FeatureDiscoveryStore.initialize(context)
-            com.lamontlabs.quantravision.devbot.engine.DiagnosticEngine.initialize(context)
         }
         
         val navController = rememberNavController()
@@ -112,7 +111,7 @@ private fun AppNavigationHost(
     }
     
     // Define main tab routes that should show the bottom bar
-    val mainTabRoutes = setOf("home", "markets", "scan", "quantrabot", "devbot", "settings")
+    val mainTabRoutes = setOf("home", "markets", "scan", "quantrabot", "settings")
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showBottomBar = currentRoute in mainTabRoutes
@@ -173,10 +172,6 @@ private fun AppNavigationHost(
             com.lamontlabs.quantravision.ui.screens.QuantraBotScreen(
                 paddingValues = PaddingValues()
             )
-        }
-        
-        composable("devbot") {
-            com.lamontlabs.quantravision.devbot.ui.DevBotScreen()
         }
         
         composable("settings") {
