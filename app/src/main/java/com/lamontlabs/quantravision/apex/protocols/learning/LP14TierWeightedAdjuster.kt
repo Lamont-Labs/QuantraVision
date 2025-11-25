@@ -54,7 +54,7 @@ class LP14TierWeightedAdjuster : ApexProtocol {
     }
     
     private fun applyTierWeightedAdjustment(score: Double, context: ApexScanContext): Double {
-        val tierMultiplier = when (context.tier.uppercase()) {
+        val tierMultiplier = when (context.tier.name.uppercase()) {
             "APEX", "APEX_ULTRA", "ULTRA" -> 1.2
             "PRO", "STANDARD" -> 1.0
             "BASIC", "STARTER" -> 0.9
