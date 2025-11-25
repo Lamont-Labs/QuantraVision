@@ -39,7 +39,7 @@ jobs:
           sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
 
       - name: Cache Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew

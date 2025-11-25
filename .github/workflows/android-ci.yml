@@ -36,7 +36,7 @@ jobs:
         sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
       
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
       with:
         cache-disabled: true
         gradle-home-cache-cleanup: true
