@@ -84,11 +84,14 @@ fun ScanScreen(
                 )
                 
                 StatCard(
-                    title = "Highlights",
+                    title = "Scans",
                     value = "${uiState.highlightsUsedToday}",
-                    subtitle = if (uiState.currentTier == SubscriptionTier.FREE) {
-                        "${uiState.highlightsRemaining} left"
-                    } else "Unlimited",
+                    subtitle = when (uiState.currentTier) {
+                        SubscriptionTier.FREE -> "${uiState.highlightsRemaining} of 3/day"
+                        SubscriptionTier.BASIC -> "of 25/day"
+                        SubscriptionTier.PRO -> "of 75/day"
+                        SubscriptionTier.APEX -> "of 200/day"
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }

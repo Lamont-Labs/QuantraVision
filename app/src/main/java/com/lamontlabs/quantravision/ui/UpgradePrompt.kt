@@ -12,7 +12,7 @@ import com.lamontlabs.quantravision.quota.HighlightQuota
 
 /**
  * UpgradePrompt
- * Shown when free highlight quota is exhausted.
+ * Shown when free scan quota is exhausted.
  * Host should wire purchase flow in onUpgrade().
  */
 @Composable
@@ -30,12 +30,12 @@ fun UpgradePrompt(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Text("Unlock QuantraVision Pro", style = MaterialTheme.typography.titleLarge)
-                Text("You’ve used all free pattern highlights.")
-                Text("Upgrade to continue highlighting every pattern without limits.")
-                Text("Includes: full template library, tuning, signed proofs.")
+                Text("Unlock More Scans", style = MaterialTheme.typography.titleLarge)
+                Text("You've used all 3 free daily scans.")
+                Text("Upgrade for more scans: Basic (25/day), Pro (75/day), or Apex (200/day).")
+                Text("Includes: extended quotas, full template library, and AI explanations.")
                 Divider()
-                Text("Free highlights used: ${HighlightQuota.state(context).count}")
+                Text("Free scans used: ${HighlightQuota.state(context).count}")
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("Later") }
                     Button(onClick = onUpgrade) { Text("Upgrade") }

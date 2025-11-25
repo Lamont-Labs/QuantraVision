@@ -104,7 +104,7 @@ class OverlayRenderer(
         } else if (quotaExceeded) {
             canvas.drawColor(Color.argb(120, 0, 0, 0))
             textPaint.textSize = 20f
-            canvas.drawText("Free highlights used. Upgrade to continue.", 24f, height / 2f, textPaint)
+            canvas.drawText("Free scans used. Upgrade to continue.", 24f, height / 2f, textPaint)
         }
     }
 }

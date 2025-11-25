@@ -227,9 +227,9 @@ private fun getTierUnlocks(tier: SubscriptionTier): List<TierUnlock> {
                 navigationRoute = "scan"
             ),
             TierUnlock(
-                title = "Unlimited Highlights",
-                description = "No daily limit on pattern detections - scan as much as you want",
-                icon = Icons.Default.AllInclusive,
+                title = "25 Scans/Day",
+                description = "8x more daily scans than Free tier for comprehensive chart analysis",
+                icon = Icons.Default.Speed,
                 color = AppColors.TierStarter,
                 navigationRoute = "home"
             ),

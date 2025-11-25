@@ -11,17 +11,17 @@ import com.lamontlabs.quantravision.quota.HighlightQuota
  * HighlightGate
  * Enforces tier-based pattern access and highlight quota.
  * 
- * Tier Pricing:
- * Free: 3 highlights/day, 10 basic patterns
- * Basic ($4.99/mo): Unlimited highlights, 25 core patterns
- * Pro ($14.99/mo): Unlimited highlights, 50 patterns
- * Apex ($29.99/mo): Unlimited highlights, all 109 patterns
+ * Tier Limits (HARD-CAPPED - No unlimited anything):
+ * Free: 3 scans/day, 10 basic patterns
+ * Basic ($4.99/mo): 25 scans/day, 25 core patterns
+ * Pro ($14.99/mo): 75 scans/day, 50 patterns
+ * Apex ($29.99/mo): 200 scans/day, all 109 patterns
  */
 object HighlightGate {
 
     /** Call before rendering each highlight. Increments counter on allowed. */
     fun allowAndCount(context: Context): Boolean {
-        // Basic/Pro/Apex get unlimited highlights
+        // Basic/Pro/Apex have higher daily limits (25/75/200) - quota tracked separately
         if (BasicFeatureGate.isActive(context) || ProFeatureGate.isActive(context)) {
             return true
         }
@@ -49,9 +49,9 @@ object HighlightGate {
         val tierFilteredMatches = PatternLibraryGate.filterByTier(context, matches)
         
         // Step 2: Filter by highlight quota
-        // Basic/Pro/Apex get all their tier patterns, Free gets quota-limited
+        // Basic/Pro/Apex have higher daily limits (25/75/200), Free gets 3/day
         if (BasicFeatureGate.isActive(context) || ProFeatureGate.isActive(context)) {
-            return tierFilteredMatches // Unlimited highlights
+            return tierFilteredMatches // Higher tier limits
         }
         
         // Free tier: apply quota limit

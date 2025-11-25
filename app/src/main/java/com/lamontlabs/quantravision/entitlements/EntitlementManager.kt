@@ -37,8 +37,8 @@ enum class Feature(val requiredTier: SubscriptionTier, val displayName: String) 
     PRO_TIER_PATTERNS(SubscriptionTier.PRO, "50 Advanced Patterns"),
     ALL_PATTERNS(SubscriptionTier.APEX, "All 109 Patterns"),
     
-    LIMITED_HIGHLIGHTS(SubscriptionTier.FREE, "3 Highlights/Day"),
-    UNLIMITED_HIGHLIGHTS(SubscriptionTier.BASIC, "Unlimited Highlights"),
+    LIMITED_HIGHLIGHTS(SubscriptionTier.FREE, "3 Scans/Day"),
+    EXTENDED_SCANS(SubscriptionTier.BASIC, "More Daily Scans"),
     
     REGIME_NAVIGATOR(SubscriptionTier.PRO, "Market Regime Detection"),
     PATTERN_TO_PLAN(SubscriptionTier.PRO, "Trade Scenario Generator"),

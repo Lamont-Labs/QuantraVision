@@ -94,10 +94,10 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(AppSpacing.lg))
                     
                     FeatureDiscoveryBanner(
-                        feature = Feature.UNLIMITED_HIGHLIGHTS,
-                        title = "Unlimited Highlights Unlocked!",
-                        description = "Scan as many charts as you want without daily limits",
-                        icon = Icons.Default.AllInclusive,
+                        feature = Feature.EXTENDED_SCANS,
+                        title = "Apex Pattern Analysis",
+                        description = "Advanced real-time pattern detection with tier-based daily limits",
+                        icon = Icons.Default.Insights,
                         actionLabel = null,
                         accentColor = AppColors.TierStarter
                     )
@@ -106,8 +106,8 @@ fun HomeScreen(
                     
                     FeatureDiscoveryBanner(
                         feature = Feature.ADVANCED_EDUCATION,
-                        title = "Advanced Lessons Available!",
-                        description = "Access interactive lessons on advanced trading strategies",
+                        title = "Chart Pattern Mastery!",
+                        description = "Learn to identify and trade chart patterns with confidence",
                         icon = Icons.Default.School,
                         actionLabel = "Start Learning",
                         onAction = onNavigateToAnalytics,
@@ -121,11 +121,14 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
                     ) {
                         StatCard(
-                            title = "Highlights Today",
+                            title = "Scans Today",
                             value = "${uiState.todayHighlightCount}",
-                            subtitle = if (uiState.currentTier == SubscriptionTier.FREE) {
-                                "${uiState.highlightQuotaRemaining} remaining"
-                            } else "Unlimited",
+                            subtitle = when (uiState.currentTier) {
+                                SubscriptionTier.FREE -> "${uiState.highlightQuotaRemaining} of 3/day"
+                                SubscriptionTier.BASIC -> "of 25/day"
+                                SubscriptionTier.PRO -> "of 75/day"
+                                SubscriptionTier.APEX -> "of 200/day"
+                            },
                             modifier = Modifier.weight(1f)
                         )
                         

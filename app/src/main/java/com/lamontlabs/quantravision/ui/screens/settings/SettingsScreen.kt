@@ -153,6 +153,24 @@ fun SettingsScreen(
                             .padding(vertical = AppSpacing.md)
                     )
                     
+                    Spacer(modifier = Modifier.height(AppSpacing.xs))
+                    
+                    Text(
+                        text = "Powered by QuantraCore Apex™ logic",
+                        style = AppTypography.labelMedium,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.xxs))
+                    
+                    Text(
+                        text = "Built by Lamont Labs",
+                        style = AppTypography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                    
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
+                    
                     Divider(color = Color.White.copy(alpha = 0.2f))
                     Spacer(modifier = Modifier.height(AppSpacing.sm))
                     

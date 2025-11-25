@@ -292,7 +292,7 @@ class EnhancedOverlayRenderer(
         }
         
         canvas.drawText(
-            "Free highlights used. Upgrade to continue.",
+            "Free scans used. Upgrade to continue.",
             width / 2f,
             height / 2f,
             overlayPaint

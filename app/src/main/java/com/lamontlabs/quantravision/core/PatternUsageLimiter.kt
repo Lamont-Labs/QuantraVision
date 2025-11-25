@@ -6,10 +6,11 @@ import android.util.Log
 
 /**
  * PatternUsageLimiter
- * - Controls free/standard/pro tier gating.
- * - Free users: 5 detections max
- * - Standard: unlimited for half pattern library
- * - Pro: full pattern library unlocked
+ * - Controls free/basic/pro/apex tier gating.
+ * - Free: 3 scans/day, 10 basic patterns
+ * - Basic: 25 scans/day, 25 core patterns
+ * - Pro: 75 scans/day, 50 patterns
+ * - Apex: 200 scans/day, all 109 patterns
  * - No network required except for paid upgrade check.
  */
 class PatternUsageLimiter(context: Context) {
