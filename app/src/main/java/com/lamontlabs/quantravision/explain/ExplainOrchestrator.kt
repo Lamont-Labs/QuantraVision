@@ -42,6 +42,23 @@ class ExplainOrchestrator(private val context: Context) {
         }
     }
     
+    private fun buildPrimitivePacket(apexResult: ApexResult): Map<String, Any> {
+        return mapOf(
+            "scan_id" to apexResult.scanId,
+            "status" to apexResult.status.name,
+            "quantra_score" to apexResult.quantraScore.normalizedScore,
+            "score_band" to apexResult.quantraScore.band.name,
+            "confidence" to apexResult.confidenceApex,
+            "entropy" to apexResult.entropyScore,
+            "regime_ok" to apexResult.regimeOk,
+            "suppression_active" to apexResult.suppressionActive,
+            "omega_lock" to apexResult.omegaLock,
+            "invalidation_points" to apexResult.invalidationPoints,
+            "top_protocols" to apexResult.protocolTrace.take(5).map { it.protocolId },
+            "proof_hash" to apexResult.proofHash
+        )
+    }
+
     private suspend fun tryCloudExplanation(
         apexResult: ApexResult,
         tier: String
@@ -50,7 +67,8 @@ class ExplainOrchestrator(private val context: Context) {
             Timber.d("$TAG: Attempting cloud explanation for tier=$tier")
             
             val cloudReasoner = CloudReasoner(context)
-            when (val result = cloudReasoner.narrate(apexResult, tier)) {
+            val primitivePacket = buildPrimitivePacket(apexResult)
+            when (val result = cloudReasoner.narrate(primitivePacket, tier)) {
                 is CloudReasoner.NarrationResult.Success -> {
                     Timber.d("$TAG: Cloud narration received, validating...")
                     

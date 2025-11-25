@@ -166,13 +166,31 @@ class AutoExplainManager(private val context: Context) {
         }
     }
 
+    private fun buildPrimitivePacket(apexResult: ApexResult): Map<String, Any> {
+        return mapOf(
+            "scan_id" to apexResult.scanId,
+            "status" to apexResult.status.name,
+            "quantra_score" to apexResult.quantraScore.normalizedScore,
+            "score_band" to apexResult.quantraScore.band.name,
+            "confidence" to apexResult.confidenceApex,
+            "entropy" to apexResult.entropyScore,
+            "regime_ok" to apexResult.regimeOk,
+            "suppression_active" to apexResult.suppressionActive,
+            "omega_lock" to apexResult.omegaLock,
+            "invalidation_points" to apexResult.invalidationPoints,
+            "top_protocols" to apexResult.protocolTrace.take(5).map { it.protocolId },
+            "proof_hash" to apexResult.proofHash
+        )
+    }
+
     suspend fun triggerAutoExplain(apexResult: ApexResult): String {
         Timber.i("$TAG: Triggering auto-explain for scan ${apexResult.scanId}")
         
         val tier = getTierString()
         
         return try {
-            val result = cloudReasoner.narrate(apexResult, tier)
+            val primitivePacket = buildPrimitivePacket(apexResult)
+            val result = cloudReasoner.narrate(primitivePacket, tier)
             
             when (result) {
                 is CloudReasoner.NarrationResult.Success -> {
