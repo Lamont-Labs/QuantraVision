@@ -39,3 +39,17 @@ The application is an Android native app built with Jetpack Compose and adheres 
 -   **OpenAI API:** Integrated for advanced cloud narration capabilities in paid subscription tiers.
 -   **Offline Assets:** Includes legal documents and educational content.
 -   **Open-License Models:** `scripts/fetch-models.sh` fetches Apache-2.0 licensed AI models like COCO SSD MobileNet v1 (quantized) for object detection and MobileSAM v2 for segmentation, with SHA-256 verification.
+
+## Recent Changes (November 2025)
+
+**UI/Branding Updates:**
+-   App identity: "Mobile Chart Overlay + Analysis Copilot powered by QuantraCore Apex logic"
+-   Added branding: "Powered by QuantraCore Apex™ logic" and "Built by Lamont Labs" in Settings
+-   Terminology: "Scans" (not "Highlights") throughout UI
+-   Removed DevBot from navigation - replaced with "Apex AI" and "Settings" tabs
+-   All quota messaging reflects hard caps - no "unlimited" claims anywhere
+
+**Critical Design Rules:**
+-   **No unlimited features:** All tiers have hard-capped daily limits (3/25/75/200 scans, 1/5/20/60 AI explanations)
+-   **Fail-closed architecture:** Pattern detection follows deterministic, conservative approach
+-   **Privacy-first:** No chart images sent to cloud - only text for narration (paid tiers only)
