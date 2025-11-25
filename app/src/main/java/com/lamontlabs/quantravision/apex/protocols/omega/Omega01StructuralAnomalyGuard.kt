@@ -1,6 +1,6 @@
 package com.lamontlabs.quantravision.apex.protocols.omega
 
-import com.lamontlabs.quantravision.apex.ProtocolRegistryMobile.ApexProtocol
+import com.lamontlabs.quantravision.apex.ApexProtocol
 import com.lamontlabs.quantravision.apex.models.*
 
 class Omega01StructuralAnomalyGuard : ApexProtocol {

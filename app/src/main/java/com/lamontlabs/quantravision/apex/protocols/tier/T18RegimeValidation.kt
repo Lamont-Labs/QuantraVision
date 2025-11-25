@@ -1,6 +1,6 @@
 package com.lamontlabs.quantravision.apex.protocols.tier
 
-import com.lamontlabs.quantravision.apex.ProtocolRegistryMobile.ApexProtocol
+import com.lamontlabs.quantravision.apex.ApexProtocol
 import com.lamontlabs.quantravision.apex.models.*
 import kotlin.math.abs
 /**
