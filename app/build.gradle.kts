@@ -204,8 +204,8 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
     // Coroutines - Kotlin 1.9.25 compatible version
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")  // 1.10.1 requires Kotlin 2.0+
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")  // For Google Play Services Task<T>.await()
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")  // 1.10.1 requires Kotlin 2.0+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")  // For Google Play Services Task<T>.await()
 
     // WorkManager - For background learning tasks
     implementation("androidx.work:work-runtime-ktx:2.9.1")
@@ -263,7 +263,7 @@ dependencies {
     // Testing - Latest stable
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.13")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("androidx.test:core:1.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
