@@ -212,13 +212,13 @@ dependencies {
 
     // TensorFlow Lite - Latest stable versions
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
+    implementation("org.tensorflow:tensorflow-lite-support:0.5.0") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
         exclude(group = "org.tensorflow", module = "tensorflow-lite-support-api")
         exclude(group = "com.google.ai.edge.litert", module = "litert-support")
         exclude(group = "com.google.ai.edge.litert", module = "litert-support-api")
     }
-    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4") {
+    implementation("org.tensorflow:tensorflow-lite-task-text:0.5.0") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite")
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
         exclude(group = "com.google.ai.edge.litert", module = "litert")
