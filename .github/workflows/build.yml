@@ -55,7 +55,7 @@ jobs:
       #   run: ./gradlew :app:bundleRelease --stacktrace
 
       - name: Upload Debug APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: QuantraVision-debug-apk
           path: |
