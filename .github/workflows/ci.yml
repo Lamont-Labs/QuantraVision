@@ -42,7 +42,7 @@ jobs:
         run: rm -rf ~/.gradle/configuration-cache/
         
       - name: Cache Gradle packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
