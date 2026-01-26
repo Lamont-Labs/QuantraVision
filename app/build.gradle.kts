@@ -168,7 +168,7 @@ configurations.all {
         force("androidx.activity:activity-ktx:1.9.3")
         force("androidx.activity:activity-compose:1.9.3")
         // Force OpenCV to use Maven Central version (available since 4.9.0)
-        force("org.opencv:opencv:4.12.0")
+        force("org.opencv:opencv:4.13.0")
     }
 }
 
@@ -212,13 +212,13 @@ dependencies {
 
     // TensorFlow Lite - Latest stable versions
     implementation("org.tensorflow:tensorflow-lite:2.17.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4") {
+    implementation("org.tensorflow:tensorflow-lite-support:0.5.0") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
         exclude(group = "org.tensorflow", module = "tensorflow-lite-support-api")
         exclude(group = "com.google.ai.edge.litert", module = "litert-support")
         exclude(group = "com.google.ai.edge.litert", module = "litert-support-api")
     }
-    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4") {
+    implementation("org.tensorflow:tensorflow-lite-task-text:0.5.0") {
         exclude(group = "org.tensorflow", module = "tensorflow-lite")
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
         exclude(group = "com.google.ai.edge.litert", module = "litert")
@@ -239,7 +239,7 @@ dependencies {
     implementation("androidx.camera:camera-view:1.5.0")
     
     // OpenCV - Latest official Maven Central release (available since 4.9.0)
-    implementation("org.opencv:opencv:4.12.0")
+    implementation("org.opencv:opencv:4.13.0")
     
     // ML Kit Text Recognition - Latest stable
     implementation("com.google.mlkit:text-recognition:16.0.1")
