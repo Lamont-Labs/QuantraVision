@@ -94,6 +94,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
+      - name: Prepare instrumentation APKs before starting the emulator
+        run: |
+          echo "BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Build instrumentation APKs
+        run: bash ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest -PqvTestAbi=x86_64 --no-daemon
       - name: Enable emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

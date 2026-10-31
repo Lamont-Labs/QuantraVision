@@ -57,6 +57,7 @@ object QuotaGate {
      * @param tier Current subscription tier (FREE, BASIC, PRO, APEX)
      * @return true if call is allowed and count incremented, false otherwise
      */
+    @Synchronized
     fun canMakeCloudCall(context: Context, tier: String): Boolean {
         val normalizedTier = normalizeTier(tier)
         var state = loadState(context)
@@ -200,6 +201,14 @@ object QuotaGate {
             return newState
         }
         
+        val recentCallsArray = json.optJSONArray("recentCallTimestamps")
+        val recentCalls = mutableListOf<Long>()
+        if (recentCallsArray != null) {
+            for (i in 0 until recentCallsArray.length()) {
+                recentCalls.add(recentCallsArray.getLong(i))
+            }
+        }
+
         val lastResetDateUTC = json.optString("lastResetDate", todayUTC)
         
         if (lastResetDateUTC != todayUTC) {
@@ -209,19 +218,11 @@ object QuotaGate {
                 lastCallTimestamp = json.optLong("lastCallTimestamp", 0L),
                 lastResetDate = todayUTC,
                 tier = json.optString("tier", "FREE"),
-                recentCallTimestamps = emptyList()
+                recentCallTimestamps = recentCalls.filter { System.currentTimeMillis() - it < SIXTY_SECONDS_MS }
             )
             saveState(context, resetState)
             lastCallTimestampCache = resetState.lastCallTimestamp
             return resetState
-        }
-        
-        val recentCallsArray = json.optJSONArray("recentCallTimestamps")
-        val recentCalls = mutableListOf<Long>()
-        if (recentCallsArray != null) {
-            for (i in 0 until recentCallsArray.length()) {
-                recentCalls.add(recentCallsArray.getLong(i))
-            }
         }
         
         val state = QuotaState(

@@ -169,7 +169,9 @@ class TierProtocolsT80Test {
                 "normalizedScore" to score,
                 "proofReady" to true,
                 "suppressionActive" to false,
-                "cascadingFailureRisk" to 0.3
+                "cascadingFailureRisk" to 0.3,
+                "proofHash" to "a".repeat(64), "proofFingerprint" to "fixture-input",
+                "proofGenerationToken" to "fixture-generation"
             )
             
             val verdict = protocol.evaluate(context, primitives, testState)
