@@ -1,73 +1,48 @@
-# Note: Enable GitHub Dependabot for automated dependency vulnerability scanning
-# Settings → Security → Dependabot → Enable Dependabot security updates
-
-name: CI
+name: Android verification
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, 'repair/**']
   pull_request:
-    branches: [ main, develop ]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 35
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
-      
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 12266719
-          accept-android-sdk-licenses: true
-          log-accepted-android-sdk-licenses: true
-      
-      - name: Install required SDK packages
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
-          
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        
-      - name: Clean Gradle configuration cache
-        run: rm -rf ~/.gradle/configuration-cache/
-        
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-            
-      - name: Run Lint
-        run: ./gradlew lint
-        
-      - name: Run Unit Tests
-        run: ./gradlew test
-        
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-        
-      - name: Upload Debug APK
+      - uses: android-actions/setup-android@v3
+      - name: Install matching Android SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test, lint, and build
+        run: bash ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon --stacktrace
+      - name: Verification reports
+        if: always()
         uses: actions/upload-artifact@v4
-        if: success()
         with:
-          name: debug-apk
+          name: verification-reports-${{ github.run_number }}
+          path: |
+            app/build/reports/
+            app/build/test-results/
+          retention-days: 30
+      - name: Installable debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuantraVision-debug-${{ github.run_number }}
           path: app/build/outputs/apk/debug/*.apk
-          retention-days: 7
-      
-      # NOTE: Release APK build disabled - requires signing credentials
-      # To enable: Configure signing secrets in GitHub repository settings
-      # See RELEASE_PLAYBOOK.md for signing configuration details
+          if-no-files-found: error
+          retention-days: 30
