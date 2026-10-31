@@ -23,6 +23,9 @@ class StartupSmokeTest {
         val device = UiDevice.getInstance(instrumentation)
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             assertTrue("Home navigation must render", device.wait(Until.hasObject(By.text("Home")), 15_000))
+            // Android's first immersive-mode hint can cover page headings after startup.
+            device.wait(Until.findObject(By.res("android:id/ok").text("Got it")), 5_000)?.click()
+            device.waitForIdle()
             val pages = linkedMapOf(
                 // A fresh Free install must reach the Market feature gate, not paid content.
                 "Market" to By.text("Real-Time Market Data"), "Scan" to By.text("Pattern Scanner"),
