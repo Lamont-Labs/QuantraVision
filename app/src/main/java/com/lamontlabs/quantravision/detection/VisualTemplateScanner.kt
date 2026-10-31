@@ -10,6 +10,7 @@ import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
 import org.opencv.imgproc.Imgproc
+import kotlin.math.abs
 
 /** Single-frame template matching, with no alerts, learning writes or hidden fallback. */
 class VisualTemplateScanner(context: Context) : AutoCloseable {
@@ -41,10 +42,13 @@ class VisualTemplateScanner(context: Context) : AutoCloseable {
                         try {
                             Imgproc.matchTemplate(scaled, template.image, output, Imgproc.TM_CCOEFF_NORMED)
                             val match = Core.minMaxLoc(output)
-                            val confidence = match.maxVal
+                            // The same geometry can have reversed brightness on dark charts.
+                            val inverted = abs(match.minVal) > abs(match.maxVal)
+                            val confidence = if (inverted) abs(match.minVal) else abs(match.maxVal)
+                            val location = if (inverted) match.minLoc else match.maxLoc
                             if (!confidence.isFinite() || confidence < template.threshold || confidence !in 0.0..1.0 ||
                                 confidence <= (best?.confidence ?: -1.0)) continue
-                            val b = SourceBounds.fromScaled(match.maxLoc.x, match.maxLoc.y,
+                            val b = SourceBounds.fromScaled(location.x, location.y,
                                 template.image.cols().toDouble(), template.image.rows().toDouble(), scale)
                             if (b.right > bitmap.width + 1 || b.bottom > bitmap.height + 1) continue
                             best = DetectionResult(name, confidence, RectF(b.left.toFloat(), b.top.toFloat(),

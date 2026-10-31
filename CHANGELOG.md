@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.1 repair] — 2026-10-31
+
+Development build; installs as **QuantraVision Repair** alongside the production package.
+
+### Fixed
+
+- The live screenshot route measures supported candle bodies and wicks instead of returning empty vision features. Measurements are explicitly image pixels and sequence ordinals.
+- Failed guards, unavailable quota storage and detector errors stop the scan without switching to an alternate detector. Invented price levels, volume and candle timestamps are removed from this route.
+- Template bounds map back to the original screenshot. Frame-local native image pyramids prevent stale-image cache reuse. Matching supports light and inverted dark contrast.
+- Chart guard registration initializes before use; weighted aggregation and proof input binding replace permissive placeholder checks.
+- Closed Room database instances are discarded, and achievement events wait for initialization.
+- Subscription restoration resolves current purchased products, including downgrades and revoked access. Pending or unknown products do not unlock a tier.
+- Daily quota reset preserves the rolling cloud rate window. Scan counters and the live UI use the same quota source.
+- Android component registration, foreground-service permissions, API 26 compatibility and English/Spanish/French resource keys are repaired.
+
+### Verification and delivery
+
+- Unconditional passing assertions are removed; regression tests cover the repaired failure paths.
+- One GitHub workflow requires JVM tests, lint, signed ARM64 APK assembly, Android 35 navigation smoke checks and native OpenCV localization fixtures.
+- Successful main builds publish a development prerelease with the APK, source commit, SHA-256 and signing-certificate information.
+
+### Evidence boundaries
+
+Screenshot matches remain visual observations, with market prices, volume, candle times and trading confidence unavailable. Broad recognition accuracy, physical-phone acceptance and real Google Play purchase completion are not established by these checks. The README describes current implemented behavior; older entries below include historical plans.
+
+---
+
 ## [Unreleased]
 
 ### Added

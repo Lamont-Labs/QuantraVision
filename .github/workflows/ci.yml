@@ -114,17 +114,7 @@ jobs:
           profile: pixel_2
           ram-size: 2048M
           disable-animations: true
-          script: |
-            bash ./gradlew :app:installDebug :app:installDebugAndroidTest -PqvTestAbi=x86_64 --no-daemon
-            adb shell appops set com.lamontlabs.quantravision.debug SYSTEM_ALERT_WINDOW allow
-            adb shell pm grant com.lamontlabs.quantravision.debug android.permission.POST_NOTIFICATIONS
-            bash ./gradlew :app:connectedDebugAndroidTest -PqvTestAbi=x86_64 -Pandroid.testInstrumentationRunnerArguments.class=com.lamontlabs.quantravision.integration.DetectionFlowTest,com.lamontlabs.quantravision.integration.StartupSmokeTest --no-daemon --stacktrace
-      - name: Collect Android proof
-        if: always()
-        run: |
-          mkdir -p device-proof
-          adb logcat -d > device-proof/logcat.txt
-          adb pull /sdcard/Android/data/com.lamontlabs.quantravision.debug/files/. device-proof/
+          script: bash scripts/run-android-smoke.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -16,15 +16,25 @@ import org.yaml.snakeyaml.Yaml
 /** Runs the real Android/OpenCV scanner against a bundled reference asset. */
 @RunWith(AndroidJUnit4::class)
 class DetectionFlowTest {
-    @Test fun referenceTemplateIsLocatedInTheOriginalScreenshotCoordinates() {
+    @Test fun referenceTemplateIsLocatedInTheOriginalScreenshotCoordinates() = verifyLocalization(false)
+    @Test fun invertedContrastTemplateIsLocatedInTheOriginalScreenshotCoordinates() = verifyLocalization(true)
+
+    private fun verifyLocalization(invert: Boolean) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(BuildConfig.APPLICATION_ID, context.packageName)
         assertTrue("OpenCV must initialize", OpenCVLoader.initDebug())
         val yamlFile = context.assets.list("pattern_templates")!!.first { it.endsWith(".yaml") }
         val data = context.assets.open("pattern_templates/$yamlFile").use { Yaml().load<Map<String, Any>>(it) }
         val imageName = (data["image"] as String).substringAfterLast('/')
-        val reference = context.assets.open("pattern_templates/$imageName").use { BitmapFactory.decodeStream(it) }!!
+        val decoded = context.assets.open("pattern_templates/$imageName").use { BitmapFactory.decodeStream(it) }!!
+        val reference = if (invert) {
+            val pixels = IntArray(decoded.width * decoded.height)
+            decoded.getPixels(pixels, 0, decoded.width, 0, 0, decoded.width, decoded.height)
+            for (i in pixels.indices) pixels[i] = pixels[i] xor 0x00ffffff
+            Bitmap.createBitmap(pixels, decoded.width, decoded.height, Bitmap.Config.ARGB_8888).also { decoded.recycle() }
+        } else decoded
         val screenshot = Bitmap.createBitmap(reference.width + 80, reference.height + 80, Bitmap.Config.ARGB_8888)
+        screenshot.eraseColor(reference.getPixel(0, 0))
         Canvas(screenshot).drawBitmap(reference, 40f, 40f, null)
         VisualTemplateScanner(context).use { scanner ->
             val match = scanner.scan(screenshot).firstOrNull { it.patternName == data["name"] }

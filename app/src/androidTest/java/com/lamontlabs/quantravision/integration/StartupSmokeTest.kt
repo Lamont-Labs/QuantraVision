@@ -23,13 +23,18 @@ class StartupSmokeTest {
         val device = UiDevice.getInstance(instrumentation)
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             assertTrue("Home navigation must render", device.wait(Until.hasObject(By.text("Home")), 15_000))
-            for (tab in listOf("Market", "Scan", "Apex AI", "Settings", "Home")) {
+            val pages = linkedMapOf(
+                "Market" to By.text("Markets"), "Scan" to By.text("Pattern Scanner"),
+                "Apex AI" to By.text("QuantraBot"), "Settings" to By.text("Current Plan"),
+                "Home" to By.textStartsWith("Welcome,")
+            )
+            for ((tab, content) in pages) {
                 val target = device.findObject(By.text(tab))
                 assertNotNull("Missing navigation tab: $tab", target)
                 target.click()
                 device.waitForIdle()
                 scenario.onActivity { activity -> assertFalse("Navigation closed the activity: $tab", activity.isFinishing) }
-                assertTrue("Navigation disappeared after opening $tab", device.wait(Until.hasObject(By.text("Home")), 5_000))
+                assertTrue("Expected page content did not render for $tab", device.wait(Until.hasObject(content), 15_000))
                 assertTrue("Could not capture $tab", device.takeScreenshot(File(context.getExternalFilesDir(null), "screen-${tab.lowercase().replace(' ', '-')}.png")))
             }
         }
