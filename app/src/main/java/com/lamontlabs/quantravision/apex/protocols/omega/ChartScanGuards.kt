@@ -46,7 +46,7 @@ object ChartScanGuards {
         override val protocolName: String,
         private val failure: (ApexScanContext, ChartPrimitives) -> String?
     ) : ApexProtocol {
-        override val weight = 1.0
+        override val weight = 5.0
         override suspend fun evaluate(context: ApexScanContext, primitives: ChartPrimitives,
             state: MutableMap<String, Any>): ProtocolVerdict {
             val reason = failure(context, primitives)

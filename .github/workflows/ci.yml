@@ -30,6 +30,15 @@ jobs:
       - name: Install matching Android SDK
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - name: Keep development signing key between builds
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: quantravision-development-signing-v1
+      - name: Check test integrity
+        run: python3 scripts/check-test-integrity.py
       - name: Test, lint, and build
         run: bash ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon --stacktrace
       - name: Verification reports
@@ -41,10 +50,25 @@ jobs:
             app/build/reports/
             app/build/test-results/
           retention-days: 30
+      - name: Record verified build identity
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, json, os
+          from pathlib import Path
+          folder = Path('app/build/outputs/apk/debug')
+          apk = next(folder.glob('*.apk'))
+          metadata = {'commit': os.environ['GITHUB_SHA'], 'run_id': os.environ['GITHUB_RUN_ID'],
+                      'application_id': 'com.lamontlabs.quantravision.debug', 'version': '3.1.1',
+                      'apk': apk.name, 'bytes': apk.stat().st_size,
+                      'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
+                      'checks': ['testDebugUnitTest', 'lintDebug', 'assembleDebug']}
+          (folder / 'build-manifest.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          PYCODE
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs app/build/outputs/apk/debug/*.apk > app/build/outputs/apk/debug/signing-certificate.txt
       - name: Installable debug APK
         uses: actions/upload-artifact@v4
         with:
           name: QuantraVision-debug-${{ github.run_number }}
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/
           if-no-files-found: error
           retention-days: 30

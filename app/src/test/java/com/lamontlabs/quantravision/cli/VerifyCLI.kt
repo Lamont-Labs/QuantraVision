@@ -1,8 +1,5 @@
 package com.lamontlabs.quantravision.cli
 
-import kotlinx.cli.ArgParser
-import kotlinx.cli.ArgType
-import kotlinx.cli.required
 import java.io.File
 import java.security.MessageDigest
 
@@ -17,10 +14,14 @@ object VerifyCLI {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val parser = ArgParser("verifycli")
-        val file by parser.option(ArgType.String, shortName = "f", description = "File to verify").required()
-        val mode by parser.option(ArgType.Choice(listOf("verify", "hash")), shortName = "m", description = "Mode").required()
-        parser.parse(args)
+        fun option(vararg names: String): String? {
+            val index = args.indexOfFirst { it in names }
+            return if (index >= 0) args.getOrNull(index + 1) else null
+        }
+        val file = requireNotNull(option("--file", "-f")) { "Usage: verifycli verify|hash --file PATH" }
+        val mode = args.firstOrNull()?.takeIf { it == "verify" || it == "hash" }
+            ?: option("--mode", "-m")
+        require(mode == "verify" || mode == "hash") { "Mode must be verify or hash" }
 
         val f = File(file)
         if (!f.exists()) {

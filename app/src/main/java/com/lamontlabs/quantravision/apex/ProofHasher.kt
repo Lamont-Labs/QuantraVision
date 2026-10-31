@@ -30,7 +30,7 @@ object ProofHasher {
     private const val HASH_ALGORITHM = "SHA-256"
 
     fun hashScanInput(context: ApexScanContext, primitives: ChartPrimitives): String = sha256Hex(
-        Gson().toJson(linkedMapOf("ticker" to context.ticker, "timeframe" to context.timeframe,
+        com.google.gson.GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(linkedMapOf("ticker" to context.ticker, "timeframe" to context.timeframe,
             "chartType" to context.chartType, "primitives" to primitives)))
     
     /**

@@ -14,7 +14,7 @@ import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.entitlements.Feature
 import com.lamontlabs.quantravision.entitlements.SubscriptionTier
 import com.lamontlabs.quantravision.overlay.OverlayService
-import com.lamontlabs.quantravision.quota.HighlightQuota
+import com.lamontlabs.quantravision.pipeline.QuotaGate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,8 +76,8 @@ class ScanViewModel(private val context: Context) : ViewModel() {
                 val allDetections = database.patternDao().getAll()
                 val detectionCount = allDetections.size
                 
-                val quotaState = HighlightQuota.state(context)
-                val quotaRemaining = HighlightQuota.remaining(context)
+                val quotaState = QuotaGate(context).getQuotaSummary()
+                val quotaRemaining = quotaState.scansRemaining
                 
                 val hasScanLearning = EntitlementManager.hasFeatureAccess(Feature.SCAN_LEARNING)
                 val scanLearningProgress = if (hasScanLearning) {
@@ -93,7 +93,7 @@ class ScanViewModel(private val context: Context) : ViewModel() {
                     it.copy(
                         detectionCount = detectionCount,
                         scanLearningProgress = scanLearningProgress,
-                        highlightsUsedToday = quotaState.count,
+                        highlightsUsedToday = quotaState.scansUsed,
                         highlightsRemaining = quotaRemaining,
                         currentTier = currentTier
                     )
@@ -146,18 +146,12 @@ class ScanViewModel(private val context: Context) : ViewModel() {
     private fun startOverlayService(resultCode: Int, data: Intent) {
         android.util.Log.i("ScanViewModel", "=== Starting OverlayService ===")
         
-        // CRITICAL: Don't start service if model not imported
-        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
-        if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
-            android.util.Log.w("ScanViewModel", "Cannot start scanner - AI model not imported")
-            android.widget.Toast.makeText(
-                context,
-                "AI model required. Please import it from Settings first.",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+        if (!com.lamontlabs.quantravision.QuantraVisionApp.openCVInitialized) {
+            android.widget.Toast.makeText(context, "Chart scanner unavailable: OpenCV could not initialize.",
+                android.widget.Toast.LENGTH_LONG).show()
             return
         }
-        
+
         android.util.Log.i("ScanViewModel", "MediaProjection resultCode: $resultCode")
         android.util.Log.i("ScanViewModel", "MediaProjection data: $data")
         

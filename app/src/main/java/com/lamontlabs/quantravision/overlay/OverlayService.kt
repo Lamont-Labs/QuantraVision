@@ -92,6 +92,7 @@ class OverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i(TAG, "=== OverlayService.onCreate() START ===")
+        startForegroundService()
         
         // CRITICAL: Defense-in-depth - Check if service should be disabled
         // This should NEVER happen (OverlayServiceGuard disables component before import)
@@ -107,27 +108,13 @@ class OverlayService : Service() {
             return
         }
         
-        // CRITICAL: Must call startForeground() before any stopSelf() to avoid crash
-        // This prevents "app has a bug" error when service needs to stop immediately
-        startForegroundService()
-        
-        // Check if AI model is imported before initializing service
-        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(this)
-        val modelState = modelManager.getModelState()
-        if (modelState != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
-            Log.w(TAG, "AI model not imported yet (state=$modelState), stopping service gracefully")
-            Toast.makeText(
-                this,
-                "Scanner requires AI model. Please import it from the app first.",
-                Toast.LENGTH_LONG
-            ).show()
-            // Properly stop foreground service to avoid crash
+        if (!com.lamontlabs.quantravision.QuantraVisionApp.openCVInitialized) {
+            Toast.makeText(this, "Chart scanner unavailable: OpenCV could not initialize.", Toast.LENGTH_LONG).show()
             stopForeground(true)
             stopSelf()
             return
         }
-        Log.i(TAG, "✓ AI model is imported")
-        
+
         // Initialize v2.0 Pipeline Coordinator
         pipelineCoordinator = QuantraPipelineCoordinator(this, detectPatterns = { bitmap ->
             val detector = patternDetector ?: error("Pattern templates are not ready")
@@ -529,6 +516,11 @@ class OverlayService : Service() {
                     clearRejectedScan("Scan allowance reached or quota storage unavailable")
                 is QuantraPipelineCoordinator.PipelineResult.Success -> {
                     val results = result.patterns
+                    // Persist only measurements that passed the authoritative scan path.
+                    try {
+                        val dao = com.lamontlabs.quantravision.PatternDatabase.getInstance(applicationContext).patternDao()
+                        results.forEach { dao.insert(it.toPatternMatch()) }
+                    } catch (error: Exception) { Timber.w(error, "Could not save scan history") }
                     withContext(Dispatchers.Main) {
                         patternNotificationManager.showPatterns(results.map { it.toPatternMatch() })
                         floatingLogo?.updatePatternCount(results.size)
@@ -555,7 +547,7 @@ class OverlayService : Service() {
         }
     }
 
-    private suspend fun clearRejectedScan(message: String) {
+    private suspend fun clearRejectedScan(message: String) = withContext(NonCancellable) {
         withContext(Dispatchers.Main) {
             resultController.manualClear()
             patternNotificationManager.dismiss()
@@ -630,8 +622,9 @@ class OverlayService : Service() {
     private fun createPersistentVirtualDisplay() {
         try {
             val displayMetrics = resources.displayMetrics
-            val width = 720
-            val height = 1280
+            val scale = (1280f / maxOf(displayMetrics.widthPixels, displayMetrics.heightPixels)).coerceAtMost(1f)
+            val width = (displayMetrics.widthPixels * scale).toInt().coerceAtLeast(2)
+            val height = (displayMetrics.heightPixels * scale).toInt().coerceAtLeast(2)
             val densityDpi = displayMetrics.densityDpi
             
             // Create ImageReader that will be reused for all frame captures

@@ -18,34 +18,29 @@ class QuantraVisionApp : Application() {
         
         StartupDiagnosticCollector.start()
         
-        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(this)
-        if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
-            Log.i("QuantraVision", "Model not imported - disabling OverlayService at OS level")
-            com.lamontlabs.quantravision.overlay.OverlayServiceGuard.disable(this)
-        }
-        
         try {
             val success = OpenCVLoader.initDebug()
             if (success) {
                 openCVInitialized = true
+                com.lamontlabs.quantravision.overlay.OverlayServiceGuard.enable(this)
                 Log.i("QuantraVision", "OpenCV loaded successfully - full pattern detection available")
             } else {
                 openCVInitialized = false
-                Log.e("QuantraVision", "OpenCV initialization failed - pattern detection limited to ML-only mode")
+                Log.e("QuantraVision", "OpenCV initialization failed - scanner unavailable")
                 
                 android.widget.Toast.makeText(
                     this,
-                    "Limited Mode: Advanced pattern detection unavailable. App will detect only 6 core patterns via ML.",
+                    "Chart scanner unavailable: OpenCV could not initialize.",
                     android.widget.Toast.LENGTH_LONG
                 ).show()
             }
         } catch (e: Exception) {
             openCVInitialized = false
-            Log.e("QuantraVision", "OpenCV initialization exception: ${e.message} - limited mode enabled", e)
+            Log.e("QuantraVision", "OpenCV initialization exception: ${e.message} - scanner unavailable", e)
             
             android.widget.Toast.makeText(
                 this,
-                "Limited Mode: Template matching disabled. Only 6 ML patterns available.",
+                "Chart scanner unavailable: OpenCV could not initialize.",
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }

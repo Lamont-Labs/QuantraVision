@@ -1,66 +1,39 @@
 package com.lamontlabs.quantravision.integration
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.lamontlabs.quantravision.BuildConfig
+import com.lamontlabs.quantravision.detection.VisualTemplateScanner
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.Assert.*
+import org.opencv.android.OpenCVLoader
+import org.yaml.snakeyaml.Yaml
 
-/**
- * Integration Test Suite for Detection Flow
- * 
- * End-to-end tests for the complete detection workflow from
- * calibration through pattern recognition to result display.
- * 
- * @author Lamont Labs
- * @since 2.1
- */
+/** Runs the real Android/OpenCV scanner against a bundled reference asset. */
 @RunWith(AndroidJUnit4::class)
 class DetectionFlowTest {
-    
-    @Test
-    fun useAppContext() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.lamontlabs.quantravision", appContext.packageName)
-    }
-    
-    @Test
-    fun `test complete detection flow from start to finish`() {
-        assertTrue("E2E detection flow works", true)
-    }
-    
-    @Test
-    fun `test calibration then detection sequence`() {
-        assertTrue("Calibration to detection sequence", true)
-    }
-    
-    @Test
-    fun `test pattern detection with overlay display`() {
-        assertTrue("Overlay display integration", true)
-    }
-    
-    @Test
-    fun `test detection results are accurate`() {
-        assertTrue("Detection accuracy validation", true)
-    }
-    
-    @Test
-    fun `test detection handles screen rotation`() {
-        assertTrue("Rotation during detection", true)
-    }
-    
-    @Test
-    fun `test detection performance meets standards`() {
-        assertTrue("Performance standards met", true)
-    }
-    
-    @Test
-    fun `test detection with Free tier restrictions`() {
-        assertTrue("Free tier restrictions work", true)
-    }
-    
-    @Test
-    fun `test detection with Pro tier features`() {
-        assertTrue("Pro tier features work", true)
+    @Test fun referenceTemplateIsLocatedInTheOriginalScreenshotCoordinates() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals(BuildConfig.APPLICATION_ID, context.packageName)
+        assertTrue("OpenCV must initialize", OpenCVLoader.initDebug())
+        val yamlFile = context.assets.list("pattern_templates")!!.first { it.endsWith(".yaml") }
+        val data = context.assets.open("pattern_templates/$yamlFile").use { Yaml().load<Map<String, Any>>(it) }
+        val imageName = (data["image"] as String).substringAfterLast('/')
+        val reference = context.assets.open("pattern_templates/$imageName").use { BitmapFactory.decodeStream(it) }!!
+        val screenshot = Bitmap.createBitmap(reference.width + 80, reference.height + 80, Bitmap.Config.ARGB_8888)
+        Canvas(screenshot).drawBitmap(reference, 40f, 40f, null)
+        VisualTemplateScanner(context).use { scanner ->
+            val match = scanner.scan(screenshot).firstOrNull { it.patternName == data["name"] }
+            assertNotNull("Bundled reference must be recognized", match)
+            assertEquals(40f, match!!.bbox!!.left, 3f)
+            assertEquals(40f, match.bbox!!.top, 3f)
+            assertTrue(match.confidence > 0.95)
+        }
+        reference.recycle()
+        screenshot.recycle()
     }
 }

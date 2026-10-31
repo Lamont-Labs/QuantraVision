@@ -151,30 +151,16 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                     val purchases = result.purchasesList
                     Log.d("BillingManager", "Restored ${purchases.size} purchases")
                     
-                    var validPurchaseFound = false
-                    
-                    if (purchases.isNotEmpty()) {
-                        for (purchase in purchases) {
-                            when (purchase.purchaseState) {
-                                Purchase.PurchaseState.PURCHASED -> {
-                                    processPurchase(purchase, isRestoration = true)
-                                    validPurchaseFound = true
-                                }
-                                Purchase.PurchaseState.PENDING -> {
-                                    Log.w("BillingManager", "Purchase pending: ${purchase.products}")
-                                }
-                                else -> {
-                                    Log.w("BillingManager", "Invalid purchase state: ${purchase.purchaseState}")
-                                }
-                            }
-                        }
-                    }
-                    
-                    // CRITICAL: If no valid purchases found, clear entitlements
-                    // This handles refunds, revocations, and chargebacks
-                    if (!validPurchaseFound) {
-                        Log.w("BillingManager", "No valid purchases found - clearing entitlements")
+                    val selected = BillingEntitlementPolicy.resolveOwned(purchases.map {
+                        BillingEntitlementPolicy.OwnedSubscription(it.products,
+                            it.purchaseState == Purchase.PurchaseState.PURCHASED, it.purchaseToken)
+                    })
+                    purchases.filter { it.purchaseState == Purchase.PurchaseState.PURCHASED && !it.isAcknowledged }
+                        .forEach { acknowledgePurchaseWithRetry(it.purchaseToken, retryCount = 0) }
+                    if (selected.tier == com.lamontlabs.quantravision.entitlements.SubscriptionTier.FREE) {
                         clearEntitlements()
+                    } else {
+                        setUnlockedSecure(selected.tier.name, selected.token)
                     }
                 } else {
                     Log.e("BillingManager", "Purchase restoration failed: ${result.billingResult.debugMessage}")
@@ -200,6 +186,7 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
                     .remove(unlockedKey)
                     .remove(purchaseTokenKey)
                     .apply()
+                EntitlementManager.updateTierFromString("")
                 onTierChanged?.invoke("")
                 Log.w("BillingManager", "Entitlements cleared")
             } catch (e: Exception) {
@@ -261,11 +248,8 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
 
     override fun onPurchasesUpdated(result: BillingResult, purchases: MutableList<Purchase>?) {
         if (result.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-            for (purchase in purchases) {
-                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                    processPurchase(purchase, isRestoration = false)
-                }
-            }
+            // Re-query ownership so callbacks cannot preserve a stale higher tier.
+            restorePurchases()
         } else if (result.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
             Log.d("BillingManager", "User canceled purchase")
         } else {
@@ -273,46 +257,14 @@ class BillingManager(private val activity: Activity) : PurchasesUpdatedListener 
         }
     }
 
-    private fun processPurchase(purchase: Purchase, isRestoration: Boolean) {
-        if (!purchase.isAcknowledged) {
-            acknowledgePurchaseWithRetry(purchase.purchaseToken, retryCount = 0)
-        }
-
-        val sku = purchase.products.firstOrNull()
-        when (sku) {
-            "qv_apex_monthly" -> {
-                setUnlockedSecure("APEX", purchase.purchaseToken)
-                if (!isRestoration) {
-                    Log.d("BillingManager", "Apex subscription activated")
-                }
-            }
-            "qv_pro_monthly" -> {
-                if (getUnlockedTier() != "APEX") {
-                    setUnlockedSecure("PRO", purchase.purchaseToken)
-                    if (!isRestoration) {
-                        Log.d("BillingManager", "Pro subscription activated")
-                    }
-                }
-            }
-            "qv_basic_monthly" -> {
-                if (getUnlockedTier() != "PRO" && getUnlockedTier() != "APEX") {
-                    setUnlockedSecure("BASIC", purchase.purchaseToken)
-                    if (!isRestoration) {
-                        Log.d("BillingManager", "Basic subscription activated")
-                    }
-                }
-            }
-        }
-    }
-
     private fun setUnlockedSecure(tier: String, token: String) {
         synchronized(this) {
             try {
                 val normalizedTier = tier.uppercase()
-                prefs.edit()
+                check(prefs.edit()
                     .putString(unlockedKey, normalizedTier)
                     .putString(purchaseTokenKey, token)
-                    .apply()
+                    .commit()) { "Entitlement storage failed" }
                 EntitlementManager.updateTierFromString(normalizedTier)
                 onTierChanged?.invoke(normalizedTier)
             } catch (e: Exception) {

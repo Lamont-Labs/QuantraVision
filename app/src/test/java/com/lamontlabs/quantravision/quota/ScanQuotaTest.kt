@@ -242,7 +242,7 @@ class ScanQuotaTest {
     // ============================================================
     
     @Test
-    fun `scan quota resets at 00:00 UTC`() {
+    fun `scan quota resets at midnight UTC`() {
         setTier("FREE")
         
         // Use all scans
