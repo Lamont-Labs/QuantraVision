@@ -184,7 +184,7 @@ class PatternNotificationManager(private val context: Context) {
                     if (it.hasAnyIndicators()) " • ${it.getSummary()}" else ""
                 } ?: ""
                 
-                val line = "${pattern.patternName} (${confidencePercent}%$scorePart)$indicatorSummary"
+                val line = "${pattern.patternName} (${confidencePercent}% visual similarity$scorePart)$indicatorSummary"
                 inboxStyle.addLine(line)
             }
             
@@ -193,7 +193,7 @@ class PatternNotificationManager(private val context: Context) {
             val avgScore = patterns.map { it.quantraScore }.average().toInt()
             val avgScoreText = if (avgScore > 0) " • Avg: $avgScore/100" else ""
             
-            inboxStyle.setBigContentTitle("$patternCount pattern${if (patternCount == 1) "" else "s"} detected$avgScoreText")
+            inboxStyle.setBigContentTitle("$patternCount visual match${if (patternCount == 1) "" else "es"}$avgScoreText")
             inboxStyle.setSummaryText("Tap to view details")
             
             // Create "Explain" action for first pattern (most relevant)
@@ -217,8 +217,8 @@ class PatternNotificationManager(private val context: Context) {
             // Build notification with AI Explain action
             val notification = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_overlay_marker)
-                .setContentTitle("$patternCount pattern${if (patternCount == 1) "" else "s"} detected")
-                .setContentText("Tap to view pattern details")
+                .setContentTitle("$patternCount visual match${if (patternCount == 1) "" else "es"}")
+                .setContentText("Image analysis · market price levels unavailable")
                 .setStyle(inboxStyle)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)  // Dismiss when user swipes away

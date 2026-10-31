@@ -1,281 +1,107 @@
-/*
- * Copyright (c) 2025 Lamont Labs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.lamontlabs.quantravision.pipeline
 
 import android.content.Context
 import android.graphics.Bitmap
 import com.lamontlabs.quantravision.apex.ApexEngineMobile
 import com.lamontlabs.quantravision.apex.models.*
-import com.lamontlabs.quantravision.cloud.CloudReasoner
-import com.lamontlabs.quantravision.cloud.LLMContractValidator
+import com.lamontlabs.quantravision.detection.DetectionResult
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.tiers.Tier
 import com.lamontlabs.quantravision.tiers.TierRegistry
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.util.UUID
 
-/**
- * QuantraPipelineCoordinator
- * 
- * Master Spec v2.0 Pipeline Orchestrator
- * 
- * Enforces the fixed, non-negotiable pipeline:
- * Screen Capture → Vision Models → Primitive Extraction → Apex Engine →
- * QuantraScore → Overlay Rendering → Quota Gate → Cloud Narration → LLM Validator
- * 
- * Design principles:
- * - Fail-closed: Any error results in safe fallback, never false positives
- * - Deterministic: Same input always produces same output and proof hash
- * - Privacy-first: Never sends images to cloud, only text primitives
- * - Tier-gated: Scans and narrations are hard-capped per subscription tier
- */
-class QuantraPipelineCoordinator(private val context: Context) {
-
-    companion object {
-        private const val TAG = "QuantraPipelineCoordinator"
-    }
-
-    private val visionManager = VisionManager(context)
+/** One authoritative route: quota -> vision -> measurements -> guards -> templates -> results. */
+class QuantraPipelineCoordinator(
+    private val context: Context,
+    private val detectPatterns: suspend (Bitmap) -> List<DetectionResult>,
+    private val visionManager: VisionManager = VisionManager(context),
+    private val quotaGate: ScanQuota = QuotaGate(context)
+) {
     private val primitivesBuilder = PrimitivesBuilder()
-    private val quotaGate = QuotaGate(context)
-    private val cloudNarrationOrchestrator = CloudNarrationOrchestrator(context)
+    private val scanMutex = Mutex()
 
     sealed class PipelineResult {
-        data class Success(
-            val apexResult: ApexResult,
-            val overlayData: OverlayData,
-            val narration: NarrationData?
-        ) : PipelineResult()
-
-        data class QuotaExhausted(
-            val scanLimit: Int,
-            val narrationLimit: Int,
-            val tier: Tier
-        ) : PipelineResult()
-
-        data class FailClosed(
-            val stage: String,
-            val reason: String,
-            val proofHash: String
-        ) : PipelineResult()
+        data class Success(val apexResult: ApexResult, val overlayData: OverlayData,
+            val narration: NarrationData?, val patterns: List<DetectionResult> = emptyList(),
+            val source: PrimitiveSource = PrimitiveSource.SCREEN_GEOMETRY) : PipelineResult()
+        data class QuotaExhausted(val scanLimit: Int, val narrationLimit: Int, val tier: Tier) : PipelineResult()
+        data class FailClosed(val stage: String, val reason: String, val proofHash: String) : PipelineResult()
     }
+    data class OverlayData(val status: ApexStatus, val score: Int, val verdict: String,
+        val shouldRender: Boolean, val overlayStyle: OverlayStyle)
+    enum class OverlayStyle { SOLID_TEAL, AMBER_DASHED, VIOLET_BROKEN, NONE }
+    data class NarrationData(val headline: String, val whatWasSeen: String, val whyApexSaidThis: String,
+        val conditionsToWatch: String, val riskCaveats: String, val validated: Boolean)
 
-    data class OverlayData(
-        val status: ApexStatus,
-        val score: Int,
-        val verdict: String,
-        val shouldRender: Boolean,
-        val overlayStyle: OverlayStyle
-    )
-
-    enum class OverlayStyle {
-        SOLID_TEAL,      // PASS - solid teal overlays
-        AMBER_DASHED,    // WAIT - amber dashed overlays
-        VIOLET_BROKEN,   // SUPPRESSED - violet broken overlays
-        NONE             // FAIL/OMEGA - no overlays
-    }
-
-    data class NarrationData(
-        val headline: String,
-        val whatWasSeen: String,
-        val whyApexSaidThis: String,
-        val conditionsToWatch: String,
-        val riskCaveats: String,
-        val validated: Boolean
-    )
-
-    /**
-     * Execute the complete v2.0 pipeline.
-     * 
-     * @param bitmap Screen capture bitmap
-     * @param ticker Optional ticker symbol (from OCR or user input)
-     * @param timeframe Optional timeframe (from OCR or user input)
-     * @param requestNarration Whether to request cloud narration (tier-gated)
-     * @return PipelineResult with Apex result, overlay data, and optional narration
-     */
-    suspend fun executePipeline(
-        bitmap: Bitmap,
-        ticker: String? = null,
-        timeframe: String? = null,
-        requestNarration: Boolean = false
-    ): PipelineResult = withContext(Dispatchers.Default) {
-        val pipelineStartTime = System.currentTimeMillis()
-        val pipelineId = generatePipelineId()
-        
-        Timber.i("$TAG: [$pipelineId] Starting v2.0 pipeline")
-
-        try {
-            val tier = EntitlementManager.getCurrentTier(context)
-            Timber.d("$TAG: [$pipelineId] User tier: $tier")
-
-            val canScanResult = quotaGate.checkScanQuota()
-            if (!canScanResult.allowed) {
-                Timber.w("$TAG: [$pipelineId] Scan quota exhausted")
-                return@withContext PipelineResult.QuotaExhausted(
-                    scanLimit = TierRegistry.getScanLimit(tier),
-                    narrationLimit = TierRegistry.getAIExplanationLimit(tier),
-                    tier = tier
-                )
-            }
-
-            Timber.d("$TAG: [$pipelineId] Stage 1: Vision processing")
-            val visionOutput = try {
-                visionManager.processImage(bitmap)
-            } catch (e: Exception) {
-                Timber.e(e, "$TAG: [$pipelineId] Vision processing failed")
-                return@withContext createFailClosedResult("vision", e.message ?: "Vision error", pipelineId)
-            }
-            
-            if (visionOutput == null) {
-                Timber.w("$TAG: [$pipelineId] Vision returned null - fail-closed")
-                return@withContext createFailClosedResult("vision", "Vision processing unavailable", pipelineId)
-            }
-
-            Timber.d("$TAG: [$pipelineId] Stage 2: Primitive extraction")
-            val primitives = try {
-                primitivesBuilder.buildPrimitives(visionOutput, bitmap)
-            } catch (e: Exception) {
-                Timber.e(e, "$TAG: [$pipelineId] Primitive extraction failed")
-                return@withContext createFailClosedResult("primitives", e.message ?: "Primitive error", pipelineId)
-            }
-            
-            if (primitives == null) {
-                Timber.w("$TAG: [$pipelineId] Primitives returned null - fail-closed")
-                return@withContext createFailClosedResult("primitives", "Primitive extraction unavailable", pipelineId)
-            }
-
-            Timber.d("$TAG: [$pipelineId] Stage 3: Apex Engine scan")
-            val scanContext = ApexScanContext(
-                ticker = ticker ?: visionOutput.detectedTicker,
-                timeframe = timeframe ?: visionOutput.detectedTimeframe,
-                chartType = visionOutput.chartType,
-                timestamp = System.currentTimeMillis(),
-                userId = EntitlementManager.getAnonymousUserId(context),
-                tier = mapTierToSubscriptionTier(tier)
-            )
-
-            val apexResult = try {
-                ApexEngineMobile.runScan(scanContext, primitives, System.currentTimeMillis())
-            } catch (e: Exception) {
-                Timber.e(e, "$TAG: [$pipelineId] Apex Engine failed")
-                return@withContext createFailClosedResult("apex", e.message ?: "Apex error", pipelineId)
-            }
-
-            quotaGate.recordScan()
-            Timber.d("$TAG: [$pipelineId] Scan recorded. Score: ${apexResult.quantraScore.normalizedScore}")
-
-            Timber.d("$TAG: [$pipelineId] Stage 4: Overlay data generation")
-            val overlayData = generateOverlayData(apexResult)
-
-            var narrationData: NarrationData? = null
-            if (requestNarration && shouldAttemptNarration(tier, apexResult)) {
-                Timber.d("$TAG: [$pipelineId] Stage 5: Cloud narration")
-                val canNarrateResult = quotaGate.checkNarrationQuota()
-                
-                if (canNarrateResult.allowed) {
-                    narrationData = try {
-                        cloudNarrationOrchestrator.narrate(apexResult, tier)
-                    } catch (e: Exception) {
-                        Timber.w(e, "$TAG: [$pipelineId] Cloud narration failed (non-fatal)")
-                        null
-                    }
-                    
-                    if (narrationData != null) {
-                        quotaGate.recordNarration()
-                    }
-                } else {
-                    Timber.d("$TAG: [$pipelineId] Narration quota exhausted")
+    suspend fun executePipeline(bitmap: Bitmap, ticker: String? = null, timeframe: String? = null,
+        @Suppress("UNUSED_PARAMETER") requestNarration: Boolean = false): PipelineResult = withContext(Dispatchers.Default) {
+        scanMutex.withLock {
+            var stage = "quota"
+            val pipelineId = UUID.randomUUID().toString()
+            fun fail(reason: String): PipelineResult.FailClosed = PipelineResult.FailClosed(stage, reason,
+                com.lamontlabs.quantravision.apex.ProofHasher.hashFailClosed(pipelineId, stage, reason, System.currentTimeMillis()))
+            try {
+                val quota = quotaGate.checkScanQuota()
+                if (!quota.allowed) return@withLock PipelineResult.QuotaExhausted(quota.limit,
+                    TierRegistry.getAIExplanationLimit(quota.tier), quota.tier)
+                stage = "vision"
+                val vision = visionManager.processImage(bitmap)
+                    ?: return@withLock fail("No readable red/green candlestick series. Use a clear chart with at least 10 visible candles.")
+                stage = "primitives"
+                val primitives = primitivesBuilder.buildPrimitives(vision, bitmap)
+                    ?: return@withLock fail("Candle measurements could not be validated")
+                stage = "apex"
+                val now = System.currentTimeMillis()
+                val tier = quota.tier
+                val scanContext = ApexScanContext(ticker ?: vision.detectedTicker, timeframe ?: vision.detectedTimeframe,
+                    vision.chartType, now, EntitlementManager.getAnonymousUserId(context), when (tier) {
+                        Tier.FREE -> SubscriptionTier.FREE
+                        Tier.BASIC -> SubscriptionTier.BASIC
+                        Tier.PRO -> SubscriptionTier.PRO
+                        Tier.APEX -> SubscriptionTier.APEX
+                    })
+                val apex = ApexEngineMobile.runScan(scanContext, primitives, now)
+                if (!ScanResultPolicy.canRender(apex.status)) {
+                    return@withLock fail(apex.invalidationPoints.firstOrNull() ?: "Chart analysis was rejected")
                 }
+                stage = "templates"
+                val patterns = detectPatterns(bitmap)
+                if (patterns.any { !ScanResultPolicy.validDetection(it, bitmap.width, bitmap.height) })
+                    return@withLock fail("Detector returned invalid confidence or coordinates")
+                val observations = patterns.map { it.copy(
+                    source = "Template", reasoning = "Visual template match. Market prices, volume and candle times are unavailable.",
+                    timeframe = vision.detectedTimeframe ?: "unknown") }
+                stage = "quota"
+                if (!quotaGate.recordScan()) return@withLock fail("Scan usage could not be recorded; results withheld")
+                PipelineResult.Success(apex, OverlayData(apex.status, 0, "Visual analysis · prices unavailable",
+                    observations.isNotEmpty(), if (observations.isEmpty()) OverlayStyle.NONE else OverlayStyle.AMBER_DASHED),
+                    narration = null, patterns = observations, source = primitives.source)
+            } catch (cancel: CancellationException) { throw cancel
+            } catch (error: Exception) {
+                fail("Scan could not complete (${error.javaClass.simpleName})")
             }
-
-            val pipelineTime = System.currentTimeMillis() - pipelineStartTime
-            Timber.i("$TAG: [$pipelineId] Pipeline complete in ${pipelineTime}ms")
-
-            PipelineResult.Success(
-                apexResult = apexResult,
-                overlayData = overlayData,
-                narration = narrationData
-            )
-
-        } catch (e: Exception) {
-            Timber.e(e, "$TAG: [$pipelineId] Unexpected pipeline error")
-            createFailClosedResult("pipeline", e.message ?: "Unknown error", pipelineId)
         }
     }
 
-    private fun generateOverlayData(apexResult: ApexResult): OverlayData {
-        val (shouldRender, style) = when (apexResult.status) {
-            ApexStatus.PASS -> true to OverlayStyle.SOLID_TEAL
-            ApexStatus.WAIT -> true to OverlayStyle.AMBER_DASHED
-            ApexStatus.SUPPRESSED -> true to OverlayStyle.VIOLET_BROKEN
-            ApexStatus.FAIL -> false to OverlayStyle.NONE
-            ApexStatus.OMEGA -> false to OverlayStyle.NONE
-        }
+    fun release() = visionManager.release()
+}
 
-        val verdict = when (apexResult.status) {
-            ApexStatus.PASS -> "Structure Confirmed"
-            ApexStatus.WAIT -> "Early Formation"
-            ApexStatus.SUPPRESSED -> "Suppressed"
-            ApexStatus.FAIL -> "Not Detected"
-            ApexStatus.OMEGA -> "Safety Lock"
-        }
+interface ScanQuota {
+    fun checkScanQuota(): QuotaGate.QuotaCheckResult
+    fun recordScan(): Boolean
+}
 
-        return OverlayData(
-            status = apexResult.status,
-            score = apexResult.quantraScore.normalizedScore,
-            verdict = verdict,
-            shouldRender = shouldRender,
-            overlayStyle = style
-        )
-    }
-
-    private fun shouldAttemptNarration(tier: Tier, apexResult: ApexResult): Boolean {
-        if (tier == Tier.FREE) return false
-        if (apexResult.status == ApexStatus.OMEGA) return false
-        return true
-    }
-
-    private fun mapTierToSubscriptionTier(tier: Tier): SubscriptionTier {
-        return when (tier) {
-            Tier.FREE -> SubscriptionTier.FREE
-            Tier.BASIC -> SubscriptionTier.BASIC
-            Tier.PRO -> SubscriptionTier.PRO
-            Tier.APEX -> SubscriptionTier.APEX
-        }
-    }
-
-    private fun createFailClosedResult(stage: String, reason: String, pipelineId: String): PipelineResult.FailClosed {
-        val proofHash = com.lamontlabs.quantravision.apex.ProofHasher.hashFailClosed(
-            pipelineId = pipelineId,
-            stage = stage,
-            reason = reason,
-            timestamp = System.currentTimeMillis()
-        )
-        
-        return PipelineResult.FailClosed(
-            stage = stage,
-            reason = reason,
-            proofHash = proofHash
-        )
-    }
-
-    private fun generatePipelineId(): String {
-        return "PL_${System.currentTimeMillis()}_${UUID.randomUUID().toString().take(8)}"
+object ScanResultPolicy {
+    fun canRender(status: ApexStatus): Boolean = status == ApexStatus.PASS || status == ApexStatus.WAIT
+    fun validDetection(result: DetectionResult, width: Int, height: Int): Boolean {
+        val b = result.bbox ?: return false
+        return result.patternName.isNotBlank() && result.confidence.isFinite() && result.confidence in 0.0..1.0 &&
+            listOf(b.left, b.top, b.right, b.bottom).all { it.isFinite() } &&
+            b.left >= 0 && b.top >= 0 && b.right <= width && b.bottom <= height && b.width() > 0 && b.height() > 0
     }
 }

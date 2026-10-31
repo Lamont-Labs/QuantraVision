@@ -13,15 +13,14 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.lamontlabs.quantravision.ml.HybridDetectorBridge
+import com.lamontlabs.quantravision.detection.VisualTemplateScanner
+import com.lamontlabs.quantravision.detection.DetectionResult
 import com.lamontlabs.quantravision.psychology.BehavioralGuardrails
 import com.lamontlabs.quantravision.licensing.ProFeatureGate
 import com.lamontlabs.quantravision.MainActivity
 import com.lamontlabs.quantravision.R
 import com.lamontlabs.quantravision.PatternMatch
-import com.lamontlabs.quantravision.TradeScenarioInfo
 import com.lamontlabs.quantravision.pipeline.QuantraPipelineCoordinator
-import com.lamontlabs.quantravision.planner.PatternToPlanEngine
 import kotlinx.coroutines.*
 import timber.log.Timber
 
@@ -78,7 +77,7 @@ class OverlayService : Service() {
     
     // CRITICAL: Reuse detector bridge to avoid repeated template loading
     // Templates are cached inside detector, loading once saves ~200ms and memory on each scan
-    private var detectorBridge: HybridDetectorBridge? = null
+    private var patternDetector: VisualTemplateScanner? = null
     
     // v2.0 Pipeline Coordinator for enhanced scan flow
     private var pipelineCoordinator: QuantraPipelineCoordinator? = null
@@ -130,7 +129,10 @@ class OverlayService : Service() {
         Log.i(TAG, "✓ AI model is imported")
         
         // Initialize v2.0 Pipeline Coordinator
-        pipelineCoordinator = QuantraPipelineCoordinator(this)
+        pipelineCoordinator = QuantraPipelineCoordinator(this, detectPatterns = { bitmap ->
+            val detector = patternDetector ?: error("Pattern templates are not ready")
+            detector.scan(bitmap)
+        })
         Log.i(TAG, "✓ Pipeline coordinator initialized")
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -517,221 +519,53 @@ class OverlayService : Service() {
     
     private suspend fun processFrameForPatterns(bitmap: android.graphics.Bitmap) {
         try {
-            // v2.0 Pipeline: Try new pipeline first, fallback to legacy detection
-            val coordinator = pipelineCoordinator
-            if (coordinator != null) {
-                Timber.i("🚀 Attempting v2.0 pipeline scan...")
-                val pipelineResult = coordinator.executePipeline(bitmap)
-                
-                when (pipelineResult) {
-                    is QuantraPipelineCoordinator.PipelineResult.QuotaExhausted -> {
-                        Timber.w("⚠️ v2.0 pipeline: Quota exhausted (scans: ${pipelineResult.scanLimit}, tier: ${pipelineResult.tier})")
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                applicationContext,
-                                "⚠️ Scan quota reached for ${pipelineResult.tier} tier.\nUpgrade for more scans!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        // Don't fall back - quota is a hard limit
+            val coordinator = pipelineCoordinator ?: error("Scanner is not ready")
+            when (val result = coordinator.executePipeline(bitmap)) {
+                is QuantraPipelineCoordinator.PipelineResult.FailClosed -> {
+                    Timber.w("Scan rejected at ${result.stage}: ${result.reason} (${result.proofHash})")
+                    clearRejectedScan(result.reason)
+                }
+                is QuantraPipelineCoordinator.PipelineResult.QuotaExhausted ->
+                    clearRejectedScan("Scan allowance reached or quota storage unavailable")
+                is QuantraPipelineCoordinator.PipelineResult.Success -> {
+                    val results = result.patterns
+                    withContext(Dispatchers.Main) {
+                        patternNotificationManager.showPatterns(results.map { it.toPatternMatch() })
+                        floatingLogo?.updatePatternCount(results.size)
+                        floatingLogo?.setDetectionStatus(if (results.isEmpty()) LogoBadge.DetectionStatus.IDLE
+                            else LogoBadge.DetectionStatus.PATTERNS_FOUND)
+                        Toast.makeText(applicationContext, if (results.isEmpty()) "No visual matches found"
+                            else "${results.size} visual matches · price levels unavailable", Toast.LENGTH_SHORT).show()
+                    }
+                    if (results.isEmpty()) {
+                        resultController.manualClear()
                         stateMachine.transitionToIdle()
-                        return
-                    }
-                    is QuantraPipelineCoordinator.PipelineResult.FailClosed -> {
-                        Timber.w("⚠️ v2.0 pipeline: FailClosed at stage '${pipelineResult.stage}' - ${pipelineResult.reason}")
-                        Timber.w("   ProofHash: ${pipelineResult.proofHash}")
-                        // Fall through to legacy detection
-                        Timber.i("🔄 Falling back to legacy detection...")
-                    }
-                    is QuantraPipelineCoordinator.PipelineResult.Success -> {
-                        Timber.i("✅ v2.0 pipeline: Success! Score: ${pipelineResult.overlayData.score}, Status: ${pipelineResult.overlayData.status}")
-                        
-                        // Use overlay data to determine rendering
-                        val overlayData = pipelineResult.overlayData
-                        val apexResult = pipelineResult.apexResult
-                        
-                        if (overlayData.shouldRender) {
-                            Timber.i("📊 v2.0 pipeline: Rendering overlay (style: ${overlayData.overlayStyle})")
-                            
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "✅ ${overlayData.verdict} (Score: ${overlayData.score})",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                
-                                floatingLogo?.updatePatternCount(1)
-                                
-                                when (overlayData.overlayStyle) {
-                                    QuantraPipelineCoordinator.OverlayStyle.SOLID_TEAL -> 
-                                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
-                                    QuantraPipelineCoordinator.OverlayStyle.AMBER_DASHED,
-                                    QuantraPipelineCoordinator.OverlayStyle.VIOLET_BROKEN -> 
-                                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
-                                    QuantraPipelineCoordinator.OverlayStyle.NONE -> 
-                                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-                                }
-                            }
-                            
-                            // Log narration if available
-                            pipelineResult.narration?.let { narration ->
-                                Timber.i("📝 Narration: ${narration.headline}")
-                                Timber.d("   What: ${narration.whatWasSeen}")
-                                Timber.d("   Why: ${narration.whyApexSaidThis}")
-                            }
-                            
-                            stateMachine.transitionToIdle()
-                            return
-                        } else {
-                            Timber.i("📊 v2.0 pipeline: No overlay to render (status: ${overlayData.status})")
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "No patterns detected",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-                                floatingLogo?.updatePatternCount(0)
-                            }
-                            stateMachine.transitionToIdle()
-                            return
-                        }
-                    }
-                }
-            } else {
-                Timber.d("v2.0 pipeline coordinator not initialized, using legacy detection")
-            }
-            
-            // Legacy detection flow (fallback)
-            // Use cached detector bridge (initialized once on service start)
-            val detector = detectorBridge
-            if (detector == null) {
-                Timber.e("❌ CRITICAL: Detector bridge is null - templates not loaded")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        applicationContext,
-                        "❌ Pattern detector not initialized. Please restart scanner.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                return
-            }
-            
-            Timber.i("🔬 Running legacy pattern detection using cached detector ($templateCount templates)...")
-            val patternToPlanEngine = PatternToPlanEngine(applicationContext)
-            val isProActive = ProFeatureGate.isActive(applicationContext)
-            
-            Timber.i("🔍 Running optimized pattern detection (1-2.5s expected)...")
-            val results = detector.detectPatternsOptimized(bitmap)
-            Timber.i("✅ Legacy pattern detection complete - found ${results.size} raw patterns")
-            
-            val allDetectedPatterns = mutableListOf<PatternMatch>()
-                
-                for (pattern in results) {
-                    val patternMatch = pattern.toPatternMatch()
-                    
-                    if (isProActive) {
-                        try {
-                            val mockPrice = 100.0
-                            val scenario = patternToPlanEngine.generateScenario(
-                                patternMatch = patternMatch,
-                                currentPrice = mockPrice
-                            )
-                            
-                            patternMatch.tradeScenario = TradeScenarioInfo(
-                                entryPrice = scenario.entryPrice,
-                                stopLoss = scenario.stopLoss,
-                                takeProfit = scenario.takeProfit
-                            )
-                        } catch (e: Exception) {
-                            timber.log.Timber.w(e, "Failed to generate trade scenario for ${patternMatch.patternName}")
-                        }
-                    }
-                    
-                    allDetectedPatterns.add(patternMatch)
-                    
-                    behavioralGuardrails?.let { guardrails ->
-                        scope.launch {
-                            try {
-                                val warning = guardrails.recordView(patternMatch)
-                                warning?.let { w ->
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "⚠️ ${w.message}",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                timber.log.Timber.e(e, "Error recording behavioral view")
-                            }
-                        }
-                    }
-                }
-            
-            Timber.i("📊 Processed ${allDetectedPatterns.size} final patterns")
-            
-            withContext(Dispatchers.Main) {
-                try {
-                    Timber.i("📲 Showing notification for ${allDetectedPatterns.size} patterns...")
-                    
-                    // CRITICAL: Always call showPatterns - it handles empty list
-                    patternNotificationManager.showPatterns(allDetectedPatterns)
-                    Timber.i("✅ Notification displayed successfully")
-                    
-                    // Show user feedback toast
-                    val message = if (allDetectedPatterns.isEmpty()) {
-                        "No patterns detected"
                     } else {
-                        "✅ Found ${allDetectedPatterns.size} pattern${if (allDetectedPatterns.size == 1) "" else "s"}!"
+                        stateMachine.transitionToShowingResult(results)
+                        resultController.showResults(results)
                     }
-                    Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
-                    
-                    floatingLogo?.updatePatternCount(allDetectedPatterns.size)
-                    
-                    if (allDetectedPatterns.isNotEmpty()) {
-                        val highConfidencePattern = allDetectedPatterns.any { it.confidence > 0.85f }
-                        if (highConfidencePattern) {
-                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.HIGH_CONFIDENCE)
-                        } else {
-                            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.PATTERNS_FOUND)
-                        }
-                    } else {
-                        floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-                    }
-                    
-                } catch (e: Exception) {
-                    Timber.e(e, "❌ CRITICAL: Failed to show notification")
-                    Toast.makeText(
-                        applicationContext,
-                        "❌ Failed to show notification: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
             }
-            
-            if (allDetectedPatterns.isNotEmpty()) {
-                stateMachine.transitionToShowingResult(results)
-                resultController.showResults(results)
-            } else {
-                stateMachine.transitionToIdle()
-            }
-            
-        } catch (e: Exception) {
-            Timber.e(e, "❌ CRITICAL: Error processing frame for pattern detection")
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    applicationContext,
-                    "❌ Detection failed: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-                floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
-            }
-            stateMachine.transitionToIdle()
+        } catch (cancel: CancellationException) {
+            clearRejectedScan("Scan canceled")
+            throw cancel
+        } catch (error: Exception) {
+            Timber.e(error, "Scan failed")
+            clearRejectedScan("Scan could not complete. Please try again.")
         }
     }
-    
+
+    private suspend fun clearRejectedScan(message: String) {
+        withContext(Dispatchers.Main) {
+            resultController.manualClear()
+            patternNotificationManager.dismiss()
+            floatingLogo?.updatePatternCount(0)
+            floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
+            Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        }
+        stateMachine.transitionToIdle()
+    }
+
     private fun initializeMediaProjection(resultCode: Int, data: Intent) {
         try {
             val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -859,8 +693,8 @@ class OverlayService : Service() {
                 scope.launch {
                     try {
                         Timber.i("🔍 Initializing pattern detector and loading templates...")
-                        detectorBridge = HybridDetectorBridge(applicationContext)
-                        templateCount = detectorBridge?.getTemplateCount() ?: 0
+                        patternDetector = VisualTemplateScanner(applicationContext)
+                        templateCount = patternDetector?.getTemplateCount() ?: 0
                         
                         if (templateCount == 0) {
                             throw Exception("No templates loaded - pattern detection will not work")
@@ -878,7 +712,7 @@ class OverlayService : Service() {
                         }
                     } catch (e: Exception) {
                         Timber.e(e, "❌ CRITICAL: Failed to initialize pattern detector")
-                        detectorBridge = null
+                        patternDetector = null
                         templateCount = 0
                         
                         withContext(Dispatchers.Main) {
@@ -954,7 +788,7 @@ class OverlayService : Service() {
         
         // Release detector bridge (frees cached templates)
         try {
-            detectorBridge = null
+            patternDetector = null
             templateCount = 0
             Log.d(TAG, "Detector bridge released")
         } catch (e: Exception) {
@@ -1017,6 +851,11 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
+        currentScanJob?.cancel()
+        val scanner = patternDetector
+        currentScanJob?.invokeOnCompletion { scanner?.close() } ?: scanner?.close()
+        pipelineCoordinator?.release()
+        pipelineCoordinator = null
         try {
             patternNotificationManager.cleanup()
         } catch (e: Exception) {

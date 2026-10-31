@@ -33,7 +33,7 @@ class VerdictMappingTest {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        registry = ProtocolRegistryMobile(context)
+        registry = ProtocolRegistryMobile
     }
     
     // ============================================================

@@ -12,8 +12,8 @@ android {
         applicationId = "com.lamontlabs.quantravision"
         minSdk = 26
         targetSdk = 35
-        versionCode = 35
-        versionName = "3.1.0"
+        versionCode = 36
+        versionName = "3.1.1"
         vectorDrawables.useSupportLibrary = true
         
         // Target arm64-v8a only for Samsung S23 FE (saves ~40MB)
@@ -97,6 +97,10 @@ android {
             matchingFallbacks += listOf("release")
             isDebuggable = false
         }
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
 
     composeOptions {
@@ -261,6 +265,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
 
     // Testing - Latest stable
+    testImplementation(kotlin("test"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.13")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")

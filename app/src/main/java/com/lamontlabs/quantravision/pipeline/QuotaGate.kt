@@ -44,17 +44,18 @@ import java.time.ZoneOffset
  * Note: Overlays and Apex logic still run at quota=0,
  * but UI blocks new scan initiation. Cloud narration is separately gated.
  */
-class QuotaGate(private val context: Context) {
+class QuotaGate(private val context: Context) : ScanQuota {
 
     companion object {
         private const val TAG = "QuotaGate"
+        private val LOCK = Any()
         private const val PREFS_NAME = "qv_quota_gate"
         private const val KEY_SCAN_COUNT = "scan_count"
         private const val KEY_NARRATION_COUNT = "narration_count"
         private const val KEY_LAST_RESET_DATE = "last_reset_date"
     }
 
-    private val lock = Any()
+    private val lock get() = LOCK
 
     data class QuotaCheckResult(
         val allowed: Boolean,
@@ -76,8 +77,8 @@ class QuotaGate(private val context: Context) {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            Timber.e(e, "$TAG: Failed to create encrypted prefs, using fallback")
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            Timber.e(e, "$TAG: Quota storage unavailable")
+            null
         }
     }
 
@@ -101,7 +102,7 @@ class QuotaGate(private val context: Context) {
     /**
      * Check if user can make a scan based on current quota.
      */
-    fun checkScanQuota(): QuotaCheckResult {
+    override fun checkScanQuota(): QuotaCheckResult {
         resetIfNewDay()
         
         synchronized(lock) {
@@ -110,7 +111,7 @@ class QuotaGate(private val context: Context) {
             val prefs = getSecurePrefs()
             val currentCount = prefs?.getInt(KEY_SCAN_COUNT, 0) ?: 0
             val remaining = (limit - currentCount).coerceAtLeast(0)
-            val allowed = remaining > 0
+            val allowed = prefs != null && remaining > 0
 
             Timber.d("$TAG: Scan quota check - tier=$tier, used=$currentCount, limit=$limit, remaining=$remaining")
 
@@ -135,7 +136,7 @@ class QuotaGate(private val context: Context) {
             val prefs = getSecurePrefs()
             val currentCount = prefs?.getInt(KEY_NARRATION_COUNT, 0) ?: 0
             val remaining = (limit - currentCount).coerceAtLeast(0)
-            val allowed = remaining > 0
+            val allowed = prefs != null && remaining > 0
 
             Timber.d("$TAG: Narration quota check - tier=$tier, used=$currentCount, limit=$limit, remaining=$remaining")
 
@@ -151,18 +152,15 @@ class QuotaGate(private val context: Context) {
     /**
      * Record a scan usage. Call after successful scan completion.
      */
-    fun recordScan(): Boolean {
+    override fun recordScan(): Boolean {
         resetIfNewDay()
         
         synchronized(lock) {
             val prefs = getSecurePrefs() ?: return false
             val currentCount = prefs.getInt(KEY_SCAN_COUNT, 0)
-            prefs.edit()
-                .putInt(KEY_SCAN_COUNT, currentCount + 1)
-                .apply()
-            
-            Timber.d("$TAG: Scan recorded. Total: ${currentCount + 1}")
-            return true
+            val limit = TierRegistry.getScanLimit(EntitlementManager.getCurrentTier(context))
+            if (currentCount >= limit) return false
+            return prefs.edit().putInt(KEY_SCAN_COUNT, currentCount + 1).commit()
         }
     }
 
