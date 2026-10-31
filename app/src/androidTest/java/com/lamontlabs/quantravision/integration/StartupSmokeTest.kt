@@ -24,7 +24,8 @@ class StartupSmokeTest {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             assertTrue("Home navigation must render", device.wait(Until.hasObject(By.text("Home")), 15_000))
             val pages = linkedMapOf(
-                "Market" to By.text("Markets"), "Scan" to By.text("Pattern Scanner"),
+                // A fresh Free install must reach the Market feature gate, not paid content.
+                "Market" to By.text("Real-Time Market Data"), "Scan" to By.text("Pattern Scanner"),
                 "Apex AI" to By.text("QuantraBot"), "Settings" to By.text("Current Plan"),
                 "Home" to By.textStartsWith("Welcome,")
             )
@@ -34,8 +35,11 @@ class StartupSmokeTest {
                 target.click()
                 device.waitForIdle()
                 scenario.onActivity { activity -> assertFalse("Navigation closed the activity: $tab", activity.isFinishing) }
-                assertTrue("Expected page content did not render for $tab", device.wait(Until.hasObject(content), 15_000))
-                assertTrue("Could not capture $tab", device.takeScreenshot(File(context.getExternalFilesDir(null), "screen-${tab.lowercase().replace(' ', '-')}.png")))
+                val rendered = device.wait(Until.hasObject(content), 15_000)
+                val stem = "screen-${tab.lowercase().replace(' ', '-')}"
+                assertTrue("Could not capture $tab", device.takeScreenshot(File(context.getExternalFilesDir(null), "$stem.png")))
+                device.dumpWindowHierarchy(File(context.getExternalFilesDir(null), "$stem.xml"))
+                assertTrue("Expected page content did not render for $tab", rendered)
             }
         }
     }
