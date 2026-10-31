@@ -65,7 +65,7 @@ class OverlayService : Service() {
     private var imageReader: android.media.ImageReader? = null
     
     // Track current scan job for cancellation
-    private var currentScanJob: kotlinx.coroutines.Job? = null
+    private val scanSession = SingleScanSession(scope)
     
     // Track if MediaProjection is fully initialized and ready
     @Volatile
@@ -370,8 +370,7 @@ class OverlayService : Service() {
     
     private fun cancelScan() {
         Log.i(TAG, "Canceling current scan...")
-        currentScanJob?.cancel()
-        currentScanJob = null
+        scanSession.cancel()
         
         scope.launch(Dispatchers.Main) {
             floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
@@ -387,13 +386,14 @@ class OverlayService : Service() {
     }
     
     private fun triggerCapture() {
-        currentScanJob = scope.launch {
+        scanSession.start {
+            var capturedBitmap: android.graphics.Bitmap? = null
             val scanStartTime = System.currentTimeMillis()
             
             val transitioned = stateMachine.transitionToCapturing()
             if (!transitioned) {
                 Timber.w("Failed to transition to Capturing state")
-                return@launch
+                return@start
             }
             
             withContext(Dispatchers.Main) {
@@ -420,7 +420,7 @@ class OverlayService : Service() {
                         ).show()
                     }
                     stateMachine.transitionToIdle()
-                    return@launch
+                    return@start
                 }
                 
                 Timber.i("📸 Starting frame capture from VirtualDisplay...")
@@ -440,8 +440,9 @@ class OverlayService : Service() {
                         floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                     }
                     stateMachine.transitionToIdle()
-                    return@launch
+                    return@start
                 }
+                capturedBitmap = bitmap
                 
                 val captureTime = System.currentTimeMillis() - captureStartTime
                 Timber.i("✅ Frame captured in ${captureTime}ms - size: ${bitmap.width}x${bitmap.height}")
@@ -472,16 +473,13 @@ class OverlayService : Service() {
                         floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)
                     }
                     stateMachine.transitionToIdle()
-                    bitmap.recycle()
-                    return@launch
+                    return@start
                 }
                 
                 val detectionTime = System.currentTimeMillis() - detectionStartTime
                 
                 val totalTime = System.currentTimeMillis() - scanStartTime
                 Timber.i("✅ Scan complete in ${totalTime}ms (capture: ${captureTime}ms, detection: ${detectionTime}ms)")
-                
-                bitmap.recycle()
                 
             } catch (e: kotlinx.coroutines.CancellationException) {
                 // Scan was canceled by user - already showed toast in cancelScan()
@@ -499,7 +497,7 @@ class OverlayService : Service() {
                 }
                 stateMachine.transitionToIdle()
             } finally {
-                currentScanJob = null
+                capturedBitmap?.let { if (!it.isRecycled) it.recycle() }
             }
         }
     }
@@ -844,10 +842,11 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
-        currentScanJob?.cancel()
         val scanner = patternDetector
-        currentScanJob?.invokeOnCompletion { scanner?.close() } ?: scanner?.close()
-        pipelineCoordinator?.release()
+        val coordinator = pipelineCoordinator
+        scanSession.close {
+            try { scanner?.close() } finally { coordinator?.release() }
+        }
         pipelineCoordinator = null
         try {
             patternNotificationManager.cleanup()
