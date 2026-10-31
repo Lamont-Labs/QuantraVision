@@ -19,7 +19,7 @@ object PatternHeatmapOverlay {
     private const val TTL_MS = 3_600_000L // 1 hour
 
     fun add(x: Float, y: Float, conf: Float) {
-        if (detections.size > MAX_POINTS) detections.removeFirst()
+        if (detections.size > MAX_POINTS) detections.removeAt(0)
         detections.add(HeatEntry(System.currentTimeMillis(), x, y, conf))
         purgeOld()
     }

@@ -43,10 +43,10 @@ Automated unit/regression coverage includes pixel fixtures, blank/noise/unsuppor
 
 Tests that merely asserted a literal `true` were removed rather than counted as coverage. An unwired accuracy gate that required nonexistent metric files is preserved under `docs/research/`; it does not establish a measured F1 score. CI rejects new unconditional boolean assertions.
 
-JVM units use a plain Android Application to isolate their subjects. The Android smoke job launches the real application. The instrumentation suite includes a real OpenCV reference-template localization test. Run it on a connected compatible device:
+JVM units use a plain Android Application to isolate their subjects. The Android smoke job launches the real application. The instrumentation suite includes a real OpenCV reference-template localization test. Run the supported smoke checks on a connected compatible device:
 
 ```sh
-bash ./gradlew :app:connectedDebugAndroidTest
+bash ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.lamontlabs.quantravision.integration.DetectionFlowTest,com.lamontlabs.quantravision.integration.StartupSmokeTest
 ```
 
 A JVM test run and APK compilation do not establish device compatibility, screen-capture reliability, purchase completion through Google Play, chart recognition accuracy across trading platforms, or battery/performance targets. Those require device and dataset evidence. No percentage accuracy or production-readiness claim is made here.

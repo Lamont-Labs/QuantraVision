@@ -41,8 +41,8 @@ import java.time.ZoneOffset
  * Quota resets at 00:00 UTC daily.
  * Uses encrypted SharedPreferences for tamper resistance.
  * 
- * Note: Overlays and Apex logic still run at quota=0,
- * but UI blocks new scan initiation. Cloud narration is separately gated.
+ * The live pipeline stops before image processing when scan storage is
+ * unavailable or the daily scan limit is exhausted.
  */
 class QuotaGate private constructor(
     private val context: Context,
@@ -58,24 +58,19 @@ class QuotaGate private constructor(
         private const val KEY_SCAN_COUNT = "scan_count"
         private const val KEY_NARRATION_COUNT = "narration_count"
         private const val KEY_LAST_RESET_DATE = "last_reset_date"
-        private fun openEncryptedStorage(context: Context): SharedPreferences? {
-        return try {
+        private fun openEncryptedStorage(context: Context): SharedPreferences? = try {
             val masterKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
             EncryptedSharedPreferences.create(
-                context,
-                PREFS_NAME,
-                masterKey,
+                context, PREFS_NAME, masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
-        } catch (e: Exception) {
-            Timber.e(e, "$TAG: Quota storage unavailable")
+        } catch (error: Exception) {
+            Timber.e(error, "$TAG: Quota storage unavailable")
             null
         }
-    }
-
     }
 
     private val lock get() = LOCK

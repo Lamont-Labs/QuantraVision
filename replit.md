@@ -1,3 +1,5 @@
+> Repair implementation status (2026-10-31): The current README and live pipeline describe the implemented screenshot scanner. Image measurements are explicitly pixels and sequence ordinals; market prices, volume, candle times and market confidence are unavailable. The scanner does not require an imported language model. Older v2 claims below are research specifications, not implementation evidence.
+
 # QuantraVision Apex
 
 ## Overview
