@@ -120,20 +120,11 @@ class T79ProofLogSimilarityHooks : ApexProtocol {
     
     private fun createPatternFingerprint(candles: List<Candle>, context: ApexScanContext): String {
         if (candles.isEmpty()) return "empty"
-        
-        val priceRange = candles.maxOf { it.high } - candles.minOf { it.low }
-        val avgVolume = candles.map { it.volume }.average()
-        val patternType = context.chartType
-        
-        return String.format(
-            Locale.US,
-            "%s_%.2f_%.0f",
-            patternType,
-            priceRange,
-            avgVolume
-        )
+        val canonical = com.google.gson.Gson().toJson(listOf(context.ticker, context.timeframe, context.chartType, candles))
+        return MessageDigest.getInstance("SHA-256").digest(canonical.toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
     }
-    
+
     private fun createProofHash(state: Map<String, Any>): String {
         val sortedKeys = state.keys.sorted()
         val concatenated = sortedKeys.joinToString("|") { key ->

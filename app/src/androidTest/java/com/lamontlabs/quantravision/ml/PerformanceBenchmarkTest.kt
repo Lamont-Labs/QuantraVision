@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.lamontlabs.quantravision.ml.fusion.FusedPattern
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*

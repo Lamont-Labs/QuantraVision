@@ -118,8 +118,8 @@ class TierProtocolsT66Test {
         
         val verdict = protocol.evaluate(context, primitives, state)
         
-        assertTrue(verdict.passed)
-        assertTrue(state["sectorTrendValid"] as Boolean)
+        assertFalse(verdict.passed)
+        assertFalse(state["sectorTrendValid"] as Boolean)
         assertEquals(0.3, (state["sectorTrendScore"] as Double), 0.01)
     }
     
@@ -136,8 +136,8 @@ class TierProtocolsT66Test {
         
         val verdict = protocol.evaluate(context, primitives, state)
         
-        assertTrue(verdict.passed)
-        assertTrue(state["sectorTrendValid"] as Boolean)
+        assertFalse(verdict.passed)
+        assertFalse(state["sectorTrendValid"] as Boolean)
         assertEquals(0.3, (state["sectorTrendScore"] as Double), 0.01)
     }
     

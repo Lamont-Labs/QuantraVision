@@ -70,7 +70,7 @@ class Omega02RiskCapEnforcer : ApexProtocol {
         if (confidence != null && confidence > MAX_CONFIDENCE) {
             violations.add("Confidence exceeds limit: $confidence > $MAX_CONFIDENCE")
         }
-        if (confidence != null && confidence > OVER_LEVERAGED_THRESHOLD) {
+        else if (confidence != null && confidence > OVER_LEVERAGED_THRESHOLD) {
             violations.add("Over-leveraged signal detected: confidence=$confidence")
         }
         

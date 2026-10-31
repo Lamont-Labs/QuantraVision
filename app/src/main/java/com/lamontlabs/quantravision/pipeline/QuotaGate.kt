@@ -44,7 +44,12 @@ import java.time.ZoneOffset
  * Note: Overlays and Apex logic still run at quota=0,
  * but UI blocks new scan initiation. Cloud narration is separately gated.
  */
-class QuotaGate(private val context: Context) : ScanQuota {
+class QuotaGate private constructor(
+    private val context: Context,
+    private val storage: (Context) -> SharedPreferences?
+) : ScanQuota {
+    constructor(context: Context) : this(context, { openEncryptedStorage(it) })
+    internal constructor(context: Context, prefs: SharedPreferences) : this(context, { prefs })
 
     companion object {
         private const val TAG = "QuotaGate"
@@ -53,18 +58,7 @@ class QuotaGate(private val context: Context) : ScanQuota {
         private const val KEY_SCAN_COUNT = "scan_count"
         private const val KEY_NARRATION_COUNT = "narration_count"
         private const val KEY_LAST_RESET_DATE = "last_reset_date"
-    }
-
-    private val lock get() = LOCK
-
-    data class QuotaCheckResult(
-        val allowed: Boolean,
-        val remaining: Int,
-        val limit: Int,
-        val tier: Tier
-    )
-
-    private fun getSecurePrefs(): SharedPreferences? {
+        private fun openEncryptedStorage(context: Context): SharedPreferences? {
         return try {
             val masterKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -81,6 +75,19 @@ class QuotaGate(private val context: Context) : ScanQuota {
             null
         }
     }
+
+    }
+
+    private val lock get() = LOCK
+
+    data class QuotaCheckResult(
+        val allowed: Boolean,
+        val remaining: Int,
+        val limit: Int,
+        val tier: Tier
+    )
+
+    private fun getSecurePrefs(): SharedPreferences? = storage(context)
 
     private fun resetIfNewDay() {
         synchronized(lock) {

@@ -35,15 +35,15 @@ python3 scripts/check-test-integrity.py
 bash ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 ```
 
-GitHub Actions runs these checks without ignoring failures. APK artifacts are uploaded only after verification succeeds. Download the `QuantraVision-debug-<run number>` artifact from a successful workflow run. Debug builds use the application ID `com.lamontlabs.quantravision.debug` and install beside the production app.
+GitHub Actions runs these checks without ignoring failures, then runs Android startup/navigation and native OpenCV localization checks on an Android 35 emulator. APK artifacts are uploaded only after verification succeeds. Download the `QuantraVision-debug-<run number>` artifact from a successful workflow run. Debug builds use the application ID `com.lamontlabs.quantravision.debug` and install beside the production app.
 
 ## Tests and remaining validation
 
 Automated unit/regression coverage includes pixel fixtures, blank/noise/unsupported-image rejection, measured body/wick conversion, guard enforcement, quota rejection, detector failures, result-coordinate validation, scaled template bounds, proof input binding, locale stability and subscription selection/downgrades.
 
-Tests that merely asserted a literal `true` were removed rather than counted as coverage. CI rejects new unconditional boolean assertions.
+Tests that merely asserted a literal `true` were removed rather than counted as coverage. An unwired accuracy gate that required nonexistent metric files is preserved under `docs/research/`; it does not establish a measured F1 score. CI rejects new unconditional boolean assertions.
 
-The Android instrumentation suite includes a real OpenCV reference-template localization test. Run it on a connected compatible device:
+JVM units use a plain Android Application to isolate their subjects. The Android smoke job launches the real application. The instrumentation suite includes a real OpenCV reference-template localization test. Run it on a connected compatible device:
 
 ```sh
 bash ./gradlew :app:connectedDebugAndroidTest

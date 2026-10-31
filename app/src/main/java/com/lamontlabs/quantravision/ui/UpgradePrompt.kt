@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.unit.dp
-import com.lamontlabs.quantravision.quota.HighlightQuota
+import com.lamontlabs.quantravision.pipeline.QuotaGate
 
 /**
  * UpgradePrompt
@@ -35,7 +35,7 @@ fun UpgradePrompt(
                 Text("Upgrade for more scans: Basic (25/day), Pro (75/day), or Apex (200/day).")
                 Text("Includes: extended quotas, full template library, and AI explanations.")
                 Divider()
-                Text("Free scans used: ${HighlightQuota.state(context).count}")
+                Text("Free scans used: ${QuotaGate(context).getQuotaSummary().scansUsed}")
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("Later") }
                     Button(onClick = onUpgrade) { Text("Upgrade") }

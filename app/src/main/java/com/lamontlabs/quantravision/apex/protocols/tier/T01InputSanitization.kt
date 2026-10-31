@@ -27,7 +27,7 @@ class T01InputSanitization : ApexProtocol {
             issues.add("ticker missing")
         }
         // Check timeframe is valid
-        if (context.timeframe.isNullOrBlank()) {
+        if (context.timeframe.isNullOrBlank() || !Regex("(?i)[1-9][0-9]{0,3}[mhdw]").matches(context.timeframe)) {
             issues.add("timeframe missing")
         }
         // Check primitives hash exists

@@ -42,6 +42,7 @@ class QuotaGateTest {
         if (quotaFile.exists()) {
             quotaFile.delete()
         }
+        QuotaGate.resetIfNeeded(context)
     }
     
     // ============================================================

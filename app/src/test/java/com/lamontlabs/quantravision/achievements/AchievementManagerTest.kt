@@ -56,7 +56,7 @@ class AchievementManagerTest {
     
     @Test
     fun testPatternDetectedEvent() = runBlocking {
-        achievementManager.onPatternDetected("head_and_shoulders", 0.95)
+        achievementManager.onPatternDetected("head_and_shoulders", 0.95).join()
         
         val progress = achievementManager.getProgress("first_pattern")
         assert(progress > 0)
@@ -64,7 +64,7 @@ class AchievementManagerTest {
     
     @Test
     fun testLessonCompletedEvent() = runBlocking {
-        achievementManager.onLessonCompleted("lesson_01")
+        achievementManager.onLessonCompleted("lesson_01").join()
         
         val progress = achievementManager.getProgress("first_lesson")
         assert(progress > 0)

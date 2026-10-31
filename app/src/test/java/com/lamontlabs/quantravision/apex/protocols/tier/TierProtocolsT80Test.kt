@@ -15,7 +15,8 @@ class TierProtocolsT80Test {
     @Before
     fun setUp() {
         protocol = T80FinalVerdictFusion()
-        state = mutableMapOf()
+        state = mutableMapOf("proofHash" to "a".repeat(64), "proofFingerprint" to "fixture-input",
+            "proofGenerationToken" to "fixture-generation")
     }
     
     private fun createTestCandles(count: Int, basePrice: Double = 100.0): List<Candle> {
