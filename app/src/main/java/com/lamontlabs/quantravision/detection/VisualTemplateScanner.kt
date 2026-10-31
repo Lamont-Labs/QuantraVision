@@ -23,11 +23,12 @@ class VisualTemplateScanner(context: Context) : AutoCloseable {
     fun getTemplateCount(): Int = templates().size
 
     @Synchronized
-    fun scan(bitmap: Bitmap): List<DetectionResult> {
+    fun scan(bitmap: Bitmap, checkActive: () -> Unit = {}): List<DetectionResult> {
         val input = Mat()
         // A pyramid belongs to this frame only. Native pointers are not content hashes.
         val pyramid = mutableMapOf<Double, Mat>()
         try {
+            checkActive()
             Utils.bitmapToMat(bitmap, input)
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2GRAY)
             return templates().groupBy { it.name }.mapNotNull { (name, family) ->
@@ -36,6 +37,7 @@ class VisualTemplateScanner(context: Context) : AutoCloseable {
                     val config = ScaleSpace.ScaleConfig(minScale = template.scaleMin.coerceIn(0.4, 2.5),
                         maxScale = template.scaleMax.coerceIn(0.4, 2.5))
                     for (scale in ScaleSpace.scales(config)) {
+                        checkActive()
                         val scaled = pyramid.getOrPut(scale) { ScaleSpace.resizeForScaleNoCache(input, scale) }
                         if (scaled.cols() < template.image.cols() || scaled.rows() < template.image.rows()) continue
                         val output = Mat()

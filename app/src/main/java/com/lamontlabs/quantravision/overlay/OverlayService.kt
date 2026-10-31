@@ -118,7 +118,8 @@ class OverlayService : Service() {
         // Initialize v2.0 Pipeline Coordinator
         pipelineCoordinator = QuantraPipelineCoordinator(this, detectPatterns = { bitmap ->
             val detector = patternDetector ?: error("Pattern templates are not ready")
-            detector.scan(bitmap)
+            val scanContext = currentCoroutineContext()
+            detector.scan(bitmap) { scanContext.ensureActive() }
         })
         Log.i(TAG, "✓ Pipeline coordinator initialized")
         
@@ -452,22 +453,22 @@ class OverlayService : Service() {
                     floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.SCANNING)
                 }
                 
-                Timber.i("🔬 Starting pattern detection (5s timeout)...")
+                Timber.i("🔬 Starting pattern detection (30s timeout)...")
                 val detectionStartTime = System.currentTimeMillis()
                 
                 try {
-                    // CRITICAL: Separate timeout for detection phase (5s)
-                    // Frame capture has 2.5s timeout, detection needs more time for 109 patterns
-                    withTimeout(5000L) {
+                    // Cold native template loading can exceed five seconds on the emulator.
+                    // Cooperative checks between scales keep cancellation responsive.
+                    withTimeout(30_000L) {
                         processFrameForPatterns(bitmap)
                     }
                 } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
-                    Timber.e("❌ TIMEOUT: Pattern detection took longer than 5s")
+                    Timber.e("❌ TIMEOUT: Pattern detection took longer than 30s")
                     Timber.e("This may indicate a performance issue or template loading problem")
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             applicationContext,
-                            "❌ Pattern detection timed out after 5 seconds.\nPlease try again or restart the scanner.",
+                            "❌ Pattern detection timed out after 30 seconds.\nPlease try again or restart the scanner.",
                             Toast.LENGTH_LONG
                         ).show()
                         floatingLogo?.setDetectionStatus(LogoBadge.DetectionStatus.IDLE)

@@ -35,7 +35,7 @@ python3 scripts/check-test-integrity.py
 bash ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 ```
 
-GitHub Actions runs these checks without ignoring failures, then runs Android startup/navigation and native OpenCV localization checks on an Android 35 emulator. APK artifacts are uploaded only after verification succeeds. Download the `QuantraVision-debug-<run number>` artifact from a successful workflow run. Debug builds use the application ID `com.lamontlabs.quantravision.debug` and install beside the production app.
+GitHub Actions runs these checks and Android 35 emulator startup/navigation and native OpenCV localization checks in parallel. Both jobs must pass before a main build publishes its development APK. Download the `QuantraVision-debug-<run number>` artifact from a successful workflow run. Debug builds use the application ID `com.lamontlabs.quantravision.debug` and install beside the production app.
 
 ## Tests and remaining validation
 
@@ -46,7 +46,7 @@ Tests that merely asserted a literal `true` were removed rather than counted as 
 JVM units use a plain Android Application to isolate their subjects. The Android smoke job launches the real application. The instrumentation suite includes a real OpenCV reference-template localization test. Run the supported smoke checks on a connected compatible device:
 
 ```sh
-bash ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.lamontlabs.quantravision.integration.DetectionFlowTest,com.lamontlabs.quantravision.integration.StartupSmokeTest
+bash ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true -Pandroid.testInstrumentationRunnerArguments.class=com.lamontlabs.quantravision.integration.DetectionFlowTest,com.lamontlabs.quantravision.integration.StartupSmokeTest
 ```
 
 A JVM test run and APK compilation do not establish device compatibility, screen-capture reliability, purchase completion through Google Play, chart recognition accuracy across trading platforms, or battery/performance targets. Those require device and dataset evidence. No percentage accuracy or production-readiness claim is made here.

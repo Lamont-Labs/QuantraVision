@@ -20,4 +20,4 @@ trap collect_proof EXIT
 bash ./gradlew :app:installDebug :app:installDebugAndroidTest -PqvTestAbi=x86_64 --no-daemon
 adb shell appops set com.lamontlabs.quantravision.debug SYSTEM_ALERT_WINDOW allow
 adb shell pm grant com.lamontlabs.quantravision.debug android.permission.POST_NOTIFICATIONS
-bash ./gradlew :app:connectedDebugAndroidTest -PqvTestAbi=x86_64 -Pandroid.testInstrumentationRunnerArguments.class=com.lamontlabs.quantravision.integration.DetectionFlowTest,com.lamontlabs.quantravision.integration.StartupSmokeTest --no-daemon --stacktrace
+bash ./gradlew :app:connectedDebugAndroidTest -PqvTestAbi=x86_64 -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true -Pandroid.testInstrumentationRunnerArguments.class=com.lamontlabs.quantravision.integration.DetectionFlowTest,com.lamontlabs.quantravision.integration.StartupSmokeTest --no-daemon --stacktrace

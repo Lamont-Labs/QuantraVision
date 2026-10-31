@@ -17,6 +17,7 @@ Development build; installs as **QuantraVision Repair** alongside the production
 - Failed guards, unavailable quota storage and detector errors stop the scan without switching to an alternate detector. Invented price levels, volume and candle timestamps are removed from this route.
 - Template bounds map back to the original screenshot. Frame-local native image pyramids prevent stale-image cache reuse. Matching supports light and inverted dark contrast.
 - Scan cancellation keeps ownership until cleanup finishes, captured frames are recycled on every exit, and native resources are released after active work stops.
+- Native matching checks cancellation between scales and uses a 30-second detection budget; canceled work cannot consume scan quota.
 - Chart guard registration initializes before use; weighted aggregation and proof input binding replace permissive placeholder checks.
 - Closed Room database instances are discarded, and achievement events wait for initialization.
 - Subscription restoration resolves current purchased products, including downgrades and revoked access. Pending or unknown products do not unlock a tier.

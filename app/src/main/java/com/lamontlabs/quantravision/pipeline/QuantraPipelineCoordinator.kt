@@ -10,6 +10,8 @@ import com.lamontlabs.quantravision.tiers.Tier
 import com.lamontlabs.quantravision.tiers.TierRegistry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -77,6 +79,7 @@ class QuantraPipelineCoordinator(
                     source = "Template", reasoning = "Visual template match. Market prices, volume and candle times are unavailable.",
                     timeframe = vision.detectedTimeframe ?: "unknown") }
                 stage = "quota"
+                currentCoroutineContext().ensureActive()
                 if (!quotaGate.recordScan()) return@withLock fail("Scan usage could not be recorded; results withheld")
                 PipelineResult.Success(apex, OverlayData(apex.status, 0, "Visual analysis · prices unavailable",
                     observations.isNotEmpty(), if (observations.isEmpty()) OverlayStyle.NONE else OverlayStyle.AMBER_DASHED),

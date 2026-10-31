@@ -9,6 +9,9 @@ import com.lamontlabs.quantravision.detection.DetectionResult
 import com.lamontlabs.quantravision.tiers.Tier
 import com.lamontlabs.quantravision.vision.ScreenChartExtractorTest
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -71,6 +74,17 @@ class ScanPipelineTest {
         val coordinator = QuantraPipelineCoordinator(context, { error("detector failed") }, vision(), quota)
         val result = coordinator.executePipeline(chart()) as QuantraPipelineCoordinator.PipelineResult.FailClosed
         assertEquals("templates", result.stage)
+        assertEquals(0, quota.recorded)
+    }
+    @Test fun cancellationDuringDetectionDoesNotConsumeQuota() = runBlocking {
+        val quota = MemoryQuota()
+        val coordinator = QuantraPipelineCoordinator(context, {
+            currentCoroutineContext().cancel()
+            emptyList()
+        }, vision(), quota)
+        val scan = launch { coordinator.executePipeline(chart()) }
+        scan.join()
+        assertTrue(scan.isCancelled)
         assertEquals(0, quota.recorded)
     }
     @Test fun invalidDetectionCoordinatesFailClosed() = runBlocking {
