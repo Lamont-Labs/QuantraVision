@@ -9,7 +9,7 @@ import com.lamontlabs.quantravision.achievements.AchievementManager
 import com.lamontlabs.quantravision.achievements.model.Achievement
 import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.entitlements.SubscriptionTier
-import com.lamontlabs.quantravision.quota.HighlightQuota
+import com.lamontlabs.quantravision.pipeline.QuotaGate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,8 +47,8 @@ class HomeViewModel(private val context: Context) : ViewModel() {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             
             try {
-                val quotaState = HighlightQuota.state(context)
-                val quotaRemaining = HighlightQuota.remaining(context)
+                val quotaState = QuotaGate(context).getQuotaSummary()
+                val quotaRemaining = quotaState.scansRemaining
                 
                 val todayMs = System.currentTimeMillis()
                 val oneDayMs = TimeUnit.DAYS.toMillis(1)
@@ -71,7 +71,7 @@ class HomeViewModel(private val context: Context) : ViewModel() {
                     it.copy(
                         currentTier = currentTier,
                         recentDetections = recentDetections.take(10),
-                        todayHighlightCount = quotaState.count,
+                        todayHighlightCount = quotaState.scansUsed,
                         highlightQuotaRemaining = quotaRemaining,
                         achievements = recentAchievements,
                         showWelcomeMessage = showWelcome,

@@ -48,12 +48,13 @@ class T35MarketCondition : ApexProtocol {
         val lastPrice = recentCandles.last().close
         val trendStrength = if (firstPrice > 0.0) abs(lastPrice - firstPrice) / firstPrice else 0.0
         
-        val prices = recentCandles.map { it.close }
-        val mean = if (prices.isNotEmpty()) prices.average() else 0.0
-        val variance = if (prices.isNotEmpty()) prices.map { (it - mean).pow(2) }.average() else 0.0
-        val stdDev = sqrt(variance)
-        val volatility = if (mean > 0.0) stdDev / mean else 0.0
-        
+        // Volatility is variation in returns, not dispersion caused by a smooth trend.
+        val returns = recentCandles.zipWithNext { a, b ->
+            if (a.close > 0.0) (b.close - a.close) / a.close else Double.NaN
+        }
+        val meanReturn = returns.average()
+        val volatility = sqrt(returns.map { (it - meanReturn).pow(2) }.average())
+
         val marketRegime = when {
             trendStrength > 0.05 && volatility < 0.03 -> "TRENDING"
             volatility > 0.05 -> "VOLATILE"

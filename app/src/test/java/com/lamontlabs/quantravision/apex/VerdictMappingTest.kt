@@ -33,7 +33,7 @@ class VerdictMappingTest {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        registry = ProtocolRegistryMobile(context)
+        registry = ProtocolRegistryMobile
     }
     
     // ============================================================
@@ -250,15 +250,15 @@ class VerdictMappingTest {
     }
     
     @Test
-    fun `scan with insufficient candles returns FAIL status`() = runBlocking {
+    fun `scan with insufficient candles engages Omega lock`() = runBlocking {
         val chartContext = createTestContext()
         val primitives = createTestPrimitives(candleCount = 5)
         
         val result = ApexEngineMobile.runScan(chartContext, primitives, System.currentTimeMillis())
         
         assertEquals(
-            "Insufficient candles should result in FAIL status",
-            ApexStatus.FAIL,
+            "Insufficient candles must engage the safety lock",
+            ApexStatus.OMEGA,
             result.status
         )
     }
@@ -434,7 +434,7 @@ class VerdictMappingTest {
         }
         
         return ChartPrimitives(
-            rawImageHash = "test-hash-${System.currentTimeMillis()}",
+            rawImageHash = "a".repeat(64),
             candles = candles,
             detectedLines = emptyList(),
             ocrText = "",

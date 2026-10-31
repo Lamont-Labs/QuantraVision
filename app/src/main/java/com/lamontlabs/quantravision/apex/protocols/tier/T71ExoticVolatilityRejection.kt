@@ -41,9 +41,9 @@ class T71ExoticVolatilityRejection : ApexProtocol {
             val priceRanges = recentCandles.map { abs(it.high - it.low) }
             val volumes = recentCandles.map { it.volume }
             
-            for (i in 0 until (recentCandles.size - 2)) {
+            for (i in recentCandles.indices) {
                 val priceMove = priceRanges[i]
-                val volumeRatio = if (volumes[i] > 0) volumes[i + 1] / volumes[i] else 1.0
+                val volumeRatio = if (volumes.average() > 0) volumes[i] / volumes.average() else 1.0
                 
                 if (priceMove > priceRanges.average() * 1.5 && volumeRatio < 0.5) {
                     invertedPatternDetected = true
@@ -57,7 +57,7 @@ class T71ExoticVolatilityRejection : ApexProtocol {
         
         val exoticVolatilityDetected = invertedPatternDetected ||
                                        asymmetricSpikeDetected ||
-                                       volatilityException ||
+                                       volatilityException || volatilitySpikeDetected || volumeAnomalyDetected ||
                                        abnormalMovementFlag
         
         val exoticRejectionScore = if (exoticVolatilityDetected) 0.0 else 1.0

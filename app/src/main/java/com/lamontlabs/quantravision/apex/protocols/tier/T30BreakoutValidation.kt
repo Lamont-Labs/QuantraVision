@@ -50,7 +50,7 @@ class T30BreakoutValidation : ApexProtocol {
         
         val breakoutScore = when {
             nearExtreme && volumeConfirmsBreakout -> 0.85
-            nearExtreme -> 0.65
+            nearExtreme -> 0.50
             volumeConfirmsBreakout -> 0.55
             else -> 0.30
         }
@@ -60,7 +60,7 @@ class T30BreakoutValidation : ApexProtocol {
         state["breakoutCandidate"] = breakoutCandidate
         state["breakoutScore"] = breakoutScore
         
-        val passed = breakoutScore >= 0.6
+        val passed = breakoutCandidate
         val confidence = breakoutScore
         
         val reason = String.format(

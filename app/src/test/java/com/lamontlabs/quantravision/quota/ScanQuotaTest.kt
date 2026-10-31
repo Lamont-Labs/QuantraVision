@@ -22,6 +22,8 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.test.core.app.ApplicationProvider
 import com.lamontlabs.quantravision.tiers.Tier
+import com.lamontlabs.quantravision.pipeline.QuotaGate as PipelineQuotaGate
+import com.lamontlabs.quantravision.entitlements.EntitlementManager
 import com.lamontlabs.quantravision.tiers.TierRegistry
 import org.junit.Assert.*
 import org.junit.Before
@@ -51,11 +53,15 @@ import java.time.ZoneOffset
 class ScanQuotaTest {
     
     private lateinit var context: Context
+    private lateinit var quota: PipelineQuotaGate
     
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
         clearScanState()
+        EntitlementManager.initialize(context)
+        EntitlementManager.updateTierFromString("FREE")
+        quota = PipelineQuotaGate(context, getSecurePrefs()!!)
     }
     
     private fun clearScanState() {
@@ -67,28 +73,13 @@ class ScanQuotaTest {
         }
     }
     
-    private fun getSecurePrefs(): android.content.SharedPreferences? {
-        return try {
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            EncryptedSharedPreferences.create(
-                context,
-                "qv_secure_prefs",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        } catch (e: Exception) {
-            null
-        }
-    }
-    
-    private fun setTier(tier: String) {
-        val prefs = getSecurePrefs()
-        prefs?.edit()?.putString("qv_unlocked_tier", tier)?.apply()
-    }
-    
+    // Quota arithmetic uses ordinary preferences in JVM units; production storage
+    // remains encrypted and its unavailability is separately tested as fail-closed.
+    private fun getSecurePrefs(): android.content.SharedPreferences? =
+        context.getSharedPreferences("scan-ledger-test", Context.MODE_PRIVATE)
+
+    private fun setTier(tier: String) { EntitlementManager.updateTierFromString(tier) }
+
     // ============================================================
     // FREE TIER TESTS
     // ============================================================
@@ -97,39 +88,39 @@ class ScanQuotaTest {
     fun `FREE tier allows 3 scans per day`() {
         setTier("FREE")
         
-        assertTrue("First scan should succeed", ScanQuota.recordScan(context))
-        assertTrue("Second scan should succeed", ScanQuota.recordScan(context))
-        assertTrue("Third scan should succeed", ScanQuota.recordScan(context))
-        assertFalse("Fourth scan should fail (limit is 3)", ScanQuota.recordScan(context))
+        assertTrue("First scan should succeed", quota.recordScan())
+        assertTrue("Second scan should succeed", quota.recordScan())
+        assertTrue("Third scan should succeed", quota.recordScan())
+        assertFalse("Fourth scan should fail (limit is 3)", quota.recordScan())
     }
     
     @Test
     fun `FREE tier canScan returns correct value`() {
         setTier("FREE")
         
-        assertTrue(ScanQuota.canScan(context))
-        ScanQuota.recordScan(context)
+        assertTrue(quota.checkScanQuota().allowed)
+        quota.recordScan()
         
-        assertTrue(ScanQuota.canScan(context))
-        ScanQuota.recordScan(context)
+        assertTrue(quota.checkScanQuota().allowed)
+        quota.recordScan()
         
-        assertTrue(ScanQuota.canScan(context))
-        ScanQuota.recordScan(context)
+        assertTrue(quota.checkScanQuota().allowed)
+        quota.recordScan()
         
-        assertFalse("Should return false after 3 scans", ScanQuota.canScan(context))
+        assertFalse("Should return false after 3 scans", quota.checkScanQuota().allowed)
     }
     
     @Test
     fun `FREE tier getRemainingScans returns correct count`() {
         setTier("FREE")
         
-        assertEquals(3, ScanQuota.getRemainingScans(context))
-        ScanQuota.recordScan(context)
-        assertEquals(2, ScanQuota.getRemainingScans(context))
-        ScanQuota.recordScan(context)
-        assertEquals(1, ScanQuota.getRemainingScans(context))
-        ScanQuota.recordScan(context)
-        assertEquals(0, ScanQuota.getRemainingScans(context))
+        assertEquals(3, quota.getRemainingScan())
+        quota.recordScan()
+        assertEquals(2, quota.getRemainingScan())
+        quota.recordScan()
+        assertEquals(1, quota.getRemainingScan())
+        quota.recordScan()
+        assertEquals(0, quota.getRemainingScan())
     }
     
     // ============================================================
@@ -144,12 +135,12 @@ class ScanQuotaTest {
         for (i in 1..limit) {
             assertTrue(
                 "Scan $i/$limit should succeed",
-                ScanQuota.recordScan(context)
+                quota.recordScan()
             )
         }
         assertFalse(
             "Scan ${limit + 1} should fail (limit is $limit)",
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         )
     }
     
@@ -158,13 +149,13 @@ class ScanQuotaTest {
         setTier("BASIC")
         
         val limit = TierRegistry.getScanLimit(Tier.BASIC)
-        assertEquals(limit, ScanQuota.getRemainingScans(context))
+        assertEquals(limit, quota.getRemainingScan())
         
         repeat(10) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
         
-        assertEquals(limit - 10, ScanQuota.getRemainingScans(context))
+        assertEquals(limit - 10, quota.getRemainingScan())
     }
     
     // ============================================================
@@ -179,12 +170,12 @@ class ScanQuotaTest {
         for (i in 1..limit) {
             assertTrue(
                 "Scan $i/$limit should succeed",
-                ScanQuota.recordScan(context)
+                quota.recordScan()
             )
         }
         assertFalse(
             "Scan ${limit + 1} should fail (limit is $limit)",
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         )
     }
     
@@ -193,13 +184,13 @@ class ScanQuotaTest {
         setTier("PRO")
         
         val limit = TierRegistry.getScanLimit(Tier.PRO)
-        assertEquals(limit, ScanQuota.getRemainingScans(context))
+        assertEquals(limit, quota.getRemainingScan())
         
         repeat(25) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
         
-        assertEquals(limit - 25, ScanQuota.getRemainingScans(context))
+        assertEquals(limit - 25, quota.getRemainingScan())
     }
     
     // ============================================================
@@ -214,12 +205,12 @@ class ScanQuotaTest {
         for (i in 1..limit) {
             assertTrue(
                 "Scan $i/$limit should succeed",
-                ScanQuota.recordScan(context)
+                quota.recordScan()
             )
         }
         assertFalse(
             "Scan ${limit + 1} should fail (limit is $limit)",
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         )
     }
     
@@ -228,13 +219,13 @@ class ScanQuotaTest {
         setTier("APEX")
         
         val limit = TierRegistry.getScanLimit(Tier.APEX)
-        assertEquals(limit, ScanQuota.getRemainingScans(context))
+        assertEquals(limit, quota.getRemainingScan())
         
         repeat(50) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
         
-        assertEquals(limit - 50, ScanQuota.getRemainingScans(context))
+        assertEquals(limit - 50, quota.getRemainingScan())
     }
     
     // ============================================================
@@ -242,23 +233,23 @@ class ScanQuotaTest {
     // ============================================================
     
     @Test
-    fun `scan quota resets at 00:00 UTC`() {
+    fun `scan quota resets at midnight UTC`() {
         setTier("FREE")
         
         // Use all scans
         repeat(3) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
-        assertFalse("Should be blocked after 3 scans", ScanQuota.canScan(context))
+        assertFalse("Should be blocked after 3 scans", quota.checkScanQuota().allowed)
         
         // Simulate UTC reset by setting yesterday's date
         val prefs = getSecurePrefs()
         val yesterday = LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
-        prefs?.edit()?.putString("qv_scan_date", yesterday)?.apply()
+        prefs?.edit()?.putString("last_reset_date", yesterday)?.apply()
         
         // Should have 3 scans again after reset
-        assertTrue("Should have scans available after UTC reset", ScanQuota.canScan(context))
-        assertEquals("Should have full quota after reset", 3, ScanQuota.getRemainingScans(context))
+        assertTrue("Should have scans available after UTC reset", quota.checkScanQuota().allowed)
+        assertEquals("Should have full quota after reset", 3, quota.getRemainingScan())
     }
     
     @Test
@@ -267,22 +258,22 @@ class ScanQuotaTest {
         
         // Use some scans
         repeat(10) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
         
-        val preLimitRemaining = ScanQuota.getRemainingScans(context)
-        val preLimit = ScanQuota.getTierLimit(context)
+        val preLimitRemaining = quota.getRemainingScan()
+        val preLimit = quota.checkScanQuota().limit
         assertEquals("Should be on PRO tier", 75, preLimit)
         assertEquals("Should have 65 scans remaining", 65, preLimitRemaining)
         
         // Simulate UTC reset
         val prefs = getSecurePrefs()
         val yesterday = LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
-        prefs?.edit()?.putString("qv_scan_date", yesterday)?.apply()
+        prefs?.edit()?.putString("last_reset_date", yesterday)?.apply()
         
         // Should reset to full PRO quota
-        val postLimit = ScanQuota.getTierLimit(context)
-        val postLimitRemaining = ScanQuota.getRemainingScans(context)
+        val postLimit = quota.checkScanQuota().limit
+        val postLimitRemaining = quota.getRemainingScan()
         
         assertEquals("Should still be on PRO tier after reset", 75, postLimit)
         assertEquals("Should have full quota after reset", 75, postLimitRemaining)
@@ -297,15 +288,15 @@ class ScanQuotaTest {
         setTier("FREE")
         
         // Use 2 of 3 FREE scans
-        ScanQuota.recordScan(context)
-        ScanQuota.recordScan(context)
-        assertEquals("Should have 1 scan remaining on FREE", 1, ScanQuota.getRemainingScans(context))
+        quota.recordScan()
+        quota.recordScan()
+        assertEquals("Should have 1 scan remaining on FREE", 1, quota.getRemainingScan())
         
         // Upgrade to BASIC (25 scans/day)
         setTier("BASIC")
         
         // Should now have 23 scans remaining (25 - 2 used)
-        val remaining = ScanQuota.getRemainingScans(context)
+        val remaining = quota.getRemainingScan()
         assertEquals("Should have 23 scans remaining after upgrade", 23, remaining)
     }
     
@@ -315,15 +306,15 @@ class ScanQuotaTest {
         
         // Use 10 of 25 BASIC scans
         repeat(10) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
-        assertEquals("Should have 15 scans remaining on BASIC", 15, ScanQuota.getRemainingScans(context))
+        assertEquals("Should have 15 scans remaining on BASIC", 15, quota.getRemainingScan())
         
         // Upgrade to PRO (75 scans/day)
         setTier("PRO")
         
         // Should now have 65 scans remaining (75 - 10 used)
-        val remaining = ScanQuota.getRemainingScans(context)
+        val remaining = quota.getRemainingScan()
         assertEquals("Should have 65 scans remaining after upgrade", 65, remaining)
     }
     
@@ -333,15 +324,15 @@ class ScanQuotaTest {
         
         // Use 30 of 75 PRO scans
         repeat(30) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
-        assertEquals("Should have 45 scans remaining on PRO", 45, ScanQuota.getRemainingScans(context))
+        assertEquals("Should have 45 scans remaining on PRO", 45, quota.getRemainingScan())
         
         // Upgrade to APEX (200 scans/day)
         setTier("APEX")
         
         // Should now have 170 scans remaining (200 - 30 used)
-        val remaining = ScanQuota.getRemainingScans(context)
+        val remaining = quota.getRemainingScan()
         assertEquals("Should have 170 scans remaining after upgrade", 170, remaining)
     }
     
@@ -352,27 +343,27 @@ class ScanQuotaTest {
     @Test
     fun `all tier limits match TierRegistry exactly`() {
         setTier("FREE")
-        assertEquals(3, ScanQuota.getTierLimit(context))
+        assertEquals(3, quota.checkScanQuota().limit)
         
         setTier("BASIC")
-        assertEquals(25, ScanQuota.getTierLimit(context))
+        assertEquals(25, quota.checkScanQuota().limit)
         
         setTier("PRO")
-        assertEquals(75, ScanQuota.getTierLimit(context))
+        assertEquals(75, quota.checkScanQuota().limit)
         
         setTier("APEX")
-        assertEquals(200, ScanQuota.getTierLimit(context))
+        assertEquals(200, quota.checkScanQuota().limit)
     }
     
     @Test
     fun `recordScan returns false when quota exceeded`() {
         setTier("FREE")
         
-        assertTrue(ScanQuota.recordScan(context))
-        assertTrue(ScanQuota.recordScan(context))
-        assertTrue(ScanQuota.recordScan(context))
-        assertFalse("recordScan should return false when quota exceeded", ScanQuota.recordScan(context))
-        assertFalse("recordScan should continue returning false", ScanQuota.recordScan(context))
+        assertTrue(quota.recordScan())
+        assertTrue(quota.recordScan())
+        assertTrue(quota.recordScan())
+        assertFalse("recordScan should return false when quota exceeded", quota.recordScan())
+        assertFalse("recordScan should continue returning false", quota.recordScan())
     }
     
     @Test
@@ -380,10 +371,10 @@ class ScanQuotaTest {
         setTier("FREE")
         
         repeat(10) {
-            ScanQuota.recordScan(context)
+            quota.recordScan()
         }
         
-        val remaining = ScanQuota.getRemainingScans(context)
+        val remaining = quota.getRemainingScan()
         assertTrue("Remaining scans should not be negative", remaining >= 0)
         assertEquals("Should be exactly 0 when over quota", 0, remaining)
     }
@@ -392,7 +383,7 @@ class ScanQuotaTest {
     fun `unknown tier defaults to FREE tier`() {
         setTier("UNKNOWN_TIER")
         
-        val limit = ScanQuota.getTierLimit(context)
+        val limit = quota.checkScanQuota().limit
         assertEquals("Unknown tier should default to FREE (3 scans)", 3, limit)
     }
 }

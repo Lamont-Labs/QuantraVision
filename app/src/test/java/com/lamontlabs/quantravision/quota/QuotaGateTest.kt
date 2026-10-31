@@ -42,6 +42,7 @@ class QuotaGateTest {
         if (quotaFile.exists()) {
             quotaFile.delete()
         }
+        QuotaGate.resetIfNeeded(context)
     }
     
     // ============================================================
@@ -253,7 +254,7 @@ class QuotaGateTest {
             {
                 "callsToday": 3,
                 "lastCallTimestamp": ${now - 30_000L},
-                "lastResetDate": "2024-01-01",
+                "lastResetDate": "${java.time.LocalDate.now(java.time.ZoneOffset.UTC)}",
                 "lastResetMs": $now,
                 "tier": "PRO",
                 "recentCallTimestamps": [${recentCalls.joinToString(",")}]
@@ -676,4 +677,15 @@ class QuotaGateTest {
             remaining
         )
     }
+    @Test
+    fun `minute rate window survives a daily counter reset`() {
+        val now = System.currentTimeMillis()
+        val yesterday = java.time.LocalDate.now(java.time.ZoneOffset.UTC).minusDays(1)
+        File(context.filesDir, "quota_state.json").writeText("""
+            {"callsToday":3,"lastCallTimestamp":${now - 30000},"lastResetDate":"$yesterday",
+             "tier":"PRO","recentCallTimestamps":[${now - 50000},${now - 40000},${now - 30000}]}
+        """.trimIndent())
+        assertFalse(QuotaGate.canMakeCloudCall(context, "PRO"))
+    }
+
 }

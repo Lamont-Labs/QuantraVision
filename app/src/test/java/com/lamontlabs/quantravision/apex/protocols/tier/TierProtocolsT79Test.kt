@@ -15,9 +15,14 @@ class TierProtocolsT79Test {
     @Before
     fun setUp() {
         protocol = T79ProofLogSimilarityHooks()
-        state = mutableMapOf()
+        state = validProofState()
     }
     
+    private fun validProofState() = mutableMapOf<String, Any>(
+        "finalContinuationScore" to 0.8, "regimeCoherenceScore" to 0.8,
+        "finalSuppressionScore" to 0.1, "marketStressLevel" to 0.1,
+        "crossLayerScore" to 0.8, "normalizedScore" to 80.0)
+
     private fun createTestCandles(count: Int, basePrice: Double = 100.0): List<Candle> {
         return (0 until count).map { i ->
             Candle(
@@ -39,19 +44,13 @@ class TierProtocolsT79Test {
     }
     
     @Test
-    fun testInsufficientCandlesNeutral() = runBlocking {
-        val context = createTestContext()
-        val primitives = createTestPrimitives(25)
-        
-        val verdict = protocol.evaluate(context, primitives, state)
-        
-        assertTrue(verdict.passed)
-        assertEquals(0.5, verdict.confidence, 0.01)
-        assertTrue(verdict.reason.contains("neutral score"))
-        assertEquals(0.5, state["proofSimilarityScore"])
-        assertEquals(true, state["proofReady"])
+    fun testInsufficientCandlesRejectProof() = runBlocking {
+        val verdict = protocol.evaluate(createTestContext(), createTestPrimitives(25), state)
+        assertFalse(verdict.passed)
+        assertEquals(0.0, verdict.confidence, 0.0)
+        assertEquals(false, state["proofReady"])
     }
-    
+
     @Test
     fun testStubMode() = runBlocking {
         val context = createTestContext()
@@ -108,6 +107,8 @@ class TierProtocolsT79Test {
             "key2" to 100
         )
         
+        validProofState().forEach { (k, v) -> testState1.putIfAbsent(k, v) }
+        validProofState().forEach { (k, v) -> testState2.putIfAbsent(k, v) }
         protocol.evaluate(context, primitives, testState1)
         protocol.evaluate(context, primitives, testState2)
         
@@ -129,6 +130,8 @@ class TierProtocolsT79Test {
             "key1" to "value2"
         )
         
+        validProofState().forEach { (k, v) -> testState1.putIfAbsent(k, v) }
+        validProofState().forEach { (k, v) -> testState2.putIfAbsent(k, v) }
         protocol.evaluate(context, primitives, testState1)
         protocol.evaluate(context, primitives, testState2)
         
@@ -144,8 +147,8 @@ class TierProtocolsT79Test {
         val primitives1 = createTestPrimitives(35, 100.0)
         val primitives2 = createTestPrimitives(35, 200.0)
         
-        val testState1 = mutableMapOf<String, Any>()
-        val testState2 = mutableMapOf<String, Any>()
+        val testState1 = validProofState()
+        val testState2 = validProofState()
         
         protocol.evaluate(context, primitives1, testState1)
         protocol.evaluate(context, primitives2, testState2)
@@ -176,6 +179,7 @@ class TierProtocolsT79Test {
             "testKey" to "testValue"
         )
         
+        validProofState().forEach { (k, v) -> testState.putIfAbsent(k, v) }
         val verdict1 = protocol.evaluate(context, primitives, testState.toMutableMap())
         val verdict2 = protocol.evaluate(context, primitives, testState.toMutableMap())
         val verdict3 = protocol.evaluate(context, primitives, testState.toMutableMap())

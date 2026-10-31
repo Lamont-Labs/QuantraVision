@@ -38,7 +38,7 @@ sealed class OnboardingStep(val ordinal: Int, val title: String, val description
     object PRO_FEATURES : OnboardingStep(
         ordinal = 5,
         title = "Choose Your Plan",
-        description = "One-time payment • Lifetime access • No subscriptions"
+        description = "Monthly plans • Clear scan allowances"
     )
     
     companion object {

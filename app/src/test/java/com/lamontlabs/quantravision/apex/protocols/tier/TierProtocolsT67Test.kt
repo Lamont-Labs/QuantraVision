@@ -129,12 +129,14 @@ class TierProtocolsT67Test {
         state["continuationStrengthScore"] = 0.8
         state["driftScore"] = 0.0
         
-        val verdict1 = protocol.evaluate(context, primitives, state.toMutableMap())
-        val scoreNoDrift = (state["multiFrameContinuationScore"] as Double)
+        val noDrift = state.toMutableMap()
+        val verdict1 = protocol.evaluate(context, primitives, noDrift)
+        val scoreNoDrift = (noDrift["multiFrameContinuationScore"] as Double)
         
         state["driftScore"] = 0.5
-        val verdict2 = protocol.evaluate(context, primitives, state.toMutableMap())
-        val scoreWithDrift = (state["multiFrameContinuationScore"] as Double)
+        val withDrift = state.toMutableMap()
+        val verdict2 = protocol.evaluate(context, primitives, withDrift)
+        val scoreWithDrift = (withDrift["multiFrameContinuationScore"] as Double)
         
         assertTrue(scoreNoDrift > scoreWithDrift)
     }

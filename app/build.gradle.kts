@@ -12,13 +12,16 @@ android {
         applicationId = "com.lamontlabs.quantravision"
         minSdk = 26
         targetSdk = 35
-        versionCode = 35
-        versionName = "3.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        versionCode = 36
+        versionName = "3.1.1"
         vectorDrawables.useSupportLibrary = true
         
         // Target arm64-v8a only for Samsung S23 FE (saves ~40MB)
         ndk {
-            abiFilters += listOf("arm64-v8a")
+            val testAbi = providers.gradleProperty("qvTestAbi").orNull
+            require(testAbi == null || testAbi == "x86_64") { "Unsupported test ABI" }
+            abiFilters += listOf(testAbi ?: "arm64-v8a")
         }
         
         // Build fingerprint for DevBot diagnostics (configuration-cache safe)
@@ -42,6 +45,7 @@ android {
         buildConfigField("String", "BUILD_FINGERPRINT", "\"v${versionName}-${versionCode}-$gitHash\"")
         
         // App description metadata
+        manifestPlaceholders["appLabel"] = "QuantraVision"
         manifestPlaceholders["appDescription"] = "Offline AI pattern detection with predictive intelligence, gamification, and explainable AI"
         
         ksp {
@@ -86,6 +90,7 @@ android {
             }
         }
         debug {
+            manifestPlaceholders["appLabel"] = "QuantraVision Repair"
             isDebuggable = true
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-DEBUG"
@@ -96,6 +101,14 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
             isDebuggable = false
+        }
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            it.systemProperty("robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2")
+            it.maxHeapSize = "1g"
         }
     }
 
@@ -261,10 +274,15 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
 
     // Testing - Latest stable
+    testImplementation(kotlin("test"))
+    testImplementation("org.json:json:20240303")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.13")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("androidx.test:core:1.6.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:core:1.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 }

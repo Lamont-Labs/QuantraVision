@@ -1,66 +1,23 @@
 package com.lamontlabs.quantravision.regression
 
-import org.junit.Test
+import com.lamontlabs.quantravision.detection.SourceBounds
 import org.junit.Assert.*
+import org.junit.Test
 
-/**
- * Regression Test Suite for Pattern Detection
- * 
- * Tests pattern matching accuracy and detection algorithms to ensure
- * no regressions are introduced in future updates.
- * 
- * @author Lamont Labs
- * @since 2.1
- */
+/** Regression tests for the coordinate transform used by live template matching. */
 class PatternDetectionTest {
-    
-    @Test
-    fun `test pattern detection accuracy baseline`() {
-        assertTrue("Pattern detection baseline test", true)
+    @Test fun mapsDownscaledMatchToOriginalScreenshot() {
+        val b = SourceBounds.fromScaled(50.0, 75.0, 40.0, 20.0, 0.5)
+        assertEquals(SourceBounds(100.0, 150.0, 180.0, 190.0), b)
     }
-    
-    @Test
-    fun `test head and shoulders pattern recognition`() {
-        assertTrue("Head and shoulders detection", true)
+    @Test fun mapsUpscaledMatchToOriginalScreenshot() {
+        val b = SourceBounds.fromScaled(200.0, 100.0, 80.0, 40.0, 2.0)
+        assertEquals(SourceBounds(100.0, 50.0, 140.0, 70.0), b)
     }
-    
-    @Test
-    fun `test double top pattern recognition`() {
-        assertTrue("Double top detection", true)
+    @Test(expected = IllegalArgumentException::class) fun zeroScaleIsRejected() {
+        SourceBounds.fromScaled(1.0, 1.0, 10.0, 10.0, 0.0)
     }
-    
-    @Test
-    fun `test double bottom pattern recognition`() {
-        assertTrue("Double bottom detection", true)
-    }
-    
-    @Test
-    fun `test triangle pattern recognition`() {
-        assertTrue("Triangle pattern detection", true)
-    }
-    
-    @Test
-    fun `test wedge pattern recognition`() {
-        assertTrue("Wedge pattern detection", true)
-    }
-    
-    @Test
-    fun `test flag pattern recognition`() {
-        assertTrue("Flag pattern detection", true)
-    }
-    
-    @Test
-    fun `test pennant pattern recognition`() {
-        assertTrue("Pennant pattern detection", true)
-    }
-    
-    @Test
-    fun `test no false positives on random noise`() {
-        assertTrue("No false positives", true)
-    }
-    
-    @Test
-    fun `test pattern detection with different timeframes`() {
-        assertTrue("Multi-timeframe detection", true)
+    @Test(expected = IllegalArgumentException::class) fun nonFiniteCoordinatesAreRejected() {
+        SourceBounds.fromScaled(Double.NaN, 1.0, 10.0, 10.0, 1.0)
     }
 }

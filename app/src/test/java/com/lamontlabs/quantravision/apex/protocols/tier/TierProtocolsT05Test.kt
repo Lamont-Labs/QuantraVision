@@ -73,8 +73,8 @@ class TierProtocolsT05Test {
         // Verify state mutations
         assertTrue(state.containsKey("priceRangeValid"))
         assertTrue(state.containsKey("normalizedRange"))
-        assertTrue(state.containsKey("priceMin"))
-        assertTrue(state.containsKey("priceMax"))
+        assertTrue(state.containsKey("minPrice"))
+        assertTrue(state.containsKey("maxPrice"))
         
         val rangeValid = state["priceRangeValid"] as Boolean
         assertTrue(rangeValid)
@@ -145,18 +145,18 @@ class TierProtocolsT05Test {
         // Verify all expected state keys are present
         assertNotNull(state["priceRangeValid"])
         assertNotNull(state["normalizedRange"])
-        assertNotNull(state["priceMin"])
-        assertNotNull(state["priceMax"])
+        assertNotNull(state["minPrice"])
+        assertNotNull(state["maxPrice"])
         
         // Verify types
         assertTrue(state["priceRangeValid"] is Boolean)
         assertTrue(state["normalizedRange"] is Double)
-        assertTrue(state["priceMin"] is Double)
-        assertTrue(state["priceMax"] is Double)
+        assertTrue(state["minPrice"] is Double)
+        assertTrue(state["maxPrice"] is Double)
         
         // Verify logical consistency
-        val priceMin = state["priceMin"] as Double
-        val priceMax = state["priceMax"] as Double
+        val priceMin = state["minPrice"] as Double
+        val priceMax = state["maxPrice"] as Double
         assertTrue(priceMax >= priceMin)
     }
     
@@ -187,7 +187,7 @@ class TierProtocolsT05Test {
     }
     
     @Test
-    fun testDifferentHashesDifferentResults() = runBlocking {
+    fun testImageHashCannotChangeMeasuredPriceRange() = runBlocking {
         val context = ApexScanContext(
             ticker = "AAPL",
             timeframe = "1H",
@@ -219,10 +219,10 @@ class TierProtocolsT05Test {
         val verdict1 = protocol.evaluate(context, primitives1, state1)
         val verdict2 = protocol.evaluate(context, primitives2, state2)
         
-        // Different hashes should produce different price ranges (deterministically)
+        // Identical measured prices must normalize identically regardless of image identity.
         val range1 = state1["normalizedRange"] as Double
         val range2 = state2["normalizedRange"] as Double
         
-        assertNotEquals(range1, range2, 0.0001)
+        assertEquals(range1, range2, 0.0001)
     }
 }

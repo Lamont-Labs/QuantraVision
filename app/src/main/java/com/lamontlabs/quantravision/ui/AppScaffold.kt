@@ -11,8 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.lamontlabs.quantravision.PatternDatabase
-import com.lamontlabs.quantravision.PatternDetector
-import com.lamontlabs.quantravision.ml.HybridDetectorBridge
 import com.lamontlabs.quantravision.onboarding.OnboardingManager
 import com.lamontlabs.quantravision.ui.screens.settings.SettingsScreen
 import kotlinx.coroutines.launch
@@ -26,9 +24,6 @@ fun QuantraVisionApp(context: Context) {
         }
         
         val navController = rememberNavController()
-        val detectorBridge = remember { HybridDetectorBridge(context) }
-        val legacyDetector = remember { PatternDetector(context) }
-        val scope = rememberCoroutineScope()
         val onboardingManager = remember { OnboardingManager.getInstance(context) }
         
         val startDestination = if (onboardingManager.hasCompletedOnboarding()) {
@@ -40,9 +35,6 @@ fun QuantraVisionApp(context: Context) {
         AppNavigationHost(
             context = context,
             navController = navController,
-            detectorBridge = detectorBridge,
-            legacyDetector = legacyDetector,
-            scope = scope,
             startDestination = startDestination
         )
     }
@@ -52,64 +44,8 @@ fun QuantraVisionApp(context: Context) {
 private fun AppNavigationHost(
     context: Context,
     navController: NavHostController,
-    detectorBridge: HybridDetectorBridge,
-    legacyDetector: PatternDetector,
-    scope: kotlinx.coroutines.CoroutineScope,
     startDestination: String = "home"
 ) {
-    val onStartScan = onStartScan@{
-        // CRITICAL: Don't start service if model not imported
-        val modelManager = com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
-        if (modelManager.getModelState() != com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded) {
-            android.widget.Toast.makeText(
-                context,
-                "AI model required. Please import it first.",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
-            return@onStartScan
-        }
-        
-        // Start the overlay service for real-time detection
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            if (!android.provider.Settings.canDrawOverlays(context)) {
-                // Request overlay permission
-                android.widget.Toast.makeText(
-                    context,
-                    "Please grant overlay permission to start detection",
-                    android.widget.Toast.LENGTH_LONG
-                ).show()
-                val intent = android.content.Intent(
-                    android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    android.net.Uri.parse("package:${context.packageName}")
-                )
-                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } else {
-                // Start overlay service
-                val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    context.startForegroundService(serviceIntent)
-                } else {
-                    context.startService(serviceIntent)
-                }
-                android.widget.Toast.makeText(
-                    context,
-                    "Overlay started! Open your trading app to see pattern detection",
-                    android.widget.Toast.LENGTH_LONG
-                ).show()
-            }
-        } else {
-            // For older Android versions
-            val serviceIntent = android.content.Intent(context, com.lamontlabs.quantravision.overlay.OverlayService::class.java)
-            context.startService(serviceIntent)
-            android.widget.Toast.makeText(
-                context,
-                "Overlay started! Open your trading app to see pattern detection",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-    
     // Define main tab routes that should show the bottom bar
     val mainTabRoutes = setOf("home", "markets", "scan", "quantrabot", "settings")
     val navBackStackEntry by navController.currentBackStackEntryAsState()

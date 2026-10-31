@@ -53,7 +53,7 @@ class TierProtocolsT66Test {
     }
     
     @Test
-    fun testNoDetectedLines() = runBlocking {
+    fun testNoTrendLines() = runBlocking {
         val context = createTestContext()
         val primitives = createTestPrimitives(35, emptyList())
         
@@ -71,8 +71,8 @@ class TierProtocolsT66Test {
     fun testLinesMatchUptrend() = runBlocking {
         val context = createTestContext()
         val lines = listOf(
-            DetectedLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 110.0, confidence = 0.9),
-            DetectedLine(x1 = 0.0, y1 = 102.0, x2 = 10.0, y2 = 112.0, confidence = 0.85)
+            TrendLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 110.0, confidence = 0.9),
+            TrendLine(x1 = 0.0, y1 = 102.0, x2 = 10.0, y2 = 112.0, confidence = 0.85)
         )
         val primitives = createTestPrimitives(35, lines)
         
@@ -90,8 +90,8 @@ class TierProtocolsT66Test {
     fun testLinesMatchDowntrend() = runBlocking {
         val context = createTestContext()
         val lines = listOf(
-            DetectedLine(x1 = 0.0, y1 = 110.0, x2 = 10.0, y2 = 100.0, confidence = 0.9),
-            DetectedLine(x1 = 0.0, y1 = 112.0, x2 = 10.0, y2 = 102.0, confidence = 0.85)
+            TrendLine(x1 = 0.0, y1 = 110.0, x2 = 10.0, y2 = 100.0, confidence = 0.9),
+            TrendLine(x1 = 0.0, y1 = 112.0, x2 = 10.0, y2 = 102.0, confidence = 0.85)
         )
         val primitives = createTestPrimitives(35, lines)
         
@@ -109,7 +109,7 @@ class TierProtocolsT66Test {
     fun testLinesMismatchTrend() = runBlocking {
         val context = createTestContext()
         val lines = listOf(
-            DetectedLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 110.0, confidence = 0.9)
+            TrendLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 110.0, confidence = 0.9)
         )
         val primitives = createTestPrimitives(35, lines)
         
@@ -118,8 +118,8 @@ class TierProtocolsT66Test {
         
         val verdict = protocol.evaluate(context, primitives, state)
         
-        assertTrue(verdict.passed)
-        assertTrue(state["sectorTrendValid"] as Boolean)
+        assertFalse(verdict.passed)
+        assertFalse(state["sectorTrendValid"] as Boolean)
         assertEquals(0.3, (state["sectorTrendScore"] as Double), 0.01)
     }
     
@@ -127,7 +127,7 @@ class TierProtocolsT66Test {
     fun testSectorIncompatible() = runBlocking {
         val context = createTestContext()
         val lines = listOf(
-            DetectedLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 110.0, confidence = 0.9)
+            TrendLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 110.0, confidence = 0.9)
         )
         val primitives = createTestPrimitives(35, lines)
         
@@ -136,8 +136,8 @@ class TierProtocolsT66Test {
         
         val verdict = protocol.evaluate(context, primitives, state)
         
-        assertTrue(verdict.passed)
-        assertTrue(state["sectorTrendValid"] as Boolean)
+        assertFalse(verdict.passed)
+        assertFalse(state["sectorTrendValid"] as Boolean)
         assertEquals(0.3, (state["sectorTrendScore"] as Double), 0.01)
     }
     
@@ -145,7 +145,7 @@ class TierProtocolsT66Test {
     fun testDeterminism() = runBlocking {
         val context = createTestContext()
         val lines = listOf(
-            DetectedLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 105.0, confidence = 0.8)
+            TrendLine(x1 = 0.0, y1 = 100.0, x2 = 10.0, y2 = 105.0, confidence = 0.8)
         )
         val primitives = createTestPrimitives(35, lines)
         
@@ -175,7 +175,7 @@ class TierProtocolsT66Test {
         )
     }
     
-    private fun createTestPrimitives(candleCount: Int, lines: List<DetectedLine>): ChartPrimitives {
+    private fun createTestPrimitives(candleCount: Int, lines: List<TrendLine>): ChartPrimitives {
         return ChartPrimitives(
             rawImageHash = "test_hash",
             candles = createTestCandles(candleCount),

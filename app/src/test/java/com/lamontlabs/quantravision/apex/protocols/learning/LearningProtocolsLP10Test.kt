@@ -99,11 +99,11 @@ class LearningProtocolsLP10Test {
         val verdict = protocol.evaluate(context, primitives, state)
         
         assertFalse(verdict.passed)
-        assertEquals(0.2, verdict.confidence, 0.01)
-        assertTrue(verdict.reason.contains("Trend drift not calculated"))
+        assertEquals(0.0, verdict.confidence, 0.01)
+        assertTrue(verdict.reason.contains("Missing prerequisites"))
         
         assertEquals(0.0, state["driftAdaptationScore"])
-        assertEquals("", state["driftTrendVector"])
+        assertEquals("MISSING_PREREQUISITES", state["driftTrendVector"])
     }
     
     @Test

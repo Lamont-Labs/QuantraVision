@@ -57,6 +57,7 @@ object QuotaGate {
      * @param tier Current subscription tier (FREE, BASIC, PRO, APEX)
      * @return true if call is allowed and count incremented, false otherwise
      */
+    @Synchronized
     fun canMakeCloudCall(context: Context, tier: String): Boolean {
         val normalizedTier = normalizeTier(tier)
         var state = loadState(context)
@@ -92,7 +93,7 @@ object QuotaGate {
             return false
         }
         
-        incrementCallCount(context, normalizedTier)
+        if (!incrementCallCount(context, normalizedTier)) return false
         Timber.v("$TAG: Cloud call allowed (${state.callsToday + 1}/$limit today)")
         return true
     }
@@ -200,6 +201,14 @@ object QuotaGate {
             return newState
         }
         
+        val recentCallsArray = json.optJSONArray("recentCallTimestamps")
+        val recentCalls = mutableListOf<Long>()
+        if (recentCallsArray != null) {
+            for (i in 0 until recentCallsArray.length()) {
+                recentCalls.add(recentCallsArray.getLong(i))
+            }
+        }
+
         val lastResetDateUTC = json.optString("lastResetDate", todayUTC)
         
         if (lastResetDateUTC != todayUTC) {
@@ -209,19 +218,11 @@ object QuotaGate {
                 lastCallTimestamp = json.optLong("lastCallTimestamp", 0L),
                 lastResetDate = todayUTC,
                 tier = json.optString("tier", "FREE"),
-                recentCallTimestamps = emptyList()
+                recentCallTimestamps = recentCalls.filter { System.currentTimeMillis() - it < SIXTY_SECONDS_MS }
             )
             saveState(context, resetState)
             lastCallTimestampCache = resetState.lastCallTimestamp
             return resetState
-        }
-        
-        val recentCallsArray = json.optJSONArray("recentCallTimestamps")
-        val recentCalls = mutableListOf<Long>()
-        if (recentCallsArray != null) {
-            for (i in 0 until recentCallsArray.length()) {
-                recentCalls.add(recentCallsArray.getLong(i))
-            }
         }
         
         val state = QuotaState(
@@ -258,9 +259,9 @@ object QuotaGate {
     private fun normalizeTier(tier: String): String {
         return when (tier.uppercase(java.util.Locale.US)) {
             "FREE" -> "FREE"
-            "BASIC" -> "BASIC"
-            "PRO" -> "PRO"
-            "APEX" -> "APEX"
+            "BASIC", "STARTER" -> "BASIC"
+            "PRO", "STANDARD" -> "PRO"
+            "APEX", "APEX_ULTRA", "ULTRA" -> "APEX"
             else -> {
                 Timber.w("$TAG: Unknown tier '$tier', defaulting to FREE")
                 "FREE"
@@ -269,6 +270,7 @@ object QuotaGate {
     }
 
     private fun getLimitForTier(tier: String): Int {
+        if (tier == "FREE") return 0 // Free explanations are local, never cloud calls.
         val tierEnum = Tier.fromString(tier)
         return TierRegistry.getAIExplanationLimit(tierEnum)
     }

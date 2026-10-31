@@ -17,7 +17,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.lamontlabs.quantravision.permissions.PermissionOrchestrator
-import com.lamontlabs.quantravision.intelligence.llm.onboarding.ModelProvisionOrchestrator
 import com.lamontlabs.quantravision.ui.*
 
 class MainActivity : ComponentActivity() {
@@ -55,14 +54,8 @@ class MainActivity : ComponentActivity() {
             true
           }
         }
-        val modelExists = remember {
-          com.lamontlabs.quantravision.intelligence.llm.ModelManager(context)
-            .getModelState() == com.lamontlabs.quantravision.intelligence.llm.ModelState.Downloaded
-        }
-        
         var permissionsGranted by remember { mutableStateOf(hasNotificationPerm && hasOverlayPerm) }
-        var modelReady by remember { mutableStateOf(modelExists) }
-        
+
         when {
           !permissionsGranted -> {
             // Step 1: Request permissions first
@@ -72,17 +65,8 @@ class MainActivity : ComponentActivity() {
               }
             )
           }
-          !modelReady -> {
-            // Step 2: Ensure AI model is imported
-            // This happens BEFORE OverlayService can ever start
-            ModelProvisionOrchestrator(
-              onModelReady = {
-                modelReady = true
-              }
-            )
-          }
           else -> {
-            // Step 3: All setup complete - show main app
+            // The scanner does not depend on optional language models.
             QuantraVisionApp(context = this)
           }
         }

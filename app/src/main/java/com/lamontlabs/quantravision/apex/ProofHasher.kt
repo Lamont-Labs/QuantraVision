@@ -3,6 +3,10 @@ package com.lamontlabs.quantravision.apex
 import com.lamontlabs.quantravision.apex.models.ApexResult
 import com.lamontlabs.quantravision.apex.models.ProtocolVerdict
 import java.security.MessageDigest
+import java.util.Locale
+import com.google.gson.Gson
+import com.lamontlabs.quantravision.apex.models.ApexScanContext
+import com.lamontlabs.quantravision.apex.models.ChartPrimitives
 
 /**
  * BATCH 2: Proof Hasher
@@ -24,6 +28,10 @@ import java.security.MessageDigest
 object ProofHasher {
     
     private const val HASH_ALGORITHM = "SHA-256"
+
+    fun hashScanInput(context: ApexScanContext, primitives: ChartPrimitives): String = sha256Hex(
+        com.google.gson.GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(linkedMapOf("ticker" to context.ticker, "timeframe" to context.timeframe,
+            "chartType" to context.chartType, "primitives" to primitives)))
     
     /**
      * Generate deterministic proof hash for ApexResult.
@@ -77,6 +85,7 @@ object ProofHasher {
         
         return buildString {
             append("{")
+            append("inputHash:${result.inputHash},")
             append("status:${result.status.name},")
             append("quantraScore:${result.quantraScore.normalizedScore},")
             append("band:${result.quantraScore.band.name},")
@@ -85,7 +94,8 @@ object ProofHasher {
             append("suppression:${result.suppressionActive},")
             append("omega:${result.omegaLock},")
             append("regime:${result.regimeOk},")
-            append("confidence:${formatDouble(result.confidenceApex)}")
+            append("confidence:${formatDouble(result.confidenceApex)},")
+            append("invalidation:${Gson().toJson(result.invalidationPoints)}")
             append("}")
         }
     }
@@ -104,7 +114,9 @@ object ProofHasher {
                 if (index > 0) append(";")
                 append("id:${verdict.protocolId},")
                 append("pass:${verdict.passed},")
-                append("conf:${formatDouble(verdict.confidence)}")
+                append("conf:${formatDouble(verdict.confidence)},")
+                append("weight:${formatDouble(verdict.weight)},")
+                append("reason:${Gson().toJson(verdict.reason)}")
             }
             append("]")
         }
@@ -115,7 +127,7 @@ object ProofHasher {
      * Prevents floating-point precision drift in hash calculation.
      */
     private fun formatDouble(value: Double): String {
-        return "%.6f".format(value)
+        return "%.6f".format(Locale.US, value)
     }
     
     /**

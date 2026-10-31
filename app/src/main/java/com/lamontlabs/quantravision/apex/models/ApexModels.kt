@@ -58,18 +58,24 @@ data class ChartPrimitives(
     val candles: List<Candle> = emptyList(),
     val detectedLines: List<TrendLine> = emptyList(),
     val ocrText: String = "",
-    val chartType: String = "Unknown"
+    val chartType: String = "Unknown",
+    val source: PrimitiveSource = PrimitiveSource.MARKET_OHLCV,
+    val imageWidth: Int? = null,
+    val imageHeight: Int? = null
 )
+
+/** SCREEN_GEOMETRY uses pixel heights and sequence ordinals, not prices or Unix times. */
+enum class PrimitiveSource { MARKET_OHLCV, SCREEN_GEOMETRY }
 
 /**
  * Candle data structure for OHLCV price bars.
  * 
- * @property timestamp Unix timestamp in milliseconds
+ * @property timestamp Unix milliseconds for MARKET_OHLCV; sequence ordinal for SCREEN_GEOMETRY
  * @property open Opening price
  * @property high Highest price in period
  * @property low Lowest price in period
  * @property close Closing price
- * @property volume Trading volume (default 0.0 if not available)
+ * @property volume Trading volume (0.0 means unavailable for SCREEN_GEOMETRY)
  */
 data class Candle(
     val timestamp: Long,
@@ -126,7 +132,8 @@ data class ApexResult(
     val invalidationPoints: List<String>,
     val confidenceApex: Double,
     val proofHash: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val inputHash: String = ""
 )
 
 /**

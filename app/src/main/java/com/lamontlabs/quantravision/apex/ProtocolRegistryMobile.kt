@@ -108,10 +108,6 @@ import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP22Integrity
 import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP23ProofDigestGenerator
 import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP24FreshnessTokenValidator
 import com.lamontlabs.quantravision.apex.protocols.learning.mobile.LP25LearningStateFinalizer
-import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega01StructuralAnomalyGuard
-import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega02RiskCapEnforcer
-import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega03SecurityValidator
-import com.lamontlabs.quantravision.apex.protocols.omega.mobile.Omega04ComplianceGuard
 
 /**
  * BATCH 2-8: Protocol Registry Mobile
@@ -217,14 +213,16 @@ object ProtocolRegistryMobile {
      */
     private val tierProtocols = linkedMapOf<String, ApexProtocol>()
     
+    // Maps must exist before registration runs; declaration order matters in Kotlin objects.
+    private val learningProtocols = linkedMapOf<String, ApexProtocol>()
+    private val omegaProtocols = linkedMapOf<String, ApexProtocol>()
+
     init {
         // BATCH 8: Register Omega01-Omega04 protocols in strict order (BEFORE Tier protocols)
         // Omega Protocols (Omega01-Omega04): Safety hard locks
-        registerOmegaProtocol(Omega01StructuralAnomalyGuard())
-        registerOmegaProtocol(Omega02RiskCapEnforcer())
-        registerOmegaProtocol(Omega03SecurityValidator())
-        registerOmegaProtocol(Omega04ComplianceGuard())
         
+        com.lamontlabs.quantravision.apex.protocols.omega.ChartScanGuards.all().forEach(::registerOmegaProtocol)
+
         // BATCH 3: Register T01-T20 protocols in strict order
         registerTierProtocol(T01InputSanitization())
         registerTierProtocol(T02ChartGeometryValidation())
@@ -361,7 +359,7 @@ object ProtocolRegistryMobile {
      * - LP16-LP20: Adaptive Refinement
      * - LP21-LP25: Learning State Finalization
      */
-    private val learningProtocols = linkedMapOf<String, ApexProtocol>()
+
     
     /**
      * Omega protocols registry (Omega01-04).
@@ -374,7 +372,7 @@ object ProtocolRegistryMobile {
      * - Omega03: Extreme volatility guard (flash crash detection)
      * - Omega04: Entropy threshold guard (too much uncertainty)
      */
-    private val omegaProtocols = linkedMapOf<String, ApexProtocol>()
+
     
     /**
      * Register a tier protocol.

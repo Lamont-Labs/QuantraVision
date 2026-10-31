@@ -215,7 +215,7 @@ class SimpleIndicatorDetector(private val context: android.content.Context) : In
         }
     }
     
-    @OptIn(ExperimentalGetImage::class)
+    @androidx.annotation.OptIn(ExperimentalGetImage::class)
     private fun imageProxyToBitmap(image: ImageProxy): Bitmap? {
         val mediaImage = image.image ?: return null
         val nv21 = mediaImage.toNv21(image.width, image.height)

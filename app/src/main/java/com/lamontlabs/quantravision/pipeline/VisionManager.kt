@@ -1,51 +1,26 @@
-/*
- * Copyright (c) 2025 Lamont Labs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.lamontlabs.quantravision.pipeline
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.RectF
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.lamontlabs.quantravision.vision.ScreenChartExtractor
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.nio.ByteBuffer
+import java.security.MessageDigest
+import kotlin.math.abs
 
-/**
- * VisionManager
- * 
- * Master Spec v2.0 Vision Layer
- * 
- * Orchestrates on-device vision models to extract chart primitives.
- * All processing is local - no images ever sent to cloud.
- * 
- * Model licensing: Apache-2.0/MIT/BSD only
- * Fallback: If models unavailable, returns null (fail-closed)
- * 
- * Target models (Section 8.10):
- * - Canny Edge: Trendlines, wicks, edges
- * - HED: Contour detection for candles
- * - MobileNet V3: Chart segment classification
- * - UNet Small: Support/resistance zone detection
- * - Tiny Line: Trendline detection
- */
-class VisionManager(private val context: Context) {
-
-    companion object {
-        private const val TAG = "VisionManager"
-    }
-
+/** On-device measurement and OCR. No downloaded vision model is required. */
+class VisionManager(
+    @Suppress("UNUSED_PARAMETER") context: Context,
+    private val textReader: ChartTextReader = MlKitChartTextReader()
+) {
     data class VisionOutput(
         val chartType: String,
         val detectedTicker: String?,
@@ -57,204 +32,102 @@ class VisionManager(private val context: Context) {
         val imageHash: String,
         val processingTimeMs: Long
     )
-
     data class DetectedCandle(
-        val index: Int,
-        val bounds: android.graphics.RectF,
-        val isBullish: Boolean,
-        val confidence: Float
+        val index: Int, val bounds: RectF, val isBullish: Boolean, val confidence: Float,
+        val bodyTop: Float = bounds.top, val bodyBottom: Float = bounds.bottom
     )
-
     data class DetectedTrendline(
-        val startX: Float,
-        val startY: Float,
-        val endX: Float,
-        val endY: Float,
-        val lineType: TrendlineType,
-        val confidence: Float
+        val startX: Float, val startY: Float, val endX: Float, val endY: Float,
+        val lineType: TrendlineType, val confidence: Float
     )
+    enum class TrendlineType { SUPPORT, RESISTANCE, CHANNEL_UPPER, CHANNEL_LOWER, TREND_UP, TREND_DOWN, UNKNOWN }
+    /** pixelY is an image coordinate, never a market price. */
+    data class DetectedLevel(val pixelY: Float, val levelType: LevelType, val strength: Float)
+    enum class LevelType { SUPPORT, RESISTANCE, PIVOT }
 
-    enum class TrendlineType {
-        SUPPORT,
-        RESISTANCE,
-        CHANNEL_UPPER,
-        CHANNEL_LOWER,
-        TREND_UP,
-        TREND_DOWN,
-        UNKNOWN
-    }
-
-    data class DetectedLevel(
-        val priceLevel: Float,
-        val levelType: LevelType,
-        val strength: Float
-    )
-
-    enum class LevelType {
-        SUPPORT,
-        RESISTANCE,
-        PIVOT
-    }
-
-    private var chartSegmenter: com.lamontlabs.quantravision.tflite.ChartSegmenter? = null
-    private var modelsInitialized = false
-
-    init {
-        initializeModels()
-    }
-
-    private fun initializeModels() {
-        try {
-            chartSegmenter = com.lamontlabs.quantravision.tflite.ChartSegmenter(context)
-            modelsInitialized = true
-            Timber.i("$TAG: Vision models initialized successfully")
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Vision models failed to initialize, using fallback mode")
-            modelsInitialized = false
-        }
-    }
-
-    /**
-     * Compute perceptual hash as hex string.
-     * Uses the PerceptualHasher object to get Long hash, then converts to hex string.
-     */
-    private fun computePerceptualHash(bitmap: Bitmap): String {
-        val longHash = com.lamontlabs.quantravision.cache.PerceptualHasher.computeHash(bitmap)
-        return "%016x".format(longHash)
-    }
-
-    /**
-     * Process image through vision pipeline.
-     * Returns VisionOutput with detected chart elements, or null on failure.
-     * 
-     * Fail-closed behavior: If models unavailable or processing fails,
-     * returns null so the pipeline can handle it as FailClosed.
-     */
     suspend fun processImage(bitmap: Bitmap): VisionOutput? = withContext(Dispatchers.Default) {
-        val startTime = System.currentTimeMillis()
-        
-        Timber.d("$TAG: Processing image ${bitmap.width}x${bitmap.height}")
-
-        if (!modelsInitialized) {
-            Timber.w("$TAG: Models not initialized - fail-closed")
-            return@withContext null
-        }
-
-        val imageHash = try {
-            computePerceptualHash(bitmap)
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Perceptual hash failed - fail-closed")
-            return@withContext null
-        }
-
+        if (bitmap.isRecycled || bitmap.width < 160 || bitmap.height < 120 ||
+            bitmap.width.toLong() * bitmap.height > 4_000_000) return@withContext null
+        val started = android.os.SystemClock.elapsedRealtime()
         try {
-            val chartType = detectChartType(bitmap)
-            val ocrResult = extractOcrText(bitmap)
-            val candles = detectCandles(bitmap)
-            val trendlines = detectTrendlines(bitmap)
-            val levels = detectLevels(bitmap)
-
-            val processingTime = System.currentTimeMillis() - startTime
-            Timber.d("$TAG: Vision processing complete in ${processingTime}ms")
-
-            VisionOutput(
-                chartType = chartType,
-                detectedTicker = extractTicker(ocrResult),
-                detectedTimeframe = extractTimeframe(ocrResult),
-                detectedCandles = candles,
-                detectedTrendlines = trendlines,
-                detectedLevels = levels,
-                ocrText = ocrResult,
-                imageHash = imageHash,
-                processingTimeMs = processingTime
-            )
-        } catch (e: Exception) {
-            Timber.e(e, "$TAG: Vision processing error - fail-closed")
+            val pixels = IntArray(bitmap.width * bitmap.height)
+            bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+            val geometry = ScreenChartExtractor().extract(bitmap.width, bitmap.height, pixels)
+            if (geometry.isEmpty()) return@withContext null
+            val candles = geometry.mapIndexed { i, c ->
+                DetectedCandle(i, RectF(c.left.toFloat(), c.highY.toFloat(), c.right.toFloat(), c.lowY.toFloat()),
+                    c.bullish, c.confidence, c.bodyTop.toFloat(), c.bodyBottom.toFloat())
+            }
+            val ocrText = try {
+                textReader.read(bitmap)
+            } catch (cancel: CancellationException) { throw cancel
+            } catch (error: Exception) {
+                Timber.w(error, "Chart OCR unavailable; symbol and timeframe remain unknown")
+                ""
+            }
+            val bytes = ByteBuffer.allocate(8 + pixels.size * 4).putInt(bitmap.width).putInt(bitmap.height)
+            pixels.forEach { bytes.putInt(it) }
+            val hash = MessageDigest.getInstance("SHA-256").digest(bytes.array()).joinToString("") { "%02x".format(it) }
+            VisionOutput("Candlestick", extractTicker(ocrText), extractTimeframe(ocrText), candles,
+                fitBoundaries(candles), findLevels(candles), ocrText, hash,
+                android.os.SystemClock.elapsedRealtime() - started)
+        } catch (cancel: CancellationException) { throw cancel
+        } catch (error: Exception) {
+            Timber.e(error, "Image measurement failed")
             null
         }
     }
 
-    private fun detectChartType(bitmap: Bitmap): String {
-        return try {
-            if (chartSegmenter?.isEnabled == true) {
-                val mask = chartSegmenter?.segment(bitmap)
-                if (mask != null) {
-                    "Candlestick"
-                } else {
-                    "Candlestick"
-                }
-            } else {
-                "Candlestick"
+    /** Inferred least-squares boundaries, only retained when residuals are small. */
+    private fun fitBoundaries(candles: List<DetectedCandle>): List<DetectedTrendline> {
+        val xs = candles.map { it.bounds.centerX().toDouble() }
+        val meanX = xs.average()
+        val variance = xs.sumOf { (it - meanX) * (it - meanX) }
+        if (variance <= 0.0) return emptyList()
+        return listOf(TrendlineType.SUPPORT, TrendlineType.RESISTANCE).mapNotNull { type ->
+            val ys = candles.map { if (type == TrendlineType.SUPPORT) it.bounds.bottom.toDouble() else it.bounds.top.toDouble() }
+            val meanY = ys.average()
+            val slope = xs.indices.sumOf { (xs[it] - meanX) * (ys[it] - meanY) } / variance
+            val residual = xs.indices.map { abs(ys[it] - (meanY + slope * (xs[it] - meanX))) }.average()
+            val tolerance = candles.map { it.bounds.height().toDouble() }.average().coerceAtLeast(1.0)
+            val confidence = (1.0 - residual / tolerance).coerceIn(0.0, 1.0)
+            if (confidence < 0.65) null else DetectedTrendline(xs.first().toFloat(),
+                (meanY + slope * (xs.first() - meanX)).toFloat(), xs.last().toFloat(),
+                (meanY + slope * (xs.last() - meanX)).toFloat(), type, confidence.toFloat())
+        }
+    }
+
+    private fun findLevels(candles: List<DetectedCandle>): List<DetectedLevel> {
+        val tolerance = (candles.map { it.bounds.height() }.average() * 0.15).coerceAtLeast(2.0)
+        return listOf(LevelType.SUPPORT, LevelType.RESISTANCE).flatMap { type ->
+            val values = candles.map { if (type == LevelType.SUPPORT) it.bounds.bottom else it.bounds.top }.sorted()
+            val groups = mutableListOf<MutableList<Float>>()
+            for (y in values) {
+                val group = groups.lastOrNull()
+                if (group != null && y - group.first() <= tolerance) group += y else groups += mutableListOf(y)
             }
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Chart type detection failed")
-            "Candlestick"
+            groups.filter { it.size >= 3 }.map { DetectedLevel(it.average().toFloat(), type,
+                (it.size.toFloat() / candles.size).coerceIn(0f, 1f)) }
         }
     }
 
-    private fun extractOcrText(bitmap: Bitmap): String {
-        return try {
-            ""
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: OCR failed")
-            ""
-        }
-    }
+    private fun extractTicker(text: String): String? =
+        Regex("(?:NASDAQ|NYSE|AMEX|TICKER)\\s*[:·]\\s*([A-Z][A-Z0-9.]{0,7})\\b").find(text)?.groupValues?.get(1)
+            ?: Regex("\\$([A-Z][A-Z.]{0,5})\\b").find(text)?.groupValues?.get(1)
 
-    private fun detectCandles(bitmap: Bitmap): List<DetectedCandle> {
-        return try {
-            emptyList()
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Candle detection failed")
-            emptyList()
-        }
-    }
+    private fun extractTimeframe(text: String): String? =
+        Regex("(?i)\\b(1|3|5|15|30|60|120|240|4)(m|h|d|w)\\b").find(text)?.value
 
-    private fun detectTrendlines(bitmap: Bitmap): List<DetectedTrendline> {
-        return try {
-            emptyList()
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Trendline detection failed")
-            emptyList()
-        }
-    }
+    fun release() = textReader.close()
+}
 
-    private fun detectLevels(bitmap: Bitmap): List<DetectedLevel> {
-        return try {
-            emptyList()
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Level detection failed")
-            emptyList()
-        }
-    }
+interface ChartTextReader : AutoCloseable {
+    suspend fun read(bitmap: Bitmap): String
+    override fun close() {}
+}
 
-    private fun extractTicker(ocrText: String): String? {
-        if (ocrText.isBlank()) return null
-        val tickerPattern = Regex("\\b([A-Z]{1,5})\\b")
-        return tickerPattern.find(ocrText)?.groupValues?.getOrNull(1)
-    }
-
-    private fun extractTimeframe(ocrText: String): String? {
-        if (ocrText.isBlank()) return null
-        val timeframePatterns = listOf(
-            Regex("\\b(1[mM]|5[mM]|15[mM]|30[mM]|1[hH]|4[hH]|1[dD]|1[wW])\\b"),
-            Regex("\\b(minute|hour|day|week)\\b", RegexOption.IGNORE_CASE)
-        )
-        for (pattern in timeframePatterns) {
-            val match = pattern.find(ocrText)
-            if (match != null) return match.value
-        }
-        return null
-    }
-
-    fun release() {
-        try {
-            chartSegmenter?.close()
-            chartSegmenter = null
-            modelsInitialized = false
-            Timber.d("$TAG: Vision models released")
-        } catch (e: Exception) {
-            Timber.w(e, "$TAG: Error releasing vision models")
-        }
-    }
+private class MlKitChartTextReader : ChartTextReader {
+    private val recognizer by lazy { TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS) }
+    override suspend fun read(bitmap: Bitmap): String = recognizer.process(InputImage.fromBitmap(bitmap, 0)).await().text
+    override fun close() { recognizer.close() }
 }

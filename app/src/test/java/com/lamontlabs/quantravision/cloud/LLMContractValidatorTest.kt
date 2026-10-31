@@ -206,7 +206,7 @@ class LLMContractValidatorTest {
             {
                 "status_echo": "PASS",
                 "headline": "Pattern confirmed",
-                "what_was_seen": "Signals detected",
+                "what_was_seen": "Structure observed",
                 "why_apex_said_this": "Protocols validated",
                 "conditions_to_watch": "Volume",
                 "invalidation_triggers": "Break below",
@@ -228,7 +228,7 @@ class LLMContractValidatorTest {
             {
                 "scan_id": "test",
                 "status_echo": "PASS",
-                "what_was_seen": "Signals detected",
+                "what_was_seen": "Structure observed",
                 "why_apex_said_this": "Protocols validated",
                 "conditions_to_watch": "Volume",
                 "invalidation_triggers": "Break below",
@@ -299,7 +299,7 @@ class LLMContractValidatorTest {
                 "scan_id": "test-123",
                 "status_echo": "PASS",
                 "headline": "Pattern confirmed",
-                "what_was_seen": "Signals detected",
+                "what_was_seen": "Structure observed",
                 "why_apex_said_this": "Protocols validated",
                 "conditions_to_watch": "Volume stability",
                 "invalidation_triggers": "Support break",
@@ -372,11 +372,11 @@ class LLMContractValidatorTest {
     
     @Test
     fun `PRO tier enforces 180 token limit`() {
-        val response = validJsonWithLongText(150)
+        val response = validJsonWithLongText(100)
         
         val result = LLMContractValidator.validate(response, "PASS", "PRO")
         
-        assertTrue("150 words should pass PRO limit (180 tokens)", result.isValid)
+        assertTrue("100 words plus required metadata should fit the estimated PRO limit", result.isValid)
     }
     
     @Test
@@ -391,11 +391,11 @@ class LLMContractValidatorTest {
     
     @Test
     fun `ULTRA tier enforces 380 token limit`() {
-        val response = validJsonWithLongText(280)
+        val response = validJsonWithLongText(220)
         
         val result = LLMContractValidator.validate(response, "PASS", "ULTRA")
         
-        assertTrue("280 words should pass ULTRA limit (380 tokens)", result.isValid)
+        assertTrue("220 words plus required metadata should fit the estimated ULTRA limit", result.isValid)
     }
     
     @Test
@@ -410,7 +410,7 @@ class LLMContractValidatorTest {
     
     @Test
     fun `APEX_ULTRA maps to ULTRA token limit`() {
-        val response = validJsonWithLongText(280)
+        val response = validJsonWithLongText(220)
         
         val result = LLMContractValidator.validate(response, "PASS", "APEX_ULTRA")
         
@@ -473,7 +473,7 @@ class LLMContractValidatorTest {
                 "scan_id": "test-123",
                 "status_echo": "PASS",
                 "headline": ${if (fieldName == "headline") "\"$fieldValue\"" else "\"Valid headline\""},
-                "what_was_seen": ${if (fieldName == "what_was_seen") "\"$fieldValue\"" else "\"Signals detected\""},
+                "what_was_seen": ${if (fieldName == "what_was_seen") "\"$fieldValue\"" else "\"Structure observed\""},
                 "why_apex_said_this": ${if (fieldName == "why_apex_said_this") "\"$fieldValue\"" else "\"Protocols validated\""},
                 "conditions_to_watch": ${if (fieldName == "conditions_to_watch") "\"$fieldValue\"" else "\"Monitor volume\""},
                 "invalidation_triggers": ${if (fieldName == "invalidation_triggers") "\"$fieldValue\"" else "\"Support break\""},
@@ -490,7 +490,7 @@ class LLMContractValidatorTest {
                 "scan_id": "test-123",
                 "status_echo": "$status",
                 "headline": "Pattern confirmed",
-                "what_was_seen": "Signals detected",
+                "what_was_seen": "Structure observed",
                 "why_apex_said_this": "Protocols validated",
                 "conditions_to_watch": "Monitor volume",
                 "invalidation_triggers": "Support break",

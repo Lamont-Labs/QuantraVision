@@ -1,73 +1,153 @@
-# Note: Enable GitHub Dependabot for automated dependency vulnerability scanning
-# Settings → Security → Dependabot → Enable Dependabot security updates
-
-name: CI
+name: Android verification
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, 'repair/**']
   pull_request:
-    branches: [ main, develop ]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 35
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
-      
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v3
         with:
-          cmdline-tools-version: 12266719
-          accept-android-sdk-licenses: true
-          log-accepted-android-sdk-licenses: true
-      
-      - name: Install required SDK packages
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
-          
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        
-      - name: Clean Gradle configuration cache
-        run: rm -rf ~/.gradle/configuration-cache/
-        
-      - name: Cache Gradle packages
+          packages: platform-tools
+      - name: Install matching Android SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - name: Keep development signing key between builds
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-            
-      - name: Run Lint
-        run: ./gradlew lint
-        
-      - name: Run Unit Tests
-        run: ./gradlew test
-        
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-        
-      - name: Upload Debug APK
+          path: ~/.android/debug.keystore
+          key: quantravision-development-signing-v1
+      - name: Check test integrity
+        run: python3 scripts/check-test-integrity.py
+      - name: Test, lint, and build
+        run: bash ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon --stacktrace
+      - name: Verification reports
+        if: always()
         uses: actions/upload-artifact@v4
-        if: success()
         with:
-          name: debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          retention-days: 7
-      
-      # NOTE: Release APK build disabled - requires signing credentials
-      # To enable: Configure signing secrets in GitHub repository settings
-      # See RELEASE_PLAYBOOK.md for signing configuration details
+          name: verification-reports-${{ github.run_number }}
+          path: |
+            app/build/reports/
+            app/build/test-results/
+          retention-days: 30
+      - name: Record verified build identity
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, json, os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          folder = Path('app/build/outputs/apk/debug')
+          apk = next(folder.glob('*.apk'))
+          output = json.loads((folder / 'output-metadata.json').read_text())
+          metadata = {'commit': os.environ['GITHUB_SHA'], 'run_id': os.environ['GITHUB_RUN_ID'],
+                      'application_id': output['applicationId'], 'version': output['elements'][0]['versionName'],
+                      'apk': apk.name, 'bytes': apk.stat().st_size,
+                      'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
+                      'checks': ['testDebugUnitTest', 'lintDebug', 'assembleDebug']}
+          suites = [ET.parse(p).getroot() for p in Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml')]
+          metadata['unit_tests'] = {k: sum(int(s.get(k, 0)) for s in suites) for k in ('tests', 'failures', 'errors', 'skipped')}
+          assert metadata['unit_tests']['tests'] > 0 and metadata['unit_tests']['failures'] == metadata['unit_tests']['errors'] == 0
+          (folder / 'build-manifest.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          PYCODE
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs app/build/outputs/apk/debug/*.apk > app/build/outputs/apk/debug/signing-certificate.txt
+      - name: Installable debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuantraVision-debug-${{ github.run_number }}
+          path: app/build/outputs/apk/debug/
+          if-no-files-found: error
+          retention-days: 30
+
+  android-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - name: Prepare instrumentation APKs before starting the emulator
+        run: |
+          echo "BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Build instrumentation APKs
+        run: bash ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest -PqvTestAbi=x86_64 --no-daemon
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Android startup, navigation, and native OpenCV localization
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          profile: pixel_2
+          ram-size: 2048M
+          disable-animations: true
+          script: bash scripts/run-android-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-smoke-proof-${{ github.run_number }}
+          path: |
+            device-proof/
+            app/build/reports/androidTests/
+            app/build/outputs/androidTest-results/
+          retention-days: 30
+
+  development-apk:
+    needs: [verify, android-smoke]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: QuantraVision-debug-${{ github.run_number }}
+          path: verified-apk
+      - name: Publish verified development APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cp verified-apk/app-debug.apk "QuantraVision-3.1.1-repair-${GITHUB_RUN_NUMBER}.apk"
+          cat > release-notes.md <<'NOTES'
+          Development repair build. Installs as QuantraVision Repair beside the production app.
+
+          Required checks passed: full JVM unit tests, Android lint, ARM64 APK assembly and signing verification, Android 35 emulator startup/navigation, and native OpenCV reference-template localization.
+
+          Supported red/green candlestick images produce visual template matches. Market price levels, volume, candle times and trading confidence are unavailable in this screenshot route. Failed scans stop without an alternate detector. Physical-phone acceptance and broad recognition accuracy remain unverified.
+
+          The build manifest records the source commit and APK SHA-256. This is a development APK, not a production-ready release.
+          NOTES
+          gh release create "v3.1.1-repair.${GITHUB_RUN_NUMBER}" "QuantraVision-3.1.1-repair-${GITHUB_RUN_NUMBER}.apk" verified-apk/build-manifest.json verified-apk/signing-certificate.txt --repo "$GH_REPO" --target "$GITHUB_SHA" --prerelease --title "QuantraVision 3.1.1 repair build ${GITHUB_RUN_NUMBER}" --notes-file release-notes.md

@@ -14,6 +14,12 @@ class LP25LearningStateFinalizer : ApexProtocol {
         primitives: ChartPrimitives,
         state: MutableMap<String, Any>
     ): ProtocolVerdict {
+        state["learningStateReady"] = false
+        if (state["freshnessTokenValid"] != true) {
+            resetLearningState(state)
+            return ProtocolVerdict(protocolId, protocolName, false, 0.0,
+                "LearningStateFinalizer: Missing or invalid freshness token - FAIL", weight)
+        }
         // FAIL-CLOSED: Check candles
         if (primitives.candles.size < 10) {
             resetLearningState(state)
@@ -57,7 +63,7 @@ class LP25LearningStateFinalizer : ApexProtocol {
         // Verify proof digest is valid (not placeholder)
         val learningProofDigest = state["learningProofDigest"] as? String ?: ""
         
-        if (learningProofDigest.isEmpty() || learningProofDigest == "unknown" || learningProofDigest == "digest_error") {
+        if (!Regex("[a-fA-F0-9]{64}").matches(learningProofDigest)) {
             resetLearningState(state)
             return ProtocolVerdict(
                 protocolId = protocolId,
@@ -91,6 +97,7 @@ class LP25LearningStateFinalizer : ApexProtocol {
     }
     
     private fun resetLearningState(state: MutableMap<String, Any>) {
+        state["learningStateReady"] = false
         state["suppressionMemoryScore"] = 0.0
         state["driftAdaptationScore"] = 0.0
         state["patternEffectivenessScore"] = 0.0

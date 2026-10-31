@@ -149,6 +149,14 @@ interface TrainingExampleDao {
 
 @Database(entities = [PatternMatch::class, PredictedPattern::class, InvalidatedPattern::class, PatternOutcome::class, AchievementEntity::class, ConfidenceProfile::class, SuppressionRule::class, LearningMetadata::class, PatternCorrelationEntity::class, PatternSequenceEntity::class, MarketConditionOutcomeEntity::class, TemporalDataEntity::class, BehavioralEventEntity::class, StrategyMetricsEntity::class, ScanHistoryEntity::class, PatternFrequencyEntity::class, PatternCooccurrenceEntity::class, TrainingExampleEntity::class, PatternIndicatorProfile::class], version = 14)
 abstract class PatternDatabase : RoomDatabase() {
+    override fun close() {
+        synchronized(Companion) {
+            try { super.close() } finally {
+                if (INSTANCE === this) INSTANCE = null
+            }
+        }
+    }
+
     abstract fun patternDao(): PatternDao
     abstract fun predictedPatternDao(): PredictedPatternDao
     abstract fun invalidatedPatternDao(): InvalidatedPatternDao

@@ -45,7 +45,7 @@ class T40MultiFrameEntropy : ApexProtocol {
             1.0
         }
         
-        val multiFrameEntropy = (originalEntropy + stride2Entropy + stride3Entropy) / 3.0
+        val multiFrameEntropy = maxOf(originalEntropy, stride2Entropy, stride3Entropy)
         
         state["multiFrameEntropy"] = multiFrameEntropy
         state["multiFrameEntropyOk"] = multiFrameEntropy < 0.6
@@ -74,15 +74,11 @@ class T40MultiFrameEntropy : ApexProtocol {
     }
     
     private fun calculateEntropy(candles: List<Candle>): Double {
-        if (candles.isEmpty()) return 1.0
-        
-        val prices = candles.map { it.close }
-        val mean = prices.average()
-        val variance = prices.map { (it - mean).pow(2) }.average()
-        val stdDev = sqrt(variance)
-        
-        return if (mean > 0.0) {
-            (stdDev / mean).coerceIn(0.0, 1.0)
-        } else 0.5
+        if (candles.size < 2) return 1.0
+        val changes = candles.zipWithNext { a, b -> b.close - a.close }.filter { it != 0.0 }
+        if (changes.isEmpty()) return 0.0
+        val up = changes.count { it > 0 }.toDouble() / changes.size
+        if (up == 0.0 || up == 1.0) return 0.0
+        return -(up * kotlin.math.ln(up) + (1 - up) * kotlin.math.ln(1 - up)) / kotlin.math.ln(2.0)
     }
 }

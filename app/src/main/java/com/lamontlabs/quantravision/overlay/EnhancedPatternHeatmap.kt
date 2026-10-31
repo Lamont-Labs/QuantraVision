@@ -22,7 +22,7 @@ object EnhancedPatternHeatmap {
     private var animationPhase = 0f
 
     fun add(x: Float, y: Float, conf: Float, patternType: String = "default") {
-        if (detections.size > MAX_POINTS) detections.removeFirst()
+        if (detections.size > MAX_POINTS) detections.removeAt(0)
         detections.add(HeatEntry(System.currentTimeMillis(), x, y, conf, patternType))
         purgeOld()
     }

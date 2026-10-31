@@ -6,6 +6,7 @@ import com.lamontlabs.quantravision.PatternDatabase
 import com.lamontlabs.quantravision.achievements.data.AchievementEntity
 import com.lamontlabs.quantravision.achievements.model.Achievement
 import com.lamontlabs.quantravision.achievements.model.AchievementCategory
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,10 +28,11 @@ class AchievementManager private constructor(private val context: Context) {
     val achievementUnlocked: SharedFlow<Achievement> = _achievementUnlocked.asSharedFlow()
     
     private var achievementDefinitions: List<Achievement> = emptyList()
+    private val initializationJob: Job
     
     init {
         loadAchievementDefinitions()
-        scope.launch {
+        initializationJob = scope.launch {
             initializeDatabase()
         }
     }
@@ -140,6 +142,7 @@ class AchievementManager private constructor(private val context: Context) {
     }
     
     suspend fun incrementProgress(achievementId: String, amount: Int = 1) {
+        initializationJob.join()
         withContext(Dispatchers.IO) {
             try {
                 val entity = achievementDao.getById(achievementId)
@@ -197,8 +200,7 @@ class AchievementManager private constructor(private val context: Context) {
         }
     }
     
-    fun onPatternDetected(patternName: String, confidence: Double) {
-        scope.launch {
+    fun onPatternDetected(patternName: String, confidence: Double) = scope.launch {
             incrementProgress("first_pattern")
             incrementProgress("pattern_rookie")
             incrementProgress("pattern_expert")
@@ -228,16 +230,13 @@ class AchievementManager private constructor(private val context: Context) {
                     incrementProgress("cup_collector")
                 }
             }
-        }
     }
     
-    fun onLessonCompleted(lessonId: String) {
-        scope.launch {
+    fun onLessonCompleted(lessonId: String) = scope.launch {
             incrementProgress("first_lesson")
             incrementProgress("lesson_learner")
             incrementProgress("education_enthusiast")
             incrementProgress("scholar")
-        }
     }
     
     fun onBookPageRead(pageNumber: Int) {

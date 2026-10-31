@@ -1,65 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- App Identity -->
     <string name="app_name">QuantraVision Apex</string>
     <string name="app_brand">Lamont Labs • QuantraVision Apex™</string>
-
-    <!-- Tier Names & Pricing (Batch B v1.0) -->
     <string name="tier_free_name">FREE</string>
     <string name="tier_free_price">$0.00/month</string>
-    <string name="tier_free_desc">3 scans/day • 1 AI explanation/day • Apex verdict • QuantraScore • Local summaries</string>
-
+    <string name="tier_free_desc">3 scans/day • Visual chart matching</string>
     <string name="tier_basic_name">BASIC</string>
     <string name="tier_basic_price">$4.99/month</string>
-    <string name="tier_basic_desc">25 scans/day • 5 AI explanations/day • 5 saved summaries • Cloud narration</string>
-
+    <string name="tier_basic_desc">25 scans/day • Visual chart matching</string>
     <string name="tier_pro_name">PRO</string>
     <string name="tier_pro_price">$14.99/month</string>
-    <string name="tier_pro_desc">75 scans/day • 20 AI explanations/day • 20 saved summaries • Batch mode</string>
-
+    <string name="tier_pro_desc">75 scans/day • Visual chart matching</string>
     <string name="tier_apex_name">APEX</string>
     <string name="tier_apex_price">$29.99/month</string>
-    <string name="tier_apex_desc">200 scans/day • 60 AI explanations/day • 100 saved summaries • Advanced logic</string>
-
-    <!-- Activities -->
+    <string name="tier_apex_desc">200 scans/day • Visual chart matching</string>
     <string name="settings_title">Settings</string>
     <string name="subscription_title">Subscription</string>
     <string name="about_title">About</string>
-
-    <!-- Legal Disclaimers (from master spec) -->
     <string name="disclaimer_short">Not financial advice. Educational chart analysis only. Trading involves risk.</string>
-    
     <string name="disclaimer_full">QuantraVision Apex™ is an analytical and educational tool only. It does not provide financial, investment, trading, or securities advice. Outputs, overlays, scores, explanations, and Apex reasoning are algorithmic interpretations and must not be interpreted as recommendations to buy, sell, enter, exit, or take any position. All decisions are solely your responsibility. Past performance does not guarantee future results. Lamont Labs is not a registered investment advisor, broker-dealer, or CTA. Use is "as-is" without warranty. Lamont Labs is not liable for losses or damages arising from use.</string>
-
     <string name="first_launch_disclaimer">QuantraVision Apex™ is not a trading system or financial advisor. Outputs are for educational purposes only and must not be interpreted as trade recommendations. By continuing, you accept full responsibility for decisions and agree Lamont Labs is not liable for financial outcomes.</string>
-
     <string name="ai_explanation_warning">AI explanations narrate Apex Engine reasoning for educational use only. They are not trading instructions or advice. Never trade solely on AI explanations.</string>
-
     <string name="quantrascore_disclosure">QuantraScore (0–100) is internal Apex confidence in detected structure, not a prediction.</string>
-
-    <!-- UI Elements -->
     <string name="button_continue">Continue</string>
     <string name="button_accept">Accept</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_upgrade">Upgrade</string>
     <string name="button_subscribe">Subscribe</string>
-
-    <!-- Q Toggle -->
     <string name="q_toggle_scan">Toggle Scanning</string>
     <string name="q_toggle_drawer">AI Drawer</string>
-
-    <!-- Apex Status Labels -->
     <string name="status_pass">PASS</string>
     <string name="status_wait">WAIT</string>
     <string name="status_fail">FAIL</string>
     <string name="status_suppressed">SUPPRESSED</string>
     <string name="status_omega">OMEGA</string>
-
-    <!-- Quota Messages -->
     <string name="quota_exceeded">Daily cloud quota exceeded. Upgrade for more calls.</string>
     <string name="quota_remaining">%1$d cloud calls remaining today</string>
-
-    <!-- Widget & Floating Logo -->
     <string name="floating_logo_description">QuantraVision floating logo</string>
     <string name="widget_description">QuantraVision Apex widget</string>
+    <string name="qv_disclaimer">@string/disclaimer_short</string>
+    <string name="qv_brand">Lamont Labs</string>
+    <string name="upgrade_title">QuantraVision plans</string>
+    <string name="tier_standard_name">Pro (legacy Standard)</string>
+    <string name="tier_standard_desc">@string/tier_pro_desc</string>
+    <string name="tier_standard_price">@string/tier_pro_price</string>
+    <string name="button_back">Back</string>
+    <string name="how_to_title">How to use QuantraVision</string>
+    <string name="how_to_steps">1. Open QuantraVision.\n2. Grant overlay and screen-capture permission.\n3. Open a supported red/green candlestick chart.\n4. Tap Q to scan and view visual matches.</string>
+    <string name="tradeability_breakdown">Visual match details</string>
+    <string name="confidence">Visual similarity</string>
+    <string name="confluence">Confluence</string>
+    <string name="market_conditions">Market conditions</string>
+    <string name="close">Close</string>
 </resources>
