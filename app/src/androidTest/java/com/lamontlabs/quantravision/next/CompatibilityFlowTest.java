@@ -60,6 +60,15 @@ public class CompatibilityFlowTest {
     }
     protected void tap(String description) throws Exception {find(By.desc(description),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
     protected void text(String value) throws Exception {find(By.text(Pattern.compile(Pattern.quote(value),Pattern.CASE_INSENSITIVE)),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
+    protected void dismissShareChooser() throws Exception {
+        long deadline=android.os.SystemClock.uptimeMillis()+10000;String top=null;
+        do{top=device.getCurrentPackageName();if("android".equals(top)||"com.android.intentresolver".equals(top)||"com.google.android.intentresolver".equals(top))break;android.os.SystemClock.sleep(100);}while(android.os.SystemClock.uptimeMillis()<deadline);
+        assertTrue("Android share chooser was not presented", "android".equals(top)||"com.android.intentresolver".equals(top)||"com.google.android.intentresolver".equals(top));
+        Proof.save("17-share-chooser");device.pressBack();
+        deadline=android.os.SystemClock.uptimeMillis()+10000;
+        while(!PKG.equals(device.getCurrentPackageName())&&android.os.SystemClock.uptimeMillis()<deadline)android.os.SystemClock.sleep(100);
+        assertEquals("Share chooser did not return to QuantraVision",PKG,device.getCurrentPackageName());device.waitForIdle();
+    }
     protected void sampleReady() throws Exception {tap("Try sample chart");assertTrue("Sample image did not load",device.wait(Until.hasObject(By.desc("Analyze chart")),15000));}
     protected void analyzeReady() throws Exception {tap("Analyze chart");assertTrue("Real double top was not detected",device.wait(Until.hasObject(By.text("Double top")),15000));waitForIdleWork();assertNotNull(session.record);assertTrue(session.result.readable());}
 
@@ -84,8 +93,8 @@ public class CompatibilityFlowTest {
         tap("Add a note");UiObject2 input=find(By.clazz(EditText.class),false);input.setText("Watching the two measured peaks.");text("Save note");assertTrue("Note edit did not finish",device.wait(Until.hasObject(By.desc("Edit note")),5000));InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertEquals("Watching the two measured peaks.",session.record.note);assertEquals(session.record.note,new AppStore(context).read(session.record.id).note);
         tap("Settings tab");UiObject2 annotations=find(By.desc("Annotations on exports"),false);assertTrue(annotations.isChecked());annotations.click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();assertFalse(context.getSharedPreferences("app",0).getBoolean("annotations",true));Proof.save("06-settings");
-        File exports=new File(context.getCacheDir(),"exports");int jsonBefore=exports.listFiles((d,n)->n.endsWith(".json"))==null?0:exports.listFiles((d,n)->n.endsWith(".json")).length;tap("Export journal as JSON");assertTrue("No new journal export",exports.listFiles((d,n)->n.endsWith(".json")).length>jsonBefore);device.pressBack();
-        tap("Analyze tab");int before=exports.listFiles((d,n)->n.endsWith(".png")).length;tap("Share annotated chart");assertTrue("No new image export was created",exports.listFiles((d,n)->n.endsWith(".png")).length>before);device.pressBack();
+        File exports=new File(context.getCacheDir(),"exports");int jsonBefore=exports.listFiles((d,n)->n.endsWith(".json"))==null?0:exports.listFiles((d,n)->n.endsWith(".json")).length;tap("Export journal as JSON");assertTrue("No new journal export",exports.listFiles((d,n)->n.endsWith(".json")).length>jsonBefore);dismissShareChooser();
+        tap("Analyze tab");int before=exports.listFiles((d,n)->n.endsWith(".png")).length;tap("Share annotated chart");assertTrue("No new image export was created",exports.listFiles((d,n)->n.endsWith(".png")).length>before);dismissShareChooser();
         tap("Journal tab");UiObject2 row=find(By.desc("Open analysis "+session.record.id),true);row.longClick();text("Delete");assertTrue(session.store.list().isEmpty());
     }
     @Test public void invalidSharedImageCannotCreateAResultOrJournalEntry() throws Exception {

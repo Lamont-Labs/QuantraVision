@@ -108,7 +108,7 @@ public final class MainActivity extends Activity {
             Ui.add(empty,Ui.text(this,"Bring your own chart",23,Ui.INK,true));Ui.gap(empty,9);Ui.add(empty,Ui.text(this,"Use a clear screenshot with at least 8 red/green or red/teal candles. Light and dark backgrounds are supported.",14,Ui.MUTED,false));Ui.gap(empty,22);
             Ui.add(empty,Ui.button(this,"Import chart","import",true,this::pick));Ui.gap(empty,10);Ui.add(empty,Ui.button(this,"Scan another app","screen",false,this::startCapture));Ui.add(body,empty);Ui.gap(body,12);Ui.add(body,Ui.button(this,"Try sample chart","play",false,this::sample));
         } else {
-            LinearLayout imageCard=Ui.card(this);LinearLayout meta=Ui.row(this);meta.addView(Ui.pill(this,session.source.startsWith("Sample")?"GENERATED EXAMPLE":"YOUR IMAGE",Ui.TEAL));
+            LinearLayout imageCard=Ui.card(this);LinearLayout meta=Ui.row(this);meta.addView(Ui.pill(this,session.source.startsWith("Sample")?"GENERATED EXAMPLE":session.source.startsWith("Evaluation")?"EXTERNAL EXAMPLE":"YOUR IMAGE",Ui.TEAL));
             TextView dims=Ui.text(this,session.bitmap.getWidth()+" × "+session.bitmap.getHeight(),11,Ui.MUTED,false);dims.setGravity(Gravity.RIGHT);meta.addView(dims,new LinearLayout.LayoutParams(0,-2,1));Ui.add(imageCard,meta);Ui.gap(imageCard,14);
             ChartView preview=new ChartView(this,session.bitmap,session.result);
             if(session.result!=null && !session.result.matches.isEmpty()){selectedMatch=Math.min(selectedMatch,session.result.matches.size()-1);preview.select(selectedMatch);}
