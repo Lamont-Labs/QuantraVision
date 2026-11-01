@@ -16,7 +16,7 @@ public final class CropActivity extends Activity {
         catch(Exception e){Toast.makeText(this,"The crop image is unavailable.",Toast.LENGTH_SHORT).show();finish();return;}
         LinearLayout root=Ui.column(this);root.setBackgroundColor(Ui.BG);root.setPadding(Ui.dp(this,18),Ui.dp(this,20),Ui.dp(this,18),Ui.dp(this,18));
         if(android.os.Build.VERSION.SDK_INT>=30){getWindow().setDecorFitsSystemWindows(false);root.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets bars=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(Ui.dp(this,18)+bars.left,Ui.dp(this,20)+bars.top,Ui.dp(this,18)+bars.right,Ui.dp(this,18)+bars.bottom);return insets;});}else root.setFitsSystemWindows(true);
-        Ui.add(root,Ui.text(this,"Crop your chart",27,Ui.INK,true));Ui.gap(root,10);Ui.add(root,Ui.text(this,"Drag a corner to keep the candles and remove surrounding menus.",13,Ui.MUTED,false));Ui.gap(root,16);
+        Ui.add(root,Ui.display(this,"Frame your chart.",36));Ui.gap(root,10);Ui.add(root,Ui.text(this,"Drag a corner to keep the candles and remove surrounding menus.",13,Ui.MUTED,false));Ui.gap(root,16);
         crop=new CropCanvas();root.addView(crop,new LinearLayout.LayoutParams(-1,0,1));Ui.gap(root,18);Ui.add(root,Ui.button(this,"Use crop","check",true,this::apply));Ui.gap(root,10);Ui.add(root,Ui.button(this,"Cancel crop",null,false,this::finish));setContentView(root);
     }
     private void apply() {
