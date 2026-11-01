@@ -31,6 +31,11 @@ jobs:
         with:
           path: ~/.android/debug.keystore
           key: quantravision-v4-development-signing
+      - name: Reproduce the external-image evaluation
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow==12.0.0
+          python3 scripts/check-inputs.py
+          python3 scripts/evaluate-real-charts.py --check
       - name: Core regressions, lint, and both APKs
         run: bash gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest :fixture:assembleDebug --no-daemon --stacktrace
       - name: Record the built APK identity
@@ -40,14 +45,17 @@ jobs:
           cp app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk device-bundle/test.apk
           cp fixture/build/outputs/apk/debug/fixture-debug.apk device-bundle/fixture.apk
           cp device-bundle/app.apk verified-apk/QuantraVision-Studio.apk
+          cp benchmarks/real_charts/REPORT.md verified-apk/evaluation.md
+          cp benchmarks/real_charts/report.json verified-apk/evaluation.json
           python3 - <<'PY'
           import json,hashlib,os,xml.etree.ElementTree as ET
           from pathlib import Path
           apk=Path('verified-apk/QuantraVision-Studio.apk')
           suites=[ET.parse(p).getroot() for p in Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml')]
           counts={k:sum(int(s.get(k,0)) for s in suites) for k in ('tests','failures','errors','skipped')}
-          assert counts['tests']>=31 and counts['failures']==counts['errors']==counts['skipped']==0
-          data={'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.next','version':'4.1.0-preview.1','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
+          assert counts['tests']==46 and counts['failures']==counts['errors']==counts['skipped']==0
+          evaluation=Path('verified-apk/evaluation.json');evidence=json.loads(evaluation.read_text())
+          data={'engine':'geometry-3','evaluation_sha256':hashlib.sha256(evaluation.read_bytes()).hexdigest(),'evaluation_counts':evidence['counts'],'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.next','version':'4.1.0-preview.2','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
           Path('verified-apk/build.json').write_text(json.dumps(data,indent=2)+'\n')
           PY
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs verified-apk/QuantraVision-Studio.apk > verified-apk/signing.txt
@@ -134,4 +142,4 @@ jobs:
 
           Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview; physical-phone acceptance and recognition limitations are documented in the in-app evidence ledger.
           NOTES
-          gh release create "v4.1.0-studio.${GITHUB_RUN_NUMBER}" "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt --target "$GITHUB_SHA" --prerelease --title "QuantraVision Studio · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md
+          gh release create "v4.1.0-studio.${GITHUB_RUN_NUMBER}" "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt release/evaluation.md release/evaluation.json --target "$GITHUB_SHA" --prerelease --title "QuantraVision Studio · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md

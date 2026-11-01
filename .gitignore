@@ -12,3 +12,6 @@ app/src/main/assets/fonts/*.ttf
 benchmarks/real_charts/reference-cache/
 benchmarks/real_charts/images/
 app/src/main/assets/evaluation/*.png
+
+__pycache__/
+*.pyc

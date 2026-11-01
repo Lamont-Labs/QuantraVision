@@ -11,8 +11,8 @@ android {
         applicationId 'com.lamontlabs.quantravision.next'
         minSdk 26
         targetSdk 35
-        versionCode 40100
-        versionName '4.1.0-preview.1'
+        versionCode 40101
+        versionName '4.1.0-preview.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
