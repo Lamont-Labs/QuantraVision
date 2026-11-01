@@ -11,8 +11,8 @@ for name,label in frames:
  im=Image.open(args.folder/name).convert('RGB');im=im.resize((width,round(im.height*width/im.width)),Image.Resampling.LANCZOS);images.append((im,label))
 height=top+max(im.height for im,_ in images)+bottom
 board=Image.new('RGB',(margin*4+width*3,height),'#0b1012');draw=ImageDraw.Draw(board)
-font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',17)
-title=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',27)
+font=ImageFont.load_default(size=17)
+title=ImageFont.load_default(size=27)
 draw.text((margin,20),'QuantraVision Studio / Native Android review',font=title,fill='#eeeae1')
 for i,(im,label) in enumerate(images):
  x=margin+i*(width+margin);draw.text((x,top-32),label,font=font,fill='#cdb38b');board.paste(im,(x,top))

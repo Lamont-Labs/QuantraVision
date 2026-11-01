@@ -54,11 +54,14 @@ final class ChartView extends View {
             p.setStyle(Paint.Style.FILL);for(ChartEngine.Point point:m.points)c.drawCircle(x+(point.x-src.left)*scale,y+(point.y-src.top)*scale,Math.max(3,area.width()/150),p);
         }
     }
-    static Bitmap export(Bitmap b,ChartEngine.Result r,boolean annotations) {
+    static Bitmap export(Bitmap b,ChartEngine.Result r,boolean annotations) {return export(b,r,annotations,"");}
+    static Bitmap export(Bitmap b,ChartEngine.Result r,boolean annotations,String source) {
+        boolean oncs=source.contains("oncs-hammer.png"),nifty=source.contains("nifty-qtstalker.png");
         Rect src=source(b,r,true);int width=1200,height=Math.max(260,Math.round(width*src.height()/(float)src.width()));
-        height=Math.min(2000,height);Bitmap out=Bitmap.createBitmap(width,height+96,Bitmap.Config.ARGB_8888);Canvas c=new Canvas(out);c.drawColor(Ui.BG);
+        height=Math.min(2000,height);Bitmap out=Bitmap.createBitmap(width,height+(oncs?186:nifty?146:96),Bitmap.Config.ARGB_8888);Canvas c=new Canvas(out);c.drawColor(Ui.BG);
         draw(c,new RectF(24,24,width-24,height-12),b,r,-1,annotations,true);
         Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setTypeface(Typeface.create("sans-serif-medium",Typeface.NORMAL));p.setTextSize(26);p.setColor(Ui.LIME);c.drawText("QuantraVision",28,height+30,p);
-        p.setTextSize(18);p.setColor(Ui.MUTED);c.drawText("Visual geometry · market prices, volume and times unavailable",28,height+65,p);return out;
+        p.setTextSize(18);p.setColor(Ui.MUTED);c.drawText("Visual geometry · market prices, volume and times unavailable",28,height+65,p);
+        if(oncs||nifty){p.setTextSize(16);c.drawText(oncs?"Image: Paulakozoolioo / CC BY-SA 4.0":"Image: Yndesai / CC0 1.0",28,height+96,p);p.setTextSize(14);c.drawText(oncs?"commons.wikimedia.org/wiki/File:Hammer_candlestick_pattern_example.png":"commons.wikimedia.org/wiki/File:Qtstalker_candlestick_chart.png",28,height+119,p);if(oncs){c.drawText("Crop / annotations added. Modified image: CC BY-SA 4.0",28,height+143,p);c.drawText("creativecommons.org/licenses/by-sa/4.0/",28,height+165,p);}}return out;
     }
 }

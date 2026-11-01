@@ -12,6 +12,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -154,6 +155,6 @@ jobs:
 
           Required gates passed: core pixel/geometry regressions, Android lint, APK signature verification, and complete app workflow tests on Android 8, Android 15 and Android 16. Tests include actual Android screen-capture consent and image capture. Android 15 and Android 16 also exercise the real image picker.
 
-          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview; physical-phone acceptance and recognition limitations are documented in the in-app evidence ledger.
+          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview. Physical-phone acceptance remains pending; recognition limitations are documented in the in-app evidence ledger.
           NOTES
           gh release create "v4.1.0-studio.${GITHUB_RUN_NUMBER}" "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt release/evaluation.md release/evaluation.json release/Studio-native-review.png release/Studio-device-proof.zip --target "$GITHUB_SHA" --prerelease --title "QuantraVision Studio · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md
