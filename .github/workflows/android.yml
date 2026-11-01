@@ -1,4 +1,4 @@
-name: QuantraVision 4
+name: QuantraVision Studio
 on:
   push:
     branches: [main, 'rebuild/**']
@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: qv4-${{ github.ref }}
+  group: qv-studio-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   build:
@@ -39,18 +39,18 @@ jobs:
           cp app/build/outputs/apk/debug/app-debug.apk device-bundle/app.apk
           cp app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk device-bundle/test.apk
           cp fixture/build/outputs/apk/debug/fixture-debug.apk device-bundle/fixture.apk
-          cp device-bundle/app.apk verified-apk/QuantraVision-4.apk
+          cp device-bundle/app.apk verified-apk/QuantraVision-Studio.apk
           python3 - <<'PY'
           import json,hashlib,os,xml.etree.ElementTree as ET
           from pathlib import Path
-          apk=Path('verified-apk/QuantraVision-4.apk')
+          apk=Path('verified-apk/QuantraVision-Studio.apk')
           suites=[ET.parse(p).getroot() for p in Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml')]
           counts={k:sum(int(s.get(k,0)) for s in suites) for k in ('tests','failures','errors','skipped')}
-          assert counts['tests']>=24 and counts['failures']==counts['errors']==counts['skipped']==0
-          data={'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.next','version':'4.0.0-preview.1','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
+          assert counts['tests']>=31 and counts['failures']==counts['errors']==counts['skipped']==0
+          data={'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.next','version':'4.1.0-preview.1','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
           Path('verified-apk/build.json').write_text(json.dumps(data,indent=2)+'\n')
           PY
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs verified-apk/QuantraVision-4.apk > verified-apk/signing.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs verified-apk/QuantraVision-Studio.apk > verified-apk/signing.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -65,7 +65,7 @@ jobs:
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: QuantraVision-4-${{ github.run_number }}
+          name: QuantraVision-Studio-${{ github.run_number }}
           path: verified-apk/
           if-no-files-found: error
   device:
@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api: [26, 35]
+        api: [26, 35, 36]
     steps:
       - uses: actions/checkout@v4
       - uses: android-actions/setup-android@v3
@@ -117,21 +117,21 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: QuantraVision-4-${{ github.run_number }}
+          name: QuantraVision-Studio-${{ github.run_number }}
           path: release
       - name: Publish the verified APK
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          cp release/QuantraVision-4.apk "QuantraVision-4-${GITHUB_RUN_NUMBER}.apk"
+          cp release/QuantraVision-Studio.apk "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk"
           cat > notes.md <<'NOTES'
-          QuantraVision 4: rebuilt image import, crop, local candle geometry, pattern outlines, notes, journal, chart/JSON exports, and consent-based live screen capture.
+          QuantraVision Studio: redesigned chart workspace, interactive zoom/pan, visual pattern atlas with detection criteria, evidence ledger, journal, crop, exports and consent-based live screen capture.
 
-          This universal APK supports Android 8 and newer. Launch **QuantraVision 4** (the mint Q icon).
+          This universal APK supports Android 8 and newer. Launch **QuantraVision Studio** (the gold Q icon).
 
-          Required gates passed: core pixel/geometry regressions, Android lint, APK signature verification, and complete app workflow tests on Android 8 and Android 15. Tests include actual Android screen-capture consent and image capture. Android 15 also exercises the real image picker.
+          Required gates passed: core pixel/geometry regressions, Android lint, APK signature verification, and complete app workflow tests on Android 8, Android 15 and Android 16. Tests include actual Android screen-capture consent and image capture. Android 15 and Android 16 also exercise the real image picker.
 
-          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview; physical-phone acceptance and broader real-chart datasets remain additional validation.
+          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview; physical-phone acceptance and recognition limitations are documented in the in-app evidence ledger.
           NOTES
-          gh release create "v4.0.0-rebuild.${GITHUB_RUN_NUMBER}" "QuantraVision-4-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt --target "$GITHUB_SHA" --prerelease --title "QuantraVision 4 · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md
+          gh release create "v4.1.0-studio.${GITHUB_RUN_NUMBER}" "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt --target "$GITHUB_SHA" --prerelease --title "QuantraVision Studio · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md

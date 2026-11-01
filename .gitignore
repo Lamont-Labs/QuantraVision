@@ -6,3 +6,9 @@ local.properties
 *.apk
 *.iml
 .idea/
+
+app/src/main/res/font/*.ttf
+app/src/main/assets/fonts/*.ttf
+benchmarks/real_charts/reference-cache/
+benchmarks/real_charts/images/
+app/src/main/assets/evaluation/*.png

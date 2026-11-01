@@ -98,5 +98,11 @@ public class CompatibilityFlowTest {
         File folder=new File(context.getFilesDir(),"journal");try(FileOutputStream out=new FileOutputStream(new File(folder,saved.id+".json"))){out.write("not JSON".getBytes("UTF-8"));}
         assertTrue(session.store.list().isEmpty());assertTrue(new File(folder,saved.id+".png").isFile());tap("Settings tab");tap("Clear journal");text("Clear journal");assertEquals(0,folder.listFiles().length);
     }
+    @Test public void atlasSearchOpensCriteriaAndEvaluation() throws Exception {
+        tap("Atlas tab");assertTrue(device.wait(Until.hasObject(By.text("The pattern atlas.")),5000));Proof.save("11-pattern-atlas");tap("Structure patterns");find(By.desc("Search patterns"),false).setText("Double top");device.waitForIdle();tap("Open pattern Double top");assertTrue(device.wait(Until.hasObject(By.text("WHAT THE ENGINE CHECKS")),5000));assertTrue(device.hasObject(By.desc("Double top schematic")));Proof.save("12-pattern-detail");tap("Open evidence ledger");assertTrue(device.wait(Until.hasObject(By.text("The evidence ledger.")),5000));Proof.save("13-evidence-ledger");tap("Back from evaluation");tap("Back to atlas");assertTrue(device.wait(Until.hasObject(By.text("The pattern atlas.")),5000));
+    }
+    @Test public void inspectedChartZoomCanBeReset() throws Exception {
+        sampleReady();analyzeReady();UiObject2 chart=find(By.descStartsWith("Annotated chart with"),true);Rect bounds=chart.getVisibleBounds();device.click(bounds.centerX(),bounds.centerY());android.os.SystemClock.sleep(90);device.click(bounds.centerX(),bounds.centerY());assertTrue("Double tap did not zoom",device.wait(Until.hasObject(By.descContains("zoom 2.0")),3000));Proof.save("14-chart-zoom");tap("Fit chart");assertTrue("Fit did not reset the viewport",device.wait(Until.hasObject(By.descContains("zoom 1.0")),3000));
+    }
     @After public void cleanup() throws Exception {context.stopService(new Intent(context,CaptureService.class));device.setOrientationNatural();}
 }

@@ -2,21 +2,33 @@ package com.lamontlabs.quantravision.next;
 
 import android.content.Context;
 import android.graphics.*;
-import android.view.View;
+import android.view.*;
 import com.lamontlabs.quantravision.next.engine.ChartEngine;
 
 final class ChartView extends View {
-    private Bitmap image;private ChartEngine.Result result;private int selected=-1;private boolean annotations=true,focus=true;
-    ChartView(Context c,Bitmap b,ChartEngine.Result result){super(c);this.image=b;this.result=result;setContentDescription(result==null?"Chart image preview":"Annotated chart with "+result.matches.size()+" visual matches");setLayerType(View.LAYER_TYPE_SOFTWARE,null);}
+    private Bitmap image;private ChartEngine.Result result;private int selected=-1;private boolean annotations=true,focus=true,interactive=true;
+    private float zoom=1,offsetX,offsetY,lastX,lastY;
+    private final ScaleGestureDetector scaler;
+    private final GestureDetector gestures;
+    ChartView(Context c,Bitmap b,ChartEngine.Result result){super(c);this.image=b;this.result=result;description();setLayerType(View.LAYER_TYPE_SOFTWARE,null);
+        scaler=new ScaleGestureDetector(c,new ScaleGestureDetector.SimpleOnScaleGestureListener(){@Override public boolean onScale(ScaleGestureDetector detector){float previous=zoom;zoom=Math.max(1,Math.min(6,zoom*detector.getScaleFactor()));float ratio=zoom/previous;offsetX=(offsetX+getWidth()/2f-detector.getFocusX())*ratio-(getWidth()/2f-detector.getFocusX());offsetY=(offsetY+getHeight()/2f-detector.getFocusY())*ratio-(getHeight()/2f-detector.getFocusY());clamp();description();invalidate();return true;}});
+        gestures=new GestureDetector(c,new GestureDetector.SimpleOnGestureListener(){@Override public boolean onDown(MotionEvent e){return true;}@Override public boolean onDoubleTap(MotionEvent e){if(zoom>1.01f)resetTransform();else{zoom=2;offsetX=getWidth()/2f-e.getX();offsetY=getHeight()/2f-e.getY();clamp();description();invalidate();}return true;}@Override public boolean onSingleTapUp(MotionEvent e){performClick();return true;}});
+    }
+    void setInteractive(boolean value){interactive=value;}
+    void resetTransform(){zoom=1;offsetX=offsetY=0;description();invalidate();}
+    private void description(){setContentDescription((result==null?"Chart image preview":"Annotated chart with "+result.matches.size()+" visual matches")+String.format(java.util.Locale.ROOT," · zoom %.1f",zoom));}
+    private void clamp(){float x=getWidth()*(zoom-1)/2f,y=getHeight()*(zoom-1)/2f;offsetX=Math.max(-x,Math.min(x,offsetX));offsetY=Math.max(-y,Math.min(y,offsetY));}
+    @Override public boolean performClick(){super.performClick();return true;}
+    @Override public boolean onTouchEvent(MotionEvent e){if(!interactive)return false;scaler.onTouchEvent(e);gestures.onTouchEvent(e);if(e.getActionMasked()==MotionEvent.ACTION_DOWN){lastX=e.getX();lastY=e.getY();}if(e.getActionMasked()==MotionEvent.ACTION_MOVE&&!scaler.isInProgress()&&e.getPointerCount()==1&&zoom>1.01f){offsetX+=e.getX()-lastX;offsetY+=e.getY()-lastY;clamp();invalidate();}lastX=e.getX();lastY=e.getY();if(getParent()!=null)getParent().requestDisallowInterceptTouchEvent(zoom>1.01f||e.getPointerCount()>1);return true;}
     void select(int n){selected=n;invalidate();}
     void annotations(boolean value){annotations=value;invalidate();}
     void focus(boolean value){focus=value;invalidate();}
     @Override protected void onDraw(Canvas c) {
-        super.onDraw(c);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xff0b1422);
+        super.onDraw(c);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xff0a1012);
         RectF target=new RectF(0,0,getWidth(),getHeight());c.drawRoundRect(target,Ui.dp(getContext(),14),Ui.dp(getContext(),14),p);
         if(image==null||image.isRecycled())return;
         Path clip=new Path();clip.addRoundRect(target,Ui.dp(getContext(),14),Ui.dp(getContext(),14),Path.Direction.CW);c.save();c.clipPath(clip);
-        draw(c,target,image,result,selected,annotations,focus);c.restore();
+        c.translate(target.centerX()+offsetX,target.centerY()+offsetY);c.scale(zoom,zoom);c.translate(-target.centerX(),-target.centerY());draw(c,target,image,result,selected,annotations,focus);c.restore();
     }
     private static Rect source(Bitmap b,ChartEngine.Result r,boolean focus) {
         if(r==null||r.candles.isEmpty()||!focus)return new Rect(0,0,b.getWidth(),b.getHeight());
@@ -36,7 +48,7 @@ final class ChartView extends View {
             p.setColor(ink);p.setStrokeWidth(Math.max(1.8f,area.width()/220));p.setStrokeJoin(Paint.Join.ROUND);p.setStyle(Paint.Style.STROKE);
             float left=x+(m.left-src.left)*scale,top=y+(m.top-src.top)*scale,right=x+(m.right-src.left)*scale,bottom=y+(m.bottom-src.top)*scale;
             if("Candle".equals(m.family)){p.setColor((ink&0x00ffffff)|0x33000000);p.setStyle(Paint.Style.FILL);c.drawRoundRect(left-3,top-4,right+3,bottom+4,4,4,p);p.setColor(ink);p.setStyle(Paint.Style.STROKE);c.drawRoundRect(left-3,top-4,right+3,bottom+4,4,4,p);}
-            else {Path path=new Path();for(int j=0;j<m.points.size();j++){ChartEngine.Point point=m.points.get(j);float px=x+(point.x-src.left)*scale,py=y+(point.y-src.top)*scale;if(j==0)path.moveTo(px,py);else path.lineTo(px,py);}c.drawPath(path,p);}
+            else {Path path=new Path();for(int j=0;j<m.points.size();j++){ChartEngine.Point point=m.points.get(j);float px=x+(point.x-src.left)*scale,py=y+(point.y-src.top)*scale;if(j==0||m.id.contains("_triangle_")&&j==2)path.moveTo(px,py);else path.lineTo(px,py);}c.drawPath(path,p);}
             p.setStyle(Paint.Style.FILL);for(ChartEngine.Point point:m.points)c.drawCircle(x+(point.x-src.left)*scale,y+(point.y-src.top)*scale,Math.max(3,area.width()/150),p);
         }
     }
