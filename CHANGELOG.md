@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.1.0 preview.2 — 2026-11-01
+
+- Studio uses a separate install identity; earlier previews and their data remain accessible. Future Studio updates use an explicitly cached development signer.
+
+- Recovered the Studio rewrite: restrained dark/gold workspace, embedded typography, searchable visual atlas, persistent detail navigation, chart zoom/pan/fit and full-image controls.
+- Fixed rejected-image error propagation and kept detail/evaluation back controls outside their scroll containers.
+- Added hollow-candle reading, neutral body outlines and visible older-candle inspection.
+- Added an explicit experimental trace reader; saved trace pixels remain separate from candle observations and never trigger candle rules.
+- Added multiple swing scales, sloping-neckline comparison and duplicate-outline suppression. Engine identity is `geometry-3`; existing `geometry-1` and `geometry-2` journal records retain their original provenance.
+- Packaged the complete external development evaluation, including all misses. This iteration matches 7 of 16 labeled targets, up from 4 in the recovered working source. Nine targets remain missed; the set is small, selected, correlated and used during development.
+- Bound reference inputs to decoded RGBA pixels and dimensions while preserving original acquisition byte hashes. Lossless recompression is accepted; pixel changes fail.
+- Expanded required CI checks to 46 engine regressions, image-identity checks, Android lint and app workflow tests on API 26/35/36. CI results, rather than this change list, determine whether a build is publishable.
+
 ## 4.0.0 preview — 2026-10-31
 
 - Rebuilt the app around image import, crop, analysis, result outlines, journal, notes, settings and image/JSON sharing.

@@ -22,7 +22,7 @@ public class CompatibilityFlowTest {
     protected Context context;
     protected AppSession session;
     protected Activity activity;
-    protected static final String PKG="com.lamontlabs.quantravision.next";
+    protected static final String PKG="com.lamontlabs.quantravision.studio";
     @Before public void startFresh() throws Exception {
         device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());device.wakeUp();device.setOrientationNatural();
         context=InstrumentationRegistry.getInstrumentation().getTargetContext();session=((QuantraApplication)context.getApplicationContext()).session;
@@ -44,17 +44,17 @@ public class CompatibilityFlowTest {
     protected void waitForIdleWork() throws Exception {long deadline=System.currentTimeMillis()+15000;while(session!=null&&session.busy&&System.currentTimeMillis()<deadline)Thread.sleep(50);if(session!=null)assertFalse("Work did not finish",session.busy);}
     protected UiObject2 find(BySelector selector,boolean scroll) throws Exception {
         UiObject2 object=device.wait(Until.findObject(selector),2000);if(object!=null)return object;
-        if(scroll)for(int i=0;i<9;i++){device.swipe(device.getDisplayWidth()/2,device.getDisplayHeight()*3/4,device.getDisplayWidth()/2,device.getDisplayHeight()/3,24);device.waitForIdle();object=device.findObject(selector);if(object!=null)return object;}
+        if(scroll)for(int i=0;i<9;i++){UiObject2 container=device.findObject(By.clazz(android.widget.ScrollView.class));Rect area=container==null?new Rect(0,0,device.getDisplayWidth(),device.getDisplayHeight()*2/3):container.getVisibleBounds();device.swipe(area.centerX(),area.top+area.height()*3/4,area.centerX(),area.top+area.height()/4,24);device.waitForIdle();object=device.findObject(selector);if(object!=null)return object;}
         throw new AssertionError("Missing control: "+selector);
     }
     protected void tap(String description) throws Exception {find(By.desc(description),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
     protected void text(String value) throws Exception {find(By.text(Pattern.compile(Pattern.quote(value),Pattern.CASE_INSENSITIVE)),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
     protected void sampleReady() throws Exception {tap("Try sample chart");assertTrue("Sample image did not load",device.wait(Until.hasObject(By.desc("Analyze chart")),15000));}
-    protected void analyzeReady() throws Exception {tap("Analyze chart");assertTrue("Real double top was not detected",device.wait(Until.hasObject(By.text("Double top")),15000));waitForIdleWork();assertNotNull(session.record);assertTrue(session.result.readable());}
+    protected void analyzeReady() throws Exception {tap("Analyze chart");assertTrue("Sample double top was not detected",device.wait(Until.hasObject(By.text("Double top")),15000));waitForIdleWork();assertNotNull(session.record);assertTrue(session.result.readable());}
 
     @Test public void sampleToAnnotatedResultToPersistentJournal() throws Exception {
         Proof.save("01-overview");sampleReady();Proof.save("02-ready");analyzeReady();
-        assertEquals(44,session.result.candles.size());assertEquals(1,session.result.matches.size());assertEquals("Sample chart",session.source);
+        assertEquals(44,session.result.candles.size());assertEquals(2,session.result.matches.size());assertEquals("double_top_13_34",session.result.matches.get(0).id);assertEquals("bearish_engulfing_33_34",session.result.matches.get(1).id);assertEquals("Sample chart",session.source);
         Proof.save("03-analysis");String id=session.record.id;
         AppStore coldStore=new AppStore(context);AppStore.Record restored=coldStore.read(id);
         assertNotNull(restored);assertEquals("Double top",restored.result.matches.get(0).title);assertEquals(44,restored.result.candles.size());assertNotNull(coldStore.image(restored));
@@ -97,6 +97,28 @@ public class CompatibilityFlowTest {
         ChartEngine.Result measured=new ChartEngine().analyze(SamplePixels.WIDTH,SamplePixels.HEIGHT,SamplePixels.create(false,false));AppStore.Record saved=session.store.save(image,measured,"Test fixture");image.recycle();
         File folder=new File(context.getFilesDir(),"journal");try(FileOutputStream out=new FileOutputStream(new File(folder,saved.id+".json"))){out.write("not JSON".getBytes("UTF-8"));}
         assertTrue(session.store.list().isEmpty());assertTrue(new File(folder,saved.id+".png").isFile());tap("Settings tab");tap("Clear journal");text("Clear journal");assertEquals(0,folder.listFiles().length);
+    }
+    @Test public void atlasSearchOpensCriteriaAndEvaluation() throws Exception {
+        tap("Atlas tab");assertTrue(device.wait(Until.hasObject(By.text("The pattern atlas.")),5000));Proof.save("11-pattern-atlas");tap("Structure patterns");find(By.desc("Search patterns"),false).setText("Double top");device.waitForIdle();tap("Open pattern Double top");assertTrue(device.wait(Until.hasObject(By.text("WHAT THE ENGINE CHECKS")),5000));assertTrue(device.hasObject(By.desc("Double top schematic")));Proof.save("12-pattern-detail");tap("Open evidence ledger");assertTrue(device.wait(Until.hasObject(By.text("The evidence ledger.")),5000));Proof.save("13-evidence-ledger");tap("Back from evaluation");tap("Back to atlas");assertTrue(device.wait(Until.hasObject(By.text("The pattern atlas.")),5000));
+    }
+    @Test public void inspectedChartZoomCanBeReset() throws Exception {
+        sampleReady();analyzeReady();UiObject2 chart=find(By.descStartsWith("Annotated chart with"),true);Rect bounds=chart.getVisibleBounds();device.click(bounds.centerX(),bounds.centerY());android.os.SystemClock.sleep(90);device.click(bounds.centerX(),bounds.centerY());assertTrue("Double tap did not zoom",device.wait(Until.hasObject(By.descContains("zoom 2.0")),3000));Proof.save("14-chart-zoom");tap("Fit chart");assertTrue("Fit did not reset the viewport",device.wait(Until.hasObject(By.descContains("zoom 1.0")),3000));
+    }
+    @Test public void traceModePersistsObservationsWithoutInventingCandles() throws Exception {
+        Bitmap bitmap=Bitmap.createBitmap(640,300,Bitmap.Config.ARGB_8888);bitmap.eraseColor(0xfffafafa);Canvas canvas=new Canvas(bitmap);Paint paint=new Paint();paint.setColor(0xff223333);paint.setStrokeWidth(3);paint.setStyle(Paint.Style.STROKE);Path path=new Path();path.moveTo(20,245);path.lineTo(160,60);path.lineTo(315,220);path.lineTo(480,62);path.lineTo(620,245);canvas.drawPath(path,paint);File f=ShareProvider.newFile(context,"png");try(FileOutputStream out=new FileOutputStream(f)){assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,out));}bitmap.recycle();
+        context.startActivity(new Intent(Intent.ACTION_SEND).setClass(context,MainActivity.class).setType("image/png").putExtra(Intent.EXTRA_STREAM,ShareProvider.uri(context,f)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_GRANT_READ_URI_PERMISSION));assertTrue(device.wait(Until.hasObject(By.desc("Read trace")),10000));tap("Read trace");tap("Analyze chart");waitForIdleWork();assertNotNull("Trace did not save: "+session.error,session.record);assertTrue(session.result.candles.isEmpty());assertEquals("trace",session.result.inputType);assertTrue(session.result.tracePoints.size()>=8);String id=session.record.id;AppStore.Record restored=new AppStore(context).read(id);assertNotNull(restored);assertEquals("trace",restored.result.inputType);assertTrue(restored.result.candles.isEmpty());assertEquals(session.result.tracePoints.size(),restored.result.tracePoints.size());Proof.save("15-trace-observations");tap("Journal tab");tap("Open analysis "+id);waitForIdleWork();assertEquals("trace",session.inputType);
+    }
+    @Test public void legacyJournalNotesKeepOriginalEngineProvenance() throws Exception {
+        Bitmap image=Bitmap.createBitmap(SamplePixels.create(false,false),SamplePixels.WIDTH,SamplePixels.HEIGHT,Bitmap.Config.ARGB_8888);ChartEngine.Result measured=new ChartEngine().analyze(SamplePixels.WIDTH,SamplePixels.HEIGHT,SamplePixels.create(false,false));AppStore.Record saved=session.store.save(image,measured,"Legacy compatibility fixture");image.recycle();File f=new File(new File(context.getFilesDir(),"journal"),saved.id+".json");org.json.JSONObject json;try(FileInputStream in=new FileInputStream(f)){json=new org.json.JSONObject(AppStore.readText(in,1000000));}json.put("engine","geometry-1");json.remove("input_type");json.remove("trace");try(FileOutputStream out=new FileOutputStream(f)){out.write(json.toString().getBytes("UTF-8"));}AppStore cold=new AppStore(context);AppStore.Record legacy=cold.read(saved.id);assertNotNull(legacy);assertEquals("geometry-1",legacy.engineVersion);assertEquals(44,legacy.result.candles.size());cold.updateNote(legacy,"Original observations retained");AppStore.Record edited=cold.read(saved.id);assertEquals("geometry-1",edited.engineVersion);assertEquals("Original observations retained",edited.note);Bitmap original=cold.image(edited);assertNotNull(original);original.recycle();
+    }
+    @Test public void realExampleOpensFromEvidenceAndIsAnalyzed() throws Exception {
+        tap("Settings tab");tap("Evidence ledger");tap("Inspect ONCS chart");
+        assertTrue("Real example did not open",device.wait(Until.hasObject(By.desc("Analyze chart")),15000));
+        tap("Analyze chart");waitForIdleWork();assertNotNull("Real example did not save: "+session.error,session.record);
+        assertEquals("Evaluation · oncs-hammer.png",session.source);assertEquals(840,session.result.width);
+        boolean lowerWick=false;for(ChartEngine.Match match:session.result.matches)if(match.id.startsWith("hammer_"))lowerWick=true;
+        assertTrue("The real annotated lower wick was not measured",lowerWick);assertFalse(session.result.candles.isEmpty());
+        assertEquals(ChartEngine.VERSION,new AppStore(context).read(session.record.id).engineVersion);Proof.save("16-real-evaluation-image");
     }
     @After public void cleanup() throws Exception {context.stopService(new Intent(context,CaptureService.class));device.setOrientationNatural();}
 }
