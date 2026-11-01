@@ -78,7 +78,7 @@ public final class MainActivity extends Activity {
             final int index=i;LinearLayout item=Ui.column(this);item.setGravity(Gravity.CENTER);item.setContentDescription(labels[i]+" tab");item.setClickable(true);item.setFocusable(true);item.setSelected(i==tab);
             if(i==tab)item.setBackground(Ui.shape(0xff182b28,0,14,this));
             Ui.Icon icon=new Ui.Icon(this,icons[i],i==tab?Ui.LIME:Ui.MUTED);item.addView(icon,new LinearLayout.LayoutParams(dp(23),dp(23)));Ui.gap(item,6);
-            item.addView(Ui.text(this,labels[i],10.5f,i==tab?Ui.LIME:Ui.MUTED,i==tab));item.setOnClickListener(v->navigate(index));nav.addView(item,new LinearLayout.LayoutParams(0,-1,1));
+            TextView label=Ui.text(this,labels[i],10.5f,i==tab?Ui.LIME:Ui.MUTED,i==tab);label.setGravity(Gravity.CENTER);item.addView(label);item.setOnClickListener(v->navigate(index));nav.addView(item,new LinearLayout.LayoutParams(0,-1,1));
         }return nav;
     }
     private void overview() {

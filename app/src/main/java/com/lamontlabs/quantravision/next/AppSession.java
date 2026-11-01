@@ -74,7 +74,8 @@ public final class AppSession {
     }
     public void sample() {
         work("Preparing sample chart…",token->{
-            Bitmap b=Bitmap.createBitmap(SamplePixels.create(false,false),SamplePixels.WIDTH,SamplePixels.HEIGHT,Bitmap.Config.ARGB_8888);
+            Bitmap b=Bitmap.createBitmap(SamplePixels.WIDTH,SamplePixels.HEIGHT,Bitmap.Config.ARGB_8888);
+            b.setPixels(SamplePixels.create(false,false),0,SamplePixels.WIDTH,0,0,SamplePixels.WIDTH,SamplePixels.HEIGHT);
             Canvas canvas=new Canvas(b);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xff9eafc6);p.setTextSize(16);p.setTypeface(Typeface.create("sans-serif-medium",Typeface.NORMAL));
             canvas.drawText("SAMPLE CHART  /  GENERATED DEMONSTRATION",24,27,p);
             check(token);store.saveDraft(b,"Sample chart");return new Completed(b,"Sample chart",null,null);

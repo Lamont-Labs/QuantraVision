@@ -81,7 +81,7 @@ public class CompatibilityFlowTest {
         UiObject2 consent=device.wait(Until.findObject(start),12000);assertNotNull("Android projection consent was not shown",consent);consent.click();
         assertTrue("Floating capture control did not appear",device.wait(Until.hasObject(By.desc("Capture chart now")),15000));
         context.startActivity(new Intent().setClassName("com.lamontlabs.quantravision.fixture","com.lamontlabs.quantravision.fixture.FixtureActivity").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));assertTrue(device.wait(Until.hasObject(By.text("Live capture test chart")),10000));
-        Proof.save("08-live-source");tap("Capture chart now");assertTrue("Live capture did not reach analyzed results",device.wait(Until.hasObject(By.text("Double top")),20000));waitForIdleWork();
+        Proof.save("08-live-source");tap("Capture chart now");boolean shown=device.wait(Until.hasObject(By.text("Double top")),20000);assertTrue("Live capture did not reach analyzed results; busy="+session.busy+" error="+session.error+" source="+session.source+" pending="+context.getSharedPreferences("app",0).getString("pending_capture",""),shown);waitForIdleWork();
         assertEquals("Live screen",session.source);assertNotNull(session.record);assertTrue(session.result.candles.size()>=40);Proof.save("09-live-result");
         tap("Stop screen sharing");long until=System.currentTimeMillis()+5000;while(CaptureService.running&&System.currentTimeMillis()<until)Thread.sleep(50);assertFalse("Capture service did not release the session",CaptureService.running);
     }

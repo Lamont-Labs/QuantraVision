@@ -81,6 +81,7 @@ public final class CaptureService extends Service {
             if(stopping)return;image=source.acquireLatestImage();if(image==null)return;
             if(!requested.get()||SystemClock.uptimeMillis()<earliest)return;
             if(!requested.compareAndSet(true,false))return;
+            android.util.Log.i("QV.Capture","Reading requested frame "+image.getWidth()+"x"+image.getHeight());
             Image.Plane plane=image.getPlanes()[0];int stride=plane.getRowStride()/plane.getPixelStride();
             padded=Bitmap.createBitmap(stride,image.getHeight(),Bitmap.Config.ARGB_8888);padded.copyPixelsFromBuffer(plane.getBuffer());
             bitmap=Bitmap.createBitmap(padded,0,0,image.getWidth(),image.getHeight());
@@ -91,14 +92,25 @@ public final class CaptureService extends Service {
                 Intent open=new Intent(this,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("capture_id",capture);
                 main.postDelayed(()->{if(!stopping)try{startActivity(open);}catch(Exception e){Toast.makeText(this,"Open QuantraVision to view the captured chart.",Toast.LENGTH_LONG).show();}},150);
             });
-        } catch(Exception e){requested.set(false);main.post(()->{main.removeCallbacks(timeout);showControl();Toast.makeText(this,"Screen capture failed. Try another frame or import a screenshot.",Toast.LENGTH_LONG).show();});}
+        } catch(Exception e){android.util.Log.w("QV.Capture","Could not read screen frame",e);requested.set(false);main.post(()->{main.removeCallbacks(timeout);showControl();Toast.makeText(this,"Screen capture failed. Try another frame or import a screenshot.",Toast.LENGTH_LONG).show();});}
         finally {if(image!=null)image.close();if(bitmap!=null&&bitmap!=padded)bitmap.recycle();if(padded!=null)padded.recycle();}
     }
     private void capture() {
         if(stopping||requested.get())return;
         if(((QuantraApplication)getApplication()).session.busy){Toast.makeText(this,"Let the current analysis finish first.",Toast.LENGTH_SHORT).show();return;}
         if(overlay!=null)overlay.setVisibility(View.INVISIBLE);
-        earliest=SystemClock.uptimeMillis()+300;requested.set(true);main.removeCallbacks(timeout);main.postDelayed(timeout,5000);
+        earliest=Long.MAX_VALUE;requested.set(true);main.removeCallbacks(timeout);main.postDelayed(timeout,5000);
+        // Static screens need not emit another damage frame. Reattach the existing
+        // display's surface after the control is hidden; never reuse the consent token.
+        frames.postDelayed(()->{
+            if(stopping||!requested.get()||display==null||reader==null)return;
+            try {
+                display.setSurface(null);
+                try(Image previous=reader.acquireLatestImage()){ }
+                earliest=SystemClock.uptimeMillis();display.setSurface(reader.getSurface());
+                android.util.Log.i("QV.Capture","Requested a fresh screen frame");
+            } catch(Exception e){android.util.Log.w("QV.Capture","Could not refresh capture surface",e);requested.set(false);main.post(()->{main.removeCallbacks(timeout);showControl();Toast.makeText(this,"Could not refresh the screen. Start a new capture session.",Toast.LENGTH_LONG).show();});}
+        },160);
     }
     private void showControl(){if(overlay!=null&&!stopping)overlay.setVisibility(View.VISIBLE);}
     private void addControl() {
