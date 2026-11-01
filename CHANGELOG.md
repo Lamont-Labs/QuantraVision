@@ -2,6 +2,8 @@
 
 ## 4.1.0 preview.2 — 2026-11-01
 
+- Studio uses a separate install identity; earlier previews and their data remain accessible. Future Studio updates use an explicitly cached development signer.
+
 - Recovered the Studio rewrite: restrained dark/gold workspace, embedded typography, searchable visual atlas, persistent detail navigation, chart zoom/pan/fit and full-image controls.
 - Fixed rejected-image error propagation and kept detail/evaluation back controls outside their scroll containers.
 - Added hollow-candle reading, neutral body outlines and visible older-candle inspection.

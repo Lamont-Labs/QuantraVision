@@ -5,7 +5,7 @@ collect() {
     local result=$?
     trap - EXIT
     timeout 20s adb logcat -d > device-proof/logcat.txt 2>&1 || result=1
-    timeout 20s adb pull /sdcard/Android/data/com.lamontlabs.quantravision.next/files/proof/. device-proof/ > device-proof/pull.txt 2>&1 || result=1
+    timeout 20s adb pull /sdcard/Android/data/com.lamontlabs.quantravision.studio/files/proof/. device-proof/ > device-proof/pull.txt 2>&1 || result=1
     exit "$result"
 }
 trap collect EXIT
@@ -17,7 +17,7 @@ adb shell svc wifi disable || true
 adb shell svc data disable || true
 test_class=com.lamontlabs.quantravision.next.CompatibilityFlowTest
 if [[ "${ANDROID_API:-35}" -ge 29 ]]; then test_class=com.lamontlabs.quantravision.next.FullFlowTest; fi
-timeout 480s adb shell am instrument -w -r -e class "$test_class" -e listener com.lamontlabs.quantravision.next.ProofListener com.lamontlabs.quantravision.next.test/androidx.test.runner.AndroidJUnitRunner | tee device-proof/instrumentation.txt
+timeout 480s adb shell am instrument -w -r -e class "$test_class" -e listener com.lamontlabs.quantravision.next.ProofListener com.lamontlabs.quantravision.studio.test/androidx.test.runner.AndroidJUnitRunner | tee device-proof/instrumentation.txt
 python3 - <<'PY'
 import re,json,os
 from pathlib import Path

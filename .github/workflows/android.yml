@@ -31,7 +31,14 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.android/debug.keystore
-          key: quantravision-v4-development-signing
+          key: quantravision-studio-development-signing-v1
+      - name: Prepare the persistent Studio development signer
+        run: |
+          mkdir -p "$HOME/.android"
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -noprompt -keystore "$HOME/.android/debug.keystore" -storetype JKS -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname 'CN=QuantraVision Studio Development,O=Lamont Labs,C=US'
+          fi
+          printf 'QV_DEBUG_KEYSTORE=%s\n' "$HOME/.android/debug.keystore" >> "$GITHUB_ENV"
       - name: Reproduce the external-image evaluation
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==12.0.0
@@ -56,7 +63,7 @@ jobs:
           counts={k:sum(int(s.get(k,0)) for s in suites) for k in ('tests','failures','errors','skipped')}
           assert counts['tests']==46 and counts['failures']==counts['errors']==counts['skipped']==0
           evaluation=Path('verified-apk/evaluation.json');evidence=json.loads(evaluation.read_text())
-          data={'engine':'geometry-3','evaluation_sha256':hashlib.sha256(evaluation.read_bytes()).hexdigest(),'evaluation_counts':evidence['counts'],'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.next','version':'4.1.0-preview.2','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
+          data={'engine':'geometry-3','evaluation_sha256':hashlib.sha256(evaluation.read_bytes()).hexdigest(),'evaluation_counts':evidence['counts'],'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.studio','version':'4.1.0-preview.2','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
           Path('verified-apk/build.json').write_text(json.dumps(data,indent=2)+'\n')
           PY
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs verified-apk/QuantraVision-Studio.apk > verified-apk/signing.txt
@@ -153,7 +160,7 @@ jobs:
           cat > notes.md <<'NOTES'
           QuantraVision Studio: redesigned chart workspace, interactive zoom/pan, visual pattern atlas with detection criteria, evidence ledger, journal, crop, exports and consent-based live screen capture.
 
-          This universal APK supports Android 8 and newer. Launch **QuantraVision Studio** (the gold Q icon).
+          This universal APK supports Android 8 and newer. Launch **QuantraVision Studio** (the gold Q icon). Studio installs alongside the earlier preview and keeps its data separate.
 
           Required gates passed: core pixel/geometry regressions, Android lint, APK signature verification, and complete app workflow tests on Android 8, Android 15 and Android 16. Tests include actual Android screen-capture consent and image capture. Android 15 and Android 16 also exercise the real image picker.
 

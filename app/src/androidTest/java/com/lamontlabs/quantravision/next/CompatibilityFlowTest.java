@@ -22,7 +22,7 @@ public class CompatibilityFlowTest {
     protected Context context;
     protected AppSession session;
     protected Activity activity;
-    protected static final String PKG="com.lamontlabs.quantravision.next";
+    protected static final String PKG="com.lamontlabs.quantravision.studio";
     @Before public void startFresh() throws Exception {
         device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());device.wakeUp();device.setOrientationNatural();
         context=InstrumentationRegistry.getInstrumentation().getTargetContext();session=((QuantraApplication)context.getApplicationContext()).session;
@@ -44,17 +44,17 @@ public class CompatibilityFlowTest {
     protected void waitForIdleWork() throws Exception {long deadline=System.currentTimeMillis()+15000;while(session!=null&&session.busy&&System.currentTimeMillis()<deadline)Thread.sleep(50);if(session!=null)assertFalse("Work did not finish",session.busy);}
     protected UiObject2 find(BySelector selector,boolean scroll) throws Exception {
         UiObject2 object=device.wait(Until.findObject(selector),2000);if(object!=null)return object;
-        if(scroll)for(int i=0;i<9;i++){device.swipe(device.getDisplayWidth()/2,device.getDisplayHeight()*3/4,device.getDisplayWidth()/2,device.getDisplayHeight()/3,24);device.waitForIdle();object=device.findObject(selector);if(object!=null)return object;}
+        if(scroll)for(int i=0;i<9;i++){UiObject2 container=device.findObject(By.clazz(android.widget.ScrollView.class));Rect area=container==null?new Rect(0,0,device.getDisplayWidth(),device.getDisplayHeight()*2/3):container.getVisibleBounds();device.swipe(area.centerX(),area.top+area.height()*3/4,area.centerX(),area.top+area.height()/4,24);device.waitForIdle();object=device.findObject(selector);if(object!=null)return object;}
         throw new AssertionError("Missing control: "+selector);
     }
     protected void tap(String description) throws Exception {find(By.desc(description),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
     protected void text(String value) throws Exception {find(By.text(Pattern.compile(Pattern.quote(value),Pattern.CASE_INSENSITIVE)),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
     protected void sampleReady() throws Exception {tap("Try sample chart");assertTrue("Sample image did not load",device.wait(Until.hasObject(By.desc("Analyze chart")),15000));}
-    protected void analyzeReady() throws Exception {tap("Analyze chart");assertTrue("Real double top was not detected",device.wait(Until.hasObject(By.text("Double top")),15000));waitForIdleWork();assertNotNull(session.record);assertTrue(session.result.readable());}
+    protected void analyzeReady() throws Exception {tap("Analyze chart");assertTrue("Sample double top was not detected",device.wait(Until.hasObject(By.text("Double top")),15000));waitForIdleWork();assertNotNull(session.record);assertTrue(session.result.readable());}
 
     @Test public void sampleToAnnotatedResultToPersistentJournal() throws Exception {
         Proof.save("01-overview");sampleReady();Proof.save("02-ready");analyzeReady();
-        assertEquals(44,session.result.candles.size());assertEquals(1,session.result.matches.size());assertEquals("Sample chart",session.source);
+        assertEquals(44,session.result.candles.size());assertEquals(2,session.result.matches.size());assertEquals("double_top_13_34",session.result.matches.get(0).id);assertEquals("bearish_engulfing_33_34",session.result.matches.get(1).id);assertEquals("Sample chart",session.source);
         Proof.save("03-analysis");String id=session.record.id;
         AppStore coldStore=new AppStore(context);AppStore.Record restored=coldStore.read(id);
         assertNotNull(restored);assertEquals("Double top",restored.result.matches.get(0).title);assertEquals(44,restored.result.candles.size());assertNotNull(coldStore.image(restored));

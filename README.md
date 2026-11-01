@@ -2,7 +2,7 @@
 
 A rebuilt Android chart-image workspace. Import a screenshot or capture another app, inspect measured candle formations, and keep a private journal with notes and annotated exports.
 
-Launch **QuantraVision Studio**, the gold chart-lens icon. Android 8.0 and newer; the APK is universal and contains no CPU-specific native libraries. The application ID is `com.lamontlabs.quantravision.next`.
+Launch **QuantraVision Studio**, the gold chart-lens icon. Android 8.0 and newer; the APK is universal and contains no CPU-specific native libraries. The application ID is `com.lamontlabs.quantravision.studio`. Studio installs alongside the earlier preview, keeping its existing app and journal accessible.
 
 ## Working paths
 
@@ -49,7 +49,7 @@ Reference pixels, alpha and dimensions are immutable. A publisher may change los
 
 GitHub Actions builds the app once, then installs that exact APK on Android 8/API 26, Android 15/API 35 and Android 16/API 36 emulators. The tests exercise sample and imported images, crop, notes, journal persistence/deletion, settings, exports, actual MediaProjection consent, screen acquisition, and capture-session stop. API 35 and API 36 also use the real Android image picker. Screenshots, UI hierarchies and logs are retained for failures and successful workflows.
 
-Only a successful main workflow publishes a GitHub prerelease containing the APK, source/hash manifest and signing certificate. These are development-signed builds, not a Play Store release. Physical-phone acceptance, broad real-chart recognition accuracy, accessibility auditing and battery targets still need additional evidence.
+Only a successful main workflow publishes a GitHub prerelease containing the APK, source/hash manifest and signing certificate. These are development-signed builds, not a Play Store release. Studio uses an explicit signing file and a dedicated CI cache for subsequent Studio updates. Physical-phone acceptance, broad real-chart recognition accuracy, accessibility auditing and battery targets still need additional evidence.
 
 ## Source
 
