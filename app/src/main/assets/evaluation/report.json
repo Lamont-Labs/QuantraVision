@@ -2,7 +2,7 @@
   "schema": 1,
   "dataset": "External chart development set 1 · restored",
   "engine_sha256": "f3e82cd54b13a258110dd06d02c26983f80edc30e3f33d99bcd21b558d306d22",
-  "manifest_sha256": "0a17003bd09d2c1e1f624e32152945502a5ac6e1c3ec5c7ad9b0dd976f6ef22d",
+  "manifest_sha256": "97a6b6b3535ececaca5f7aeb37d08632d252236572af90849b6f925c1b3a766c",
   "limitations": "Small selected development set: 9 source charts, correlated full-image and crop cases, and publisher-provided pattern names. Labels and regions were transcribed by the implementation agent; there was no independent adjudication. The engine has been adjusted using these sources. This is not a held-out test or a general accuracy estimate. OHLC and line images use explicit experimental trace mode only in the cropped cases. The baseline has no trace reader. Extra detections on positive images are unscored because annotations are not exhaustive. Doji, long upper wick and both engulfing rules have no external positive targets. Three negative cases do not establish a general false-positive rate. No future-return or trading-performance claim is made.",
   "counts": {
     "sourceCharts": 9,

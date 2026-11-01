@@ -8,10 +8,15 @@ def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def acquire(source):
  p=ROOT/source['file']
  if not p.exists():
-  request=urllib.request.Request(source['url'],headers={'User-Agent':'Mozilla/5.0 (compatible; QuantraVisionResearch/1.0)','Referer':source['source']})
+  request=urllib.request.Request(source['url'],headers={'User-Agent':'Mozilla/5.0 (compatible; QuantraVisionResearch/1.0)','Referer':source['source'],'Accept':'image/png'})
   with urllib.request.urlopen(request,timeout=25) as response:raw=response.read(5_000_000)
   p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
- if digest(p)!=source['sha256']:raise RuntimeError('Input checksum changed: '+source['id'])
+ # Publisher CDNs can re-encode PNG compression/metadata across regions.
+ # Accept different encoded bytes only when every decoded RGBA pixel and dimension agrees.
+ with Image.open(p) as original:
+  rgba=original.convert('RGBA');pixel_hash=hashlib.sha256(struct.pack('>II',*rgba.size)+rgba.tobytes()).hexdigest()
+ if pixel_hash!=source['pixel_sha256']:raise RuntimeError('Source pixels changed: '+source['id']+' actual='+pixel_hash+' bytes='+digest(p))
+ if digest(p)!=source['sha256']:print('Verified identical pixels after publisher re-encoding: '+source['id'])
  return p
 def compile_engine(baseline=False):
  out=ROOT/'.local/evaluation'/('baseline' if baseline else 'candidate');out.mkdir(parents=True,exist_ok=True)

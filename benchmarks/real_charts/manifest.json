@@ -26,7 +26,8 @@
       "file": "benchmarks/real_charts/reference-cache/ford-double-top.png",
       "publisher": "StockCharts ChartSchool",
       "format": "OHLC bars",
-      "distribution": "reference-download-only"
+      "distribution": "reference-download-only",
+      "pixel_sha256": "77bbb8d2d5c7f512505790809beeca61e83e12dc6ec597b2cd17fb2300880b81"
     },
     {
       "id": "pfe-double-bottom",
@@ -41,7 +42,8 @@
       "format": "OHLC bars",
       "distribution": "reference-download-only",
       "pre_outage_file_sha256": "368b9cc07478373789a2718d2b0f468b7c98ad4727ec7be83e2a12793b4f4eed",
-      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed."
+      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed.",
+      "pixel_sha256": "23c30fa7acd4669273a5e9e4a18db5d890998be18ab60e20a2d6c281efe3bac8"
     },
     {
       "id": "adm-head-shoulders",
@@ -54,7 +56,8 @@
       "file": "benchmarks/real_charts/reference-cache/adm-head-shoulders.png",
       "publisher": "StockCharts ChartSchool",
       "format": "line",
-      "distribution": "reference-download-only"
+      "distribution": "reference-download-only",
+      "pixel_sha256": "f9c320dc8c531166b7e192b852ff52a9d129b111a25a1f09ad04244ca80566f4"
     },
     {
       "id": "frx-inverse-head-shoulders",
@@ -69,7 +72,8 @@
       "format": "OHLC bars",
       "distribution": "reference-download-only",
       "pre_outage_file_sha256": "0ab0d76aeb838eeb1f53728ab84890f57bc8f6e9b47fc0d39048b786c6e918f4",
-      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed."
+      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed.",
+      "pixel_sha256": "fe03d5196a566823a7e407f1b0be19238e62bf990acf2de234bc952962ed0f87"
     },
     {
       "id": "prtl-ascending-triangle",
@@ -82,7 +86,8 @@
       "file": "benchmarks/real_charts/reference-cache/prtl-ascending-triangle.png",
       "publisher": "StockCharts ChartSchool",
       "format": "OHLC bars",
-      "distribution": "reference-download-only"
+      "distribution": "reference-download-only",
+      "pixel_sha256": "bc809485fd05e83e2b57c8f8c568b03261f4ea02358f319b773e35403e4eeb98"
     },
     {
       "id": "nue-descending-triangle",
@@ -95,7 +100,8 @@
       "file": "benchmarks/real_charts/reference-cache/nue-descending-triangle.png",
       "publisher": "StockCharts ChartSchool",
       "format": "OHLC bars",
-      "distribution": "reference-download-only"
+      "distribution": "reference-download-only",
+      "pixel_sha256": "e8e8c78b734386741ac776785fab50d1f6bdf43b2bb0db5df0fb7602f26b745b"
     },
     {
       "id": "cnc-symmetrical-triangle",
@@ -110,7 +116,8 @@
       "format": "OHLC bars",
       "distribution": "reference-download-only",
       "pre_outage_file_sha256": "83bab53feea3fd879d1758ca1ff8de13ac4039d57a5d0b0b06b1cdddea0434b9",
-      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed."
+      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed.",
+      "pixel_sha256": "bf4444e4ca4ddbeb7a85cd917501e72a69487f5accb3d8b1cd73745baf66b1e7"
     },
     {
       "id": "oncs-hammer",
@@ -124,7 +131,8 @@
       "height": 398,
       "format": "filled candles",
       "sha256": "cde603bbb328821586ae464e3af1c60b4d6d8710a1960e260da060d098ac699f",
-      "asset": "oncs-hammer.png"
+      "asset": "oncs-hammer.png",
+      "pixel_sha256": "007388b2af9ca5731436ce64a5240dac539dbae09953ae35fa7a2eb52dfafdaf"
     },
     {
       "id": "nifty-qtstalker",
@@ -138,7 +146,8 @@
       "height": 768,
       "format": "hollow candles",
       "sha256": "ba69728edf00625d720e17cb8002cb63ee166f987a189ad37f435e0c32e6bce9",
-      "asset": "nifty-qtstalker.png"
+      "asset": "nifty-qtstalker.png",
+      "pixel_sha256": "ef0c96b681f0fe737d3b285edb6d074c6e4de86eb26472ccf29eb5191ff9d5fe"
     }
   ],
   "cases": [
