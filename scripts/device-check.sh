@@ -13,6 +13,9 @@ adb install -r device-bundle/app.apk
 adb install -r -t device-bundle/test.apk
 adb install -r device-bundle/fixture.apk
 adb shell settings put system screen_off_timeout 1800000
+adb shell settings put global stay_on_while_plugged_in 3
+adb shell input keyevent KEYCODE_WAKEUP
+adb shell wm dismiss-keyguard
 adb shell svc wifi disable || true
 adb shell svc data disable || true
 test_class=com.lamontlabs.quantravision.next.CompatibilityFlowTest

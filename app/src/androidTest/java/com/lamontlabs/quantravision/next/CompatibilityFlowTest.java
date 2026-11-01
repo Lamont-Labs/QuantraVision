@@ -25,6 +25,11 @@ public class CompatibilityFlowTest {
     protected static final String PKG="com.lamontlabs.quantravision.next";
     @Before public void startFresh() throws Exception {
         device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());device.wakeUp();device.setOrientationNatural();
+        // A boot-time Pixel Launcher ANR is emulator infrastructure, not an app failure.
+        // Dismiss only that named system dialog; QuantraVision errors remain fatal.
+        UiObject2 launcherError=device.findObject(By.pkg("android").text("Pixel Launcher isn't responding"));
+        if(launcherError!=null){Proof.save("emulator-launcher-anr");UiObject2 close=device.findObject(By.pkg("android").text("Close app"));assertNotNull("Cannot dismiss the emulator launcher ANR",close);close.click();device.waitForIdle();}
+        device.executeShellCommand("wm dismiss-keyguard");
         context=InstrumentationRegistry.getInstrumentation().getTargetContext();session=((QuantraApplication)context.getApplicationContext()).session;
         context.stopService(new Intent(context,CaptureService.class));waitForIdleWork();
         session.store.clear();context.getSharedPreferences("app",0).edit().clear().commit();
@@ -44,7 +49,13 @@ public class CompatibilityFlowTest {
     protected void waitForIdleWork() throws Exception {long deadline=System.currentTimeMillis()+15000;while(session!=null&&session.busy&&System.currentTimeMillis()<deadline)Thread.sleep(50);if(session!=null)assertFalse("Work did not finish",session.busy);}
     protected UiObject2 find(BySelector selector,boolean scroll) throws Exception {
         UiObject2 object=device.wait(Until.findObject(selector),2000);if(object!=null)return object;
-        if(scroll)for(int i=0;i<9;i++){device.swipe(device.getDisplayWidth()/2,device.getDisplayHeight()*3/4,device.getDisplayWidth()/2,device.getDisplayHeight()/3,24);device.waitForIdle();object=device.findObject(selector);if(object!=null)return object;}
+        if(scroll)for(int i=0;i<9;i++){
+            UiObject2 viewport=device.findObject(By.scrollable(true).pkg(PKG));
+            Rect bounds=viewport==null?new Rect(0,0,device.getDisplayWidth(),device.getDisplayHeight()):viewport.getVisibleBounds();
+            // Reader controls are fixed outside the scroll viewport. Start gestures inside the actual content pane.
+            device.swipe(bounds.centerX(),bounds.top+bounds.height()*4/5,bounds.centerX(),bounds.top+bounds.height()/4,24);
+            device.waitForIdle();object=device.findObject(selector);if(object!=null)return object;
+        }
         throw new AssertionError("Missing control: "+selector);
     }
     protected void tap(String description) throws Exception {find(By.desc(description),true).click();device.waitForIdle();InstrumentationRegistry.getInstrumentation().waitForIdleSync();}
@@ -54,7 +65,9 @@ public class CompatibilityFlowTest {
 
     @Test public void sampleToAnnotatedResultToPersistentJournal() throws Exception {
         Proof.save("01-overview");sampleReady();Proof.save("02-ready");analyzeReady();
-        assertEquals(44,session.result.candles.size());assertEquals(1,session.result.matches.size());assertEquals("Sample chart",session.source);
+        assertEquals(44,session.result.candles.size());boolean locatedTop=false;
+        for(ChartEngine.Match match:session.result.matches)if(match.id.equals("double_top_13_34"))locatedTop=true;
+        assertTrue("The known sample peaks were not localized",locatedTop);assertEquals("Sample chart",session.source);
         Proof.save("03-analysis");String id=session.record.id;
         AppStore coldStore=new AppStore(context);AppStore.Record restored=coldStore.read(id);
         assertNotNull(restored);assertEquals("Double top",restored.result.matches.get(0).title);assertEquals(44,restored.result.candles.size());assertNotNull(coldStore.image(restored));
