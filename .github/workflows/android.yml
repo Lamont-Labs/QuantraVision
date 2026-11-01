@@ -1,0 +1,137 @@
+name: QuantraVision 4
+on:
+  push:
+    branches: [main, 'rebuild/**']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qv4-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: quantravision-v4-development-signing
+      - name: Core regressions, lint, and both APKs
+        run: bash gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest :fixture:assembleDebug --no-daemon --stacktrace
+      - name: Record the built APK identity
+        run: |
+          mkdir -p device-bundle verified-apk
+          cp app/build/outputs/apk/debug/app-debug.apk device-bundle/app.apk
+          cp app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk device-bundle/test.apk
+          cp fixture/build/outputs/apk/debug/fixture-debug.apk device-bundle/fixture.apk
+          cp device-bundle/app.apk verified-apk/QuantraVision-4.apk
+          python3 - <<'PY'
+          import json,hashlib,os,xml.etree.ElementTree as ET
+          from pathlib import Path
+          apk=Path('verified-apk/QuantraVision-4.apk')
+          suites=[ET.parse(p).getroot() for p in Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml')]
+          counts={k:sum(int(s.get(k,0)) for s in suites) for k in ('tests','failures','errors','skipped')}
+          assert counts['tests']>=24 and counts['failures']==counts['errors']==counts['skipped']==0
+          data={'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'application_id':'com.lamontlabs.quantravision.next','version':'4.0.0-preview.1','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'unit_tests':counts}
+          Path('verified-apk/build.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs verified-apk/QuantraVision-4.apk > verified-apk/signing.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports-${{ github.run_number }}
+          path: |
+            app/build/reports/
+            app/build/test-results/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: device-bundle-${{ github.run_number }}
+          path: device-bundle/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: QuantraVision-4-${{ github.run_number }}
+          path: verified-apk/
+          if-no-files-found: error
+  device:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [26, 35]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - uses: actions/download-artifact@v4
+        with:
+          name: device-bundle-${{ github.run_number }}
+          path: device-bundle
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Complete app workflows on Android ${{ matrix.api }}
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          ANDROID_API: ${{ matrix.api }}
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          ram-size: 2048M
+          disable-animations: true
+          script: bash scripts/device-check.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: device-proof-api-${{ matrix.api }}-${{ github.run_number }}
+          path: device-proof/
+          if-no-files-found: error
+  publish:
+    needs: [build,device]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: QuantraVision-4-${{ github.run_number }}
+          path: release
+      - name: Publish the verified APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cp release/QuantraVision-4.apk "QuantraVision-4-${GITHUB_RUN_NUMBER}.apk"
+          cat > notes.md <<'NOTES'
+          QuantraVision 4: rebuilt image import, crop, local candle geometry, pattern outlines, notes, journal, chart/JSON exports, and consent-based live screen capture.
+
+          This universal APK supports Android 8 and newer. Launch **QuantraVision 4** (the mint Q icon).
+
+          Required gates passed: core pixel/geometry regressions, Android lint, APK signature verification, and complete app workflow tests on Android 8 and Android 15. Tests include actual Android screen-capture consent and image capture. Android 15 also exercises the real image picker.
+
+          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview; physical-phone acceptance and broader real-chart datasets remain additional validation.
+          NOTES
+          gh release create "v4.0.0-rebuild.${GITHUB_RUN_NUMBER}" "QuantraVision-4-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt --target "$GITHUB_SHA" --prerelease --title "QuantraVision 4 · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md

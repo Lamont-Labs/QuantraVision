@@ -1,9 +1,0 @@
-{
-  "skus": [
-    { "sku": "qv_basic_monthly", "title": "QuantraVision Basic", "price": "4.99", "type": "subs", "description": "Monthly subscription - 25 patterns, 5 AI explanations/day" },
-    { "sku": "qv_pro_monthly", "title": "QuantraVision Pro", "price": "14.99", "type": "subs", "description": "Monthly subscription - 50 patterns, 20 AI explanations/day, batch mode" },
-    { "sku": "qv_apex_monthly", "title": "QuantraVision Apex", "price": "29.99", "type": "subs", "description": "Monthly subscription - 109 patterns, 60 AI explanations/day, advanced features" },
-    { "sku": "qv_book_standalone", "title": "The Friendly Trader Book", "price": "4.99", "type": "inapp", "description": "Standalone purchase of The Friendly Trader trading book (10 chapters)" }
-  ],
-  "notes": "Used for Play Billing SKU validation step. Keep IDs in sync with Play Console. Monthly subscriptions (FREE/BASIC/PRO/APEX). Book can be purchased standalone by FREE/BASIC users."
-}

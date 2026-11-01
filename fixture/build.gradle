@@ -1,0 +1,8 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'com.lamontlabs.quantravision.fixture'
+    compileSdk 35
+    defaultConfig { applicationId 'com.lamontlabs.quantravision.fixture'; minSdk 26; targetSdk 35; versionCode 1; versionName '1' }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }
+    sourceSets { main { java.srcDir '../app/src/main/java'; java.include 'com/lamontlabs/quantravision/fixture/**', 'com/lamontlabs/quantravision/next/engine/SamplePixels.java' } }
+}
