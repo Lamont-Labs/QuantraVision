@@ -96,7 +96,10 @@ public final class AppStore {
         if(id.equals(context.getSharedPreferences("app",0).getString("last_record","")))
             context.getSharedPreferences("app",0).edit().remove("last_record").commit();
     }
-    public synchronized void clear() throws IOException { for(Record r:list())delete(r.id); }
+    public synchronized void clear() throws IOException {
+        File[] files=folder.listFiles();if(files!=null)for(File f:files)if(f.isFile()&&!f.delete())throw new IOException("Could not remove a journal file");
+        context.getSharedPreferences("app",0).edit().remove("last_record").commit();
+    }
     public synchronized JSONObject export() throws Exception {
         JSONObject root=new JSONObject().put("app","QuantraVision").put("format",1).put("exported",System.currentTimeMillis());
         JSONArray entries=new JSONArray();for(Record r:list())entries.put(toJson(r));return root.put("analyses",entries);

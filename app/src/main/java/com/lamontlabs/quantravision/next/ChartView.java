@@ -29,11 +29,13 @@ final class ChartView extends View {
         float x=area.centerX()-src.width()*scale/2,y=area.centerY()-src.height()*scale/2;
         Paint p=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);c.drawBitmap(b,src,new RectF(x,y,x+src.width()*scale,y+src.height()*scale),p);
         if(r==null||!annotations)return;
+        int brightness=0;for(int px:new int[]{src.left,Math.max(src.left,src.right-1)})for(int py:new int[]{src.top,Math.max(src.top,src.bottom-1)}){int color=b.getPixel(px,py);brightness+=(((color>>16)&255)*3+((color>>8)&255)*6+(color&255))/10;}
+        int ink=brightness/4>160?0xff00634f:Ui.LIME;
         for(int i=0;i<r.matches.size();i++) {
             if(selected>=0&&selected!=i)continue;ChartEngine.Match m=r.matches.get(i);
-            p.setColor(Ui.LIME);p.setStrokeWidth(Math.max(1.8f,area.width()/220));p.setStrokeJoin(Paint.Join.ROUND);p.setStyle(Paint.Style.STROKE);
+            p.setColor(ink);p.setStrokeWidth(Math.max(1.8f,area.width()/220));p.setStrokeJoin(Paint.Join.ROUND);p.setStyle(Paint.Style.STROKE);
             float left=x+(m.left-src.left)*scale,top=y+(m.top-src.top)*scale,right=x+(m.right-src.left)*scale,bottom=y+(m.bottom-src.top)*scale;
-            if("Candle".equals(m.family)){p.setColor(0x33b5f57a);p.setStyle(Paint.Style.FILL);c.drawRoundRect(left-3,top-4,right+3,bottom+4,4,4,p);p.setColor(Ui.LIME);p.setStyle(Paint.Style.STROKE);c.drawRoundRect(left-3,top-4,right+3,bottom+4,4,4,p);}
+            if("Candle".equals(m.family)){p.setColor((ink&0x00ffffff)|0x33000000);p.setStyle(Paint.Style.FILL);c.drawRoundRect(left-3,top-4,right+3,bottom+4,4,4,p);p.setColor(ink);p.setStyle(Paint.Style.STROKE);c.drawRoundRect(left-3,top-4,right+3,bottom+4,4,4,p);}
             else {Path path=new Path();for(int j=0;j<m.points.size();j++){ChartEngine.Point point=m.points.get(j);float px=x+(point.x-src.left)*scale,py=y+(point.y-src.top)*scale;if(j==0)path.moveTo(px,py);else path.lineTo(px,py);}c.drawPath(path,p);}
             p.setStyle(Paint.Style.FILL);for(ChartEngine.Point point:m.points)c.drawCircle(x+(point.x-src.left)*scale,y+(point.y-src.top)*scale,Math.max(3,area.width()/150),p);
         }

@@ -31,4 +31,5 @@ public final class EngineTest {
     @Test public void ascendingTriangle(){EngineChecks.ascendingTriangle();}
     @Test public void descendingTriangle(){EngineChecks.descendingTriangle();}
     @Test public void symmetricalTriangle(){EngineChecks.symmetricalTriangle();}
+    @Test public void scaledGrayScreen(){EngineChecks.scaledGrayScreen();}
 }

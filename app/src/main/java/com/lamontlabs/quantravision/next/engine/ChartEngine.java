@@ -105,11 +105,15 @@ public final class ChartEngine {
             for(int y=bodyTop;y<bodyBottom;y++)for(int x=l;x<=r;x++){
                 total++;if(distance(pixels[y*width+x],reference)<80)similar++;
             }
-            if(similar<total*.72)continue;
+            // Bilinear scaling can soften two edge columns of a narrow body.
+            if(similar<total*.65)continue;
             float center=(l+r)/2f;
             boolean straight=true;
             for(int i=0;i<tail;i++) {
                 int y=queue[i]/width;
+                // Screen scaling can leave one partly covered body row outside
+                // the solid core. It is not an off-center wick.
+                if((y==bodyTop-1||y==bodyBottom)&&rows[y-t]>=Math.max(2,cw*.5))continue;
                 if((y<bodyTop || y>=bodyBottom) && Math.abs(queue[i]%width-center)>Math.max(1.5,cw*.3)) { straight=false;break; }
             }
             if(!straight)continue;
@@ -142,7 +146,16 @@ public final class ChartEngine {
 
     /** Accept a thin neutral or colored wick, but stop at a full-width grid line. */
     private static int extendWick(int[] px,int w,int h,int l,int r,int from,int direction) {
-        int x=(l+r)/2,reach=Math.max(4,(r-l+1)/2+3),last=from,misses=0;
+        int best=from;
+        // Resampling can put the wick one pixel beside the rounded body center.
+        for(int offset=-1;offset<=1;offset++) {
+            int found=extendColumn(px,w,h,l,r,Math.max(l,Math.min(r,(l+r)/2+offset)),from,direction);
+            best=direction<0?Math.min(best,found):Math.max(best,found);
+        }
+        return best;
+    }
+    private static int extendColumn(int[] px,int w,int h,int l,int r,int x,int from,int direction) {
+        int reach=Math.max(4,(r-l+1)/2+3),last=from,misses=0;
         for(int step=1;step<Math.min(h/3,240);step++) {
             int y=from+step*direction;if(y<0||y>=h)break;
             int bg1=px[y*w+Math.max(0,x-reach)],bg2=px[y*w+Math.min(w-1,x+reach)];
