@@ -23,7 +23,7 @@ import re,json,os
 from pathlib import Path
 log=Path('device-proof/instrumentation.txt').read_text()
 match=re.search(r'OK \((\d+) tests?\)',log)
-expected=10 if int(os.environ.get('ANDROID_API','35'))>=29 else 9
+expected=11 if int(os.environ.get('ANDROID_API','35'))>=29 else 10
 assert match and int(match[1])==expected and 'FAILURES!!!' not in log and 'INSTRUMENTATION_FAILED' not in log and 'Process crashed' not in log, 'Android workflow tests did not all pass'
 assert 'INSTRUMENTATION_CODE: -1' in log, 'Instrumentation did not finish cleanly'
 Path('device-proof/result.json').write_text(json.dumps({'tests':int(match[1]),'failures':0,'errors':0,'skipped':0},indent=2))

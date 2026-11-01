@@ -9,7 +9,7 @@ def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def acquire(source):
  p=ROOT/source['file']
  if not p.exists():
-  request=urllib.request.Request(source['url'],headers={'User-Agent':'Mozilla/5.0 (compatible; QuantraVisionResearch/1.0)','Referer':source['source']})
+  request=urllib.request.Request(source['url'],headers={'User-Agent':'Mozilla/5.0 (compatible; QuantraVisionResearch/1.0)','Referer':source['source'],'Accept':'image/png'})
   with urllib.request.urlopen(request,timeout=25) as response:raw=response.read(5_000_000)
   validate_image(raw,source)
   p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
@@ -59,7 +59,7 @@ def main():
   for target in case.get('targets',[]):
    p=patterns[target['pattern']];ok=any(located(m,target,case['crop']) for m in result['matches']);p['targets']+=1;p['matched']+=int(ok);p['missed']+=int(not ok)
   source=sources[case['source_id']];names=', '.join(m['kind'] for m in result['matches']) or 'none';outcome=(str(result['count'])+' '+('trace samples' if case['mode']=='trace' else 'candles')+'; rules observed: '+names) if result['readable'] else result.get('problem','Reader rejected this input')
-  rows.append(dict(id=case['id'],title=case['title'],source_id=case['source_id'],source=source['source'],publisher=source['publisher'],status=status,mode=case['mode'],format=source['format'],outcome=outcome,target_hits=hits,target_count=n,forbidden_pattern_flags=len(alarms),baseline_status=old_status,baseline_target_hits=old_hits,input_pixel_sha256=case['_pixel_hash'],crop=case['crop'],matches=result['matches'],targets=case.get('targets',[])))
+  rows.append(dict(id=case['id'],title=case['title'],source_id=case['source_id'],source=source['source'],publisher=source['publisher'],status=status,mode=case['mode'],format=source['format'],asset=source.get('asset','') if case['crop']==[0,0,source['width'],source['height']] else '',outcome=outcome,target_hits=hits,target_count=n,forbidden_pattern_flags=len(alarms),baseline_status=old_status,baseline_target_hits=old_hits,input_pixel_sha256=case['_pixel_hash'],crop=case['crop'],matches=result['matches'],targets=case.get('targets',[])))
  engine_paths=sorted((ROOT/'app/src/main/java/com/lamontlabs/quantravision/next/engine').glob('*.java'));report=dict(schema=1,dataset='External chart development set 1 · restored',engine_sha256=hashlib.sha256(b''.join(p.read_bytes() for p in engine_paths)).hexdigest(),manifest_sha256=digest(DATA/'manifest.json'),limitations=manifest['limitations'],counts=counts,patterns=patterns,cases=rows)
  content=json.dumps(report,indent=2,ensure_ascii=False)+'\n';targets=[ROOT/'app/src/main/assets/evaluation/report.json',DATA/'report.json']
  for target in targets:

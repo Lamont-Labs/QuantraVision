@@ -111,5 +111,14 @@ public class CompatibilityFlowTest {
     @Test public void legacyJournalNotesKeepOriginalEngineProvenance() throws Exception {
         Bitmap image=Bitmap.createBitmap(SamplePixels.create(false,false),SamplePixels.WIDTH,SamplePixels.HEIGHT,Bitmap.Config.ARGB_8888);ChartEngine.Result measured=new ChartEngine().analyze(SamplePixels.WIDTH,SamplePixels.HEIGHT,SamplePixels.create(false,false));AppStore.Record saved=session.store.save(image,measured,"Legacy compatibility fixture");image.recycle();File f=new File(new File(context.getFilesDir(),"journal"),saved.id+".json");org.json.JSONObject json;try(FileInputStream in=new FileInputStream(f)){json=new org.json.JSONObject(AppStore.readText(in,1000000));}json.put("engine","geometry-1");json.remove("input_type");json.remove("trace");try(FileOutputStream out=new FileOutputStream(f)){out.write(json.toString().getBytes("UTF-8"));}AppStore cold=new AppStore(context);AppStore.Record legacy=cold.read(saved.id);assertNotNull(legacy);assertEquals("geometry-1",legacy.engineVersion);assertEquals(44,legacy.result.candles.size());cold.updateNote(legacy,"Original observations retained");AppStore.Record edited=cold.read(saved.id);assertEquals("geometry-1",edited.engineVersion);assertEquals("Original observations retained",edited.note);Bitmap original=cold.image(edited);assertNotNull(original);original.recycle();
     }
+    @Test public void realExampleOpensFromEvidenceAndIsAnalyzed() throws Exception {
+        tap("Settings tab");tap("Evidence ledger");tap("Inspect ONCS chart");
+        assertTrue("Real example did not open",device.wait(Until.hasObject(By.desc("Analyze chart")),15000));
+        tap("Analyze chart");waitForIdleWork();assertNotNull("Real example did not save: "+session.error,session.record);
+        assertEquals("Evaluation · oncs-hammer.png",session.source);assertEquals(840,session.result.width);
+        boolean lowerWick=false;for(ChartEngine.Match match:session.result.matches)if(match.id.startsWith("hammer_"))lowerWick=true;
+        assertTrue("The real annotated lower wick was not measured",lowerWick);assertFalse(session.result.candles.isEmpty());
+        assertEquals(ChartEngine.VERSION,new AppStore(context).read(session.record.id).engineVersion);Proof.save("16-real-evaluation-image");
+    }
     @After public void cleanup() throws Exception {context.stopService(new Intent(context,CaptureService.class));device.setOrientationNatural();}
 }

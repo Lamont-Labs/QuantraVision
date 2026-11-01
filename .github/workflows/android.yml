@@ -127,6 +127,22 @@ jobs:
         with:
           name: QuantraVision-Studio-${{ github.run_number }}
           path: release
+      - uses: actions/download-artifact@v4
+        with:
+          name: device-proof-api-36-${{ github.run_number }}
+          path: release/device-proof
+      - uses: actions/checkout@v4
+      - name: Prepare the native screenshot review
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow==12.0.0
+          python3 scripts/review-board.py release/device-proof release/Studio-native-review.png
+          python3 - <<'PYREVIEW'
+          from pathlib import Path
+          import zipfile
+          with zipfile.ZipFile('release/Studio-device-proof.zip','w',zipfile.ZIP_DEFLATED) as archive:
+              for path in Path('release/device-proof').iterdir():
+                  if path.is_file(): archive.write(path,path.name)
+          PYREVIEW
       - name: Publish the verified APK
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -140,6 +156,6 @@ jobs:
 
           Required gates passed: core pixel/geometry regressions, Android lint, APK signature verification, and complete app workflow tests on Android 8, Android 15 and Android 16. Tests include actual Android screen-capture consent and image capture. Android 15 and Android 16 also exercise the real image picker.
 
-          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview; physical-phone acceptance and recognition limitations are documented in the in-app evidence ledger.
+          Measurements describe screenshot geometry. Prices, volume, candle times and trading outcomes are not inferred. No detection-accuracy percentage is claimed. This is a development preview. Physical-phone acceptance remains pending; recognition limitations are documented in the in-app evidence ledger.
           NOTES
-          gh release create "v4.1.0-studio.${GITHUB_RUN_NUMBER}" "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt release/evaluation.md release/evaluation.json --target "$GITHUB_SHA" --prerelease --title "QuantraVision Studio · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md
+          gh release create "v4.1.0-studio.${GITHUB_RUN_NUMBER}" "QuantraVision-Studio-${GITHUB_RUN_NUMBER}.apk" release/build.json release/signing.txt release/evaluation.md release/evaluation.json release/Studio-native-review.png release/Studio-device-proof.zip --target "$GITHUB_SHA" --prerelease --title "QuantraVision Studio · build ${GITHUB_RUN_NUMBER}" --notes-file notes.md

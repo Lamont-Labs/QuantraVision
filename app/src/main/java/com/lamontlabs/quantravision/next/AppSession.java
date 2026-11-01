@@ -62,6 +62,10 @@ public final class AppSession {
         inputType="candles";
         work("Opening your image…",token->{Bitmap b=decode(uri);check(token);store.saveDraft(b,"Imported image");return new Completed(b,"Imported image",null,null);});
     }
+    public void importEvaluation(String asset){
+        if(!"oncs-hammer.png".equals(asset)&&!"nifty-qtstalker.png".equals(asset))return;inputType="candles";
+        work("Opening evaluation image…",token->{Bitmap b;try(InputStream in=app.getAssets().open("evaluation/"+asset)){b=BitmapFactory.decodeStream(in);}if(b==null)throw new IOException("Evaluation image could not be opened");b=bounded(b);check(token);String origin="Evaluation · "+asset;store.saveDraft(b,origin);return new Completed(b,origin,null,null);});
+    }
     public void importCapture(String id,boolean crop) {
         if(!crop)inputType="candles";
         work(crop?"Applying crop…":"Analyzing screen capture…",token->{
