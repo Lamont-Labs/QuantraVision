@@ -25,7 +25,13 @@ public final class FullFlowTest extends CompatibilityFlowTest {
         try{
             tap("Import chart");UiObject2 list=device.wait(Until.findObject(By.desc("List view")),3000);if(list!=null)list.click();UiObject2 image=device.wait(Until.findObject(By.textContains("QV-test-chart")),5000);if(image==null)image=device.findObject(By.descContains("QV-test-chart"));
             if(image==null){UiObject2 roots=device.findObject(By.desc("Show roots"));if(roots!=null)roots.click();UiObject2 images=device.wait(Until.findObject(By.text("Images")),3000);if(images!=null)images.click();UiObject2 folder=device.wait(Until.findObject(By.text("QuantraVision")),3000);if(folder!=null)folder.click();image=device.wait(Until.findObject(By.textContains("QV-test-chart")),5000);}
-            Proof.save("picker-before-selection");assertNotNull("The published image was not offered by Android’s picker",image);image.click();
+            Proof.save("picker-before-selection");assertNotNull("The published image was not offered by Android’s picker",image);
+            boolean selected=false;
+            for(int attempt=0;attempt<3&&!selected;attempt++){
+                try{UiObject2 current=device.findObject(By.textContains("QV-test-chart"));if(current==null)current=device.findObject(By.descContains("QV-test-chart"));if(current!=null){current.click();selected=true;}}
+                catch(StaleObjectException refresh){device.waitForIdle();}
+            }
+            assertTrue("Could not select the image after Android’s picker refreshed",selected);
             assertTrue(device.wait(Until.hasObject(By.desc("Analyze chart")),15000));analyzeReady();assertEquals("Imported image",session.source);assertEquals(44,session.result.candles.size());Proof.save("10-imported-light-chart");
         }finally{context.getContentResolver().delete(uri,null,null);}
     }

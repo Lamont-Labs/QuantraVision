@@ -78,7 +78,7 @@ public final class CaptureService extends Service {
     private void onFrame(ImageReader source) {
         Image image=null;Bitmap padded=null,bitmap=null;
         try {
-            if(stopping)return;image=source.acquireLatestImage();if(image==null)return;
+            if(stopping||source!=reader)return;image=source.acquireLatestImage();if(image==null)return;
             if(!requested.get()||SystemClock.uptimeMillis()<earliest)return;
             if(!requested.compareAndSet(true,false))return;
             android.util.Log.i("QV.Capture","Reading requested frame "+image.getWidth()+"x"+image.getHeight());
@@ -100,14 +100,14 @@ public final class CaptureService extends Service {
         if(((QuantraApplication)getApplication()).session.busy){Toast.makeText(this,"Let the current analysis finish first.",Toast.LENGTH_SHORT).show();return;}
         if(overlay!=null)overlay.setVisibility(View.INVISIBLE);
         earliest=Long.MAX_VALUE;requested.set(true);main.removeCallbacks(timeout);main.postDelayed(timeout,5000);
-        // Static screens need not emit another damage frame. Reattach the existing
-        // display's surface after the control is hidden; never reuse the consent token.
+        // Static screens need not emit another damage frame. Supply a fresh
+        // consumer surface after hiding the control, keeping the same display.
         frames.postDelayed(()->{
             if(stopping||!requested.get()||display==null||reader==null)return;
             try {
-                display.setSurface(null);
-                try(Image previous=reader.acquireLatestImage()){ }
-                earliest=SystemClock.uptimeMillis();display.setSurface(reader.getSurface());
+                ImageReader previous=reader,next=makeReader(width,height);
+                try{earliest=SystemClock.uptimeMillis();display.setSurface(next.getSurface());reader=next;previous.close();}
+                catch(Exception e){next.close();throw e;}
                 android.util.Log.i("QV.Capture","Requested a fresh screen frame");
             } catch(Exception e){android.util.Log.w("QV.Capture","Could not refresh capture surface",e);requested.set(false);main.post(()->{main.removeCallbacks(timeout);showControl();Toast.makeText(this,"Could not refresh the screen. Start a new capture session.",Toast.LENGTH_LONG).show();});}
         },160);
