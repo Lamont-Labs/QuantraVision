@@ -1,3 +1,12 @@
+# Studio 4.1 preview
+
+- Replace the sample-led landing page with a chart workspace and five-tab navigation.
+- Add the searchable 12-rule visual atlas, per-rule detection criteria and external-image evidence ledger.
+- Add pinch/double-tap zoom, pan, Fit and separate outline/full-image controls.
+- Read supported hollow/outlined bodies and earlier visible formations. Explicit experimental trace observations are stored separately from candles.
+- Preserve original engine provenance when editing legacy journal notes.
+- Gate APK publication on 42 core regressions, external-report reproducibility, lint and native workflows on Android 8, 15 and 16. Real-chart recognition remains limited; the report includes all labeled misses.
+
 # Changelog
 
 ## 4.0.0 preview — 2026-10-31

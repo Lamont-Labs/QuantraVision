@@ -15,7 +15,7 @@ final class Ui {
     static LinearLayout row(Context c){LinearLayout v=new LinearLayout(c);v.setOrientation(LinearLayout.HORIZONTAL);v.setGravity(Gravity.CENTER_VERTICAL);return v;}
     static TextView text(Context c,String value,float size,int color,boolean bold) {
         TextView v=new TextView(c);v.setText(value);v.setTextSize(size);v.setTextColor(color);v.setIncludeFontPadding(false);
-        v.setTypeface(Typeface.create(c.getResources().getFont(R.font.manrope),bold?Typeface.BOLD:Typeface.NORMAL));v.setLineSpacing(dp(c,3),1);return v;
+        v.setTypeface(Typeface.create(c.getResources().getFont(R.font.manrope),bold?Typeface.BOLD:Typeface.NORMAL));v.setFontVariationSettings("'wght' "+(bold?650:450));v.setLineSpacing(dp(c,3),1);return v;
     }
     static TextView display(Context c,String value,float size){TextView v=text(c,value,size,INK,false);v.setTypeface(Typeface.createFromAsset(c.getAssets(),"fonts/InstrumentSerif.ttf"));return v;}
     static TextView mono(Context c,String value,float size,int color){TextView v=text(c,value,size,color,false);v.setTypeface(Typeface.createFromAsset(c.getAssets(),"fonts/PlexMono.ttf"));return v;}

@@ -1,59 +1,47 @@
-# QuantraVision 4
+# QuantraVision Studio
 
-A rebuilt Android chart-image workspace. Import a screenshot or capture another app, inspect measured candle formations, and keep a private journal with notes and annotated exports.
+An Android workspace for inspecting chart screenshots, visible formations and your own notes. Android 8.0+, application ID `com.lamontlabs.quantravision.next`. The app has no Internet permission, account requirement or runtime SDK dependency. Launch **QuantraVision Studio**, the gold Q icon.
 
-Launch **QuantraVision 4**, the mint Q icon. Android 8.0 and newer; the APK is universal and contains no CPU-specific native libraries. The application ID is `com.lamontlabs.quantravision.next`.
+Studio adds a chart-first workspace, pinch/double-tap zoom and pan, a searchable 12-rule pattern atlas, detection criteria, an external-image evidence ledger and persistent study notes. Screenshot import, corner-drag crop, the Android file picker, exports and consent-based live capture remain real native app flows.
 
-## Working paths
+## Recognition and its limits
 
-- **Image import:** Android's file picker and image sharing → optional corner-drag crop → local analysis → measured outlines and explanations.
-- **Live screen:** grant overlay access when requested → approve Android's screen-capture consent → open a chart app → tap the floating Scan control → analysis opens and saves. Stop through the floating control or Android notification.
-- **Journal:** image, measured candles, outlines, date, source and editable note are stored locally. Reopen an entry, share its annotated chart, export journal JSON or delete data.
-- **Settings:** export annotations, action haptics, supported formations, capture help and data management.
+The candlestick reader measures coherent red/green or red/teal bodies, including supported outlined bodies, and visible wicks on light/dark backgrounds. It requires eight observations. Body colors identify direction; no market prices, candle timestamps, volume or future returns are inferred.
 
-The app has no internet permission or runtime SDK dependencies. Analysis does not require a model download, account or subscription. The source has one Activity-based interface, one measurement engine, one persistence layer and one consent-bound capture service.
+An **explicit experimental price-trace mode** reads a single cropped plot for structural rules. It records observed pixel samples separately, never fabricated candles or OHLC. Crop out menus, indicators and annotations; overlays and guides can still confuse it. There is no silent fallback between modes.
 
-## What analysis means
+Twelve implemented rules cover double tops/bottoms, head-and-shoulders/inverse, three triangle types, doji, long upper/lower wicks and engulfing bodies. The atlas explains their geometry and missing context. A rule match is a visual observation, not a confirmed trading signal or success probability.
 
-The engine measures filled red/green or red/teal candle bodies and colored/gray wicks, then applies geometric formation rules. At least eight coherent candles are required. Light and dark charts are supported. Blank images, unsupported palettes, noise and volume-only histograms are rejected with a usable explanation.
+The [external-image development report](benchmarks/real_charts/REPORT.md) contains **all** labeled hits and misses, exact source links, input hashes, crops, target regions and baseline results. Nine source charts yield twenty correlated image cases and sixteen positive targets. This small selected development set is not a held-out accuracy study; negative controls are few and four rules have no external positive examples. Report totals describe this exact source revision only. The generated example and synthetic regression fixtures are not counted as real-chart evidence.
 
-Supported structures: double tops/bottoms, head-and-shoulders/inverse head-and-shoulders, ascending/descending/symmetrical triangles. Recent candle rules: doji, long upper/lower wicks, bullish/bearish engulfing bodies.
+## Use
 
-These are **visual observations**, not confirmed trading signals. Coordinates are image pixels. Market prices, volume, candle times and future returns are not invented. No success probability or dataset accuracy percentage is claimed. The educational descriptions identify context that a screenshot cannot establish.
+- **Workspace:** import a PNG/JPG/WebP screenshot, resume a study or start capture.
+- **Analyze:** crop to a plot, choose Candles or experimental Price trace, inspect real input pixels and measured outlines. Double tap/pinch to zoom; drag while zoomed; Fit resets the view.
+- **Atlas:** search/filter the implemented rules, inspect their schematics, criteria and measured external coverage.
+- **Journal:** reopen an image and observations, add notes, export annotations or JSON, long-press to delete a study.
+- **More:** preferences, evidence ledger, capture help and data management.
 
-The sample is explicitly labeled generated demonstration data. It passes through the same image measurement and pattern code as imported and captured images.
+For live capture, grant the floating control when Android asks, approve Android's screen-sharing consent, open the chart app and tap Scan. Stop using the floating control or the notification. Secure-screen images cannot be captured.
 
 ## Build and verify
 
-Java 17, Android SDK 35 and Build Tools 35.0.0 are required for the Gradle build.
+Requires JDK 17, Python 3, Android SDK 35 and Build Tools 35.0.0. The Gradle pre-build step fetches checksum-pinned OFL fonts and two licensed evaluation images. All network access happens at build time.
 
 ```sh
-bash gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest
-```
-
-The pure pixel/geometry regressions can also run locally without Gradle or Android:
-
-```sh
+python3 -m pip install Pillow==12.0.0
+python3 scripts/prepare-assets.py
 python3 scripts/check-core.py
+python3 scripts/evaluate-real-charts.py --check
+bash gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest :fixture:assembleDebug
 ```
 
-GitHub Actions builds the app once, then installs that exact APK on Android 8/API 26 and Android 15/API 35 emulators. The tests exercise sample and imported images, crop, notes, journal persistence/deletion, settings, exports, actual MediaProjection consent, screen acquisition, and capture-session stop. API 35 also uses the real Android image picker. Screenshots, UI hierarchies and logs are retained for failures and successful workflows.
+GitHub Actions builds one signed APK, checks the external report against the current engine, then installs that same APK on API 26, 35 and 36. Device flows cover import/crop, real market-image file picking, chart zoom, atlas and evidence navigation, notes, journal, legacy records, trace persistence, exports, actual MediaProjection consent/capture and stop. Screenshots and logs are retained for every run. Only a green main workflow publishes the development-signed prerelease APK, hash/commit manifest, evaluation and signing information.
 
-Only a successful main workflow publishes a GitHub prerelease containing the APK, source/hash manifest and signing certificate. These are development-signed builds, not a Play Store release. Physical-phone acceptance, broad real-chart recognition accuracy, accessibility auditing and battery targets still need additional evidence.
+The same application ID and cached development signing key are retained for updates from version 4. Physical phone acceptance and broader recognition validation remain necessary; an emulator pass alone does not establish them.
 
-## Source
+## Source and licenses
 
-- `engine/ChartEngine.java`: connected components, body/wick measurements, series validation and deterministic formation rules; no Android dependency.
-- `MainActivity.java`, `Ui.java`, `ChartView.java`, `CropActivity.java`: interface, image/crop presentation and measured outlines.
-- `AppSession.java`: serialized, cancelable work and Activity recreation state.
-- `AppStore.java`: atomic journal/image persistence and export format.
-- `CaptureService.java`: one consent token and one virtual display per session, single-frame capture on explicit taps, cleanup on Android stop.
-- `ShareProvider.java`: narrowly scoped, read-only export URIs.
+`ChartEngine` / `TraceReader` are pure Java pixel geometry. `MainActivity`, `Ui`, `ChartView` and the atlas activities implement the native interface. `AppSession` owns cancelable work; `AppStore` atomically stores images and observations, preserving the original engine version when editing legacy notes. `CaptureService` owns consent-bound capture and cleanup.
 
-This rebuild replaces the previous app implementation; previous source and research documents remain in git history and the earlier repair branch. They are not validation evidence for version 4.
-
-## References and license
-
-Android's [MediaProjection contract](https://developer.android.com/media/grow/media-projection) governs capture consent, foreground service and display lifecycle. Geometric pattern terminology is discussed in [Lo, Mamaysky and Wang](https://www.nber.org/papers/w7613); this app uses its own screenshot heuristics and does not reproduce that paper's market-data study or results.
-
-Apache License 2.0; see [LICENSE](LICENSE).
+The app source is Apache 2.0. Bundled fonts retain OFL notices. The two original Commons evaluation images retain their separate [attribution and licenses](app/src/main/assets/evaluation/ATTRIBUTION.md). StockCharts publisher images are downloaded to an ignored reference cache for evaluation; they are not redistributed with the APK or repository. Old implementation/research claims in git history do not validate Studio.

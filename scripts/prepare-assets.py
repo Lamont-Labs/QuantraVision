@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Checksum-pinned build inputs. The installed app has no network permission."""
 from pathlib import Path
-import concurrent.futures,hashlib,urllib.request
+import concurrent.futures,hashlib,json,urllib.request
 ROOT=Path(__file__).resolve().parents[1]
 BASE='https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/'
 ASSETS=[
@@ -17,4 +17,7 @@ def fetch(item):
  p.parent.mkdir(parents=True,exist_ok=True);tmp=p.with_suffix('.download');tmp.write_bytes(data);tmp.replace(p)
  return name
 if __name__=='__main__':
- for name in concurrent.futures.ThreadPoolExecutor(3).map(fetch,ASSETS):print('Verified:',name)
+ manifest=ROOT/'benchmarks/real_charts/manifest.json'
+ sources=json.loads(manifest.read_text())['sources'] if manifest.exists() else []
+ images=[('app/src/main/assets/evaluation/'+s['asset'],s['url'],s['sha256']) for s in sources if s.get('asset')]
+ for name in concurrent.futures.ThreadPoolExecutor(5).map(fetch,ASSETS+images):print('Verified:',name)

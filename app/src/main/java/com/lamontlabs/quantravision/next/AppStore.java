@@ -17,11 +17,13 @@ public final class AppStore {
     private final File folder;
     public static final int LIMIT=40;
     public static final class Record {
-        public final String id,source,note;
+        public final String id,source,note,engineVersion;
         public final long created;
         public final ChartEngine.Result result;
         Record(String id,long created,String source,String note,ChartEngine.Result result) {
-            this.id=id;this.created=created;this.source=source;this.note=note;this.result=result;
+            this(id,created,source,note,result,ChartEngine.VERSION);
+        }
+        Record(String id,long created,String source,String note,ChartEngine.Result result,String engineVersion){this.id=id;this.created=created;this.source=source;this.note=note;this.result=result;this.engineVersion=engineVersion;
         }
     }
     AppStore(Context context) {
@@ -52,20 +54,24 @@ public final class AppStore {
     public synchronized Record read(String id) throws Exception {
         File json=file(id,".json");if(!json.isFile()||!file(id,".png").isFile())return null;
         JSONObject data=new JSONObject(readText(new AtomicFile(json).openRead(),1_000_000));
-        if(!"geometry-1".equals(data.getString("engine")))throw new IOException("Unsupported analysis format");
+        if(!"geometry-1".equals(data.getString("engine"))&&!"geometry-2".equals(data.getString("engine")))throw new IOException("Unsupported analysis format");
         int w=data.getInt("width"),h=data.getInt("height");
         if(w<1||h<1||(long)w*h>4_000_000)throw new IOException("Invalid image dimensions");
+        String type=data.optString("input_type","candles");if(!"candles".equals(type)&&!"trace".equals(type))throw new IOException("Invalid observation type");
+        ArrayList<ChartEngine.Point> trace=new ArrayList<>();JSONArray ts=data.optJSONArray("trace");if(ts!=null)for(int i=0;i<ts.length();i++){JSONArray point=ts.getJSONArray(i);float x=(float)point.getDouble(0),y=(float)point.getDouble(1),top=(float)point.optDouble(2,y),bottom=(float)point.optDouble(3,y);if(!Float.isFinite(x)||!Float.isFinite(y)||!Float.isFinite(top)||!Float.isFinite(bottom)||x<0||x>=w||top<0||top>y||bottom<y||bottom>=h)throw new IOException("Invalid trace extent");trace.add(new ChartEngine.Point(x,y,top,bottom));}
+        if(("trace".equals(type)&&(trace.size()<8||trace.size()>250))||("candles".equals(type)&&!trace.isEmpty()))throw new IOException("Invalid trace count");
         ArrayList<ChartEngine.Candle> candles=new ArrayList<>();JSONArray cs=data.getJSONArray("candles");
-        if(cs.length()<8||cs.length()>250)throw new IOException("Invalid candle count");
+        if(("candles".equals(type)&&(cs.length()<8||cs.length()>250))||("trace".equals(type)&&cs.length()!=0))throw new IOException("Invalid candle count");
         for(int i=0;i<cs.length();i++) {
             JSONArray c=cs.getJSONArray(i);ChartEngine.Candle candle=new ChartEngine.Candle(c.getInt(0),c.getInt(1),c.getInt(2),c.getInt(3),c.getInt(4),c.getInt(5),c.getBoolean(6));
             if(candle.right>w||candle.bottom>h)throw new IOException("Candle outside image");candles.add(candle);
         }
+        java.util.List<ChartEngine.Candle> anchors="trace".equals(type)?ChartEngine.traceAnchors(trace,w,h):candles;
         ArrayList<ChartEngine.Match> matches=new ArrayList<>();JSONArray ms=data.getJSONArray("matches");
         if(ms.length()>10)throw new IOException("Too many matches");
         for(int i=0;i<ms.length();i++) {
             JSONObject m=ms.getJSONObject(i);int first=m.getInt("first"),last=m.getInt("last");
-            if(first<0||last<first||last>=candles.size())throw new IOException("Invalid match range");
+            if(first<0||last<first||last>=anchors.size())throw new IOException("Invalid match range");
             ArrayList<ChartEngine.Point> points=new ArrayList<>();JSONArray ps=m.getJSONArray("points");
             if(ps.length()>8)throw new IOException("Invalid outline");
             for(int k=0;k<ps.length();k++) {
@@ -73,10 +79,10 @@ public final class AppStore {
                 if(!Float.isFinite(x)||!Float.isFinite(y)||x<0||y<0||x>w||y>h)throw new IOException("Invalid outline point");
                 points.add(new ChartEngine.Point(x,y));
             }
-            matches.add(new ChartEngine.Match(m.getString("kind"),m.getString("title"),m.getString("description"),m.getString("family"),first,last,points,candles));
+            matches.add(new ChartEngine.Match(m.getString("kind"),m.getString("title"),m.getString("description"),m.getString("family"),first,last,points,anchors));
         }
-        ChartEngine.Result measured=new ChartEngine.Result(w,h,candles,matches,null,data.optLong("elapsed_ms",0));
-        return new Record(id,data.getLong("created"),data.optString("source","Imported chart"),data.optString("note",""),measured);
+        ChartEngine.Result measured=new ChartEngine.Result(w,h,candles,matches,trace,type,null,data.optLong("elapsed_ms",0));
+        return new Record(id,data.getLong("created"),data.optString("source","Imported chart"),data.optString("note",""),measured,data.getString("engine"));
     }
     public Bitmap image(Record record) throws IOException {
         Bitmap b=BitmapFactory.decodeFile(file(record.id,".png").getPath());
@@ -88,7 +94,7 @@ public final class AppStore {
         catch(Exception e){return null;}
     }
     public synchronized Record updateNote(Record r,String note) throws Exception {
-        Record edited=new Record(r.id,r.created,r.source,note.substring(0,Math.min(note.length(),500)),r.result);
+        Record edited=new Record(r.id,r.created,r.source,note.substring(0,Math.min(note.length(),500)),r.result,r.engineVersion);
         writeJson(file(r.id,".json"),toJson(edited));return edited;
     }
     public synchronized void delete(String id) throws IOException {
@@ -101,7 +107,7 @@ public final class AppStore {
         context.getSharedPreferences("app",0).edit().remove("last_record").commit();
     }
     public synchronized JSONObject export() throws Exception {
-        JSONObject root=new JSONObject().put("app","QuantraVision").put("format",1).put("exported",System.currentTimeMillis());
+        JSONObject root=new JSONObject().put("app","QuantraVision").put("format",2).put("exported",System.currentTimeMillis());
         JSONArray entries=new JSONArray();for(Record r:list())entries.put(toJson(r));return root.put("analyses",entries);
     }
     public void saveDraft(Bitmap bitmap,String source) throws IOException {
@@ -139,7 +145,7 @@ public final class AppStore {
     }
     private static JSONObject toJson(Record r) throws Exception {
         JSONObject data=new JSONObject().put("id",r.id).put("created",r.created).put("source",r.source).put("note",r.note)
-                .put("engine",ChartEngine.VERSION).put("width",r.result.width).put("height",r.result.height).put("elapsed_ms",r.result.elapsedMs);
+                .put("engine",r.engineVersion).put("input_type",r.result.inputType).put("width",r.result.width).put("height",r.result.height).put("elapsed_ms",r.result.elapsedMs);
         JSONArray candles=new JSONArray();
         for(ChartEngine.Candle c:r.result.candles)candles.put(new JSONArray(Arrays.asList(c.left,c.right,c.top,c.bottom,c.bodyTop,c.bodyBottom,c.bullish)));
         JSONArray matches=new JSONArray();
@@ -150,6 +156,7 @@ public final class AppStore {
             JSONArray points=new JSONArray();for(ChartEngine.Point p:m.points)points.put(new JSONArray(Arrays.asList(p.x,p.y)));
             matches.put(value.put("points",points));
         }
-        return data.put("candles",candles).put("matches",matches);
+        JSONArray trace=new JSONArray();for(ChartEngine.Point point:r.result.tracePoints)trace.put(new JSONArray(Arrays.asList(point.x,point.y,point.top,point.bottom)));
+        return data.put("candles",candles).put("trace",trace).put("matches",matches);
     }
 }

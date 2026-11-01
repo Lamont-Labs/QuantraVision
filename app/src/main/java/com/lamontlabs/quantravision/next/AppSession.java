@@ -20,7 +20,7 @@ public final class AppSession {
     public Bitmap bitmap;
     public AppStore.Record record;
     public ChartEngine.Result result;
-    public String source="",error,progress="";
+    public String source="",error,progress="",inputType="candles";
     public String lastReceivedCapture="";
     public volatile boolean busy;
     private AtomicInteger token;
@@ -28,7 +28,7 @@ public final class AppSession {
     AppSession(Context app) {
         this.app=app.getApplicationContext();store=new AppStore(app);
         try {
-            String id=store.lastId();if(!id.isEmpty()){record=store.read(id);if(record!=null){bitmap=store.image(record);result=record.result;source=record.source;}}
+            String id=store.lastId();if(!id.isEmpty()){record=store.read(id);if(record!=null){bitmap=store.image(record);result=record.result;source=record.source;inputType=result.inputType;}}
         }catch(Exception ignored){record=null;}
         if(bitmap==null){bitmap=store.draft();if(bitmap!=null)source=store.draftSource();}
     }
@@ -59,9 +59,15 @@ public final class AppSession {
         });
     }
     public void importUri(Uri uri) {
+        inputType="candles";
         work("Opening your image…",token->{Bitmap b=decode(uri);check(token);store.saveDraft(b,"Imported image");return new Completed(b,"Imported image",null,null);});
     }
+    public void importEvaluation(String asset){
+        if(!"oncs-hammer.png".equals(asset)&&!"nifty-qtstalker.png".equals(asset))return;inputType="candles";
+        work("Opening evaluation image…",token->{Bitmap b;try(InputStream in=app.getAssets().open("evaluation/"+asset)){b=BitmapFactory.decodeStream(in);}if(b==null)throw new IOException("Evaluation image could not be opened");b=bounded(b);check(token);String origin="Evaluation · "+asset;store.saveDraft(b,origin);return new Completed(b,origin,null,null);});
+    }
     public void importCapture(String id,boolean crop) {
+        if(!crop)inputType="candles";
         work(crop?"Applying crop…":"Analyzing screen capture…",token->{
             File f=store.input(id);Bitmap b=BitmapFactory.decodeFile(f.getPath());if(b==null)throw new IOException("The captured image is unavailable. Try again.");
             b=bounded(b);check(token);String s=crop?source+" · cropped":"Live screen";
@@ -73,6 +79,7 @@ public final class AppSession {
         });
     }
     public void sample() {
+        inputType="candles";
         work("Preparing sample chart…",token->{
             Bitmap b=Bitmap.createBitmap(SamplePixels.WIDTH,SamplePixels.HEIGHT,Bitmap.Config.ARGB_8888);
             b.setPixels(SamplePixels.create(false,false),0,SamplePixels.WIDTH,0,0,SamplePixels.WIDTH,SamplePixels.HEIGHT);
@@ -91,15 +98,16 @@ public final class AppSession {
         });
     }
     public void open(AppStore.Record saved) {
+        inputType=saved.result.inputType;
         work("Opening saved analysis…",token->{Bitmap b=store.image(saved);check(token);store.remember(saved);return new Completed(b,saved.source,saved.result,saved);});
     }
     public void reset() {
-        if(busy)return;bitmap=null;record=null;result=null;error=null;source="";
+        if(busy)return;bitmap=null;record=null;result=null;error=null;source="";inputType="candles";
         app.getSharedPreferences("app",0).edit().remove("last_record").remove("draft_source").commit();new File(app.getFilesDir(),"draft.png").delete();changed();
     }
     private ChartEngine.Result measure(Bitmap image,AtomicInteger token) {
         int w=image.getWidth(),h=image.getHeight();int[] pixels=new int[w*h];image.getPixels(pixels,0,w,0,0,w,h);
-        return new ChartEngine().analyze(w,h,pixels,()->check(token));
+        return "trace".equals(inputType)?new ChartEngine().analyzeTrace(w,h,pixels,()->check(token)):new ChartEngine().analyze(w,h,pixels,()->check(token));
     }
     private Bitmap decode(Uri uri) throws IOException {
         BitmapFactory.Options bounds=new BitmapFactory.Options();bounds.inJustDecodeBounds=true;

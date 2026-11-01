@@ -31,9 +31,10 @@ final class ChartView extends View {
         c.translate(target.centerX()+offsetX,target.centerY()+offsetY);c.scale(zoom,zoom);c.translate(-target.centerX(),-target.centerY());draw(c,target,image,result,selected,annotations,focus);c.restore();
     }
     private static Rect source(Bitmap b,ChartEngine.Result r,boolean focus) {
-        if(r==null||r.candles.isEmpty()||!focus)return new Rect(0,0,b.getWidth(),b.getHeight());
+        if(r==null||r.observationCount()==0||!focus)return new Rect(0,0,b.getWidth(),b.getHeight());
         int l=b.getWidth(),t=b.getHeight(),right=0,bottom=0;
         for(ChartEngine.Candle candle:r.candles){l=Math.min(l,candle.left);t=Math.min(t,candle.top);right=Math.max(right,candle.right);bottom=Math.max(bottom,candle.bottom);}
+        for(ChartEngine.Point point:r.tracePoints){l=Math.min(l,(int)point.x);t=Math.min(t,(int)point.top);right=Math.max(right,(int)point.x+1);bottom=Math.max(bottom,(int)point.bottom+1);}
         int margin=Math.max(16,Math.round((right-l)*.035f));return new Rect(Math.max(0,l-margin),Math.max(0,t-margin),Math.min(b.getWidth(),right+margin),Math.min(b.getHeight(),bottom+margin));
     }
     private static void draw(Canvas c,RectF area,Bitmap b,ChartEngine.Result r,int selected,boolean annotations,boolean focus) {
@@ -41,6 +42,7 @@ final class ChartView extends View {
         float x=area.centerX()-src.width()*scale/2,y=area.centerY()-src.height()*scale/2;
         Paint p=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);c.drawBitmap(b,src,new RectF(x,y,x+src.width()*scale,y+src.height()*scale),p);
         if(r==null||!annotations)return;
+        if(!r.tracePoints.isEmpty()){p.setStyle(Paint.Style.STROKE);p.setColor(Ui.TEAL);p.setStrokeWidth(1.3f);Path path=new Path();boolean first=true;for(ChartEngine.Point point:r.tracePoints){float tx=x+(point.x-src.left)*scale,ty=y+(point.y-src.top)*scale;if(first){path.moveTo(tx,ty);first=false;}else path.lineTo(tx,ty);}c.drawPath(path,p);}
         int brightness=0;for(int px:new int[]{src.left,Math.max(src.left,src.right-1)})for(int py:new int[]{src.top,Math.max(src.top,src.bottom-1)}){int color=b.getPixel(px,py);brightness+=(((color>>16)&255)*3+((color>>8)&255)*6+(color&255))/10;}
         int ink=brightness/4>160?0xff00634f:Ui.LIME;
         for(int i=0;i<r.matches.size();i++) {

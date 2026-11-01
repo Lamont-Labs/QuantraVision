@@ -32,4 +32,15 @@ public final class EngineTest {
     @Test public void descendingTriangle(){EngineChecks.descendingTriangle();}
     @Test public void symmetricalTriangle(){EngineChecks.symmetricalTriangle();}
     @Test public void scaledGrayScreen(){EngineChecks.scaledGrayScreen();}
+    @Test public void hollowDark(){EngineChecks.hollowDark();}
+    @Test public void hollowLight(){EngineChecks.hollowLight();}
+    @Test public void shortWideCandles(){EngineChecks.shortWideCandles();}
+    @Test public void neutralOutlinedBody(){EngineChecks.neutralOutlinedBody();}
+    @Test public void labelClustersRejected(){EngineChecks.labelClustersRejected();}
+    @Test public void olderVisibleCandle(){EngineChecks.olderVisibleCandle();}
+    @Test public void traceDoubleTop(){EngineChecks.traceDoubleTop();}
+    @Test public void traceBlankRejected(){EngineChecks.traceBlankRejected();}
+    @Test public void traceNoiseRejected(){EngineChecks.traceNoiseRejected();}
+    @Test public void traceCancellation(){EngineChecks.traceCancellation();}
+    @Test public void traceObservationsImmutable(){EngineChecks.traceObservationsImmutable();}
 }

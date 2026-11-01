@@ -49,6 +49,7 @@ public final class MainActivity extends Activity {
     }
     private void receive(Intent intent) {
         if(intent==null)return;
+        String evaluation=intent.getStringExtra("evaluation_asset");if(evaluation!=null){intent.removeExtra("evaluation_asset");if(!session.busy){tab=1;positions[1]=0;selectedMatch=0;session.importEvaluation(evaluation);}return;}
         String capture=intent.getStringExtra("capture_id");
         if(capture!=null){intent.removeExtra("capture_id");if(!capture.equals(session.lastReceivedCapture)){pendingCapture=capture;pendingCrop=false;positions[1]=0;changed();}return;}
         Uri uri=null;
@@ -94,27 +95,29 @@ public final class MainActivity extends Activity {
     private void fillAtlas(LinearLayout grid){grid.removeAllViews();LinearLayout row=null;int found=0;String query=atlasQuery.toLowerCase(Locale.ROOT).trim();for(PatternCatalog.Pattern p:PatternCatalog.ALL){if(!"All".equals(atlasFamily)&&!p.family.equals(atlasFamily))continue;if(!query.isEmpty()&&!(p.title+" "+p.summary).toLowerCase(Locale.ROOT).contains(query))continue;if(found%2==0){row=Ui.row(this);row.setGravity(Gravity.TOP);Ui.add(grid,row);Ui.gap(grid,10);}addTile(row,p,found%2==0);found++;}if(found%2==1)row.addView(new View(this),new LinearLayout.LayoutParams(0,1,1));if(found==0)Ui.add(grid,Ui.text(this,"No formations match this search.",14,Ui.MUTED,false));}
     private void analyze() {
         String title=session.result==null?"Analyze a chart":session.result.matches.isEmpty()?"Chart read":session.result.matches.get(0).title;
-        String subtitle=session.result==null?"Pixel geometry, with the original image always in view.":session.result.candles.size()+" candles read · "+session.result.matches.size()+" visual "+(session.result.matches.size()==1?"match":"matches");
+        String subtitle=session.result==null?"Inspect the original image and its measured geometry.":session.result.observationCount()+("trace".equals(session.result.inputType)?" trace samples read":" candles read")+" · "+session.result.matches.size()+" visual "+(session.result.matches.size()==1?"match":"matches");
         pageHeader(session.result==null?"CHART LAB":"ANALYSIS SAVED",title,subtitle);
+        if(session.error!=null) {
+            Ui.gap(body,14);LinearLayout error=Ui.card(this);Ui.add(error,Ui.text(this,"Let’s get a clearer chart",18,Ui.INK,true));Ui.gap(error,8);Ui.add(error,Ui.text(this,session.error,13,Ui.MUTED,false));
+            if(session.bitmap!=null){Ui.gap(error,14);Ui.add(error,Ui.button(this,"Adjust crop","crop",false,this::crop));}Ui.add(body,error);
+        }
+
         if(session.bitmap==null) {
             LinearLayout empty=Ui.card(this);Ui.Icon icon=new Ui.Icon(this,"scan",Ui.LIME);LinearLayout.LayoutParams ip=new LinearLayout.LayoutParams(dp(46),dp(46));ip.gravity=Gravity.CENTER;empty.addView(icon,ip);Ui.gap(empty,20);
             Ui.add(empty,Ui.text(this,"Bring your own chart",23,Ui.INK,true));Ui.gap(empty,9);Ui.add(empty,Ui.text(this,"Use a clear screenshot with at least 8 red/green or red/teal candles. Light and dark backgrounds are supported.",14,Ui.MUTED,false));Ui.gap(empty,22);
             Ui.add(empty,Ui.button(this,"Import chart","import",true,this::pick));Ui.gap(empty,10);Ui.add(empty,Ui.button(this,"Scan another app","screen",false,this::startCapture));Ui.add(body,empty);Ui.gap(body,12);Ui.add(body,Ui.button(this,"Try sample chart","play",false,this::sample));
         } else {
-            LinearLayout imageCard=Ui.card(this);LinearLayout meta=Ui.row(this);meta.addView(Ui.pill(this,session.source.startsWith("Sample")?"GENERATED SAMPLE":"YOUR IMAGE",Ui.TEAL));
+            LinearLayout imageCard=Ui.card(this);LinearLayout meta=Ui.row(this);meta.addView(Ui.pill(this,session.source.startsWith("Sample")?"GENERATED EXAMPLE":"YOUR IMAGE",Ui.TEAL));
             TextView dims=Ui.text(this,session.bitmap.getWidth()+" × "+session.bitmap.getHeight(),11,Ui.MUTED,false);dims.setGravity(Gravity.RIGHT);meta.addView(dims,new LinearLayout.LayoutParams(0,-2,1));Ui.add(imageCard,meta);Ui.gap(imageCard,14);
             ChartView preview=new ChartView(this,session.bitmap,session.result);
             if(session.result!=null && !session.result.matches.isEmpty()){selectedMatch=Math.min(selectedMatch,session.result.matches.size()-1);preview.select(selectedMatch);}
             imageCard.addView(preview,new LinearLayout.LayoutParams(-1,dp(chartHeight())));Ui.gap(imageCard,12);
             LinearLayout controls=Ui.row(this);toolbar(controls,"Crop","Adjust crop",this::crop);toolbar(controls,"Fit","Fit chart",preview::resetTransform);TextView outlines=toolbar(controls,"Outlines","Toggle outlines",()->{});outlines.setOnClickListener(v->{boolean show=!outlines.isSelected();outlines.setSelected(show);preview.annotations(show);outlines.setTextColor(show?Ui.LIME:Ui.MUTED);});outlines.setSelected(true);TextView full=toolbar(controls,"Full image","Show full image",()->{});full.setOnClickListener(v->{boolean show=!full.isSelected();full.setSelected(show);preview.focus(!show);preview.resetTransform();full.setText(show?"Focus":"Full image");});Ui.add(imageCard,controls);Ui.add(body,imageCard);Ui.gap(body,16);
+            if(session.result==null && !session.busy){LinearLayout modes=Ui.row(this);toolbar(modes,"Candles","Read candles",()->{session.inputType="candles";render();});toolbar(modes,"Price trace · exp.","Read trace",()->{session.inputType="trace";render();});Ui.add(body,modes);Ui.gap(body,7);Ui.add(body,Ui.text(this,"trace".equals(session.inputType)?"Experimental trace reader: crop to one price plot without indicator overlays. Samples are image pixels, not candles or OHLC.":"Candlestick reader selected. Red/green or red/teal bodies with clear wicks.",11,Ui.MUTED,false));Ui.gap(body,15);}
             if(session.result==null && !session.busy)Ui.add(body,Ui.button(this,"Analyze chart","scan",true,()->{positions[1]=0;session.analyze();}));
             if(session.result!=null)results(preview);
         }
         if(session.busy)progress();
-        if(session.error!=null) {
-            Ui.gap(body,14);LinearLayout error=Ui.card(this);Ui.add(error,Ui.text(this,"Let’s get a clearer chart",18,Ui.INK,true));Ui.gap(error,8);Ui.add(error,Ui.text(this,session.error,13,Ui.MUTED,false));
-            if(session.bitmap!=null){Ui.gap(error,14);Ui.add(error,Ui.button(this,"Adjust crop","crop",false,this::crop));}Ui.add(body,error);
-        }
         Ui.gap(body,24);Ui.add(body,Ui.text(this,"Visual observations only. Prices, volume and candle times cannot be read reliably from image geometry.",11,Ui.MUTED,false));
     }
     private int chartHeight(){if(session.bitmap==null)return 200;float aspect=session.bitmap.getHeight()/(float)session.bitmap.getWidth();if(session.result!=null&&!session.result.candles.isEmpty()){int l=session.bitmap.getWidth(),t=session.bitmap.getHeight(),r=0,b=0;for(ChartEngine.Candle c:session.result.candles){l=Math.min(l,c.left);t=Math.min(t,c.top);r=Math.max(r,c.right);b=Math.max(b,c.bottom);}aspect=(b-t+32f)/(r-l+32f);}float width=getResources().getDisplayMetrics().widthPixels/getResources().getDisplayMetrics().density-80;return Math.max(180,Math.min(320,Math.round(width*aspect)));}
@@ -126,9 +129,9 @@ public final class MainActivity extends Activity {
     }
     private void results(ChartView preview) {
         ChartEngine.Result result=session.result;
-        LinearLayout summary=Ui.row(this);summary.addView(Ui.pill(this,result.candles.size()+" CANDLES READ",Ui.TEAL));TextView elapsed=Ui.text(this,result.elapsedMs+" ms",11,Ui.MUTED,false);elapsed.setGravity(Gravity.RIGHT);summary.addView(elapsed,new LinearLayout.LayoutParams(0,-2,1));Ui.add(body,summary);Ui.gap(body,20);
+        LinearLayout summary=Ui.row(this);summary.addView(Ui.pill(this,result.observationCount()+("trace".equals(result.inputType)?" TRACE SAMPLES":" CANDLES READ"),Ui.TEAL));TextView elapsed=Ui.text(this,result.elapsedMs+" ms",11,Ui.MUTED,false);elapsed.setGravity(Gravity.RIGHT);summary.addView(elapsed,new LinearLayout.LayoutParams(0,-2,1));Ui.add(body,summary);Ui.gap(body,20);
         Ui.add(body,Ui.text(this,result.matches.isEmpty()?"Chart read. No rule matched.":result.matches.size()+" visual "+(result.matches.size()==1?"match":"matches"),23,Ui.INK,true));Ui.gap(body,9);
-        Ui.add(body,Ui.text(this,result.matches.isEmpty()?"The candles were measured, but they did not satisfy the supported formation rules. This is a valid analysis, not a detector error.":"Tap a formation to inspect its outline and the geometry behind it.",13,Ui.MUTED,false));Ui.gap(body,16);
+        Ui.add(body,Ui.text(this,result.matches.isEmpty()?"The visible geometry was measured, but did not satisfy the supported formation rules. This is a valid analysis, not a detector error.":"Tap a formation to inspect its outline and the geometry behind it.",13,Ui.MUTED,false));Ui.gap(body,16);
         for(int i=0;i<result.matches.size();i++) {
             ChartEngine.Match match=result.matches.get(i);final int index=i;LinearLayout card=Ui.card(this);LinearLayout head=Ui.row(this);
             PatternCatalog.Pattern pattern=PatternCatalog.get(PatternCatalog.key(match.id));if(pattern!=null)head.addView(new PatternGlyph(this,pattern),new LinearLayout.LayoutParams(dp(46),dp(36)));TextView title=Ui.text(this,match.title,16,Ui.INK,true);LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,-2,1);tp.leftMargin=dp(12);head.addView(title,tp);head.addView(new Ui.Icon(this,"arrow",Ui.LIME),new LinearLayout.LayoutParams(dp(19),dp(19)));Ui.add(card,head);Ui.gap(card,12);
@@ -152,7 +155,7 @@ public final class MainActivity extends Activity {
         LinearLayout card=Ui.card(this);LinearLayout row=Ui.row(this);ImageView image=new ImageView(this);image.setScaleType(ImageView.ScaleType.CENTER_CROP);image.setImageBitmap(session.store.thumbnail(record));image.setBackground(Ui.shape(Ui.BG,0,10,this));image.setClipToOutline(true);row.addView(image,new LinearLayout.LayoutParams(dp(62),dp(62)));
         LinearLayout labels=Ui.column(this);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.leftMargin=dp(14);row.addView(labels,lp);
         String title=record.result.matches.isEmpty()?"No matching formation":record.result.matches.get(0).title;
-        Ui.add(labels,Ui.text(this,title,15,Ui.INK,true));Ui.gap(labels,6);Ui.add(labels,Ui.text(this,date(record.created),11,Ui.MUTED,false));Ui.gap(labels,4);Ui.add(labels,Ui.text(this,record.result.candles.size()+" candles · "+record.result.matches.size()+(record.result.matches.size()==1?" match":" matches"),11,Ui.TEAL,false));
+        Ui.add(labels,Ui.text(this,title,15,Ui.INK,true));Ui.gap(labels,6);Ui.add(labels,Ui.text(this,date(record.created),11,Ui.MUTED,false));Ui.gap(labels,4);Ui.add(labels,Ui.text(this,record.result.observationCount()+("trace".equals(record.result.inputType)?" samples · ":" candles · ")+record.result.matches.size()+(record.result.matches.size()==1?" match":" matches"),11,Ui.TEAL,false));
         Ui.Icon arrow=new Ui.Icon(this,"arrow",Ui.MUTED);row.addView(arrow,new LinearLayout.LayoutParams(dp(20),dp(20)));Ui.add(card,row);
         if(!record.note.isEmpty()){Ui.gap(card,12);TextView note=Ui.text(this,record.note,12,Ui.MUTED,false);note.setMaxLines(2);Ui.add(card,note);}
         card.setContentDescription("Open analysis "+record.id);card.setOnClickListener(v->{if(session.busy){toast("Please wait for the current operation.");return;}tab=1;positions[1]=0;selectedMatch=0;session.open(record);});
