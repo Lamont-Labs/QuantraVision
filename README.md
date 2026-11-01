@@ -10,6 +10,7 @@ Launch **QuantraVision Studio**, the gold chart-lens icon. Android 8.0 and newer
 - **Live screen:** grant overlay access when requested → approve Android's screen-capture consent → open a chart app → tap the floating Scan control → analysis opens and saves. Stop through the floating control or Android notification.
 - **Journal:** image, measured candles, outlines, date, source and editable note are stored locally. Reopen an entry, share its annotated chart, export journal JSON or delete data.
 - **Atlas:** searchable visual schematics for the 12 implemented rules, detection criteria, source references and per-rule external-image outcomes.
+- **Reader controls:** Candles / Price trace and Analyze remain fixed above navigation while preparing a study.
 - **Chart inspection:** pinch or double-tap to zoom, pan, fit, switch between the focused plot and full image, and toggle outlines.
 - **More:** export annotations, action haptics, evidence ledger, capture help and data management.
 

@@ -3,6 +3,7 @@
 ## 4.1.0 preview.2 — 2026-11-01
 
 - Recovered the Studio rewrite: restrained dark/gold workspace, embedded typography, searchable visual atlas, persistent detail navigation, chart zoom/pan/fit and full-image controls.
+- Keep reader selection and the Analyze action fixed above navigation, including when a tall image or larger text pushes chart content below the fold.
 - Fixed rejected-image error propagation and kept detail/evaluation back controls outside their scroll containers.
 - Added hollow-candle reading, neutral body outlines and visible older-candle inspection.
 - Added an explicit experimental trace reader; saved trace pixels remain separate from candle observations and never trigger candle rules.

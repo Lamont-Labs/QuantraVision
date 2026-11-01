@@ -73,6 +73,7 @@ public final class MainActivity extends Activity {
         final int visibleTab=tab;scroll.setOnScrollChangeListener((v,x,y,oldX,oldY)->positions[visibleTab]=y);
         body=Ui.column(this);body.setPadding(dp(22),dp(24),dp(22),dp(30));scroll.addView(body,new ScrollView.LayoutParams(-1,-2));root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
         switch(tab){case 0:overview();break;case 1:analyze();break;case 2:atlas();break;case 3:journal();break;default:settings();}
+        if(tab==1&&session.bitmap!=null&&session.result==null&&!session.busy){root.addView(Ui.line(this));root.addView(analysisActions());}
         root.addView(Ui.line(this));root.addView(nav(),new LinearLayout.LayoutParams(-1,dp(68)));setContentView(root);
         int y=positions[tab];ScrollView currentScroll=scroll;currentScroll.post(()->currentScroll.scrollTo(0,y));
     }
@@ -113,12 +114,20 @@ public final class MainActivity extends Activity {
             if(session.result!=null && !session.result.matches.isEmpty()){selectedMatch=Math.min(selectedMatch,session.result.matches.size()-1);preview.select(selectedMatch);}
             imageCard.addView(preview,new LinearLayout.LayoutParams(-1,dp(chartHeight())));Ui.gap(imageCard,12);
             LinearLayout controls=Ui.row(this);toolbar(controls,"Crop","Adjust crop",this::crop);toolbar(controls,"Fit","Fit chart",preview::resetTransform);TextView outlines=toolbar(controls,"Outlines","Toggle outlines",()->{});outlines.setOnClickListener(v->{boolean show=!outlines.isSelected();outlines.setSelected(show);preview.annotations(show);outlines.setTextColor(show?Ui.LIME:Ui.MUTED);});outlines.setSelected(true);TextView full=toolbar(controls,"Full image","Show full image",()->{});full.setOnClickListener(v->{boolean show=!full.isSelected();full.setSelected(show);preview.focus(!show);preview.resetTransform();full.setText(show?"Focus":"Full image");});Ui.add(imageCard,controls);Ui.add(body,imageCard);Ui.gap(body,16);
-            if(session.result==null && !session.busy){LinearLayout modes=Ui.row(this);TextView candleMode=toolbar(modes,"Candles","Read candles",()->{session.inputType="candles";render();});TextView traceMode=toolbar(modes,"Price trace · preview","Read trace",()->{session.inputType="trace";render();});("trace".equals(session.inputType)?traceMode:candleMode).setBackground(Ui.shape(Ui.CARD2,Ui.LINE,6,this));Ui.add(body,modes);Ui.gap(body,7);Ui.add(body,Ui.text(this,"trace".equals(session.inputType)?"Experimental trace reader: crop to one price plot without indicator overlays. Samples are image pixels, not candles or OHLC.":"Candlestick reader selected. Red/green or red/teal bodies with clear wicks.",11,Ui.MUTED,false));Ui.gap(body,15);}
-            if(session.result==null && !session.busy)Ui.add(body,Ui.button(this,"Analyze chart","scan",true,()->{positions[1]=0;session.analyze();}));
+            if(session.result==null && !session.busy)Ui.add(body,Ui.text(this,"trace".equals(session.inputType)?"Experimental trace reader: crop to one price plot without indicator overlays. Samples are image pixels, not candles or OHLC.":"Candlestick reader selected. Red/green or red/teal bodies with clear wicks.",11,Ui.MUTED,false));
             if(session.result!=null)results(preview);
         }
         if(session.busy)progress();
         Ui.gap(body,24);Ui.add(body,Ui.text(this,"Visual observations only. Prices, volume and candle times cannot be read reliably from image geometry.",11,Ui.MUTED,false));
+    }
+    private View analysisActions(){
+        LinearLayout actions=Ui.column(this);actions.setPadding(dp(22),dp(8),dp(22),dp(10));actions.setBackgroundColor(Ui.BG);
+        LinearLayout modes=Ui.row(this);
+        TextView candles=toolbar(modes,"Candles","Read candles",()->{session.inputType="candles";render();});
+        TextView trace=toolbar(modes,"Price trace · preview","Read trace",()->{session.inputType="trace";render();});
+        ("trace".equals(session.inputType)?trace:candles).setBackground(Ui.shape(Ui.CARD2,Ui.LINE,6,this));
+        Ui.add(actions,modes);Ui.gap(actions,8);Ui.add(actions,Ui.button(this,"Analyze chart","scan",true,()->{positions[1]=0;session.analyze();}));
+        return actions;
     }
     private int chartHeight(){if(session.bitmap==null)return 200;float aspect=session.bitmap.getHeight()/(float)session.bitmap.getWidth();if(session.result!=null&&!session.result.candles.isEmpty()){int l=session.bitmap.getWidth(),t=session.bitmap.getHeight(),r=0,b=0;for(ChartEngine.Candle c:session.result.candles){l=Math.min(l,c.left);t=Math.min(t,c.top);r=Math.max(r,c.right);b=Math.max(b,c.bottom);}aspect=(b-t+32f)/(r-l+32f);}float width=getResources().getDisplayMetrics().widthPixels/getResources().getDisplayMetrics().density-80;return Math.max(180,Math.min(320,Math.round(width*aspect)));}
     private TextView toolbar(LinearLayout row,String label,String description,Runnable click){TextView v=Ui.text(this,label,11,Ui.LIME,true);v.setContentDescription(description);v.setPadding(0,dp(14),0,dp(10));v.setMinimumHeight(dp(48));v.setGravity(Gravity.CENTER);v.setOnClickListener(a->click.run());row.addView(v,new LinearLayout.LayoutParams(0,-2,1));return v;}
