@@ -23,16 +23,20 @@ public final class FullFlowTest extends CompatibilityFlowTest {
         try(OutputStream out=context.getContentResolver().openOutputStream(uri)){assertTrue(b.compress(Bitmap.CompressFormat.PNG,100,out));}b.recycle();
         ContentValues published=new ContentValues();published.put(MediaStore.Images.Media.IS_PENDING,0);context.getContentResolver().update(uri,published,null,null);
         try{
-            tap("Import chart");UiObject2 list=device.wait(Until.findObject(By.desc("List view")),3000);if(list!=null)list.click();UiObject2 image=device.wait(Until.findObject(By.textContains("QV-test-chart")),5000);if(image==null)image=device.findObject(By.descContains("QV-test-chart"));
-            if(image==null){UiObject2 roots=device.findObject(By.desc("Show roots"));if(roots!=null)roots.click();UiObject2 images=device.wait(Until.findObject(By.text("Images")),3000);if(images!=null)images.click();UiObject2 folder=device.wait(Until.findObject(By.text("QuantraVision")),3000);if(folder!=null)folder.click();image=device.wait(Until.findObject(By.textContains("QV-test-chart")),5000);}
-            Proof.save("picker-before-selection");assertNotNull("The published image was not offered by Android’s picker",image);
-            boolean selected=false;
+            tap("Import chart");UiObject2 list=device.wait(Until.findObject(By.desc("List view")),3000);if(list!=null)list.click();UiObject2 image=awaitPublishedChart(5000);
+            if(image==null){UiObject2 roots=device.findObject(By.desc("Show roots"));if(roots!=null)roots.click();UiObject2 images=device.wait(Until.findObject(By.text("Images")),3000);if(images!=null)images.click();UiObject2 folder=device.wait(Until.findObject(By.text("QuantraVision")),3000);if(folder!=null)folder.click();}
+            Proof.save("picker-before-selection");boolean selected=false;
             for(int attempt=0;attempt<3&&!selected;attempt++){
-                try{UiObject2 current=device.findObject(By.textContains("QV-test-chart"));if(current==null)current=device.findObject(By.descContains("QV-test-chart"));if(current!=null){current.click();selected=true;}}
+                try{UiObject2 current=awaitPublishedChart(10000);if(current!=null){current.click();selected=true;}}
                 catch(StaleObjectException refresh){device.waitForIdle();}
             }
             assertTrue("Could not select the image after Android’s picker refreshed",selected);
             assertTrue(device.wait(Until.hasObject(By.desc("Analyze chart")),15000));analyzeReady();assertEquals("Imported image",session.source);assertEquals(44,session.result.candles.size());Proof.save("10-imported-light-chart");
         }finally{context.getContentResolver().delete(uri,null,null);}
+    }
+    private UiObject2 awaitPublishedChart(long timeout){
+        long deadline=android.os.SystemClock.uptimeMillis()+timeout;
+        do{UiObject2 row=device.findObject(By.textContains("QV-test-chart"));if(row==null)row=device.findObject(By.descStartsWith("QV-test-chart.png"));if(row!=null)return row;android.os.SystemClock.sleep(100);}while(android.os.SystemClock.uptimeMillis()<deadline);
+        return null;
     }
 }

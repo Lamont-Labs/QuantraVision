@@ -34,6 +34,11 @@ public class CompatibilityFlowTest {
     protected void launch() {
         Intent intent=new Intent(context,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity=InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+        long deadline=android.os.SystemClock.uptimeMillis()+15000;
+        java.util.concurrent.atomic.AtomicBoolean focused=new java.util.concurrent.atomic.AtomicBoolean();
+        do{InstrumentationRegistry.getInstrumentation().runOnMainSync(()->focused.set(activity.hasWindowFocus()&&activity.getWindow().getDecorView().isShown()));if(!focused.get())android.os.SystemClock.sleep(100);}while(!focused.get()&&android.os.SystemClock.uptimeMillis()<deadline);
+        assertTrue("New application window did not receive focus",focused.get());
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();device.waitForIdle();
         assertTrue("Overview did not launch",device.wait(Until.hasObject(By.text("QuantraVision")),15000));
     }
     protected void waitForIdleWork() throws Exception {long deadline=System.currentTimeMillis()+15000;while(session!=null&&session.busy&&System.currentTimeMillis()<deadline)Thread.sleep(50);if(session!=null)assertFalse("Work did not finish",session.busy);}
