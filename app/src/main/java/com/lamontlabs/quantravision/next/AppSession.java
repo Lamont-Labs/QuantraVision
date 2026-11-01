@@ -33,7 +33,7 @@ public final class AppSession {
         if(bitmap==null){bitmap=store.draft();if(bitmap!=null)source=store.draftSource();}
     }
     public void observe(Runnable observer){this.observer=observer;}
-    public void stopObserving(){observer=null;}
+    public void stopObserving(Runnable departing){if(observer==departing)observer=null;}
     private void changed(){if(observer!=null)observer.run();}
     public void cancel(){if(token!=null && token.compareAndSet(0,1)){progress="Stopping…";changed();}}
     public boolean committing(){return token!=null&&token.get()==2;}

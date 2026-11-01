@@ -28,6 +28,7 @@ public final class MainActivity extends Activity {
     private Bitmap hero;
     private String pendingCapture;
     private boolean pendingCrop;
+    private final Runnable sessionObserver=this::changed;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);session=((QuantraApplication)getApplication()).session;
@@ -37,8 +38,8 @@ public final class MainActivity extends Activity {
         hero=Bitmap.createBitmap(SamplePixels.create(false,false),SamplePixels.WIDTH,SamplePixels.HEIGHT,Bitmap.Config.ARGB_8888);
         render();receive(getIntent());
     }
-    @Override protected void onStart(){super.onStart();session.observe(this::changed);String id=getPreferences().getString("pending_capture","");if(!id.isEmpty()&&!id.equals(session.lastReceivedCapture)){pendingCapture=id;pendingCrop=false;}changed();}
-    @Override protected void onStop(){session.stopObserving();super.onStop();}
+    @Override protected void onStart(){super.onStart();session.observe(sessionObserver);String id=getPreferences().getString("pending_capture","");if(!id.isEmpty()&&!id.equals(session.lastReceivedCapture)){pendingCapture=id;pendingCrop=false;}changed();}
+    @Override protected void onStop(){session.stopObserving(sessionObserver);super.onStop();}
     @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);receive(intent);}
     @Override protected void onSaveInstanceState(Bundle state){if(scroll!=null)positions[tab]=scroll.getScrollY();state.putInt("tab",tab);state.putIntArray("positions",positions);super.onSaveInstanceState(state);}
     private void changed() {

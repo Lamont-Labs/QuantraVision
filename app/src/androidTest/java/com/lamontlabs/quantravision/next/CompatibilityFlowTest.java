@@ -59,7 +59,8 @@ public class CompatibilityFlowTest {
         AppStore coldStore=new AppStore(context);AppStore.Record restored=coldStore.read(id);
         assertNotNull(restored);assertEquals("Double top",restored.result.matches.get(0).title);assertEquals(44,restored.result.candles.size());assertNotNull(coldStore.image(restored));
         tap("Journal tab");assertTrue(device.wait(Until.hasObject(By.desc("Open analysis "+id)),5000));Proof.save("04-journal");
-        launch();tap("Journal tab");tap("Open analysis "+id);assertTrue(device.wait(Until.hasObject(By.text("Double top")),10000));
+        launch();sampleReady();analyzeReady();assertNotEquals("Restarted workspace did not complete a new analysis",id,session.record.id);
+        tap("Journal tab");tap("Open analysis "+id);assertTrue(device.wait(Until.hasObject(By.text("Double top")),10000));
     }
     @Test public void cropNotesAndSettingsPerformTheirActions() throws Exception {
         sampleReady();tap("Adjust crop");UiObject2 area=find(By.desc("Crop area. Drag its corners to resize."),false);Rect view=area.getVisibleBounds();
