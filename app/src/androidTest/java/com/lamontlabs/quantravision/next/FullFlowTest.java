@@ -23,8 +23,8 @@ public final class FullFlowTest extends CompatibilityFlowTest {
         try(OutputStream out=context.getContentResolver().openOutputStream(uri)){assertTrue(b.compress(Bitmap.CompressFormat.PNG,100,out));}b.recycle();
         ContentValues published=new ContentValues();published.put(MediaStore.Images.Media.IS_PENDING,0);context.getContentResolver().update(uri,published,null,null);
         try{
-            tap("Import chart");UiObject2 list=device.wait(Until.findObject(By.desc("List view")),3000);if(list!=null)list.click();UiObject2 image=awaitPublishedChart(5000);
-            if(image==null){UiObject2 roots=device.findObject(By.desc("Show roots"));if(roots!=null)roots.click();UiObject2 images=device.wait(Until.findObject(By.text("Images")),3000);if(images!=null)images.click();UiObject2 folder=device.wait(Until.findObject(By.text("QuantraVision")),3000);if(folder!=null)folder.click();}
+            tap("Import chart");pickerClick(By.desc("List view"),3000);UiObject2 image=awaitPublishedChart(5000);
+            if(image==null){pickerClick(By.desc("Show roots"),3000);pickerClick(By.text("Images"),5000);pickerClick(By.text("QuantraVision"),5000);}
             Proof.save("picker-before-selection");boolean selected=false;
             for(int attempt=0;attempt<3&&!selected;attempt++){
                 try{UiObject2 current=awaitPublishedChart(10000);if(current!=null){current.click();selected=true;}}
@@ -38,5 +38,14 @@ public final class FullFlowTest extends CompatibilityFlowTest {
         long deadline=android.os.SystemClock.uptimeMillis()+timeout;
         do{UiObject2 row=device.findObject(By.textContains("QV-test-chart"));if(row==null)row=device.findObject(By.descStartsWith("QV-test-chart.png"));if(row!=null)return row;android.os.SystemClock.sleep(100);}while(android.os.SystemClock.uptimeMillis()<deadline);
         return null;
+    }
+    private boolean pickerClick(BySelector selector,long timeout){
+        long deadline=android.os.SystemClock.uptimeMillis()+timeout;
+        do{
+            try{UiObject2 control=device.findObject(selector);if(control!=null){control.click();device.waitForIdle();return true;}}
+            catch(StaleObjectException refresh){device.waitForIdle();}
+            android.os.SystemClock.sleep(100);
+        }while(android.os.SystemClock.uptimeMillis()<deadline);
+        return false;
     }
 }
