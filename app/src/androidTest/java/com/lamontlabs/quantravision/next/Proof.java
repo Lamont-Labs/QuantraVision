@@ -7,6 +7,9 @@ public final class Proof {
     public static void save(String name) throws Exception {
         File folder=new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getExternalFilesDir(null),"proof");if(!folder.isDirectory())folder.mkdirs();
         UiDevice device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();device.waitForIdle();
+        // Accessibility can report the new tree before SurfaceFlinger presents it.
+        android.os.SystemClock.sleep(250);
         if(!device.takeScreenshot(new File(folder,name+".png")))throw new AssertionError("Screenshot failed: "+name);
         device.dumpWindowHierarchy(new File(folder,name+".xml"));
     }
