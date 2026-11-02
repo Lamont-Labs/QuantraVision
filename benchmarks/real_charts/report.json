@@ -1,0 +1,2499 @@
+{
+  "schema": 1,
+  "dataset": "External chart development set 1 · restored",
+  "engine_sha256": "13595decb3ff1566ab94e831bb56c8234c0e1bd15ea68f2f94f04d1672ba4469",
+  "manifest_sha256": "38bebfe55ead8aa801058409d5d0eb981dfd2a1b3d99da5eccf4393b7baf44ac",
+  "limitations": "Small selected development set: 9 source charts, correlated full-image and crop cases, and publisher-provided pattern names. Labels and regions were transcribed by the implementation agent; there was no independent adjudication. The engine has been adjusted using these sources. This is not a held-out test or a general accuracy estimate. OHLC and line images use explicit experimental trace mode only in the cropped cases. The baseline has no trace reader. Extra detections on positive images are unscored because annotations are not exhaustive. Doji, long upper wick and both engulfing rules have no external positive targets. Three negative cases do not establish a general false-positive rate. No future-return or trading-performance claim is made.",
+  "counts": {
+    "sourceCharts": 9,
+    "cases": 20,
+    "positiveTargets": 16,
+    "matchedTargets": 7,
+    "missedTargets": 9,
+    "negativePatternChecks": 3,
+    "negativeReadChecks": 1,
+    "forbiddenPatternFlags": 0,
+    "falseReadableInputs": 0,
+    "baselineMatchedTargets": 0,
+    "baselineUnsupportedTargets": 7
+  },
+  "patterns": {
+    "double_top": {
+      "targets": 2,
+      "matched": 1,
+      "missed": 1
+    },
+    "double_bottom": {
+      "targets": 2,
+      "matched": 1,
+      "missed": 1
+    },
+    "head_shoulders": {
+      "targets": 2,
+      "matched": 0,
+      "missed": 2
+    },
+    "inverse_head_shoulders": {
+      "targets": 2,
+      "matched": 1,
+      "missed": 1
+    },
+    "ascending_triangle": {
+      "targets": 2,
+      "matched": 1,
+      "missed": 1
+    },
+    "descending_triangle": {
+      "targets": 2,
+      "matched": 1,
+      "missed": 1
+    },
+    "symmetrical_triangle": {
+      "targets": 2,
+      "matched": 0,
+      "missed": 2
+    },
+    "doji": {
+      "targets": 0,
+      "matched": 0,
+      "missed": 0
+    },
+    "hammer": {
+      "targets": 2,
+      "matched": 2,
+      "missed": 0
+    },
+    "shooting_star": {
+      "targets": 0,
+      "matched": 0,
+      "missed": 0
+    },
+    "bullish_engulfing": {
+      "targets": 0,
+      "matched": 0,
+      "missed": 0
+    },
+    "bearish_engulfing": {
+      "targets": 0,
+      "matched": 0,
+      "missed": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "ford-double-top-full",
+      "title": "Ford Double Top · full",
+      "source_id": "ford-double-top",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/double-top-reversal",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "ff59b2f849449f1c3de54aa3f4ad82efffa8536608bf0b3ab69c8668550891c7",
+      "crop": [
+        0,
+        0,
+        458,
+        429
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "double_top",
+          "region": [
+            45,
+            35,
+            280,
+            145
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ford-double-top-plot",
+      "title": "Ford Double Top · plot",
+      "source_id": "ford-double-top",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/double-top-reversal",
+      "publisher": "StockCharts ChartSchool",
+      "status": "matched",
+      "mode": "trace",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "138 trace samples; rules observed: head_shoulders, double_top, ascending_triangle, descending_triangle, double_bottom, ascending_triangle, double_bottom, double_top",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "1f0591af7db52c3beead156b2947d2f842af33f5a5e2e6bdb4db8b7446c7e03e",
+      "crop": [
+        6,
+        30,
+        426,
+        226
+      ],
+      "matches": [
+        {
+          "kind": "head_shoulders",
+          "box": [
+            73.0,
+            20.0,
+            349.0,
+            130.0
+          ],
+          "points": [
+            [
+              73.5,
+              21.0
+            ],
+            [
+              172.5,
+              97.0
+            ],
+            [
+              220.5,
+              20.0
+            ],
+            [
+              318.5,
+              130.0
+            ],
+            [
+              348.5,
+              77.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            73.0,
+            20.0,
+            221.0,
+            97.0
+          ],
+          "points": [
+            [
+              73.5,
+              21.0
+            ],
+            [
+              172.5,
+              97.0
+            ],
+            [
+              220.5,
+              20.0
+            ]
+          ]
+        },
+        {
+          "kind": "ascending_triangle",
+          "box": [
+            16.0,
+            21.0,
+            74.0,
+            132.0
+          ],
+          "points": [
+            [
+              58.5,
+              25.0
+            ],
+            [
+              73.5,
+              21.0
+            ],
+            [
+              16.5,
+              132.0
+            ],
+            [
+              67.5,
+              64.0
+            ]
+          ]
+        },
+        {
+          "kind": "descending_triangle",
+          "box": [
+            73.0,
+            21.0,
+            143.0,
+            95.0
+          ],
+          "points": [
+            [
+              73.5,
+              21.0
+            ],
+            [
+              121.5,
+              60.0
+            ],
+            [
+              103.5,
+              95.0
+            ],
+            [
+              142.5,
+              90.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            142.0,
+            20.0,
+            173.0,
+            97.0
+          ],
+          "points": [
+            [
+              142.5,
+              90.0
+            ],
+            [
+              154.5,
+              63.0
+            ],
+            [
+              172.5,
+              97.0
+            ]
+          ]
+        },
+        {
+          "kind": "ascending_triangle",
+          "box": [
+            103.0,
+            60.0,
+            155.0,
+            95.0
+          ],
+          "points": [
+            [
+              121.5,
+              60.0
+            ],
+            [
+              154.5,
+              63.0
+            ],
+            [
+              103.5,
+              95.0
+            ],
+            [
+              142.5,
+              90.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            103.0,
+            60.0,
+            143.0,
+            95.0
+          ],
+          "points": [
+            [
+              103.5,
+              95.0
+            ],
+            [
+              121.5,
+              60.0
+            ],
+            [
+              142.5,
+              90.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            58.0,
+            21.0,
+            74.0,
+            64.0
+          ],
+          "points": [
+            [
+              58.5,
+              25.0
+            ],
+            [
+              67.5,
+              64.0
+            ],
+            [
+              73.5,
+              21.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "double_top",
+          "region": [
+            45,
+            35,
+            280,
+            145
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pfe-double-bottom-full",
+      "title": "Pfe Double Bottom · full",
+      "source_id": "pfe-double-bottom",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/double-bottom-reversal",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "ff04e8b8f4303ac3a8e8b424523dd480d0afcb0b1cc309d2f6984962d12d4a0f",
+      "crop": [
+        0,
+        0,
+        516,
+        485
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "double_bottom",
+          "region": [
+            208,
+            117,
+            384,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pfe-double-bottom-plot",
+      "title": "Pfe Double Bottom · plot",
+      "source_id": "pfe-double-bottom",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/double-bottom-reversal",
+      "publisher": "StockCharts ChartSchool",
+      "status": "matched",
+      "mode": "trace",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "160 trace samples; rules observed: descending_triangle, ascending_triangle, double_top, double_bottom, inverse_head_shoulders, ascending_triangle, double_top, double_bottom",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "ecf5ae5d5a89f6def3d77fc56a2c698871d370700f25aacfe8f4a69f60b67b8b",
+      "crop": [
+        6,
+        30,
+        491,
+        257
+      ],
+      "matches": [
+        {
+          "kind": "descending_triangle",
+          "box": [
+            64.0,
+            36.0,
+            362.0,
+            221.0
+          ],
+          "points": [
+            [
+              64.5,
+              36.0
+            ],
+            [
+              301.5,
+              96.0
+            ],
+            [
+              223.5,
+              221.0
+            ],
+            [
+              361.5,
+              221.0
+            ]
+          ]
+        },
+        {
+          "kind": "ascending_triangle",
+          "box": [
+            145.0,
+            96.0,
+            302.0,
+            221.0
+          ],
+          "points": [
+            [
+              145.5,
+              99.0
+            ],
+            [
+              301.5,
+              96.0
+            ],
+            [
+              223.5,
+              221.0
+            ],
+            [
+              265.5,
+              163.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            145.0,
+            96.0,
+            302.0,
+            221.0
+          ],
+          "points": [
+            [
+              145.5,
+              99.0
+            ],
+            [
+              223.5,
+              221.0
+            ],
+            [
+              301.5,
+              96.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            223.0,
+            96.0,
+            362.0,
+            221.0
+          ],
+          "points": [
+            [
+              223.5,
+              221.0
+            ],
+            [
+              301.5,
+              96.0
+            ],
+            [
+              361.5,
+              221.0
+            ]
+          ]
+        },
+        {
+          "kind": "inverse_head_shoulders",
+          "box": [
+            127.0,
+            99.0,
+            266.0,
+            221.0
+          ],
+          "points": [
+            [
+              127.5,
+              160.0
+            ],
+            [
+              145.5,
+              99.0
+            ],
+            [
+              223.5,
+              221.0
+            ],
+            [
+              250.5,
+              99.0
+            ],
+            [
+              265.5,
+              163.0
+            ]
+          ]
+        },
+        {
+          "kind": "ascending_triangle",
+          "box": [
+            301.0,
+            96.0,
+            410.0,
+            221.0
+          ],
+          "points": [
+            [
+              301.5,
+              96.0
+            ],
+            [
+              391.5,
+              110.0
+            ],
+            [
+              361.5,
+              221.0
+            ],
+            [
+              409.5,
+              149.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            301.0,
+            96.0,
+            392.0,
+            221.0
+          ],
+          "points": [
+            [
+              301.5,
+              96.0
+            ],
+            [
+              361.5,
+              221.0
+            ],
+            [
+              391.5,
+              110.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            127.0,
+            99.0,
+            197.0,
+            177.0
+          ],
+          "points": [
+            [
+              127.5,
+              160.0
+            ],
+            [
+              145.5,
+              99.0
+            ],
+            [
+              196.5,
+              177.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "double_bottom",
+          "region": [
+            208,
+            117,
+            384,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "id": "adm-head-shoulders-full",
+      "title": "Adm Head Shoulders · full",
+      "source_id": "adm-head-shoulders",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/head-and-shoulders-top",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "line",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "d53ad7a7f3ad2fe481e3385a75ebc0733566da3420379dbde00738dc849cb0b5",
+      "crop": [
+        0,
+        0,
+        457,
+        429
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "head_shoulders",
+          "region": [
+            70,
+            32,
+            192,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "id": "adm-head-shoulders-plot",
+      "title": "Adm Head Shoulders · plot",
+      "source_id": "adm-head-shoulders",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/head-and-shoulders-top",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "trace",
+      "format": "line",
+      "asset": "",
+      "outcome": "142 trace samples; rules observed: descending_triangle, double_bottom",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "2e71f1c41e4a04cdda92d53db5d0bba6489a3e784843ea7be7508648e277f079",
+      "crop": [
+        5,
+        30,
+        433,
+        226
+      ],
+      "matches": [
+        {
+          "kind": "descending_triangle",
+          "box": [
+            36.0,
+            13.0,
+            206.0,
+            133.0
+          ],
+          "points": [
+            [
+              115.5,
+              13.0
+            ],
+            [
+              205.5,
+              63.0
+            ],
+            [
+              36.5,
+              133.0
+            ],
+            [
+              193.5,
+              123.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            36.0,
+            13.0,
+            194.0,
+            133.0
+          ],
+          "points": [
+            [
+              36.5,
+              133.0
+            ],
+            [
+              115.5,
+              13.0
+            ],
+            [
+              193.5,
+              123.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "head_shoulders",
+          "region": [
+            70,
+            32,
+            192,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frx-inverse-head-shoulders-full",
+      "title": "Frx Inverse Head Shoulders · full",
+      "source_id": "frx-inverse-head-shoulders",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/head-and-shoulders-bottom",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "46eb6da5137888ebaa5803419cb1416dd1ed91b4cefc780c63c9d822f2a3ea9f",
+      "crop": [
+        0,
+        0,
+        456,
+        283
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "inverse_head_shoulders",
+          "region": [
+            162,
+            125,
+            320,
+            269
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frx-inverse-head-shoulders-plot",
+      "title": "Frx Inverse Head Shoulders · plot",
+      "source_id": "frx-inverse-head-shoulders",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/head-and-shoulders-bottom",
+      "publisher": "StockCharts ChartSchool",
+      "status": "matched",
+      "mode": "trace",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "138 trace samples; rules observed: descending_triangle, inverse_head_shoulders, inverse_head_shoulders, symmetrical_triangle, double_top, double_bottom, double_top, double_bottom",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "87960bbf11dbda91db08cedff98b0e89bc8d9f0605f716a05e8e626024043894",
+      "crop": [
+        6,
+        29,
+        426,
+        269
+      ],
+      "matches": [
+        {
+          "kind": "descending_triangle",
+          "box": [
+            87.0,
+            9.0,
+            298.0,
+            210.0
+          ],
+          "points": [
+            [
+              87.5,
+              9.0
+            ],
+            [
+              264.5,
+              112.0
+            ],
+            [
+              161.5,
+              175.0
+            ],
+            [
+              297.5,
+              193.0
+            ]
+          ]
+        },
+        {
+          "kind": "inverse_head_shoulders",
+          "box": [
+            234.0,
+            62.0,
+            361.0,
+            210.0
+          ],
+          "points": [
+            [
+              234.5,
+              210.0
+            ],
+            [
+              264.5,
+              112.0
+            ],
+            [
+              297.5,
+              193.0
+            ],
+            [
+              348.5,
+              62.0
+            ],
+            [
+              360.5,
+              111.0
+            ]
+          ]
+        },
+        {
+          "kind": "inverse_head_shoulders",
+          "box": [
+            161.0,
+            91.0,
+            298.0,
+            210.0
+          ],
+          "points": [
+            [
+              161.5,
+              175.0
+            ],
+            [
+              185.5,
+              91.0
+            ],
+            [
+              234.5,
+              210.0
+            ],
+            [
+              264.5,
+              112.0
+            ],
+            [
+              297.5,
+              193.0
+            ]
+          ]
+        },
+        {
+          "kind": "symmetrical_triangle",
+          "box": [
+            185.0,
+            91.0,
+            298.0,
+            210.0
+          ],
+          "points": [
+            [
+              185.5,
+              91.0
+            ],
+            [
+              264.5,
+              112.0
+            ],
+            [
+              234.5,
+              210.0
+            ],
+            [
+              297.5,
+              193.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            185.0,
+            91.0,
+            265.0,
+            210.0
+          ],
+          "points": [
+            [
+              185.5,
+              91.0
+            ],
+            [
+              234.5,
+              210.0
+            ],
+            [
+              264.5,
+              112.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            234.0,
+            112.0,
+            298.0,
+            210.0
+          ],
+          "points": [
+            [
+              234.5,
+              210.0
+            ],
+            [
+              264.5,
+              112.0
+            ],
+            [
+              297.5,
+              193.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            348.0,
+            59.0,
+            382.0,
+            111.0
+          ],
+          "points": [
+            [
+              348.5,
+              62.0
+            ],
+            [
+              360.5,
+              111.0
+            ],
+            [
+              381.5,
+              59.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            327.0,
+            62.0,
+            361.0,
+            111.0
+          ],
+          "points": [
+            [
+              327.5,
+              106.0
+            ],
+            [
+              348.5,
+              62.0
+            ],
+            [
+              360.5,
+              111.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "inverse_head_shoulders",
+          "region": [
+            162,
+            125,
+            320,
+            269
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prtl-ascending-triangle-full",
+      "title": "Prtl Ascending Triangle · full",
+      "source_id": "prtl-ascending-triangle",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/ascending-triangle",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "5ebbe0e2597833a2050135ddd23c6ec5cbf8d60e30f81a70ec2715a1bdb325d3",
+      "crop": [
+        0,
+        0,
+        517,
+        484
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "ascending_triangle",
+          "region": [
+            22,
+            103,
+            388,
+            229
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prtl-ascending-triangle-plot",
+      "title": "Prtl Ascending Triangle · plot",
+      "source_id": "prtl-ascending-triangle",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/ascending-triangle",
+      "publisher": "StockCharts ChartSchool",
+      "status": "matched",
+      "mode": "trace",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "159 trace samples; rules observed: symmetrical_triangle, double_bottom, double_top, ascending_triangle, descending_triangle, descending_triangle, double_bottom, double_top",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "6fe51df8662d3cfdca036fa7240a48afcb23e554b0a84db162babeecbdc689eb",
+      "crop": [
+        6,
+        30,
+        497,
+        258
+      ],
+      "matches": [
+        {
+          "kind": "symmetrical_triangle",
+          "box": [
+            197.0,
+            58.0,
+            366.0,
+            167.0
+          ],
+          "points": [
+            [
+              268.5,
+              58.0
+            ],
+            [
+              344.5,
+              93.0
+            ],
+            [
+              197.5,
+              167.0
+            ],
+            [
+              365.5,
+              129.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            197.0,
+            58.0,
+            329.0,
+            167.0
+          ],
+          "points": [
+            [
+              197.5,
+              167.0
+            ],
+            [
+              268.5,
+              58.0
+            ],
+            [
+              328.5,
+              147.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            152.0,
+            58.0,
+            269.0,
+            167.0
+          ],
+          "points": [
+            [
+              152.5,
+              75.0
+            ],
+            [
+              197.5,
+              167.0
+            ],
+            [
+              268.5,
+              58.0
+            ]
+          ]
+        },
+        {
+          "kind": "ascending_triangle",
+          "box": [
+            33.0,
+            95.0,
+            112.0,
+            213.0
+          ],
+          "points": [
+            [
+              87.5,
+              95.0
+            ],
+            [
+              111.5,
+              95.0
+            ],
+            [
+              33.5,
+              213.0
+            ],
+            [
+              96.5,
+              122.0
+            ]
+          ]
+        },
+        {
+          "kind": "descending_triangle",
+          "box": [
+            152.0,
+            75.0,
+            233.0,
+            167.0
+          ],
+          "points": [
+            [
+              152.5,
+              75.0
+            ],
+            [
+              204.5,
+              128.0
+            ],
+            [
+              197.5,
+              167.0
+            ],
+            [
+              232.5,
+              162.0
+            ]
+          ]
+        },
+        {
+          "kind": "descending_triangle",
+          "box": [
+            268.0,
+            58.0,
+            329.0,
+            147.0
+          ],
+          "points": [
+            [
+              268.5,
+              58.0
+            ],
+            [
+              313.5,
+              113.0
+            ],
+            [
+              310.5,
+              139.0
+            ],
+            [
+              328.5,
+              147.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            96.0,
+            95.0,
+            124.0,
+            122.0
+          ],
+          "points": [
+            [
+              96.5,
+              122.0
+            ],
+            [
+              111.5,
+              95.0
+            ],
+            [
+              123.5,
+              119.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            87.0,
+            95.0,
+            112.0,
+            122.0
+          ],
+          "points": [
+            [
+              87.5,
+              95.0
+            ],
+            [
+              96.5,
+              122.0
+            ],
+            [
+              111.5,
+              95.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "ascending_triangle",
+          "region": [
+            22,
+            103,
+            388,
+            229
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nue-descending-triangle-full",
+      "title": "Nue Descending Triangle · full",
+      "source_id": "nue-descending-triangle",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/descending-triangle",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "a87cf6420312c9628d257ef10654f380dc09acdf69955a8d6531f8bea7eef201",
+      "crop": [
+        0,
+        0,
+        517,
+        485
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "descending_triangle",
+          "region": [
+            85,
+            52,
+            351,
+            174
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nue-descending-triangle-plot",
+      "title": "Nue Descending Triangle · plot",
+      "source_id": "nue-descending-triangle",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/descending-triangle",
+      "publisher": "StockCharts ChartSchool",
+      "status": "matched",
+      "mode": "trace",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "158 trace samples; rules observed: ascending_triangle, head_shoulders, double_bottom, descending_triangle, double_top, double_bottom",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "9190b9e0a6c2868373e0ec05a3c990412b8841083376799f37f1a9daae8f844e",
+      "crop": [
+        6,
+        30,
+        481,
+        258
+      ],
+      "matches": [
+        {
+          "kind": "ascending_triangle",
+          "box": [
+            99.0,
+            48.0,
+            292.0,
+            136.0
+          ],
+          "points": [
+            [
+              120.5,
+              48.0
+            ],
+            [
+              219.5,
+              48.0
+            ],
+            [
+              99.5,
+              136.0
+            ],
+            [
+              291.5,
+              119.0
+            ]
+          ]
+        },
+        {
+          "kind": "head_shoulders",
+          "box": [
+            54.0,
+            48.0,
+            220.0,
+            136.0
+          ],
+          "points": [
+            [
+              54.5,
+              72.0
+            ],
+            [
+              99.5,
+              136.0
+            ],
+            [
+              120.5,
+              48.0
+            ],
+            [
+              201.5,
+              123.0
+            ],
+            [
+              219.5,
+              48.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            99.0,
+            48.0,
+            202.0,
+            136.0
+          ],
+          "points": [
+            [
+              99.5,
+              136.0
+            ],
+            [
+              120.5,
+              48.0
+            ],
+            [
+              201.5,
+              123.0
+            ]
+          ]
+        },
+        {
+          "kind": "descending_triangle",
+          "box": [
+            201.0,
+            48.0,
+            310.0,
+            123.0
+          ],
+          "points": [
+            [
+              219.5,
+              48.0
+            ],
+            [
+              309.5,
+              77.0
+            ],
+            [
+              201.5,
+              123.0
+            ],
+            [
+              291.5,
+              119.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_top",
+          "box": [
+            120.0,
+            48.0,
+            220.0,
+            123.0
+          ],
+          "points": [
+            [
+              120.5,
+              48.0
+            ],
+            [
+              201.5,
+              123.0
+            ],
+            [
+              219.5,
+              48.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            201.0,
+            48.0,
+            292.0,
+            123.0
+          ],
+          "points": [
+            [
+              201.5,
+              123.0
+            ],
+            [
+              219.5,
+              48.0
+            ],
+            [
+              291.5,
+              119.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "descending_triangle",
+          "region": [
+            85,
+            52,
+            351,
+            174
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cnc-symmetrical-triangle-full",
+      "title": "Cnc Symmetrical Triangle · full",
+      "source_id": "cnc-symmetrical-triangle",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/symmetrical-triangle",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "candles",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "fbb88ed8edef197f991b02a1ba0799c17adf70584e02203a19e1b0813201f556",
+      "crop": [
+        0,
+        0,
+        519,
+        401
+      ],
+      "matches": [],
+      "targets": [
+        {
+          "pattern": "symmetrical_triangle",
+          "region": [
+            28,
+            40,
+            366,
+            162
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cnc-symmetrical-triangle-plot",
+      "title": "Cnc Symmetrical Triangle · plot",
+      "source_id": "cnc-symmetrical-triangle",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/symmetrical-triangle",
+      "publisher": "StockCharts ChartSchool",
+      "status": "missed",
+      "mode": "trace",
+      "format": "OHLC bars",
+      "asset": "",
+      "outcome": "176 trace samples; rules observed: descending_triangle, double_bottom",
+      "target_hits": 0,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "926954b6af7a7a9d2507aa4921e3e2097ff49d293aa9987034c889805019d2c2",
+      "crop": [
+        20,
+        30,
+        373,
+        198
+      ],
+      "matches": [
+        {
+          "kind": "descending_triangle",
+          "box": [
+            77.0,
+            10.0,
+            292.0,
+            105.0
+          ],
+          "points": [
+            [
+              77.5,
+              10.0
+            ],
+            [
+              187.5,
+              35.0
+            ],
+            [
+              153.5,
+              105.0
+            ],
+            [
+              291.5,
+              99.0
+            ]
+          ]
+        },
+        {
+          "kind": "double_bottom",
+          "box": [
+            153.0,
+            35.0,
+            292.0,
+            105.0
+          ],
+          "points": [
+            [
+              153.5,
+              105.0
+            ],
+            [
+              187.5,
+              35.0
+            ],
+            [
+              291.5,
+              99.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "symmetrical_triangle",
+          "region": [
+            28,
+            40,
+            366,
+            162
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oncs-hammer-full",
+      "title": "ONCS lower-wick example · full",
+      "source_id": "oncs-hammer",
+      "source": "https://commons.wikimedia.org/wiki/File:Hammer_candlestick_pattern_example.png",
+      "publisher": "Paulakozoolioo · Wikimedia Commons",
+      "status": "matched",
+      "mode": "candles",
+      "format": "filled candles",
+      "asset": "oncs-hammer.png",
+      "outcome": "41 candles; rules observed: double_top, bearish_engulfing, bullish_engulfing, bullish_engulfing, bearish_engulfing, bearish_engulfing, doji, bullish_engulfing, bearish_engulfing, hammer",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "3b865247160d39ebc60ff02318c7db4d5a6901197467064578b9a074183f8c0a",
+      "crop": [
+        0,
+        0,
+        840,
+        398
+      ],
+      "matches": [
+        {
+          "kind": "double_top",
+          "box": [
+            198.0,
+            29.0,
+            807.0,
+            345.0
+          ],
+          "points": [
+            [
+              204.0,
+              72.0
+            ],
+            [
+              707.5,
+              345.0
+            ],
+            [
+              801.0,
+              29.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            198.0,
+            72.0,
+            229.0,
+            156.0
+          ],
+          "points": [
+            [
+              204.0,
+              72.0
+            ],
+            [
+              223.0,
+              156.0
+            ]
+          ]
+        },
+        {
+          "kind": "bullish_engulfing",
+          "box": [
+            123.0,
+            110.0,
+            154.0,
+            158.0
+          ],
+          "points": [
+            [
+              129.0,
+              138.0
+            ],
+            [
+              148.0,
+              155.0
+            ]
+          ]
+        },
+        {
+          "kind": "bullish_engulfing",
+          "box": [
+            310.0,
+            120.0,
+            340.0,
+            169.0
+          ],
+          "points": [
+            [
+              316.0,
+              146.0
+            ],
+            [
+              334.5,
+              167.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            571.0,
+            248.0,
+            602.0,
+            291.0
+          ],
+          "points": [
+            [
+              577.0,
+              248.0
+            ],
+            [
+              596.0,
+              291.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            273.0,
+            116.0,
+            303.0,
+            152.0
+          ],
+          "points": [
+            [
+              278.5,
+              123.0
+            ],
+            [
+              297.0,
+              152.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            795.0,
+            29.0,
+            807.0,
+            115.0
+          ],
+          "points": [
+            [
+              801.0,
+              29.0
+            ],
+            [
+              801.0,
+              115.0
+            ]
+          ]
+        },
+        {
+          "kind": "bullish_engulfing",
+          "box": [
+            366.0,
+            133.0,
+            396.0,
+            158.0
+          ],
+          "points": [
+            [
+              372.0,
+              138.0
+            ],
+            [
+              390.5,
+              147.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            534.0,
+            239.0,
+            564.0,
+            263.0
+          ],
+          "points": [
+            [
+              539.5,
+              239.0
+            ],
+            [
+              558.5,
+              263.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            702.0,
+            285.0,
+            713.0,
+            345.0
+          ],
+          "points": [
+            [
+              707.5,
+              285.0
+            ],
+            [
+              707.5,
+              345.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "hammer",
+          "region": [
+            702,
+            284,
+            716,
+            347
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oncs-hammer-plot",
+      "title": "ONCS lower-wick example · plot",
+      "source_id": "oncs-hammer",
+      "source": "https://commons.wikimedia.org/wiki/File:Hammer_candlestick_pattern_example.png",
+      "publisher": "Paulakozoolioo · Wikimedia Commons",
+      "status": "matched",
+      "mode": "candles",
+      "format": "filled candles",
+      "asset": "",
+      "outcome": "38 candles; rules observed: bearish_engulfing, bullish_engulfing, bullish_engulfing, bearish_engulfing, bearish_engulfing, bullish_engulfing, bearish_engulfing, hammer, shooting_star, hammer",
+      "target_hits": 1,
+      "target_count": 1,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "missed",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "41007853bff24a5c49f43b9beb61d94fc4e9f0228ff9f29e136a10b4e36307d7",
+      "crop": [
+        37,
+        40,
+        770,
+        366
+      ],
+      "matches": [
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            161.0,
+            32.0,
+            192.0,
+            116.0
+          ],
+          "points": [
+            [
+              167.0,
+              32.0
+            ],
+            [
+              186.0,
+              116.0
+            ]
+          ]
+        },
+        {
+          "kind": "bullish_engulfing",
+          "box": [
+            86.0,
+            70.0,
+            117.0,
+            118.0
+          ],
+          "points": [
+            [
+              92.0,
+              98.0
+            ],
+            [
+              111.0,
+              115.0
+            ]
+          ]
+        },
+        {
+          "kind": "bullish_engulfing",
+          "box": [
+            273.0,
+            80.0,
+            303.0,
+            129.0
+          ],
+          "points": [
+            [
+              279.0,
+              106.0
+            ],
+            [
+              297.5,
+              127.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            534.0,
+            208.0,
+            565.0,
+            251.0
+          ],
+          "points": [
+            [
+              540.0,
+              208.0
+            ],
+            [
+              559.0,
+              251.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            236.0,
+            76.0,
+            266.0,
+            112.0
+          ],
+          "points": [
+            [
+              241.5,
+              83.0
+            ],
+            [
+              260.0,
+              112.0
+            ]
+          ]
+        },
+        {
+          "kind": "bullish_engulfing",
+          "box": [
+            329.0,
+            93.0,
+            359.0,
+            118.0
+          ],
+          "points": [
+            [
+              335.0,
+              98.0
+            ],
+            [
+              353.5,
+              107.0
+            ]
+          ]
+        },
+        {
+          "kind": "bearish_engulfing",
+          "box": [
+            497.0,
+            199.0,
+            527.0,
+            223.0
+          ],
+          "points": [
+            [
+              502.5,
+              199.0
+            ],
+            [
+              521.5,
+              223.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            665.0,
+            245.0,
+            676.0,
+            305.0
+          ],
+          "points": [
+            [
+              670.5,
+              245.0
+            ],
+            [
+              670.5,
+              305.0
+            ]
+          ]
+        },
+        {
+          "kind": "shooting_star",
+          "box": [
+            646.0,
+            212.0,
+            658.0,
+            261.0
+          ],
+          "points": [
+            [
+              652.0,
+              212.0
+            ],
+            [
+              652.0,
+              261.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            12.0,
+            111.0,
+            24.0,
+            147.0
+          ],
+          "points": [
+            [
+              18.0,
+              111.0
+            ],
+            [
+              18.0,
+              147.0
+            ]
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "pattern": "hammer",
+          "region": [
+            702,
+            284,
+            716,
+            347
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nifty-full",
+      "title": "NIFTY · whole chart readability",
+      "source_id": "nifty-qtstalker",
+      "source": "https://commons.wikimedia.org/wiki/File:Qtstalker_candlestick_chart.png",
+      "publisher": "Yndesai · Wikimedia Commons",
+      "status": "readable",
+      "mode": "candles",
+      "format": "hollow candles",
+      "asset": "nifty-qtstalker.png",
+      "outcome": "95 candles; rules observed: double_bottom, hammer, hammer, doji, hammer, doji, doji, hammer, shooting_star, doji",
+      "target_hits": 0,
+      "target_count": 0,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unreadable",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "9d4f21d399075b66fbff10c842e633515f0a989d4e4db7d834a7e67495bb3fdd",
+      "crop": [
+        0,
+        0,
+        1366,
+        768
+      ],
+      "matches": [
+        {
+          "kind": "double_bottom",
+          "box": [
+            256.0,
+            62.0,
+            371.0,
+            648.0
+          ],
+          "points": [
+            [
+              258.5,
+              648.0
+            ],
+            [
+              290.5,
+              62.0
+            ],
+            [
+              368.5,
+              573.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            190.0,
+            521.0,
+            195.0,
+            573.0
+          ],
+          "points": [
+            [
+              192.5,
+              521.0
+            ],
+            [
+              192.5,
+              573.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            234.0,
+            580.0,
+            239.0,
+            625.0
+          ],
+          "points": [
+            [
+              236.5,
+              580.0
+            ],
+            [
+              236.5,
+              625.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            245.0,
+            547.0,
+            250.0,
+            591.0
+          ],
+          "points": [
+            [
+              247.5,
+              547.0
+            ],
+            [
+              247.5,
+              591.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            1004.0,
+            367.0,
+            1009.0,
+            407.0
+          ],
+          "points": [
+            [
+              1006.5,
+              367.0
+            ],
+            [
+              1006.5,
+              407.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            201.0,
+            516.0,
+            206.0,
+            550.0
+          ],
+          "points": [
+            [
+              203.5,
+              516.0
+            ],
+            [
+              203.5,
+              550.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            1015.0,
+            377.0,
+            1020.0,
+            407.0
+          ],
+          "points": [
+            [
+              1017.5,
+              377.0
+            ],
+            [
+              1017.5,
+              407.0
+            ]
+          ]
+        },
+        {
+          "kind": "hammer",
+          "box": [
+            1026.0,
+            397.0,
+            1031.0,
+            423.0
+          ],
+          "points": [
+            [
+              1028.5,
+              397.0
+            ],
+            [
+              1028.5,
+              423.0
+            ]
+          ]
+        },
+        {
+          "kind": "shooting_star",
+          "box": [
+            1279.0,
+            115.0,
+            1284.0,
+            141.0
+          ],
+          "points": [
+            [
+              1281.5,
+              115.0
+            ],
+            [
+              1281.5,
+              141.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            498.0,
+            422.0,
+            503.0,
+            447.0
+          ],
+          "points": [
+            [
+              500.5,
+              422.0
+            ],
+            [
+              500.5,
+              447.0
+            ]
+          ]
+        }
+      ],
+      "targets": []
+    },
+    {
+      "id": "nifty-trend-candles",
+      "title": "NIFTY monotonic segment · candles",
+      "source_id": "nifty-qtstalker",
+      "source": "https://commons.wikimedia.org/wiki/File:Qtstalker_candlestick_chart.png",
+      "publisher": "Yndesai · Wikimedia Commons",
+      "status": "negative_pass",
+      "mode": "candles",
+      "format": "hollow candles",
+      "asset": "",
+      "outcome": "23 candles; rules observed: shooting_star, doji, doji, shooting_star",
+      "target_hits": 0,
+      "target_count": 0,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "negative_pass",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "71c610703435613a7fbe892e716081857762db1468ce1448a271387152253a7c",
+      "crop": [
+        1050,
+        95,
+        1306,
+        430
+      ],
+      "matches": [
+        {
+          "kind": "shooting_star",
+          "box": [
+            229.0,
+            20.0,
+            234.0,
+            46.0
+          ],
+          "points": [
+            [
+              231.5,
+              20.0
+            ],
+            [
+              231.5,
+              46.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            42.0,
+            225.0,
+            47.0,
+            246.0
+          ],
+          "points": [
+            [
+              44.5,
+              225.0
+            ],
+            [
+              44.5,
+              246.0
+            ]
+          ]
+        },
+        {
+          "kind": "doji",
+          "box": [
+            185.0,
+            77.0,
+            190.0,
+            98.0
+          ],
+          "points": [
+            [
+              187.5,
+              77.0
+            ],
+            [
+              187.5,
+              98.0
+            ]
+          ]
+        },
+        {
+          "kind": "shooting_star",
+          "box": [
+            174.0,
+            69.0,
+            179.0,
+            89.0
+          ],
+          "points": [
+            [
+              176.5,
+              69.0
+            ],
+            [
+              176.5,
+              89.0
+            ]
+          ]
+        }
+      ],
+      "targets": []
+    },
+    {
+      "id": "nifty-trend-trace",
+      "title": "NIFTY monotonic segment · trace",
+      "source_id": "nifty-qtstalker",
+      "source": "https://commons.wikimedia.org/wiki/File:Qtstalker_candlestick_chart.png",
+      "publisher": "Yndesai · Wikimedia Commons",
+      "status": "negative_pass",
+      "mode": "trace",
+      "format": "hollow candles",
+      "asset": "",
+      "outcome": "180 trace samples; rules observed: none",
+      "target_hits": 0,
+      "target_count": 0,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "unsupported_mode",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "71c610703435613a7fbe892e716081857762db1468ce1448a271387152253a7c",
+      "crop": [
+        1050,
+        95,
+        1306,
+        430
+      ],
+      "matches": [],
+      "targets": []
+    },
+    {
+      "id": "nifty-chrome",
+      "title": "Application chrome · not a chart",
+      "source_id": "nifty-qtstalker",
+      "source": "https://commons.wikimedia.org/wiki/File:Qtstalker_candlestick_chart.png",
+      "publisher": "Yndesai · Wikimedia Commons",
+      "status": "negative_pass",
+      "mode": "candles",
+      "format": "hollow candles",
+      "asset": "",
+      "outcome": "No readable candle series found. Use at least 8 red/green or red/teal candles with visible wicks. Crop out menus or try another chart.",
+      "target_hits": 0,
+      "target_count": 0,
+      "forbidden_pattern_flags": 0,
+      "baseline_status": "negative_pass",
+      "baseline_target_hits": 0,
+      "input_pixel_sha256": "6ebe2a5c04b53eeb9516c25e75012e9c7df37d885f11d32795c5ec37bf37f217",
+      "crop": [
+        0,
+        0,
+        300,
+        200
+      ],
+      "matches": [],
+      "targets": []
+    }
+  ]
+}

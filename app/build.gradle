@@ -1,4 +1,9 @@
 plugins { id 'com.android.application' }
+tasks.register('prepareStudioAssets', Exec) {
+    workingDir rootProject.projectDir
+    commandLine 'python3', 'scripts/prepare-assets.py'
+}
+tasks.named('preBuild').configure { dependsOn 'prepareStudioAssets' }
 android {
     namespace 'com.lamontlabs.quantravision.next'
     compileSdk 35
@@ -6,8 +11,8 @@ android {
         applicationId 'com.lamontlabs.quantravision.next'
         minSdk 26
         targetSdk 35
-        versionCode 40001
-        versionName '4.0.0-preview.1'
+        versionCode 40101
+        versionName '4.1.0-preview.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

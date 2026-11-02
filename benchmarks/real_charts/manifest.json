@@ -1,0 +1,627 @@
+{
+  "schema": 1,
+  "patterns": [
+    "double_top",
+    "double_bottom",
+    "head_shoulders",
+    "inverse_head_shoulders",
+    "ascending_triangle",
+    "descending_triangle",
+    "symmetrical_triangle",
+    "doji",
+    "hammer",
+    "shooting_star",
+    "bullish_engulfing",
+    "bearish_engulfing"
+  ],
+  "sources": [
+    {
+      "id": "ford-double-top",
+      "name": "doubletop-f.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/double-top-reversal",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FUxqIBrGqAqZ3Pm9Urk6B%2Fdoubletop-f.png?alt=media&token=bc0831af-f12d-4a14-8961-3e3c672c2860",
+      "width": 458,
+      "height": 429,
+      "sha256": "8d03f7dd7ea53b93bf893a40ed623061407fa76c62796f4d49ac8a6d9f0cd631",
+      "file": "benchmarks/real_charts/reference-cache/ford-double-top.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "OHLC bars",
+      "distribution": "reference-download-only",
+      "pixel_sha256": "77bbb8d2d5c7f512505790809beeca61e83e12dc6ec597b2cd17fb2300880b81"
+    },
+    {
+      "id": "pfe-double-bottom",
+      "name": "doublebot-pfe.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/double-bottom-reversal",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FkladJ36ecTHeAw3JV3RJ%2Fdoublebot-pfe.png?alt=media&token=a8d00527-2994-4151-bf75-a42b4882c6fe",
+      "width": 516,
+      "height": 485,
+      "sha256": "d63a980a0be7eaa7bd6bdc92c5c81597b0fd28fff127dad2dd0460dd9a96a1ae",
+      "file": "benchmarks/real_charts/reference-cache/pfe-double-bottom.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "OHLC bars",
+      "distribution": "reference-download-only",
+      "pre_outage_file_sha256": "368b9cc07478373789a2718d2b0f468b7c98ad4727ec7be83e2a12793b4f4eed",
+      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed.",
+      "pixel_sha256": "23c30fa7acd4669273a5e9e4a18db5d890998be18ab60e20a2d6c281efe3bac8"
+    },
+    {
+      "id": "adm-head-shoulders",
+      "name": "hs-basicupslope-adm.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/head-and-shoulders-top",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FfkE1PgKLRDVqAuvP1hAB%2Fhs-basicupslope-adm.png?alt=media&token=70d0aec9-1b92-4722-9fec-279222060d69",
+      "width": 457,
+      "height": 429,
+      "sha256": "e86a48de3a4af152370449db34fbedb6ed82484068115ee0d1fbb4c164cabc61",
+      "file": "benchmarks/real_charts/reference-cache/adm-head-shoulders.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "line",
+      "distribution": "reference-download-only",
+      "pixel_sha256": "f9c320dc8c531166b7e192b852ff52a9d129b111a25a1f09ad04244ca80566f4"
+    },
+    {
+      "id": "frx-inverse-head-shoulders",
+      "name": "hs-botslopup-frx.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/head-and-shoulders-bottom",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FHx4qQrAuHDxP1ExGlvOf%2Fhs-botslopup-frx.png?alt=media&token=3078fb83-9bb9-454d-8e92-a3cd58ca0184",
+      "width": 456,
+      "height": 283,
+      "sha256": "e90212a1cdd2465658086d972a738bbafd307e39b9f420893c746df36809a9ed",
+      "file": "benchmarks/real_charts/reference-cache/frx-inverse-head-shoulders.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "OHLC bars",
+      "distribution": "reference-download-only",
+      "pre_outage_file_sha256": "0ab0d76aeb838eeb1f53728ab84890f57bc8f6e9b47fc0d39048b786c6e918f4",
+      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed.",
+      "pixel_sha256": "fe03d5196a566823a7e407f1b0be19238e62bf990acf2de234bc952962ed0f87"
+    },
+    {
+      "id": "prtl-ascending-triangle",
+      "name": "asctri-conti-prtl.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/ascending-triangle",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FmoSfz2uiG8G4PFlRFL5K%2Fasctri-conti-prtl.png?alt=media&token=2c462096-9ec7-42a6-a8be-750d679bd881",
+      "width": 517,
+      "height": 484,
+      "sha256": "8fb77ad5f4cbb5baa02825e2a06fb80c911cc0777fb18281d1560017c6fc603c",
+      "file": "benchmarks/real_charts/reference-cache/prtl-ascending-triangle.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "OHLC bars",
+      "distribution": "reference-download-only",
+      "pixel_sha256": "bc809485fd05e83e2b57c8f8c568b03261f4ea02358f319b773e35403e4eeb98"
+    },
+    {
+      "id": "nue-descending-triangle",
+      "name": "desctri-conti-nue.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/descending-triangle",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FHRIe3J1dLhvQD0HE1Nqh%2Fdesctri-conti-nue.png?alt=media&token=5cc503d7-8ac7-4038-b138-26e42fee7b27",
+      "width": 517,
+      "height": 485,
+      "sha256": "f654138ed1a370570c3b69e5a55c7f6f500ae82e5ac74246f4a27de26fb9192a",
+      "file": "benchmarks/real_charts/reference-cache/nue-descending-triangle.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "OHLC bars",
+      "distribution": "reference-download-only",
+      "pixel_sha256": "e8e8c78b734386741ac776785fab50d1f6bdf43b2bb0db5df0fb7602f26b745b"
+    },
+    {
+      "id": "cnc-symmetrical-triangle",
+      "name": "symtri-conti-cnc.png",
+      "source": "https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns/symmetrical-triangle",
+      "url": "https://436553459-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FERtrZrZOhufFzk6ZQO4B%2Fuploads%2FYae9cpCQOjctGiKwKdWm%2Fsymtri-conti-cnc.png?alt=media&token=b88cc5a5-c1b2-4cbd-8b57-fee875640ac0",
+      "width": 519,
+      "height": 401,
+      "sha256": "acee0cfe4ddddfa5d3e8737bbd36932cfb4034234168001b043078abe3363fbf",
+      "file": "benchmarks/real_charts/reference-cache/cnc-symmetrical-triangle.png",
+      "publisher": "StockCharts ChartSchool",
+      "format": "OHLC bars",
+      "distribution": "reference-download-only",
+      "pre_outage_file_sha256": "83bab53feea3fd879d1758ca1ff8de13ac4039d57a5d0b0b06b1cdddea0434b9",
+      "recovery_note": "Publisher download bytes differed after recovery. Current original was visually reviewed against the named pattern and frozen crop/region; this new byte hash is pinned. No labels or regions were changed.",
+      "pixel_sha256": "bf4444e4ca4ddbeb7a85cd917501e72a69487f5accb3d8b1cd73745baf66b1e7"
+    },
+    {
+      "id": "oncs-hammer",
+      "name": "Hammer_candlestick_pattern_example.png",
+      "file": "benchmarks/real_charts/images/oncs-hammer.png",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Hammer_candlestick_pattern_example.png",
+      "source": "https://commons.wikimedia.org/wiki/File:Hammer_candlestick_pattern_example.png",
+      "publisher": "Paulakozoolioo · Wikimedia Commons",
+      "distribution": "CC-BY-SA-4.0",
+      "width": 840,
+      "height": 398,
+      "format": "filled candles",
+      "sha256": "cde603bbb328821586ae464e3af1c60b4d6d8710a1960e260da060d098ac699f",
+      "asset": "oncs-hammer.png",
+      "pixel_sha256": "007388b2af9ca5731436ce64a5240dac539dbae09953ae35fa7a2eb52dfafdaf"
+    },
+    {
+      "id": "nifty-qtstalker",
+      "name": "Qtstalker_candlestick_chart.png",
+      "file": "benchmarks/real_charts/images/nifty-qtstalker.png",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Qtstalker_candlestick_chart.png",
+      "source": "https://commons.wikimedia.org/wiki/File:Qtstalker_candlestick_chart.png",
+      "publisher": "Yndesai · Wikimedia Commons",
+      "distribution": "CC0-1.0",
+      "width": 1366,
+      "height": 768,
+      "format": "hollow candles",
+      "sha256": "ba69728edf00625d720e17cb8002cb63ee166f987a189ad37f435e0c32e6bce9",
+      "asset": "nifty-qtstalker.png",
+      "pixel_sha256": "ef0c96b681f0fe737d3b285edb6d074c6e4de86eb26472ccf29eb5191ff9d5fe"
+    }
+  ],
+  "cases": [
+    {
+      "id": "ford-double-top-full",
+      "source_id": "ford-double-top",
+      "title": "Ford Double Top · full",
+      "crop": [
+        0,
+        0,
+        458,
+        429
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "double_top",
+          "region": [
+            45,
+            35,
+            280,
+            145
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "ford-double-top-plot",
+      "source_id": "ford-double-top",
+      "title": "Ford Double Top · plot",
+      "crop": [
+        6,
+        30,
+        426,
+        226
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "double_top",
+          "region": [
+            45,
+            35,
+            280,
+            145
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "pfe-double-bottom-full",
+      "source_id": "pfe-double-bottom",
+      "title": "Pfe Double Bottom · full",
+      "crop": [
+        0,
+        0,
+        516,
+        485
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "double_bottom",
+          "region": [
+            208,
+            117,
+            384,
+            255
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "pfe-double-bottom-plot",
+      "source_id": "pfe-double-bottom",
+      "title": "Pfe Double Bottom · plot",
+      "crop": [
+        6,
+        30,
+        491,
+        257
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "double_bottom",
+          "region": [
+            208,
+            117,
+            384,
+            255
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "adm-head-shoulders-full",
+      "source_id": "adm-head-shoulders",
+      "title": "Adm Head Shoulders · full",
+      "crop": [
+        0,
+        0,
+        457,
+        429
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "head_shoulders",
+          "region": [
+            70,
+            32,
+            192,
+            110
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "adm-head-shoulders-plot",
+      "source_id": "adm-head-shoulders",
+      "title": "Adm Head Shoulders · plot",
+      "crop": [
+        5,
+        30,
+        433,
+        226
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "head_shoulders",
+          "region": [
+            70,
+            32,
+            192,
+            110
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "frx-inverse-head-shoulders-full",
+      "source_id": "frx-inverse-head-shoulders",
+      "title": "Frx Inverse Head Shoulders · full",
+      "crop": [
+        0,
+        0,
+        456,
+        283
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "inverse_head_shoulders",
+          "region": [
+            162,
+            125,
+            320,
+            269
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "frx-inverse-head-shoulders-plot",
+      "source_id": "frx-inverse-head-shoulders",
+      "title": "Frx Inverse Head Shoulders · plot",
+      "crop": [
+        6,
+        29,
+        426,
+        269
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "inverse_head_shoulders",
+          "region": [
+            162,
+            125,
+            320,
+            269
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "prtl-ascending-triangle-full",
+      "source_id": "prtl-ascending-triangle",
+      "title": "Prtl Ascending Triangle · full",
+      "crop": [
+        0,
+        0,
+        517,
+        484
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "ascending_triangle",
+          "region": [
+            22,
+            103,
+            388,
+            229
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "prtl-ascending-triangle-plot",
+      "source_id": "prtl-ascending-triangle",
+      "title": "Prtl Ascending Triangle · plot",
+      "crop": [
+        6,
+        30,
+        497,
+        258
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "ascending_triangle",
+          "region": [
+            22,
+            103,
+            388,
+            229
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "nue-descending-triangle-full",
+      "source_id": "nue-descending-triangle",
+      "title": "Nue Descending Triangle · full",
+      "crop": [
+        0,
+        0,
+        517,
+        485
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "descending_triangle",
+          "region": [
+            85,
+            52,
+            351,
+            174
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "nue-descending-triangle-plot",
+      "source_id": "nue-descending-triangle",
+      "title": "Nue Descending Triangle · plot",
+      "crop": [
+        6,
+        30,
+        481,
+        258
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "descending_triangle",
+          "region": [
+            85,
+            52,
+            351,
+            174
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "cnc-symmetrical-triangle-full",
+      "source_id": "cnc-symmetrical-triangle",
+      "title": "Cnc Symmetrical Triangle · full",
+      "crop": [
+        0,
+        0,
+        519,
+        401
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "symmetrical_triangle",
+          "region": [
+            28,
+            40,
+            366,
+            162
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "cnc-symmetrical-triangle-plot",
+      "source_id": "cnc-symmetrical-triangle",
+      "title": "Cnc Symmetrical Triangle · plot",
+      "crop": [
+        20,
+        30,
+        373,
+        198
+      ],
+      "mode": "trace",
+      "targets": [
+        {
+          "pattern": "symmetrical_triangle",
+          "region": [
+            28,
+            40,
+            366,
+            162
+          ]
+        }
+      ],
+      "label_origin": "Publisher-named example; region and crop restored from the pre-outage frozen manifest. This is a development set, not a blind test."
+    },
+    {
+      "id": "oncs-hammer-full",
+      "source_id": "oncs-hammer",
+      "title": "ONCS lower-wick example · full",
+      "crop": [
+        0,
+        0,
+        840,
+        398
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "hammer",
+          "region": [
+            702,
+            284,
+            716,
+            347
+          ]
+        }
+      ],
+      "label_origin": "Black-marked lower-wick example in publisher image; pre-outage frozen target."
+    },
+    {
+      "id": "oncs-hammer-plot",
+      "source_id": "oncs-hammer",
+      "title": "ONCS lower-wick example · plot",
+      "crop": [
+        37,
+        40,
+        770,
+        366
+      ],
+      "mode": "candles",
+      "targets": [
+        {
+          "pattern": "hammer",
+          "region": [
+            702,
+            284,
+            716,
+            347
+          ]
+        }
+      ],
+      "label_origin": "Black-marked lower-wick example in publisher image; pre-outage frozen target."
+    },
+    {
+      "id": "nifty-full",
+      "source_id": "nifty-qtstalker",
+      "title": "NIFTY · whole chart readability",
+      "crop": [
+        0,
+        0,
+        1366,
+        768
+      ],
+      "mode": "candles"
+    },
+    {
+      "id": "nifty-trend-candles",
+      "source_id": "nifty-qtstalker",
+      "title": "NIFTY monotonic segment · candles",
+      "crop": [
+        1050,
+        95,
+        1306,
+        430
+      ],
+      "mode": "candles",
+      "negative": true,
+      "forbidden": [
+        "double_top",
+        "double_bottom",
+        "head_shoulders",
+        "inverse_head_shoulders",
+        "ascending_triangle",
+        "descending_triangle",
+        "symmetrical_triangle"
+      ],
+      "label_origin": "Manually transcribed segment contains no complete supported macro formation. Candle-level rules are unscored."
+    },
+    {
+      "id": "nifty-trend-trace",
+      "source_id": "nifty-qtstalker",
+      "title": "NIFTY monotonic segment · trace",
+      "crop": [
+        1050,
+        95,
+        1306,
+        430
+      ],
+      "mode": "trace",
+      "negative": true,
+      "forbidden": [
+        "double_top",
+        "double_bottom",
+        "head_shoulders",
+        "inverse_head_shoulders",
+        "ascending_triangle",
+        "descending_triangle",
+        "symmetrical_triangle"
+      ],
+      "label_origin": "Manually transcribed segment contains no complete supported macro formation. Candle-level rules are unscored."
+    },
+    {
+      "id": "nifty-chrome",
+      "source_id": "nifty-qtstalker",
+      "title": "Application chrome · not a chart",
+      "crop": [
+        0,
+        0,
+        300,
+        200
+      ],
+      "mode": "candles",
+      "negative": true,
+      "forbidden": [
+        "double_top",
+        "double_bottom",
+        "head_shoulders",
+        "inverse_head_shoulders",
+        "ascending_triangle",
+        "descending_triangle",
+        "symmetrical_triangle",
+        "doji",
+        "hammer",
+        "shooting_star",
+        "bullish_engulfing",
+        "bearish_engulfing"
+      ],
+      "require_rejection": true
+    }
+  ],
+  "limitations": "Small selected development set: 9 source charts, correlated full-image and crop cases, and publisher-provided pattern names. Labels and regions were transcribed by the implementation agent; there was no independent adjudication. The engine has been adjusted using these sources. This is not a held-out test or a general accuracy estimate. OHLC and line images use explicit experimental trace mode only in the cropped cases. The baseline has no trace reader. Extra detections on positive images are unscored because annotations are not exhaustive. Doji, long upper wick and both engulfing rules have no external positive targets. Three negative cases do not establish a general false-positive rate. No future-return or trading-performance claim is made.",
+  "pixel_identity": "SHA-256 of big-endian uint32 width and height followed by decoded RGBA pixels; original download byte hashes retained as provenance."
+}
