@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.0 preview.3 — 2026-11-01
+
+- Give Studio a separate install identity after verification found that its signing certificate differed from the earlier preview. The earlier app and its journal remain accessible.
+- Pin the Studio signing file and dedicated cache so subsequent Studio builds keep one certificate.
+- Retain all tested Studio workflows and the unchanged geometry-3 engine/evaluation.
+
 ## 4.1.0 preview.2 — 2026-11-01
 
 - Recovered the Studio rewrite: restrained dark/gold workspace, embedded typography, searchable visual atlas, persistent detail navigation, chart zoom/pan/fit and full-image controls.

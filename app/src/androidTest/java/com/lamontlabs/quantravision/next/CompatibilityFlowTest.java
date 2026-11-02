@@ -22,7 +22,7 @@ public class CompatibilityFlowTest {
     protected Context context;
     protected AppSession session;
     protected Activity activity;
-    protected static final String PKG="com.lamontlabs.quantravision.next";
+    protected static final String PKG="com.lamontlabs.quantravision.studio";
     @Before public void startFresh() throws Exception {
         device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());device.wakeUp();device.setOrientationNatural();
         // A boot-time Pixel Launcher ANR is emulator infrastructure, not an app failure.
