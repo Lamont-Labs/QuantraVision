@@ -130,6 +130,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: QuantraVision-Studio-${{ github.run_number }}
@@ -138,7 +139,6 @@ jobs:
         with:
           name: device-proof-api-36-${{ github.run_number }}
           path: release/device-proof
-      - uses: actions/checkout@v4
       - name: Prepare the native screenshot review
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==12.0.0
